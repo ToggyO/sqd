@@ -42,21 +42,31 @@ namespace Squadio.API
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var apiSettings = Configuration.GetSection("AppSettings:APISettings").Get<ApiSettings>();
+            services.AddCors(options =>
+            {
+                options.AddPolicy(MyAllowSpecificOrigins,
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin();
+                    });
+            });
 
+            services.AddMvcCore()
+                .AddApiExplorer();
+
+            var apiSettings = Configuration.GetSection("AppSettings:APISettings").Get<ApiSettings>();
 
             services.AddMemoryCache();
 
             var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
 
-            services.AddDbContextPool<SquadioDbContext>(builder =>
+            services.AddDbContext<SquadioDbContext>(builder =>
                     builder
                         .EnableSensitiveDataLogging()
-                        .UseNpgsql(string.Format(connectionString),
+                        .UseNpgsql(connectionString,
                             optionsBuilder =>
                                 optionsBuilder.MigrationsAssembly(typeof(SquadioDbContext).Assembly.FullName)));
-            services.AddMvcCore()
-                .AddApiExplorer();
+
 
             services.AddSwaggerGen(c =>
             {
@@ -76,18 +86,6 @@ namespace Squadio.API
                         new string[0] 
                     }
                 });
-            });
-
-
-            services.AddCors(options =>
-            {
-                options.AddPolicy(MyAllowSpecificOrigins,
-                    builder =>
-                    {
-                        builder.WithOrigins("http://localhost:5005")
-                            .AllowAnyHeader()
-                            .AllowAnyMethod();
-                    });
             });
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
