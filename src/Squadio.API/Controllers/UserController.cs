@@ -4,7 +4,7 @@ using Squadio.API.Handlers.Users;
 namespace Squadio.API.Controllers
 {
     [ApiController]
-    [Route("api/user")]
+    [Route("api/users")]
     public class UserController : ControllerBase
     {
         private readonly IUserHandler _userHandler;
