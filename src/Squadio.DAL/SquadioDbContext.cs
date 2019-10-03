@@ -7,7 +7,10 @@ namespace Squadio.DAL
     {
         public DbSet<UserModel> Users { get; set; }
 
-
+        public SquadioDbContext(DbContextOptions<SquadioDbContext> options)
+            : base(options)
+        {
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UserModel>(entity =>

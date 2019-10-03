@@ -20,6 +20,7 @@ using Squadio.Common.Settings;
 using Swashbuckle.AspNetCore.Swagger;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.OpenApi.Models;
 
 namespace Squadio.API
 {
@@ -54,33 +55,36 @@ namespace Squadio.API
                         .UseNpgsql(string.Format(connectionString),
                             optionsBuilder =>
                                 optionsBuilder.MigrationsAssembly(typeof(SquadioDbContext).Assembly.FullName)));
-
+            services.AddMvcCore()
+                .AddApiExplorer();
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "Squad.io API", Version = "v1" });
-                c.IncludeXmlComments($"{AppDomain.CurrentDomain.BaseDirectory}Squadio.API.xml");
-                c.AddSecurityDefinition("Bearer",
-                    new ApiKeyScheme
-                    {
-                        In = "header",
-                        Description = "Please insert JWT with Bearer into field",
-                        Name = "Authorization",
-                        Type = "apiKey"
-                    });
-                c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Squad.io API", Version = "v1" });
+                //c.IncludeXmlComments($"{AppDomain.CurrentDomain.BaseDirectory}Squadio.API.xml");
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    {"Bearer", Enumerable.Empty<string>()}
+                    Type = SecuritySchemeType.ApiKey
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+                        },
+                        new string[0] 
+                    }
                 });
             });
-            
+
 
             services.AddCors(options =>
             {
                 options.AddPolicy(MyAllowSpecificOrigins,
                     builder =>
                     {
-                        builder.WithOrigins("http://localhost:5000")
+                        builder.WithOrigins("http://localhost:5005")
                             .AllowAnyHeader()
                             .AllowAnyMethod();
                     });
@@ -117,7 +121,6 @@ namespace Squadio.API
                     };
                 });
 
-            services.AddMvc();
 
             DependencyInjectionModule.Load(services);
         }
@@ -134,24 +137,22 @@ namespace Squadio.API
                 app.UseHsts();
                 app.UseHttpsRedirection();
             }
-            /*
-            app.UseMiddleware(typeof(ExceptionMiddleware));
+            
+            app.UseMiddleware(typeof(BaseErrorsMiddleware));
 
-            app.UseSwagger();*/
             app.UseCors(MyAllowSpecificOrigins);
             app.UseStaticFiles();
 
-            /*app.UseSwaggerUI(c =>
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Anova API V1");
-
-                c.ShowExtensions();
-            });*/
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Squad.io API V1");
+            });
 
             app.EnsureMigrationOfContext<SquadioDbContext>();
 
-            app.UseMvcWithDefaultRoute();
-            app.UseRequestLocalization();
+            //app.UseMvcWithDefaultRoute();
+            //app.UseRequestLocalization();
         }
     }
 }
