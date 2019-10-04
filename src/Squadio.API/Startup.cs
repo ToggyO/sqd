@@ -58,12 +58,19 @@ namespace Squadio.API
 
             services.AddMemoryCache();
 
-            var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
+            var dbSettings = new DbSettings
+            {
+                DB_HOST = Configuration.GetSection("DB_HOST").Value,
+                DB_PORT = Configuration.GetSection("DB_PORT").Value,
+                DB_USER = Configuration.GetSection("DB_USER").Value,
+                DB_NAME = Configuration.GetSection("DB_NAME").Value,
+                DB_PASSWORD = Configuration.GetSection("DB_PASSWORD").Value
+            };
 
             services.AddDbContext<SquadioDbContext>(builder =>
                     builder
                         .EnableSensitiveDataLogging()
-                        .UseNpgsql(connectionString,
+                        .UseNpgsql(dbSettings.PostgresConnectionString,
                             optionsBuilder =>
                                 optionsBuilder.MigrationsAssembly(typeof(SquadioDbContext).Assembly.FullName)));
 
