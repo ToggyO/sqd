@@ -24,9 +24,10 @@ namespace Squadio.DAL.Repository.Users.Implementation
             throw new NotImplementedException();
         }
 
-        public Task<UserModel> Get(Guid id)
+        public async Task<UserModel> GetById(Guid id)
         {
-            throw new NotImplementedException();
+            var entity = await _context.Users.FindAsync(id);
+            return entity;
         }
 
         public Task<UserModel> Update(UserModel entity)
