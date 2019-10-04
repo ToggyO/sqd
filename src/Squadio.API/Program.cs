@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace Squadio.API
 {
@@ -10,10 +11,13 @@ namespace Squadio.API
             CreateHostBuilder(args).Build().Run();
         }
 
-        public static IWebHostBuilder CreateHostBuilder(string[] args) 
-        {
-            return WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
-        }
+        /// <summary>
+        /// CreateWebHostBuilder
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static IHostBuilder CreateHostBuilder(string[] args) => 
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
     }
 }

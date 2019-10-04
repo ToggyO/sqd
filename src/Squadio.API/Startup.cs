@@ -1,8 +1,6 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
-
-using Squadio.Common.Extensions;
 using Squadio.DAL;
 
 using Microsoft.AspNetCore.Builder;
@@ -10,16 +8,15 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Mvc;
 
 using Microsoft.Extensions.Hosting;
 using Squadio.API.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Squadio.Common.Settings;
 
-using Swashbuckle.AspNetCore.Swagger;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.OpenApi.Models;
 
 namespace Squadio.API
@@ -47,7 +44,9 @@ namespace Squadio.API
                 options.AddPolicy(MyAllowSpecificOrigins,
                     builder =>
                     {
-                        builder.AllowAnyOrigin();
+                        builder.WithOrigins("http://localhost:5005")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
                     });
             });
 
@@ -57,6 +56,8 @@ namespace Squadio.API
             var apiSettings = Configuration.GetSection("AppSettings:APISettings").Get<ApiSettings>();
 
             services.AddMemoryCache();
+            
+            services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 
             var dbSettings = new DbSettings
             {
@@ -66,6 +67,15 @@ namespace Squadio.API
                 DB_NAME = Configuration.GetSection("DB_NAME").Value,
                 DB_PASSWORD = Configuration.GetSection("DB_PASSWORD").Value
             };
+            
+            services.AddLogging(builder =>
+            {
+                builder.AddConfiguration(Configuration.GetSection("Logging"));
+                if (Configuration.GetSection("ASPNETCORE_ENVIRONMENT").Value != "Uat")
+                    builder.AddConsole();
+                builder.AddDebug();
+                builder.AddEventSourceLogger();
+            });
 
             services.AddDbContext<SquadioDbContext>(builder =>
                     builder
@@ -126,6 +136,7 @@ namespace Squadio.API
                     };
                 });
 
+            //services.AddMvc().AddControllersAsServices();
 
             DependencyInjectionModule.Load(services);
         }
@@ -143,6 +154,8 @@ namespace Squadio.API
                 app.UseHttpsRedirection();
             }
             
+            app.UseRouting();
+            
             app.UseMiddleware(typeof(BaseErrorsMiddleware));
 
             app.UseCors(MyAllowSpecificOrigins);
@@ -155,6 +168,11 @@ namespace Squadio.API
             });
 
             app.EnsureMigrationOfContext<SquadioDbContext>();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
 
             //app.UseMvcWithDefaultRoute();
             //app.UseRequestLocalization();

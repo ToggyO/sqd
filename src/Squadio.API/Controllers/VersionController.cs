@@ -1,19 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Squadio.API.Handlers.Users;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Squadio.API.Controllers
 {
     [ApiController]
-    [Route("api/versions")]
+    [AllowAnonymous]
+    [Route("api/v1/versions")]
     public class VersionController : ControllerBase
     {
-        const string version = "0.0.1 b";
+        private const string Version = "0.0.1 b";
 
         [HttpGet]
-        public async Task<string> GetVersion()
+        public string GetVersion()
         {
-            return version;
+            return Version;
         }
     }
 }
