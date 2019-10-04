@@ -68,6 +68,9 @@ namespace Squadio.API
                 DB_PASSWORD = Configuration.GetSection("DB_PASSWORD").Value
             };
             
+            services.Configure<EmailSettingsModel>(Configuration.GetSection("EmailSettings"));
+            services.Configure<StaticUrlsSettingsModel>(Configuration.GetSection("StaticUrls"));
+            
             services.AddLogging(builder =>
             {
                 builder.AddConfiguration(Configuration.GetSection("Logging"));
