@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Squadio.Domain.Models.Users;
 
 namespace Squadio.DAL.Repository.Users.Implementation
@@ -14,9 +16,12 @@ namespace Squadio.DAL.Repository.Users.Implementation
             _context = context;
         }
 
-        public Task<UserModel> Create(UserModel entity)
+        public async Task<UserModel> Create(UserModel entity)
         {
-            throw new NotImplementedException();
+            var user = await _context.Users.AddAsync(entity);
+            await _context.SaveChangesAsync();
+            var result = user.Entity;
+            return result;
         }
 
         public Task<UserModel> Delete(Guid id)
@@ -33,6 +38,27 @@ namespace Squadio.DAL.Repository.Users.Implementation
         public Task<UserModel> Update(UserModel entity)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<UserModel> GetByEmail(string email)
+        {
+            var entity = await _context.Users
+                .Where(x => string.Equals(x.Email, email, StringComparison.OrdinalIgnoreCase))
+                .FirstOrDefaultAsync();
+            return entity;
+        }
+
+        public async Task AddPasswordRequest(Guid userId, string code)
+        {
+            var user = await GetById(userId);
+            var newRequest = new UserPasswordRequestModel
+            {
+                UserId = user.Id,
+                Code = code,
+                CreatedDate = DateTime.UtcNow
+            };
+            await _context.UserPasswordRequests.AddAsync(newRequest);
+            await _context.SaveChangesAsync();
         }
     }
 }

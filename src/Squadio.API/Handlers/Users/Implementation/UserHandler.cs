@@ -2,7 +2,9 @@
 using System.Threading.Tasks;
 using Squadio.BLL.Providers.Users;
 using Squadio.BLL.Services.Users;
+using Squadio.Common.Models.Responses;
 using Squadio.Domain.Models.Users;
+using Squadio.DTO.Users;
 
 namespace Squadio.API.Handlers.Users.Implementation
 {
@@ -16,10 +18,21 @@ namespace Squadio.API.Handlers.Users.Implementation
             _service = service;
             _provider = provider;
         }
-        public async Task<UserModel> GetById(Guid id)
+        public async Task<Response<UserDTO>> GetById(Guid id)
         {
             var user = await _provider.GetById(id);
-            return user;
+            var result = new Response<UserDTO>()
+            {
+                Data = user
+            };
+            return result;
+        }
+
+        public async Task<Response> SignUp(string email)
+        {
+            await _service.SignUp(email);
+            var result = new Response();
+            return result;
         }
     }
 }

@@ -2,6 +2,7 @@
 using Squadio.API.Handlers.Users;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Squadio.Common.Models.Responses;
 
 namespace Squadio.API.Controllers
 {
@@ -13,9 +14,13 @@ namespace Squadio.API.Controllers
         private const string Version = "0.0.1 b";
 
         [HttpGet]
-        public string GetVersion()
+        public Response<string> GetVersion()
         {
-            return Version;
+            var result = new Response<string>
+            {
+                Data = Version
+            };
+            return result;
         }
     }
 }

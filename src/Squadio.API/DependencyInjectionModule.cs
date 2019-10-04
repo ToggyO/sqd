@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Mapper;
+using Microsoft.Extensions.DependencyInjection;
 using Squadio.API.Handlers.Users;
 using Squadio.API.Handlers.Users.Implementation;
 using Squadio.Common.Extensions;

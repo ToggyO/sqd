@@ -9,10 +9,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Squadio.DAL\Squadio.DAL.csproj" />
+    <ProjectReference Include="..\Squadio.DTO\Squadio.DTO.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="MailKit" Version="2.3.1.6" />
+    <PackageReference Include="Mapper" Version="0.1.1" />
     <PackageReference Include="MimeKit" Version="2.3.1" />
   </ItemGroup>
 

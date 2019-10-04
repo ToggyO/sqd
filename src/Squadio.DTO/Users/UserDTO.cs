@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Squadio.Domain.Models.Users
+namespace Squadio.DTO.Users
 {
-    public class UserModel
+    public class UserDTO
     {
         public Guid Id { get; set; }
         public string FirstName { get; set; }
@@ -12,8 +10,5 @@ namespace Squadio.Domain.Models.Users
         public string MiddleName { get; set; }
         public string PhoneNumber { get; set; }
         public string Email { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public string Hash { get; set; }
-        public string Salt { get; set; }
     }
 }

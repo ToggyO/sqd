@@ -6,6 +6,8 @@ namespace Squadio.DAL
     public class SquadioDbContext : DbContext
     {
         public DbSet<UserModel> Users { get; set; }
+        public DbSet<UserPasswordRequestModel> UserPasswordRequests { get; set; }
+        
 
         public SquadioDbContext(DbContextOptions<SquadioDbContext> options)
             : base(options)
