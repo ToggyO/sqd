@@ -10,9 +10,10 @@ namespace Squadio.BLL.Services.Users.Implementation
     public class UserService : IUserService
     {
         private readonly IUserRepository _repository;
-        private readonly IMailService<PasswordSetEmailModel> _passwordSetMailService;
+        private readonly IEmailService<PasswordSetEmailModel> _passwordSetMailService;
         public UserService(IUserRepository repository
-            , IMailService<PasswordSetEmailModel> passwordSetMailService)
+            , IEmailService<PasswordSetEmailModel> passwordSetMailService
+            )
         {
             _repository = repository;
             _passwordSetMailService = passwordSetMailService;
@@ -26,6 +27,12 @@ namespace Squadio.BLL.Services.Users.Implementation
             
             var code = Guid.NewGuid().ToString("N");
 
+            await _passwordSetMailService.Send(new PasswordSetEmailModel
+            {
+                Code = code,
+                To = email
+            });
+
             user = new UserModel
             {
                 Email = email,
@@ -34,12 +41,6 @@ namespace Squadio.BLL.Services.Users.Implementation
 
             user = await _repository.Create(user);
             await _repository.AddPasswordRequest(user.Id, code);
-
-            await _passwordSetMailService.Send(new PasswordSetEmailModel
-            {
-                Code = code,
-                Email = email
-            });
         }
     }
 }

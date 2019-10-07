@@ -1,37 +1,37 @@
-﻿using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using Squadio.Common.Extensions.EmbeddedResources;
+﻿using Microsoft.Extensions.Options;
+using Squadio.BLL.Extensions;
+using Squadio.BLL.Services.Email.Sender;
 using Squadio.Common.Models.Email;
 using Squadio.Common.Settings;
 
 namespace Squadio.BLL.Services.Email.Implementations
 {
-    public class ResetPasswordEmailService: MailService<ResetPasswordEmailModel>
+    public class ResetPasswordEmailService: BaseEmailService<PasswordResetEmailModel>
     {
         private readonly IOptions<StaticUrlsSettingsModel> _options;
-
-        public ResetPasswordEmailService(IOptions<StaticUrlsSettingsModel> options
-            , IOptions<EmailSettingsModel> emailSettings) : base(emailSettings)
+        
+        public ResetPasswordEmailService(IOptions<EmailSettingsModel> emailSettings
+            , IEmailSender emailSender
+            , IOptions<StaticUrlsSettingsModel> options) : base(emailSettings, emailSender)
         {
             _options = options;
         }
 
-        public override Task<MailMessage> Get(ResetPasswordEmailModel model)
+        protected override string GetHtmlTemplate(PasswordResetEmailModel model)
         {
-            var body = (EmbeddedResources.GetRestorePasswordTemplate())
-                .Replace("{{RestoreUrl}}", _options.Value.ResetPasswordUrl)
-                .Replace("{{Code}}", model.Code);
+            
+            var resource = EmbeddedResources
+                .GetResource(
+                    "Squadio.BLL.Services.Email.Templates.ResetPasswordTemplate.html")
+                .Replace("{{ResetPasswordUrl}}", _options.Value.ResetPasswordUrl
+                .Replace("{{Code}}", model.Code));
 
-            return Task.FromResult(new MailMessage
-            {
-                Subject = "Восстановление пароля",
-                Body = body,
-                Html = true,
-                ToAddresses = new[]
-                {
-                    model.Email,
-                }
-            });
+            return resource;
+        }
+
+        protected override string GetSubject(PasswordResetEmailModel emailModel)
+        {
+            return "Reset password";
         }
     }
 }

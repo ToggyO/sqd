@@ -18,4 +18,14 @@
     <PackageReference Include="MimeKit" Version="2.3.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Services\Email\Templates\ResetPasswordTemplate.html" />
+    <None Remove="Services\Email\Templates\SetPasswordTemplate.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Services\Email\Templates\ResetPasswordTemplate.html" />
+    <EmbeddedResource Include="Services\Email\Templates\SetPasswordTemplate.html" />
+  </ItemGroup>
+
 </Project>

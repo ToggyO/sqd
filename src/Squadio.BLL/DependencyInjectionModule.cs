@@ -3,7 +3,10 @@ using Mapper;
 using Microsoft.Extensions.DependencyInjection;
 using Squadio.BLL.Providers.Users;
 using Squadio.BLL.Providers.Users.Implementation;
-using Squadio.BLL.Services.Email.Services;
+using Squadio.BLL.Services.Email;
+using Squadio.BLL.Services.Email.Implementations;
+using Squadio.BLL.Services.Email.Sender;
+using Squadio.BLL.Services.Email.Sender.Implementation;
 using Squadio.BLL.Services.Users;
 using Squadio.BLL.Services.Users.Implementation;
 using Squadio.Common.Extensions;
@@ -16,7 +19,7 @@ namespace Squadio.BLL
         {
             DAL.DependencyInjectionModule.Load(services);
             DTO.DependencyInjectionModule.Load(services);
-            
+
             LoadEmailServices(services);
             
             services.Add<IUserProvider, UserProvider>(serviceLifetime);
@@ -26,6 +29,7 @@ namespace Squadio.BLL
         
         private static void LoadEmailServices(IServiceCollection services)
         {
+            services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<IEmailService, EmailService>();
             
             foreach (var implementationType in typeof(DependencyInjectionModule).Assembly.GetTypes().Where(t =>

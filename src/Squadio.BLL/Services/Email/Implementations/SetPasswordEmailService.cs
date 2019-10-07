@@ -1,37 +1,37 @@
-﻿using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using Squadio.Common.Extensions.EmbeddedResources;
+﻿using Microsoft.Extensions.Options;
+using Squadio.BLL.Extensions;
+using Squadio.BLL.Services.Email.Sender;
 using Squadio.Common.Models.Email;
 using Squadio.Common.Settings;
 
 namespace Squadio.BLL.Services.Email.Implementations
 {
-    public class SetPasswordEmailService : MailService<PasswordSetEmailModel>
+    public class SetPasswordEmailService: BaseEmailService<PasswordSetEmailModel>
     {
         private readonly IOptions<StaticUrlsSettingsModel> _options;
-
-        public SetPasswordEmailService(IOptions<StaticUrlsSettingsModel> options
-            , IOptions<EmailSettingsModel> emailSettings) : base(emailSettings)
+        
+        public SetPasswordEmailService(IOptions<EmailSettingsModel> emailSettings
+            , IEmailSender emailSender
+            , IOptions<StaticUrlsSettingsModel> options) : base(emailSettings, emailSender)
         {
             _options = options;
         }
 
-        public override Task<MailMessage> Get(PasswordSetEmailModel model)
+        protected override string GetHtmlTemplate(PasswordSetEmailModel model)
         {
-            var body = (EmbeddedResources.GetSetPasswordTemplate())
-                .Replace("{{SetPasswordUrl}}", _options.Value.SetPasswordUrl)
-                .Replace("{{Code}}", model.Code);
+            
+            var resource = EmbeddedResources
+                .GetResource(
+                    "Squadio.BLL.Services.Email.Templates.SetPasswordTemplate.html")
+                .Replace("{{SetPasswordUrl}}", _options.Value.SetPasswordUrl
+                .Replace("{{Code}}", model.Code));
 
-            return Task.FromResult(new MailMessage
-            {
-                Subject = "Задание пароля",
-                Body = body,
-                Html = true,
-                ToAddresses = new[]
-                {
-                    model.Email,
-                }
-            });
+            return resource;
+        }
+
+        protected override string GetSubject(PasswordSetEmailModel emailModel)
+        {
+            return "Set password";
         }
     }
 }

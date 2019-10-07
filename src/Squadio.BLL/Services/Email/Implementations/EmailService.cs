@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Squadio.Common.Models.Email;
 
-namespace Squadio.BLL.Services.Email.Services
+namespace Squadio.BLL.Services.Email.Implementations
 {
-    public class EmailService: IEmailService
+    public class EmailService : IEmailService
     {
         private readonly IServiceProvider _serviceProvider;
 
