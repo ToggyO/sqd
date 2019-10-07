@@ -4,6 +4,7 @@ using Squadio.BLL.Providers.Users;
 using Squadio.BLL.Services.Users;
 using Squadio.Common.Models.Responses;
 using Squadio.Domain.Models.Users;
+using Squadio.DTO.Auth;
 using Squadio.DTO.Users;
 
 namespace Squadio.API.Handlers.Users.Implementation
@@ -18,12 +19,33 @@ namespace Squadio.API.Handlers.Users.Implementation
             _service = service;
             _provider = provider;
         }
+        
         public async Task<Response<UserDTO>> GetById(Guid id)
         {
             var user = await _provider.GetById(id);
             var result = new Response<UserDTO>()
             {
                 Data = user
+            };
+            return result;
+        }
+        
+        public async Task<Response<UserDTO>> GetByCode(string code)
+        {
+            var user = await _provider.GetByCode(code);
+            var result = new Response<UserDTO>()
+            {
+                Data = user
+            };
+            return result;
+        }
+
+        public async Task<Response<AuthInfoDTO>> SetPassword(UserSetPasswordDTO dto)
+        {
+            var item = await _service.SetPassword(dto.Code, dto.Password);
+            var result = new Response<AuthInfoDTO>
+            {
+                Data = item
             };
             return result;
         }

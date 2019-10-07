@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Squadio.Common.Models.Responses;
+using Squadio.DTO.Auth;
 using Squadio.DTO.Users;
 
 namespace Squadio.API.Controllers
@@ -36,6 +37,18 @@ namespace Squadio.API.Controllers
         public async Task<Response> SignUpEmail([Required, FromRoute] string email)
         {
             return await _userHandler.SignUp(email);
+        }
+        
+        [HttpPut("password/set")]
+        public async Task<Response<AuthInfoDTO>> SetPassword([FromQuery, Required] UserSetPasswordDTO dto)
+        {
+            return await _userHandler.SetPassword(dto);
+        }
+        
+        [HttpPut("password/reset")]
+        public async Task<Response<UserDTO>> ResetPassword([FromQuery, Required] string code)
+        {
+            return await _userHandler.GetByCode(code);
         }
     }
 }

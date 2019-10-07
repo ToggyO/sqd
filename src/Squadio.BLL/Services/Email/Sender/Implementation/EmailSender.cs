@@ -104,9 +104,11 @@ namespace Squadio.BLL.Services.Email.Sender.Implementation
         {
             try
             {
+                /*
                 #if Debug
                 ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
                 #endif
+                */
 
                 using (var email = new MailMessage(new MailAddress(_user, _from), new MailAddress(to)))
                 {
@@ -156,8 +158,8 @@ namespace Squadio.BLL.Services.Email.Sender.Implementation
                         smtp.UseDefaultCredentials = false;
                         smtp.Credentials = new NetworkCredential(_user, _password);
                         smtp.EnableSsl = true;
-
-                        _logger.LogInformation(email.Body);
+                        
+                        //_logger.LogInformation(email.Body);
 
                         await smtp.SendMailAsync(email);
                     }
@@ -166,6 +168,7 @@ namespace Squadio.BLL.Services.Email.Sender.Implementation
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
+                throw;
             }
         }
     }

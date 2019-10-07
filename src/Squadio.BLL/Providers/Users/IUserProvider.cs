@@ -8,5 +8,6 @@ namespace Squadio.BLL.Providers.Users
     public interface IUserProvider
     {
         Task<UserDTO> GetById(Guid id);
+        Task<UserDTO> GetByCode(string code);
     }
 }

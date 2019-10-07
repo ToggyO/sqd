@@ -56,6 +56,16 @@ namespace Squadio.DAL.Repository.Users.Implementation
             }
         }
 
+        public async Task<UserModel> GetByCode(string code)
+        {
+            var item = await _context.UserPasswordRequests
+                .Where(x => x.Code == code)
+                .Include(x => x.User)
+                .Select(x => x.User)
+                .FirstOrDefaultAsync();
+            return item;
+        }
+
         public async Task AddPasswordRequest(Guid userId, string code)
         {
             var user = await GetById(userId);

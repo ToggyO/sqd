@@ -23,8 +23,8 @@ namespace Squadio.BLL.Services.Email.Implementations
             var resource = EmbeddedResources
                 .GetResource(
                     "Squadio.BLL.Services.Email.Templates.ResetPasswordTemplate.html")
-                .Replace("{{ResetPasswordUrl}}", _options.Value.ResetPasswordUrl
-                .Replace("{{Code}}", model.Code));
+                .Replace("{{ResetPasswordUrl}}", _options.Value.ResetPasswordUrl)
+                .Replace("{{Code}}", model.Code);
 
             return resource;
         }

@@ -24,5 +24,12 @@ namespace Squadio.BLL.Providers.Users.Implementation
             var result = _mapper.Map<UserModel, UserDTO>(userEntity);
             return result;
         }
+
+        public async Task<UserDTO> GetByCode(string code)
+        {
+            var userEntity = await _repository.GetByCode(code);
+            var result = _mapper.Map<UserModel, UserDTO>(userEntity);
+            return result;
+        }
     }
 }
