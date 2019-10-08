@@ -39,7 +39,7 @@ namespace Squadio.API.Controllers
         }
         
         [HttpPut("passwords/set")]
-        public async Task<Response<UserDTO>> SetPassword([FromQuery] UserSetPasswordDTO dto)
+        public async Task<Response<UserDTO>> SetPassword([FromBody] UserSetPasswordDTO dto)
         {
             return await _handler.SetPassword(dto);
         }
