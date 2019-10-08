@@ -54,9 +54,9 @@ namespace Squadio.BLL.Services.Users.Implementation
             await _repository.AddPasswordRequest(user.Id, code);
         }
 
-        public async Task<UserDTO> SetPassword(string code, string password)
+        public async Task<UserDTO> SetPassword(string email, string code, string password)
         {
-            var userPasswordRequest = await _repository.GetByChangePasswordRequestsCode(code);
+            var userPasswordRequest = await _repository.GetChangePasswordRequests(email, code);
             if(userPasswordRequest.IsActivated)
                 throw new Exception("Code already used");
             

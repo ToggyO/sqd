@@ -14,13 +14,10 @@ namespace Squadio.API.Controllers
         private const string Version = "0.0.1 b";
 
         [HttpGet]
-        public Response<string> GetVersion()
+        [AllowAnonymous]
+        public string GetVersion()
         {
-            var result = new Response<string>
-            {
-                Data = Version
-            };
-            return result;
+            return Version;
         }
     }
 }

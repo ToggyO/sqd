@@ -9,6 +9,6 @@ namespace Squadio.BLL.Services.Users
     public interface IUsersService
     {
         Task SignUp(string email);
-        Task<UserDTO> SetPassword(string code, string password);
+        Task<UserDTO> SetPassword(string email, string code, string password);
     }
 }

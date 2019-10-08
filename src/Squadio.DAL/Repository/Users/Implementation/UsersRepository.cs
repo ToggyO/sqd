@@ -56,10 +56,13 @@ namespace Squadio.DAL.Repository.Users.Implementation
             }
         }
 
-        public async Task<UserPasswordRequestModel> GetByChangePasswordRequestsCode(string code)
+        public async Task<UserPasswordRequestModel> GetChangePasswordRequests(string email, string code)
         {
             var item = await _context.UserPasswordRequests
-                .Where(x => x.Code == code)
+                .Include(x => x.User)
+                .Where(x => x.Code.ToUpper() == code.ToUpper() &&
+                            x.User.Email.ToUpper() == email.ToUpper())
+                .OrderByDescending(x => x.CreatedDate)
                 .FirstOrDefaultAsync();
             return item;
         }

@@ -39,15 +39,9 @@ namespace Squadio.API.Controllers
         }
         
         [HttpPut("passwords/set")]
-        public async Task<Response<UserDTO>> SetPassword([FromQuery, Required] UserSetPasswordDTO dto)
+        public async Task<Response<UserDTO>> SetPassword([FromQuery] UserSetPasswordDTO dto)
         {
             return await _handler.SetPassword(dto);
-        }
-        
-        [HttpPut("passwords/reset")]
-        public async Task<Response<UserDTO>> ResetPassword([FromQuery, Required] string code)
-        {
-            return null;
         }
     }
 }
