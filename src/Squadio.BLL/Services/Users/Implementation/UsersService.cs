@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Magora.Passwords;
 using Mapper;
 using Squadio.BLL.Services.Email;
+using Squadio.Common.Exceptions.BusinessLogicExceptions;
 using Squadio.Common.Models.Email;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Users;
@@ -36,7 +37,7 @@ namespace Squadio.BLL.Services.Users.Implementation
             if(user != null)
                 throw new Exception("Email already used");
             
-            var code = Guid.NewGuid().ToString("N");
+            var code = GenerateCode();
 
             await _passwordSetMailService.Send(new PasswordSetEmailModel
             {
@@ -69,6 +70,20 @@ namespace Squadio.BLL.Services.Users.Implementation
 
             var userDTO = _mapper.Map<UserModel, UserDTO>(user);
             return userDTO;
+        }
+
+        private static string GenerateCode(int length = 6)
+        {
+            var generator = new Random();
+            
+            var result = "";
+            
+            while (result.Length < length)
+            {
+                result += generator.Next(0, 9);
+            }
+            
+            return result;
         }
     }
 }
