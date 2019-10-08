@@ -32,10 +32,10 @@ namespace Squadio.API.Controllers
             return await _handler.GetById(id);
         }
         
-        [HttpPost("signup/{email}")]
-        public async Task<Response> SignUp([Required, FromRoute] string email)
+        [HttpPost("signup")]
+        public async Task<Response> SignUp([Required, FromBody] UserEmailDTO email)
         {
-            return await _handler.SignUp(email);
+            return await _handler.SignUp(email.Email);
         }
         
         [HttpPut("passwords/set")]
@@ -45,9 +45,9 @@ namespace Squadio.API.Controllers
         }
         
         [HttpPost("passwords/reset")]
-        public async Task<Response> ResetPasswordRequest([FromQuery, Required] string email)
+        public async Task<Response> ResetPasswordRequest([FromBody, Required] UserEmailDTO email)
         {
-            return await _handler.ResetPasswordRequest(email);
+            return await _handler.ResetPasswordRequest(email.Email);
         }
     }
 }
