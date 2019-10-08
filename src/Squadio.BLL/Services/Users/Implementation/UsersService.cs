@@ -17,16 +17,19 @@ namespace Squadio.BLL.Services.Users.Implementation
     {
         private readonly IUsersRepository _repository;
         private readonly IEmailService<PasswordSetEmailModel> _passwordSetMailService;
+        private readonly IEmailService<PasswordResetEmailModel> _passwordResetMailService;
         private readonly IPasswordService _passwordService;
         private readonly IMapper _mapper;
         public UsersService(IUsersRepository repository
             , IEmailService<PasswordSetEmailModel> passwordSetMailService
+            , IEmailService<PasswordResetEmailModel> passwordResetMailService
             , IPasswordService passwordService
             , IMapper mapper
             )
         {
             _repository = repository;
             _passwordSetMailService = passwordSetMailService;
+            _passwordResetMailService = passwordResetMailService;
             _passwordService = passwordService;
             _mapper = mapper;
         }
@@ -70,6 +73,23 @@ namespace Squadio.BLL.Services.Users.Implementation
 
             var userDTO = _mapper.Map<UserModel, UserDTO>(user);
             return userDTO;
+        }
+
+        public async Task ResetPasswordRequest(string email)
+        {
+            var user = await _repository.GetByEmail(email);
+            if(user == null)
+                throw new Exception("User not found");
+            
+            var code = GenerateCode();
+            
+            await _repository.AddPasswordRequest(user.Id, code);
+
+            await _passwordResetMailService.Send(new PasswordResetEmailModel
+            {
+                Code = code,
+                To = email
+            });
         }
 
         private static string GenerateCode(int length = 6)
