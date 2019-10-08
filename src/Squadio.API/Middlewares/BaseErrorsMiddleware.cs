@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Squadio.Common.Models.Responses;
@@ -17,21 +18,32 @@ namespace Squadio.API.Extensions
 
         public async Task Invoke(HttpContext context)
         {
-            await _next.Invoke(context);
+            try
+            {
+                await _next.Invoke(context);
 
-            if (context.Request.Path.StartsWithSegments("/api"))
-                switch (context.Response.StatusCode)
+                if (context.Request.Path.StartsWithSegments("/api"))
+                    switch (context.Response.StatusCode)
+                    {
+                        case 401:
+                            await Handle(context, UnauthorizedContent);
+                            return;
+                        case 403:
+                            await Handle(context, ForbiddenContent);
+                            return;
+                        case 404:
+                            await Handle(context, NotFoundContent);
+                            return;
+                    }
+            }
+            catch (Exception e)
+            {
+                await Handle(context, new ErrorResponse()
                 {
-                    case 401:
-                        await Handle(context, UnauthorizedContent);
-                        return;
-                    case 403:
-                        await Handle(context, ForbiddenContent);
-                        return;
-                    case 404:
-                        await Handle(context, NotFoundContent);
-                        return;
-                }
+                    Code = "unexpected_error",
+                    Message = e.Message
+                });
+            }
         }
 
         private static ErrorResponse NotFoundContent => new ErrorResponse

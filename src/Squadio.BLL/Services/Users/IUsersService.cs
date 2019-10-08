@@ -6,9 +6,9 @@ using Squadio.DTO.Users;
 
 namespace Squadio.BLL.Services.Users
 {
-    public interface IUserService
+    public interface IUsersService
     {
         Task SignUp(string email);
-        Task<AuthInfoDTO> SetPassword(string code, string password);
+        Task<UserDTO> SetPassword(string code, string password);
     }
 }

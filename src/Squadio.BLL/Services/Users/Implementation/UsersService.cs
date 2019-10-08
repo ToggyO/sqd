@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Magora.Passwords;
 using Mapper;
 using Squadio.BLL.Services.Email;
 using Squadio.Common.Models.Email;
@@ -11,18 +12,21 @@ using Squadio.DTO.Users;
 
 namespace Squadio.BLL.Services.Users.Implementation
 {
-    public class UserService : IUserService
+    public class UsersService : IUsersService
     {
-        private readonly IUserRepository _repository;
+        private readonly IUsersRepository _repository;
         private readonly IEmailService<PasswordSetEmailModel> _passwordSetMailService;
+        private readonly IPasswordService _passwordService;
         private readonly IMapper _mapper;
-        public UserService(IUserRepository repository
+        public UsersService(IUsersRepository repository
             , IEmailService<PasswordSetEmailModel> passwordSetMailService
+            , IPasswordService passwordService
             , IMapper mapper
             )
         {
             _repository = repository;
             _passwordSetMailService = passwordSetMailService;
+            _passwordService = passwordService;
             _mapper = mapper;
         }
 
@@ -50,15 +54,21 @@ namespace Squadio.BLL.Services.Users.Implementation
             await _repository.AddPasswordRequest(user.Id, code);
         }
 
-        public async Task<AuthInfoDTO> SetPassword(string code, string password)
+        public async Task<UserDTO> SetPassword(string code, string password)
         {
-            var user = await _repository.GetByCode(code);
+            var userPasswordRequest = await _repository.GetByChangePasswordRequestsCode(code);
+            if(userPasswordRequest.IsActivated)
+                throw new Exception("Code already used");
+            
+            var passwordModel = await _passwordService.CreatePassword(password);
+            await _repository.SavePassword(userPasswordRequest.UserId, passwordModel.Hash, passwordModel.Salt);
+            
+            await _repository.ActivateChangePasswordRequestsCode(code);
+
+            var user = await _repository.GetById(userPasswordRequest.UserId);
+
             var userDTO = _mapper.Map<UserModel, UserDTO>(user);
-            var result = new AuthInfoDTO
-            {
-                User = userDTO
-            };
-            return result;
+            return userDTO;
         }
     }
 }

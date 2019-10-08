@@ -7,11 +7,10 @@ using Squadio.DTO.Users;
 
 namespace Squadio.API.Handlers.Users
 {
-    public interface IUserHandler
+    public interface IUsersHandler
     {
         Task<Response<UserDTO>> GetById(Guid id);
-        Task<Response<UserDTO>> GetByCode(string code);
-        Task<Response<AuthInfoDTO>> SetPassword(UserSetPasswordDTO dto);
+        Task<Response<UserDTO>> SetPassword(UserSetPasswordDTO dto);
         Task<Response> SignUp(string email);
     }
 }

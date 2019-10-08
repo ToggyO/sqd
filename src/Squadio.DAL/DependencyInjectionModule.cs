@@ -9,7 +9,7 @@ namespace Squadio.DAL
     {
         public static void Load(IServiceCollection services, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         {
-            services.Add<IUserRepository, UserRepository>(serviceLifetime);
+            services.Add<IUsersRepository, UsersRepository>(serviceLifetime);
         }
     }
 }

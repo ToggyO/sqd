@@ -9,5 +9,7 @@ namespace Squadio.Domain.Models.Users
         public UserModel User { get; set; }
         public string Code { get; set; }
         public DateTime CreatedDate { get; set; }
+        public bool IsActivated { get; set; }
+        public DateTime? ActivatedDate { get; set; }
     }
 }

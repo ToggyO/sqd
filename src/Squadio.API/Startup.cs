@@ -1,7 +1,6 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
-using Squadio.DAL;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -9,15 +8,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
-
 using Microsoft.Extensions.Hosting;
-using Squadio.API.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Squadio.Common.Settings;
-
 using Microsoft.OpenApi.Models;
+
+using Squadio.DAL;
+using Squadio.API.Extensions;
+using Squadio.Common.Settings;
 
 namespace Squadio.API
 {
@@ -68,6 +67,7 @@ namespace Squadio.API
                 DB_PASSWORD = Configuration.GetSection("DB_PASSWORD").Value
             };
             
+            services.Configure<ApiSettings>(Configuration.GetSection("APISettings"));
             services.Configure<EmailSettingsModel>(Configuration.GetSection("EmailSettings"));
             services.Configure<StaticUrlsSettingsModel>(Configuration.GetSection("StaticUrls"));
             
@@ -88,15 +88,18 @@ namespace Squadio.API
                                 optionsBuilder.MigrationsAssembly(typeof(SquadioDbContext).Assembly.FullName)));
 
 
-            services.AddSwaggerGen(c =>
+            services.AddSwaggerGen(options =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Squad.io API", Version = "v1" });
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "Squad.io API", Version = "v1" });
                 //c.IncludeXmlComments($"{AppDomain.CurrentDomain.BaseDirectory}Squadio.API.xml");
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
+                    In = ParameterLocation.Header,
+                    Name = "Authorization",
+                    Description = "Please insert JWT with Bearer into field",
                     Type = SecuritySchemeType.ApiKey
                 });
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
                         new OpenApiSecurityScheme
@@ -111,18 +114,22 @@ namespace Squadio.API
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
-                    options.RequireHttpsMetadata = true;
+                    //options.RequireHttpsMetadata = true;
 
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ClockSkew = TimeSpan.Zero,
-                        ValidIssuer = apiSettings.ISSUER,
-                        ValidAudience = apiSettings.AUDIENCE,
-                        ValidateIssuer = true,
+                        
                         ValidateAudience = true,
-                        ValidateLifetime = true,
+                        ValidAudience = apiSettings.AUDIENCE,
+                        
+                        ValidateIssuer = true,
+                        ValidIssuer = apiSettings.ISSUER,
+                        
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(apiSettings.PublicKey)),
-                        ValidateIssuerSigningKey = true
+                        ValidateIssuerSigningKey = true,
+                        
+                        ValidateLifetime = true
                     };
 
                     options.Events = new JwtBearerEvents

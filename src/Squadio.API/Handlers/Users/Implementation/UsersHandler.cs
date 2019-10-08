@@ -9,12 +9,12 @@ using Squadio.DTO.Users;
 
 namespace Squadio.API.Handlers.Users.Implementation
 {
-    public class UserHandler : IUserHandler
+    public class UsersHandler : IUsersHandler
     {
-        private readonly IUserProvider _provider;
-        private readonly IUserService _service;
-        public UserHandler(IUserProvider provider
-            , IUserService service)
+        private readonly IUsersProvider _provider;
+        private readonly IUsersService _service;
+        public UsersHandler(IUsersProvider provider
+            , IUsersService service)
         {
             _service = service;
             _provider = provider;
@@ -29,31 +29,21 @@ namespace Squadio.API.Handlers.Users.Implementation
             };
             return result;
         }
-        
-        public async Task<Response<UserDTO>> GetByCode(string code)
-        {
-            var user = await _provider.GetByCode(code);
-            var result = new Response<UserDTO>()
-            {
-                Data = user
-            };
-            return result;
-        }
-
-        public async Task<Response<AuthInfoDTO>> SetPassword(UserSetPasswordDTO dto)
-        {
-            var item = await _service.SetPassword(dto.Code, dto.Password);
-            var result = new Response<AuthInfoDTO>
-            {
-                Data = item
-            };
-            return result;
-        }
 
         public async Task<Response> SignUp(string email)
         {
             await _service.SignUp(email);
             var result = new Response();
+            return result;
+        }
+        
+        public async Task<Response<UserDTO>> SetPassword(UserSetPasswordDTO dto)
+        {
+            var item = await _service.SetPassword(dto.Code, dto.Password);
+            var result = new Response<UserDTO>
+            {
+                Data = item
+            };
             return result;
         }
     }

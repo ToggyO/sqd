@@ -1,12 +1,17 @@
 ﻿using System.Linq;
+using Magora.Passwords;
 using Mapper;
 using Microsoft.Extensions.DependencyInjection;
+using Squadio.BLL.Factories;
+using Squadio.BLL.Factories.Implementation;
 using Squadio.BLL.Providers.Users;
 using Squadio.BLL.Providers.Users.Implementation;
 using Squadio.BLL.Services.Email;
 using Squadio.BLL.Services.Email.Implementations;
 using Squadio.BLL.Services.Email.Sender;
 using Squadio.BLL.Services.Email.Sender.Implementation;
+using Squadio.BLL.Services.Tokens;
+using Squadio.BLL.Services.Tokens.Implementation;
 using Squadio.BLL.Services.Users;
 using Squadio.BLL.Services.Users.Implementation;
 using Squadio.Common.Extensions;
@@ -22,8 +27,13 @@ namespace Squadio.BLL
 
             LoadEmailServices(services);
             
-            services.Add<IUserProvider, UserProvider>(serviceLifetime);
-            services.Add<IUserService, UserService>(serviceLifetime);
+            services.AddTransient<IPasswordService, PasswordService>();
+            
+            services.Add<IUsersProvider, UsersProvider>(serviceLifetime);
+            services.Add<IUsersService, UsersService>(serviceLifetime);
+            services.Add<ITokensService, TokensService>(serviceLifetime);
+            
+            services.Add<ITokensFactory, TokensFactory>(serviceLifetime);
             services.AddMapper();
         }
         

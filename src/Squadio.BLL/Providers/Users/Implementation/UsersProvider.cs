@@ -7,11 +7,11 @@ using Squadio.DTO.Users;
 
 namespace Squadio.BLL.Providers.Users.Implementation
 {
-    public class UserProvider : IUserProvider
+    public class UsersProvider : IUsersProvider
     {
-        private readonly IUserRepository _repository;
+        private readonly IUsersRepository _repository;
         private readonly IMapper _mapper;
-        public UserProvider(IUserRepository repository
+        public UsersProvider(IUsersRepository repository
             , IMapper mapper)
         {
             _repository = repository;
@@ -25,9 +25,9 @@ namespace Squadio.BLL.Providers.Users.Implementation
             return result;
         }
 
-        public async Task<UserDTO> GetByCode(string code)
+        public async Task<UserDTO> GetByEmail(string email)
         {
-            var userEntity = await _repository.GetByCode(code);
+            var userEntity = await _repository.GetByEmail(email);
             var result = _mapper.Map<UserModel, UserDTO>(userEntity);
             return result;
         }

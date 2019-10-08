@@ -8,10 +8,10 @@ using Squadio.Domain.Models.Users;
 
 namespace Squadio.DAL.Repository.Users.Implementation
 {
-    public class UserRepository : IUserRepository
+    public class UsersRepository : IUsersRepository
     {
         private readonly SquadioDbContext _context;
-        public UserRepository(SquadioDbContext context)
+        public UsersRepository(SquadioDbContext context)
         {
             _context = context;
         }
@@ -56,26 +56,46 @@ namespace Squadio.DAL.Repository.Users.Implementation
             }
         }
 
-        public async Task<UserModel> GetByCode(string code)
+        public async Task<UserPasswordRequestModel> GetByChangePasswordRequestsCode(string code)
         {
             var item = await _context.UserPasswordRequests
                 .Where(x => x.Code == code)
-                .Include(x => x.User)
-                .Select(x => x.User)
                 .FirstOrDefaultAsync();
             return item;
         }
 
-        public async Task AddPasswordRequest(Guid userId, string code)
+        public async Task SavePassword(Guid userId, string hash, string salt)
+        {
+            var item = await _context.Users.FindAsync(userId);
+            item.Hash = hash;
+            item.Salt = salt;
+            _context.Update(item);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<UserPasswordRequestModel> AddPasswordRequest(Guid userId, string code)
         {
             var user = await GetById(userId);
             var newRequest = new UserPasswordRequestModel
             {
                 UserId = user.Id,
                 Code = code,
-                CreatedDate = DateTime.UtcNow
+                CreatedDate = DateTime.UtcNow,
+                IsActivated = false
             };
             await _context.UserPasswordRequests.AddAsync(newRequest);
+            await _context.SaveChangesAsync();
+            return newRequest;
+        }
+
+        public async Task ActivateChangePasswordRequestsCode(string code)
+        {
+            var item = await _context.UserPasswordRequests
+                .Where(x => x.Code == code)
+                .FirstOrDefaultAsync();
+            item.ActivatedDate = DateTime.UtcNow;
+            item.IsActivated = true;
+            _context.UserPasswordRequests.Update(item);
             await _context.SaveChangesAsync();
         }
     }

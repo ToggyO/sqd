@@ -5,9 +5,9 @@ using Squadio.DTO.Users;
 
 namespace Squadio.BLL.Providers.Users
 {
-    public interface IUserProvider
+    public interface IUsersProvider
     {
         Task<UserDTO> GetById(Guid id);
-        Task<UserDTO> GetByCode(string code);
+        Task<UserDTO> GetByEmail(string email);
     }
 }

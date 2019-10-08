@@ -5,20 +5,19 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Squadio.Common.Models.Responses;
-using Squadio.DTO.Auth;
 using Squadio.DTO.Users;
 
 namespace Squadio.API.Controllers
 {
     [ApiController]
     [Route("api/users")]
-    public class UserController : ControllerBase
+    public class UsersController : ControllerBase
     {
-        private readonly IUserHandler _userHandler;
+        private readonly IUsersHandler _handler;
 
-        public UserController(IUserHandler userHandler)
+        public UsersController(IUsersHandler handler)
         {
-            _userHandler = userHandler;
+            _handler = handler;
         }
         
         [HttpGet]
@@ -30,25 +29,25 @@ namespace Squadio.API.Controllers
         [HttpGet("{id}")]
         public async Task<Response<UserDTO>> GetById([Required, FromRoute] Guid id)
         {
-            return await _userHandler.GetById(id);
+            return await _handler.GetById(id);
         }
         
         [HttpGet("signup/{email}")]
         public async Task<Response> SignUpEmail([Required, FromRoute] string email)
         {
-            return await _userHandler.SignUp(email);
+            return await _handler.SignUp(email);
         }
         
-        [HttpPut("password/set")]
-        public async Task<Response<AuthInfoDTO>> SetPassword([FromQuery, Required] UserSetPasswordDTO dto)
+        [HttpPut("passwords/set")]
+        public async Task<Response<UserDTO>> SetPassword([FromQuery, Required] UserSetPasswordDTO dto)
         {
-            return await _userHandler.SetPassword(dto);
+            return await _handler.SetPassword(dto);
         }
         
-        [HttpPut("password/reset")]
+        [HttpPut("passwords/reset")]
         public async Task<Response<UserDTO>> ResetPassword([FromQuery, Required] string code)
         {
-            return await _userHandler.GetByCode(code);
+            return null;
         }
     }
 }
