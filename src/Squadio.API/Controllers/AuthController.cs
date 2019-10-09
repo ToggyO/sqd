@@ -39,5 +39,11 @@ namespace Squadio.API.Controllers
         {
             return await _handler.GoogleAuthenticate(request.Token);
         }
+        
+        [HttpPost("token/microsoft")]
+        public async Task<Response<AuthInfoDTO>> MicrosoftAuthenticate([Required] MicrosoftTokenDTO request)
+        {
+            return await _handler.MicrosoftAuthenticate(request.Token);
+        }
     }
 }

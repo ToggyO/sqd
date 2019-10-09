@@ -93,6 +93,11 @@ namespace Squadio.BLL.Services.Tokens.Implementation
             return result;
         }
 
+        public async Task<AuthInfoDTO> MicrosoftAuthenticate(string microsoftToken)
+        {
+            return null;
+        }
+
         /// <summary>
         /// Return true if password is valid
         /// </summary>

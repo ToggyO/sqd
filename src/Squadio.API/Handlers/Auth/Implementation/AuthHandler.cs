@@ -40,5 +40,14 @@ namespace Squadio.API.Handlers.Auth.Implementation
                 Data = userAuthDTO
             };
         }
+
+        public async Task<Response<AuthInfoDTO>> MicrosoftAuthenticate(string microsoftToken)
+        {
+            var userAuthDTO = await _tokensService.MicrosoftAuthenticate(microsoftToken);
+            return new Response<AuthInfoDTO>
+            {
+                Data = userAuthDTO
+            };
+        }
     }
 }

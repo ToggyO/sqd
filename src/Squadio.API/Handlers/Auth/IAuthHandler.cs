@@ -9,5 +9,6 @@ namespace Squadio.API.Handlers.Auth
         Task<Response<AuthInfoDTO>> Authenticate(CredentialsDTO request);
         Task<Response<TokenDTO>> RefreshToken(string refreshToken);
         Task<Response<AuthInfoDTO>> GoogleAuthenticate(string gmailToken);
+        Task<Response<AuthInfoDTO>> MicrosoftAuthenticate(string microsoftToken);
     }
 }
