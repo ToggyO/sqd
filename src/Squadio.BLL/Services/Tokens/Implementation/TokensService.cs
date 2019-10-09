@@ -1,6 +1,6 @@
-﻿using System;
-using System.Security;
+﻿using System.Security;
 using System.Threading.Tasks;
+using Google.Apis.Auth;
 using Magora.Passwords;
 using Mapper;
 using Microsoft.Extensions.Options;
@@ -25,12 +25,14 @@ namespace Squadio.BLL.Services.Tokens.Implementation
         public TokensService(IUsersRepository usersRepository
             , IPasswordService passwordService
             , IMapper mapper
-            , ITokensFactory tokenFactory)
+            , ITokensFactory tokenFactory
+            , IOptions<GoogleSettings> googleSettings)
         {
             _usersRepository = usersRepository;
             _passwordService = passwordService;
             _mapper = mapper;
             _tokenFactory = tokenFactory;
+            _googleSettings = googleSettings;
         }
         
         public async Task<AuthInfoDTO> Authenticate(CredentialsDTO dto)
@@ -68,11 +70,18 @@ namespace Squadio.BLL.Services.Tokens.Implementation
             return tokenDTO;
         }
 
-        public Task<AuthInfoDTO> GoogleAuthenticate(string gmailToken)
+        public async Task<AuthInfoDTO> GoogleAuthenticate(string gmailToken)
         {
+            var infoFromGoogleToken = await GoogleJsonWebSignature.ValidateAsync(gmailToken);
             
+            if((string) infoFromGoogleToken.Audience != _googleSettings.Value.ClientId)
+                throw new SecurityException("Incorrect google token");
             
-            /*var tokenDTO = await _tokenFactory.CreateToken(user);
+            var user = await _usersRepository.GetByEmail(infoFromGoogleToken.Email);
+            if(user == null)
+                throw new SecurityException("User not exist incorrect");
+            
+            var tokenDTO = await _tokenFactory.CreateToken(user);
             var userDTO = _mapper.Map<UserModel, UserDTO>(user);
 
             var result = new AuthInfoDTO
@@ -81,8 +90,7 @@ namespace Squadio.BLL.Services.Tokens.Implementation
                 Token = tokenDTO
             };
             
-            return result;*/
-            return null;
+            return result;
         }
 
         /// <summary>
