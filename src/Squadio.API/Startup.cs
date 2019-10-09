@@ -67,11 +67,7 @@ namespace Squadio.API
                 DB_PASSWORD = Configuration.GetSection("DB_PASSWORD").Value
             };
 
-            services.Configure<GoogleSettings>(googleSettings =>
-            {
-                googleSettings.ClientId = Configuration.GetSection("Google:ClientId").Value;
-                googleSettings.ClientSecret = Configuration.GetSection("Google:ClientSecret").Value;
-            });
+            services.Configure<GoogleSettings>(Configuration.GetSection("GoogleOAuth"));
             
             services.Configure<ApiSettings>(Configuration.GetSection("APISettings"));
             services.Configure<EmailSettingsModel>(Configuration.GetSection("EmailSettings"));
