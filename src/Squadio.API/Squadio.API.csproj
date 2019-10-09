@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UserSecretsId>24d5197a-cbfa-4d86-8e6d-0dd6744bfabf</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,6 +25,10 @@
     <ProjectReference Include="..\Squadio.Common\Squadio.Common.csproj" />
     <ProjectReference Include="..\Squadio.DAL\Squadio.DAL.csproj" />
     <ProjectReference Include="..\Squadio.Domain\Squadio.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 </Project>

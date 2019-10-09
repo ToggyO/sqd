@@ -23,9 +23,22 @@ namespace Squadio.API.Handlers.Auth.Implementation
             };
         }
 
-        public Task<Response<AuthInfoDTO>> RefreshToken(string refreshToken)
+        public async Task<Response<TokenDTO>> RefreshToken(string refreshToken)
         {
-            throw new System.NotImplementedException();
+            var tokenDTO = await _tokensService.RefreshToken(refreshToken);
+            return new Response<TokenDTO>
+            {
+                Data = tokenDTO
+            };
+        }
+
+        public async Task<Response<AuthInfoDTO>> GoogleAuthenticate(string gmailToken)
+        {
+            var userAuthDTO = await _tokensService.GoogleAuthenticate(gmailToken);
+            return new Response<AuthInfoDTO>
+            {
+                Data = userAuthDTO
+            };
         }
     }
 }

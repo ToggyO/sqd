@@ -29,9 +29,15 @@ namespace Squadio.API.Controllers
         }
         
         [HttpPut("token")]
-        public async Task<ActionResult<Response<AuthInfoDTO>>> RefreshToken([Required] string token)
+        public async Task<ActionResult<Response<TokenDTO>>> RefreshToken([Required] RefreshTokenDTO request)
         {
-            return await _handler.RefreshToken(token);
+            return await _handler.RefreshToken(request.RefreshToken);
+        }
+        
+        [HttpPost("token/google")]
+        public async Task<Response<AuthInfoDTO>> GoogleAuthenticate([Required] GmailTokenDTO request)
+        {
+            return await _handler.GoogleAuthenticate(request.Token);
         }
     }
 }

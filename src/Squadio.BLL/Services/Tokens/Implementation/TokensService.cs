@@ -1,14 +1,10 @@
 ﻿using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Magora.Passwords;
 using Mapper;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Squadio.BLL.Factories;
-using Squadio.BLL.Providers.Users;
 using Squadio.Common.Extensions;
 using Squadio.Common.Settings;
 using Squadio.DAL.Repository.Users;
@@ -24,6 +20,7 @@ namespace Squadio.BLL.Services.Tokens.Implementation
         private readonly IPasswordService _passwordService;
         private readonly IMapper _mapper;
         private readonly ITokensFactory _tokenFactory;
+        private readonly IOptions<GoogleSettings> _googleSettings;
 
         public TokensService(IUsersRepository usersRepository
             , IPasswordService passwordService
@@ -70,7 +67,24 @@ namespace Squadio.BLL.Services.Tokens.Implementation
             var tokenDTO = await _tokenFactory.CreateToken(user);
             return tokenDTO;
         }
-        
+
+        public Task<AuthInfoDTO> GoogleAuthenticate(string gmailToken)
+        {
+            
+            
+            /*var tokenDTO = await _tokenFactory.CreateToken(user);
+            var userDTO = _mapper.Map<UserModel, UserDTO>(user);
+
+            var result = new AuthInfoDTO
+            {
+                User = userDTO,
+                Token = tokenDTO
+            };
+            
+            return result;*/
+            return null;
+        }
+
         /// <summary>
         /// Return true if password is valid
         /// </summary>
