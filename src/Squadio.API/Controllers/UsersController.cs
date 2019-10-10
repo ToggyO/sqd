@@ -2,8 +2,11 @@
 using Squadio.API.Handlers.Users;
 using Squadio.Domain.Models.Users;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Users;
 
@@ -21,15 +24,24 @@ namespace Squadio.API.Controllers
         }
         
         [HttpGet]
-        public async Task<UserModel> GetAll()
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<Response<IEnumerable<UserDTO>>> GetAll()
         {
-            return null;
+            return await _handler.GetAll();
         }
         
         [HttpGet("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<Response<UserDTO>> GetById([Required, FromRoute] Guid id)
         {
             return await _handler.GetById(id);
+        }
+        
+        [HttpGet("current")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<Response<UserDTO>> GetCurrentUser()
+        {
+            return await _handler.GetCurrentUser(User);
         }
         
         [HttpPost("signup")]

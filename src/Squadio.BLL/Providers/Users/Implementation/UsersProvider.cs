@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Mapper;
 using Squadio.DAL.Repository.Users;
@@ -16,6 +17,13 @@ namespace Squadio.BLL.Providers.Users.Implementation
         {
             _repository = repository;
             _mapper = mapper;
+        }
+
+        public async Task<IEnumerable<UserDTO>> GetAll()
+        {
+            var userEntities = await _repository.GetAll();
+            var result = _mapper.Map<IEnumerable<UserModel>, IEnumerable<UserDTO>>(userEntities);
+            return result;
         }
 
         public async Task<UserDTO> GetById(Guid id)

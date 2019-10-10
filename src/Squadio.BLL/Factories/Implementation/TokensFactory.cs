@@ -8,7 +8,6 @@ using Microsoft.IdentityModel.Tokens;
 using Squadio.Common.Settings;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Auth;
-using ClaimTypes = Squadio.Common.Extensions.ClaimTypes;
 
 namespace Squadio.BLL.Factories.Implementation
 {
@@ -65,8 +64,8 @@ namespace Squadio.BLL.Factories.Implementation
                 expires: exp,
                 claims: new[]
                 {
-                    new Claim(ClaimTypes.TokenId, Guid.NewGuid().ToString("N")),
-                    new Claim(ClaimTypes.UserId, userId.ToString("N")),
+                    new Claim(Common.Extensions.ClaimTypes.TokenId, Guid.NewGuid().ToString("N")),
+                    new Claim(Common.Extensions.ClaimTypes.UserId, userId.ToString("N")),
                 });
         }
 
@@ -80,8 +79,8 @@ namespace Squadio.BLL.Factories.Implementation
                 expires: exp,
                 claims: new[]
                 {
-                    new Claim(ClaimTypes.TokenId, Guid.NewGuid().ToString("N")),
-                    new Claim(ClaimTypes.UserId, userId.ToString("N")),
+                    new Claim(Common.Extensions.ClaimTypes.TokenId, Guid.NewGuid().ToString("N")),
+                    new Claim(Common.Extensions.ClaimTypes.UserId, userId.ToString("N")),
                 });
         }
 
@@ -93,14 +92,16 @@ namespace Squadio.BLL.Factories.Implementation
         {
             return new TokenValidationParameters
             {
-                ValidIssuer = _settings.Value.ISSUER,
-                ValidAudience = _settings.Value.AUDIENCE,
                 ValidateIssuer = true,
+                ValidIssuer = _settings.Value.ISSUER,
+                
                 ValidateAudience = true,
-                ValidateLifetime = true,
-                IssuerSigningKey = new SymmetricSecurityKey(_settings.Value.PublicKeyBytes),
+                ValidAudience = _settings.Value.AUDIENCE,
+                
                 ValidateIssuerSigningKey = true,
-                ClockSkew = TimeSpan.Zero
+                IssuerSigningKey = new SymmetricSecurityKey(_settings.Value.PublicKeyBytes),
+                
+                ValidateLifetime = true
             };
         }
     }

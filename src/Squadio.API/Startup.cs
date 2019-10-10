@@ -147,6 +147,8 @@ namespace Squadio.API
                         }
                     };
                 });
+            
+            services.AddAuthorization();
 
             //services.AddMvc().AddControllersAsServices();
 
@@ -167,6 +169,9 @@ namespace Squadio.API
             }
             
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
             
             app.UseMiddleware(typeof(BaseErrorsMiddleware));
 

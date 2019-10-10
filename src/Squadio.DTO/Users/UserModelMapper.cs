@@ -1,4 +1,6 @@
-﻿using Squadio.Domain.Models.Users;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Squadio.Domain.Models.Users;
 using Mapper;
 
 namespace Squadio.DTO.Users
@@ -23,6 +25,22 @@ namespace Squadio.DTO.Users
                 MiddleName = item.MiddleName,
                 PhoneNumber = item.PhoneNumber
             };
+        }
+    }
+    
+    public class EnumerableUserModelMapper : IMapper<IEnumerable<UserModel>, IEnumerable<UserDTO>>
+    {
+        private readonly IMapper _mapper;
+
+        public EnumerableUserModelMapper(IMapper mapper)
+        {
+            _mapper = mapper;
+        }
+    
+        public IEnumerable<UserDTO> Map(IEnumerable<UserModel> items)
+        {
+            var result = items.Select(x => _mapper.Map<UserModel, UserDTO>(x));
+            return result;
         }
     }
 }

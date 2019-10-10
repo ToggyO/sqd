@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Squadio.BLL.Providers.Users;
 using Squadio.BLL.Services.Users;
+using Squadio.Common.Exceptions.PermissionException;
+using Squadio.Common.Extensions;
 using Squadio.Common.Models.Responses;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Auth;
@@ -19,7 +23,27 @@ namespace Squadio.API.Handlers.Users.Implementation
             _service = service;
             _provider = provider;
         }
-        
+
+        public async Task<Response<IEnumerable<UserDTO>>> GetAll()
+        {
+            var items = await _provider.GetAll();
+            var result = new Response<IEnumerable<UserDTO>>()
+            {
+                Data = items
+            };
+            return result;
+        }
+
+        public async Task<Response<UserDTO>> GetCurrentUser(ClaimsPrincipal claims)
+        {
+            var user = await _provider.GetById(claims.GetUserId() ?? throw new PermissionException());
+            var result = new Response<UserDTO>()
+            {
+                Data = user
+            };
+            return result;
+        }
+
         public async Task<Response<UserDTO>> GetById(Guid id)
         {
             var user = await _provider.GetById(id);

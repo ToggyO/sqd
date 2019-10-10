@@ -5,16 +5,6 @@ namespace Squadio.Common.Models.Responses
 {
     public class Response
     {
-        public HttpStatusCode HttpStatusCode { get; set; } = HttpStatusCode.OK;
-
-        public bool IsSuccess
-        {
-            get
-            {
-                var asInt = (int)HttpStatusCode;
-                return asInt >= 200 && asInt <= 299;
-            }
-        }
         public string Code { get; set; } = "success";
     }
     public class Response<T> : Response where T : class

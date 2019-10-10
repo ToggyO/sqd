@@ -40,6 +40,12 @@ namespace Squadio.DAL.Repository.Users.Implementation
             throw new NotImplementedException();
         }
 
+        public async Task<IEnumerable<UserModel>> GetAll()
+        {
+            var entities = await _context.Users.ToListAsync();
+            return entities;
+        }
+
         public async Task<UserModel> GetByEmail(string email)
         {
             try
