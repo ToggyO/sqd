@@ -17,6 +17,11 @@
     <PackageReference Include="Magora.Passwords" Version="0.1.0-alpha02" />
     <PackageReference Include="MailKit" Version="2.3.1.6" />
     <PackageReference Include="Mapper" Version="0.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Graph" Version="1.17.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.4.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.2" />
     <PackageReference Include="MimeKit" Version="2.3.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.5.0" />
   </ItemGroup>

@@ -68,6 +68,7 @@ namespace Squadio.API
             };
 
             services.Configure<GoogleSettings>(Configuration.GetSection("GoogleOAuth"));
+            services.Configure<MicrosoftAccountSettings>(Configuration.GetSection("MicrosoftOAuth"));
             
             services.Configure<ApiSettings>(Configuration.GetSection("APISettings"));
             services.Configure<EmailSettingsModel>(Configuration.GetSection("EmailSettings"));

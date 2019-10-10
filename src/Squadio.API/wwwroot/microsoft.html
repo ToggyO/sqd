@@ -1,123 +1,146 @@
 <html lang="en">
-  <head>
+<head>
     <title>Auth by microsoft account</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bluebird/3.3.4/bluebird.min.js" class="pre"></script>
-    <script src="https://alcdn.msauth.net/lib/1.1.3/js/msal.js"></script>
-  </head>
-  <body>
-  <script>
+    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.0/js/msal.min.js"></script>
+</head>
+<body>
+<script>
     const msalConfig = {
-      auth: {
-        clientId: 'e0b221ed-d1ab-42b9-a33d-16410a9572ee'
-      },
-      cache: {
-        cacheLocation: "localStorage",
-        storeAuthStateInCookie: true
-      }
+        auth: {
+            clientId: 'e0b221ed-d1ab-42b9-a33d-16410a9572ee'
+        },
+        cache: {
+            cacheLocation: "localStorage",
+            storeAuthStateInCookie: true
+        }
     };
 
     const graphConfig = {
-      graphMeEndpoint: "https://graph.microsoft.com/v1.0/me"
+        graphMeEndpoint: "https://graph.microsoft.com/v1.0/me"
     };
 
-    const loginRequest = {
-      scopes: ["user.read"]
+    const requestObj = {
+        scopes: ["User.Read"]
     };
 
     const myMSALObj = new Msal.UserAgentApplication(msalConfig);
     myMSALObj.handleRedirectCallback(function (error, response) {
-      if(error){
-        console.error("handleCallback error: ", response);
-      }
-      else {
-        console.log("handleCallback response: ", response);
-      }
-    });
-    
-    document.addEventListener("DOMContentLoaded", function(event) {
-      let token = localStorage.getItem("msal.idtoken");
-      console.log("on document ready");
-      document.getElementById('microsoft-token-input').value = token;
-      if(token != null) {
-        if(token.length > 0) {
-          validate();
+        if (error) {
+            console.error("handleCallback error: ", response);
+        } else {
+            console.log("handleCallback response: ", response);
         }
-      }
     });
-  </script>
-  <script>
+
+    document.addEventListener("DOMContentLoaded", function (event) {
+        let token = localStorage.getItem("msal.idtoken");
+        console.log("on document ready");
+        if (token != null) {
+            if (token.length > 0) {
+                validate();
+            }
+        }
+    });
+</script>
+<script>
     function logIn() {
 
-      myMSALObj.loginPopup(loginRequest)
-      .then(function (response) {
-        if (response.tokenType === "access_token") {
-          showWelcomeMessage();
-          callMSGraph(graphConfig.graphMeEndpoint, response.accessToken, graphAPICallback);
-        }
-        else {
-          console.log("loginPopup response: ", response);
-          document.getElementById('microsoft-token-input').value = response.idToken.rawIdToken;
-        }
-      })
-      .catch(function (err) {
-        console.error("loginPopup error: ", err);
-      });
-    }
-    
-    function logOut() {
-      myMSALObj.logout();
+        myMSALObj.loginPopup(requestObj)
+            .then(function (response) {
+                acquireTokenPopupAndCallMSGraph();
+                console.log("loginPopup response: ", response);
+            })
+            .catch(function (err) {
+                console.error("loginPopup error: ", err);
+            });
     }
 
-    function showWelcomeMessage() {
-      var divWelcome = document.getElementById('WelcomeMessage');
-      divWelcome.innerHTML = 'Welcome ' + myMSALObj.getAccount().userName + "to Microsoft Graph API";
-      var loginbutton = document.getElementById('LogIn');
-      loginbutton.innerHTML = 'LogOut';
-      loginbutton.setAttribute('onclick', 'LogOut();');
+    function logOut() {
+        localStorage.clear();
+        myMSALObj.logout();
     }
-    
-    function callMSGraph(theUrl, accessToken, callback) {
-      var xmlHttp = new XMLHttpRequest();
-      xmlHttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200)
-          callback(JSON.parse(this.responseText));
-      };
-      xmlHttp.open("GET", theUrl, true); 
-      xmlHttp.setRequestHeader('Authorization', 'Bearer ' + accessToken);
-      xmlHttp.send();
+
+    function acquireTokenPopupAndCallMSGraph() {
+        //Always start with acquireTokenSilent to obtain a token in the signed in user from cache
+        myMSALObj.acquireTokenSilent(requestObj).then(function (tokenResponse) {
+            console.log("Access token: ", tokenResponse.accessToken);
+            callMSGraph(graphConfig.graphMeEndpoint, tokenResponse.accessToken, graphAPICallback);
+        }).catch(function (error) {
+            console.log(error);
+            // Upon acquireTokenSilent failure (due to consent or interaction or login required ONLY)
+            // Call acquireTokenPopup(popup window)
+            if (requiresInteraction(error.errorCode)) {
+                myMSALObj.acquireTokenPopup(requestObj).then(function (tokenResponse) {
+                    console.log("Access token: ", tokenResponse.accessToken);
+                    callMSGraph(graphConfig.graphMeEndpoint, tokenResponse.accessToken, graphAPICallback);
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            }
+        });
+    }
+
+    function callMSGraph(theUrl, accessToken) {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function () {
+            try {
+                console.log(JSON.parse(this.responseText));
+            }
+            catch (e) {
+                
+            }
+        };
+        xmlHttp.open("GET", theUrl, true); // true for asynchronous
+        xmlHttp.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+        xmlHttp.send();
     }
 
     function graphAPICallback(data) {
-      document.getElementById("json").innerHTML = JSON.stringify(data, null, 2);
+        document.getElementById("json").innerHTML = JSON.stringify(data, null, 2);
     }
-    
+
     function validate() {
-      var id_token = document.getElementById('microsoft-token-input').value;
+        var id_token = localStorage.getItem("msal.idtoken");
 
-      var xhr = new XMLHttpRequest();
+        console.log("-----------------");
 
-      var body = JSON.stringify({
-        token: id_token
-      });
+        for (item in localStorage) {
+            if (item.toString().includes(msalConfig.auth.clientId) && item.toString().includes(requestObj.scopes)) {
+                var tokenInfo = JSON.parse(localStorage[item]);
+                id_token = tokenInfo.accessToken;
+                break;
+            }
+        }
+        console.log("-----------------");
 
-      xhr.open('POST', 'http://localhost:5005/api/auth/token/microsoft');
-      xhr.setRequestHeader('Content-Type', 'application/json');
+        var xhr = new XMLHttpRequest();
 
-      xhr.onload = function () {
-        var result = JSON.parse(xhr.responseText);
-        console.log(result);
-      };
+        var body = JSON.stringify({
+            token: id_token
+        });
 
-      xhr.send(body);
+        xhr.open('POST', 'http://localhost:5005/api/auth/token/microsoft');
+        xhr.setRequestHeader('Content-Type', 'application/json');
+
+        xhr.onload = function () {
+            var result = JSON.parse(xhr.responseText);
+            console.log(result);
+        };
+
+        xhr.send(body);
     }
-  </script>
+</script>
 
 
-  <input hidden id="microsoft-token-input">
-  <h2>Welcome to MSAL.js Quickstart</h2><br/>
-  <h4 id="WelcomeMessage"></h4>
-  <button id="LogIn" onclick="logIn()">LogIn</button><br/><br/>
-  <button id="validate" onclick="validate()">Backend validation</button><br/><br/>
-  <pre id="json"></pre>
-  </body>
+<h2>Welcome to MSAL.js Quickstart</h2><br/>
+<h4 id="WelcomeMessage"></h4>
+<button id="LogIn" onclick="logIn()">LogIn</button>
+<hr>
+<button id="validate" onclick="validate()">Backend validation</button>
+<hr>
+<button id="LogOut" onclick="logOut()">LogOut</button>
+<hr>
+<pre id="json"></pre>
+</body>
 </html>
