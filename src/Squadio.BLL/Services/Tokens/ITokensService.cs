@@ -8,6 +8,5 @@ namespace Squadio.BLL.Services.Tokens
         Task<AuthInfoDTO> Authenticate(CredentialsDTO dto);
         Task<TokenDTO> RefreshToken(string refreshToken);
         Task<AuthInfoDTO> GoogleAuthenticate(string gmailToken);
-        Task<AuthInfoDTO> MicrosoftAuthenticate(string microsoftToken);
     }
 }

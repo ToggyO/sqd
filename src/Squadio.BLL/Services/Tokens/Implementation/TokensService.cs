@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Net.Http.Headers;
 using System.Security;
 using System.Threading.Tasks;
 using Google.Apis.Auth;
 using Magora.Passwords;
 using Mapper;
 using Microsoft.Extensions.Options;
-using Microsoft.Identity.Client;
 using Squadio.BLL.Factories;
 using Squadio.Common.Extensions;
 using Squadio.Common.Settings;
@@ -14,9 +12,6 @@ using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Auth;
 using Squadio.DTO.Users;  
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using ClientCredential = Microsoft.IdentityModel.Clients.ActiveDirectory.ClientCredential;
-using UserAssertion = Microsoft.IdentityModel.Clients.ActiveDirectory.UserAssertion;
 
 namespace Squadio.BLL.Services.Tokens.Implementation
 {
@@ -27,21 +22,18 @@ namespace Squadio.BLL.Services.Tokens.Implementation
         private readonly IMapper _mapper;
         private readonly ITokensFactory _tokenFactory;
         private readonly IOptions<GoogleSettings> _googleSettings;
-        private readonly IOptions<MicrosoftAccountSettings> _microsoftSettings;
 
         public TokensService(IUsersRepository usersRepository
             , IPasswordService passwordService
             , IMapper mapper
             , ITokensFactory tokenFactory
-            , IOptions<GoogleSettings> googleSettings
-            , IOptions<MicrosoftAccountSettings> microsoftSettings)
+            , IOptions<GoogleSettings> googleSettings)
         {
             _usersRepository = usersRepository;
             _passwordService = passwordService;
             _mapper = mapper;
             _tokenFactory = tokenFactory;
             _googleSettings = googleSettings;
-            _microsoftSettings = microsoftSettings;
         }
         
         public async Task<AuthInfoDTO> Authenticate(CredentialsDTO dto)
@@ -100,30 +92,6 @@ namespace Squadio.BLL.Services.Tokens.Implementation
             };
             
             return result;
-        }
-
-        public async Task<AuthInfoDTO> MicrosoftAuthenticate(string microsoftToken)
-        {
-            try
-            {
-                var userAssertion = new UserAssertion(microsoftToken);
-
-                var authContext = new AuthenticationContext("https://login.microsoftonline.com/"+_microsoftSettings.Value.TenantId);
-                var clientCredential = new ClientCredential(_microsoftSettings.Value.ClientId, _microsoftSettings.Value.ClientSecret);
-
-                var result = await authContext.AcquireTokenAsync("https://graph.microsoft.com", clientCredential, userAssertion);
-
-                int a = 0;
-                /*
-                var microsoftClient = PublicClientApplicationBuilder.Create(_microsoftSettings.Value.ClientId).Build();
-                var aaa = await microsoftClient.AcquireTokenInteractive(new[] {"user.read"}).ExecuteAsync();
-                */
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-            return null;
         }
 
         /// <summary>
