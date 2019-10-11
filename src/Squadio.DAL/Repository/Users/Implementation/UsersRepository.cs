@@ -38,9 +38,7 @@ namespace Squadio.DAL.Repository.Users.Implementation
         public async Task<UserModel> Update(UserModel userUpdateModel)
         {
             var entity = await _context.Users.FindAsync(userUpdateModel.Id);
-            entity.FirstName = userUpdateModel.FirstName;
-            entity.LastName = userUpdateModel.LastName;
-            entity.MiddleName = userUpdateModel.MiddleName;
+            entity.Name = userUpdateModel.Name;
             _context.Update(entity);
             await _context.SaveChangesAsync();
             return entity;

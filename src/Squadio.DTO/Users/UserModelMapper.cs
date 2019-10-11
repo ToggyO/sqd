@@ -20,10 +20,7 @@ namespace Squadio.DTO.Users
             {
                 Id = item.Id,
                 Email = item.Email,
-                FirstName = item.FirstName,
-                LastName = item.LastName,
-                MiddleName = item.MiddleName,
-                PhoneNumber = item.PhoneNumber
+                Name = item.Name
             };
         }
     }

@@ -98,9 +98,7 @@ namespace Squadio.BLL.Services.Users.Implementation
             if(userEntity == null) 
                 throw new BusinessLogicException("","User not found","userId");
             
-            userEntity.FirstName = updateDTO.FirstName;
-            userEntity.LastName = updateDTO.LastName;
-            userEntity.MiddleName = updateDTO.MiddleName;
+            userEntity.Name = updateDTO.Name;
             userEntity = await _repository.Update(userEntity);
             
             var result = _mapper.Map<UserModel, UserDTO>(userEntity);

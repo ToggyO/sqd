@@ -20,15 +20,16 @@ namespace Squadio.BLL.Services.Companies.Implementation
 
         public async Task<CompanyDTO> Create(Guid userId, CreateCompanyDTO dto)
         {
-            var entity = new CompanyModel
+            var entityCompany = new CompanyModel
             {
-                AdministratorId = userId, 
                 Name = dto.Name
             };
             
-            entity = await _repository.Create(entity);
+            entityCompany = await _repository.Create(entityCompany);
             
-            var result = _mapper.Map<CompanyModel, CompanyDTO>(entity);
+            //TODO: Add admin
+            
+            var result = _mapper.Map<CompanyModel, CompanyDTO>(entityCompany);
             return result;
         }
     }

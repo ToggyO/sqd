@@ -7,7 +7,5 @@ namespace Squadio.Domain.Models.Companies
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public Guid AdministratorId { get; set; }
-        public UserModel Administrator { get; set; }
     }
 }
