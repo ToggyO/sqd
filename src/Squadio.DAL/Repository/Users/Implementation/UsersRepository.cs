@@ -35,9 +35,15 @@ namespace Squadio.DAL.Repository.Users.Implementation
             return entity;
         }
 
-        public Task<UserModel> Update(UserModel entity)
+        public async Task<UserModel> Update(UserModel userUpdateModel)
         {
-            throw new NotImplementedException();
+            var entity = await _context.Users.FindAsync(userUpdateModel.Id);
+            entity.FirstName = userUpdateModel.FirstName;
+            entity.LastName = userUpdateModel.LastName;
+            entity.MiddleName = userUpdateModel.MiddleName;
+            _context.Update(entity);
+            await _context.SaveChangesAsync();
+            return entity;
         }
 
         public async Task<IEnumerable<UserModel>> GetAll()

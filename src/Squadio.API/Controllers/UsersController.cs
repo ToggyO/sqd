@@ -44,6 +44,13 @@ namespace Squadio.API.Controllers
             return await _handler.GetCurrentUser(User);
         }
         
+        [HttpPut("current")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<Response<UserDTO>> UpdateCurrentUser([FromBody] UserUpdateDTO updateDTO)
+        {
+            return await _handler.UpdateCurrentUser(updateDTO, User);
+        }
+        
         [HttpPost("signup")]
         public async Task<Response> SignUp([Required, FromBody] UserEmailDTO email)
         {

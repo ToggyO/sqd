@@ -10,6 +10,7 @@ namespace Squadio.BLL.Providers.Users
     {
         Task<IEnumerable<UserDTO>> GetAll();
         Task<UserDTO> GetById(Guid id);
+        Task<UserDTO> UpdateUser(Guid id, UserUpdateDTO updateDTO);
         Task<UserDTO> GetByEmail(string email);
     }
 }

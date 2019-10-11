@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Mapper;
+using Squadio.Common.Exceptions.BusinessLogicExceptions;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Users;
@@ -29,6 +30,21 @@ namespace Squadio.BLL.Providers.Users.Implementation
         public async Task<UserDTO> GetById(Guid id)
         {
             var userEntity = await _repository.GetById(id);
+            var result = _mapper.Map<UserModel, UserDTO>(userEntity);
+            return result;
+        }
+
+        public async Task<UserDTO> UpdateUser(Guid id, UserUpdateDTO updateDTO)
+        {
+            var userEntity = await _repository.GetById(id);
+            if(userEntity == null) 
+                throw new BusinessLogicException("","User not found","userId");
+            
+            userEntity.FirstName = updateDTO.FirstName;
+            userEntity.LastName = updateDTO.LastName;
+            userEntity.MiddleName = updateDTO.MiddleName;
+            userEntity = await _repository.Update(userEntity);
+            
             var result = _mapper.Map<UserModel, UserDTO>(userEntity);
             return result;
         }
