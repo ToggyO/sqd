@@ -4,8 +4,12 @@ using Mapper;
 using Microsoft.Extensions.DependencyInjection;
 using Squadio.BLL.Factories;
 using Squadio.BLL.Factories.Implementation;
+using Squadio.BLL.Providers.Companies;
+using Squadio.BLL.Providers.Companies.Implementation;
 using Squadio.BLL.Providers.Users;
 using Squadio.BLL.Providers.Users.Implementation;
+using Squadio.BLL.Services.Companies;
+using Squadio.BLL.Services.Companies.Implementation;
 using Squadio.BLL.Services.Email;
 using Squadio.BLL.Services.Email.Implementations;
 using Squadio.BLL.Services.Email.Sender;
@@ -32,6 +36,9 @@ namespace Squadio.BLL
             services.Add<IUsersProvider, UsersProvider>(serviceLifetime);
             services.Add<IUsersService, UsersService>(serviceLifetime);
             services.Add<ITokensService, TokensService>(serviceLifetime);
+            
+            services.Add<ICompaniesProvider, CompaniesProvider>(serviceLifetime);
+            services.Add<ICompaniesService, CompaniesService>(serviceLifetime);
             
             services.Add<ITokensFactory, TokensFactory>(serviceLifetime);
             services.AddMapper();
