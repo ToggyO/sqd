@@ -44,9 +44,9 @@ namespace Squadio.API.Handlers.Users.Implementation
             return result;
         }
 
-        public async Task<Response<UserDTO>> UpdateCurrentUser(UserUpdateDTO updateDTO, ClaimsPrincipal claims)
+        public async Task<Response<UserDTO>> UpdateCurrentUser(UserUpdateDTO dto, ClaimsPrincipal claims)
         {
-            var user = await _provider.UpdateUser(claims.GetUserId() ?? throw new PermissionException(), updateDTO);
+            var user = await _service.UpdateUser(claims.GetUserId() ?? throw new PermissionException(), dto);
             var result = new Response<UserDTO>()
             {
                 Data = user

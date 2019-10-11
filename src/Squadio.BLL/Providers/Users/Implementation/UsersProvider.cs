@@ -34,21 +34,6 @@ namespace Squadio.BLL.Providers.Users.Implementation
             return result;
         }
 
-        public async Task<UserDTO> UpdateUser(Guid id, UserUpdateDTO updateDTO)
-        {
-            var userEntity = await _repository.GetById(id);
-            if(userEntity == null) 
-                throw new BusinessLogicException("","User not found","userId");
-            
-            userEntity.FirstName = updateDTO.FirstName;
-            userEntity.LastName = updateDTO.LastName;
-            userEntity.MiddleName = updateDTO.MiddleName;
-            userEntity = await _repository.Update(userEntity);
-            
-            var result = _mapper.Map<UserModel, UserDTO>(userEntity);
-            return result;
-        }
-
         public async Task<UserDTO> GetByEmail(string email)
         {
             var userEntity = await _repository.GetByEmail(email);

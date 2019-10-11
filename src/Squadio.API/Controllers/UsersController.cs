@@ -46,9 +46,9 @@ namespace Squadio.API.Controllers
         
         [HttpPut("current")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<Response<UserDTO>> UpdateCurrentUser([FromBody] UserUpdateDTO updateDTO)
+        public async Task<Response<UserDTO>> UpdateCurrentUser([FromBody] UserUpdateDTO dto)
         {
-            return await _handler.UpdateCurrentUser(updateDTO, User);
+            return await _handler.UpdateCurrentUser(dto, User);
         }
         
         [HttpPost("signup")]
@@ -64,9 +64,9 @@ namespace Squadio.API.Controllers
         }
         
         [HttpPost("passwords/reset")]
-        public async Task<Response> ResetPasswordRequest([FromBody, Required] UserEmailDTO email)
+        public async Task<Response> ResetPasswordRequest([FromBody, Required] UserEmailDTO dto)
         {
-            return await _handler.ResetPasswordRequest(email.Email);
+            return await _handler.ResetPasswordRequest(dto.Email);
         }
     }
 }

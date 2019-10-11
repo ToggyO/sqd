@@ -11,7 +11,7 @@ namespace Squadio.API.Handlers.Users
     {
         Task<Response<IEnumerable<UserDTO>>> GetAll();
         Task<Response<UserDTO>> GetCurrentUser(ClaimsPrincipal claims);
-        Task<Response<UserDTO>> UpdateCurrentUser(UserUpdateDTO updateDTO, ClaimsPrincipal claims);
+        Task<Response<UserDTO>> UpdateCurrentUser(UserUpdateDTO dto, ClaimsPrincipal claims);
         Task<Response<UserDTO>> GetById(Guid id);
         Task<Response<UserDTO>> SetPassword(UserSetPasswordDTO dto);
         Task<Response> SignUp(string email);
