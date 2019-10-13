@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Google.Apis.Auth;
 using Mapper;
 using Microsoft.Extensions.Options;
+using Squadio.BLL.Services.Companies;
 using Squadio.BLL.Services.Email;
 using Squadio.BLL.Services.Users;
 using Squadio.Common.Exceptions.BusinessLogicExceptions;
@@ -12,6 +13,7 @@ using Squadio.Common.Settings;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Users;
+using Squadio.DTO.Companies;
 using Squadio.DTO.Users;
 
 namespace Squadio.BLL.Services.SignUp.Implementation
@@ -22,11 +24,13 @@ namespace Squadio.BLL.Services.SignUp.Implementation
         private readonly IEmailService<PasswordSetEmailModel> _passwordSetMailService;
         private readonly IOptions<GoogleSettings> _googleSettings;
         private readonly IUsersService _usersService;
+        private readonly ICompaniesService _companiesService;
         private readonly IMapper _mapper;
         public SignUpService(IUsersRepository repository
             , IEmailService<PasswordSetEmailModel> passwordSetMailService
             , IOptions<GoogleSettings> googleSettings
             , IUsersService usersService
+            , ICompaniesService companiesService
             , IMapper mapper
         )
         {
@@ -34,6 +38,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             _passwordSetMailService = passwordSetMailService;
             _googleSettings = googleSettings;
             _usersService = usersService;
+            _companiesService = companiesService;
             _mapper = mapper;
         }
 
@@ -110,9 +115,18 @@ namespace Squadio.BLL.Services.SignUp.Implementation
         {
             var user = await _usersService.UpdateUser(id, updateDTO);
 
-            await _repository.SetRegistrationStep(user.Id, RegistrationStep.Done);
+            await _repository.SetRegistrationStep(user.Id, RegistrationStep.UsernameEntered);
 
             return user;
+        }
+
+        public async Task<CompanyDTO> SignUpCompany(Guid userId, CreateCompanyDTO dto)
+        {
+            var company = await _companiesService.Create(userId, dto);
+
+            await _repository.SetRegistrationStep(userId, RegistrationStep.CompanyCreated);
+
+            return company;
         }
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Squadio.API.Handlers.SignUp;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Auth;
+using Squadio.DTO.Companies;
 using Squadio.DTO.Users;
 
 namespace Squadio.API.Controllers
@@ -50,6 +51,13 @@ namespace Squadio.API.Controllers
         public async Task<Response<UserDTO>> UpdateCurrentUser([FromBody] UserUpdateDTO dto)
         {
             return await _handler.SignUpUsername(dto, User);
+        }
+        
+        [HttpPut("company")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<Response<CompanyDTO>> CreateCompany([Required, FromBody] CreateCompanyDTO dto)
+        {
+            return await _handler.SignUpCompany(dto, User);
         }
     }
 }
