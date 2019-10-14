@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Squadio.Domain.Models.Companies;
+using Squadio.Domain.Models.Teams;
 using Squadio.Domain.Models.Users;
 
 namespace Squadio.DAL
@@ -11,6 +12,8 @@ namespace Squadio.DAL
         public DbSet<UserPasswordRequestModel> UserPasswordRequests { get; set; }
         public DbSet<CompanyModel> Companies { get; set; }
         public DbSet<CompanyUserModel> CompaniesUsers { get; set; }
+        public DbSet<TeamUserModel> TeamsUsers { get; set; }
+        public DbSet<TeamModel> Teams { get; set; }
         
 
         public SquadioDbContext(DbContextOptions<SquadioDbContext> options)

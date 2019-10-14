@@ -1,9 +1,8 @@
 ﻿using System;
-using Squadio.Domain.Models.Users;
 
-namespace Squadio.Domain.Models.Companies
+namespace Squadio.Domain.Models.Projects
 {
-    public class CompanyModel
+    public class ProjectModel
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

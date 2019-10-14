@@ -19,7 +19,7 @@ namespace Squadio.DTO.Users
             return new UserRegistrationStepDTO
             {
                 Step = (int) item.Step,
-                StepName = item.StepName
+                StepName = item.Step.ToString()
             };
         }
     }

@@ -68,10 +68,10 @@ namespace Squadio.DAL.Repository.Users.Implementation
 
         public async Task<UserRegistrationStepModel> GetRegistrationStepByEmail(string email)
         {
-            var item = (await _context.UsersRegistrationStep
-                    .Include(x => x.User)
-                    .ToListAsync())
-                .FirstOrDefault(x => string.Equals(x.User.Email, email, StringComparison.OrdinalIgnoreCase));
+            var item = await _context.UsersRegistrationStep
+                .Include(x => x.User)
+                .Where(x => x.User.Email.ToUpper() == email.ToUpper())
+                .FirstOrDefaultAsync();
             return item;
         }
 
@@ -90,7 +90,7 @@ namespace Squadio.DAL.Repository.Users.Implementation
             }
 
             item.Step = step;
-            item.StepName = step.ToString();
+            item.UpdatedDate = DateTime.UtcNow;
             
             if(stepExisted)
                 _context.Update(item);

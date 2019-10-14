@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Squadio.DAL;
@@ -9,9 +10,10 @@ using Squadio.DAL;
 namespace Squadio.DAL.Migrations
 {
     [DbContext(typeof(SquadioDbContext))]
-    partial class SquadioDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191014070104_AddTeam")]
+    partial class AddTeam
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -174,6 +176,9 @@ namespace Squadio.DAL.Migrations
 
                     b.Property<int>("Step")
                         .HasColumnType("integer");
+
+                    b.Property<string>("StepName")
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("timestamp without time zone");

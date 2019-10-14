@@ -21,7 +21,8 @@ namespace Squadio.DAL.Repository.CompaniesUsers.Implementation
             {
                 CompanyId = companyId,
                 UserId = userId,
-                Status = userStatus
+                Status = userStatus,
+                CreatedDate = DateTime.UtcNow
             };
             _context.CompaniesUsers.Add(item);
             await _context.SaveChangesAsync();
