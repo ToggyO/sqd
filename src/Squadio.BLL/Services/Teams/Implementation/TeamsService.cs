@@ -26,7 +26,9 @@ namespace Squadio.BLL.Services.Teams.Implementation
         {
             var entityTeam = new TeamModel
             {
-                Name = dto.Name
+                Name = dto.Name,
+                CompanyId = dto.CompanyId,
+                CreatedDate = DateTime.UtcNow
             };
             
             entityTeam = await _repository.Create(entityTeam);

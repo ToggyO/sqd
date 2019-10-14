@@ -27,7 +27,8 @@ namespace Squadio.BLL.Services.Companies.Implementation
         {
             var entityCompany = new CompanyModel
             {
-                Name = dto.Name
+                Name = dto.Name,
+                CreatedDate = DateTime.UtcNow
             };
             
             entityCompany = await _repository.Create(entityCompany);
