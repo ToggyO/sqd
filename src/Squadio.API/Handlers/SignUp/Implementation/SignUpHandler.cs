@@ -8,6 +8,7 @@ using Squadio.Common.Extensions;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Auth;
 using Squadio.DTO.Companies;
+using Squadio.DTO.Teams;
 using Squadio.DTO.Users;
 
 namespace Squadio.API.Handlers.SignUp.Implementation
@@ -73,6 +74,16 @@ namespace Squadio.API.Handlers.SignUp.Implementation
         {
             var company = await _service.SignUpCompany(claims.GetUserId() ?? throw new PermissionException(), dto);
             var result = new Response<CompanyDTO>()
+            {
+                Data = company
+            };
+            return result;
+        }
+
+        public async Task<Response<TeamDTO>> SignUpTeam(CreateTeamDTO dto, ClaimsPrincipal claims)
+        {
+            var company = await _service.SignUpTeam(claims.GetUserId() ?? throw new PermissionException(), dto);
+            var result = new Response<TeamDTO>()
             {
                 Data = company
             };

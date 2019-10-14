@@ -5,6 +5,7 @@ using Mapper;
 using Microsoft.Extensions.Options;
 using Squadio.BLL.Services.Companies;
 using Squadio.BLL.Services.Email;
+using Squadio.BLL.Services.Teams;
 using Squadio.BLL.Services.Users;
 using Squadio.Common.Exceptions.BusinessLogicExceptions;
 using Squadio.Common.Exceptions.SecurityExceptions;
@@ -14,6 +15,7 @@ using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Companies;
+using Squadio.DTO.Teams;
 using Squadio.DTO.Users;
 
 namespace Squadio.BLL.Services.SignUp.Implementation
@@ -25,12 +27,14 @@ namespace Squadio.BLL.Services.SignUp.Implementation
         private readonly IOptions<GoogleSettings> _googleSettings;
         private readonly IUsersService _usersService;
         private readonly ICompaniesService _companiesService;
+        private readonly ITeamsService _teamsService;
         private readonly IMapper _mapper;
         public SignUpService(IUsersRepository repository
             , IEmailService<PasswordSetEmailModel> passwordSetMailService
             , IOptions<GoogleSettings> googleSettings
             , IUsersService usersService
             , ICompaniesService companiesService
+            , ITeamsService teamsService
             , IMapper mapper
         )
         {
@@ -39,6 +43,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             _googleSettings = googleSettings;
             _usersService = usersService;
             _companiesService = companiesService;
+            _teamsService = teamsService;
             _mapper = mapper;
         }
 
@@ -127,6 +132,15 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             await _repository.SetRegistrationStep(userId, RegistrationStep.CompanyCreated);
 
             return company;
+        }
+
+        public async Task<TeamDTO> SignUpTeam(Guid userId, CreateTeamDTO dto)
+        {
+            var team = await _teamsService.Create(userId, dto);
+
+            await _repository.SetRegistrationStep(userId, RegistrationStep.TeamCreated);
+
+            return team;
         }
     }
 }

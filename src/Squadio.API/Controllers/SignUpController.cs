@@ -7,6 +7,7 @@ using Squadio.API.Handlers.SignUp;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Auth;
 using Squadio.DTO.Companies;
+using Squadio.DTO.Teams;
 using Squadio.DTO.Users;
 
 namespace Squadio.API.Controllers
@@ -58,6 +59,13 @@ namespace Squadio.API.Controllers
         public async Task<Response<CompanyDTO>> CreateCompany([Required, FromBody] CreateCompanyDTO dto)
         {
             return await _handler.SignUpCompany(dto, User);
+        }
+        
+        [HttpPut("team")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<Response<TeamDTO>> CreateTeam([Required, FromBody] CreateTeamDTO dto)
+        {
+            return await _handler.SignUpTeam(dto, User);
         }
     }
 }

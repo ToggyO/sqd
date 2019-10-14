@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Auth;
 using Squadio.DTO.Companies;
+using Squadio.DTO.Teams;
 using Squadio.DTO.Users;
 
 namespace Squadio.API.Handlers.SignUp
@@ -14,6 +15,7 @@ namespace Squadio.API.Handlers.SignUp
         Task<Response<AuthInfoDTO>> SignUpPassword(UserSetPasswordDTO dto);
         Task<Response<UserDTO>> SignUpUsername(UserUpdateDTO dto, ClaimsPrincipal claims);
         Task<Response<CompanyDTO>> SignUpCompany(CreateCompanyDTO dto, ClaimsPrincipal claims);
+        Task<Response<TeamDTO>> SignUpTeam(CreateTeamDTO dto, ClaimsPrincipal claims);
         Task<Response<UserRegistrationStepDTO>> GetRegistrationStep(string email);
     }
 }
