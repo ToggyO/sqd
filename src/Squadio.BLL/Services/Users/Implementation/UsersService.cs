@@ -5,10 +5,8 @@ using Mapper;
 using Squadio.BLL.Services.Email;
 using Squadio.Common.Exceptions.BusinessLogicExceptions;
 using Squadio.Common.Models.Email;
-using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Models.Users;
-using Squadio.DTO.Auth;
 using Squadio.DTO.Users;
 
 namespace Squadio.BLL.Services.Users.Implementation
@@ -32,30 +30,6 @@ namespace Squadio.BLL.Services.Users.Implementation
             _passwordResetMailService = passwordResetMailService;
             _passwordService = passwordService;
             _mapper = mapper;
-        }
-
-        public async Task SignUp(string email)
-        {
-            var user = await _repository.GetByEmail(email);
-            if(user != null)
-                throw new Exception("Email already used");
-            
-            var code = GenerateCode();
-
-            await _passwordSetMailService.Send(new PasswordSetEmailModel
-            {
-                Code = code,
-                To = email
-            });
-
-            user = new UserModel
-            {
-                Email = email,
-                CreatedDate = DateTime.UtcNow
-            };
-
-            user = await _repository.Create(user);
-            await _repository.AddPasswordRequest(user.Id, code);
         }
 
         public async Task<UserDTO> SetPassword(string email, string code, string password)
@@ -105,7 +79,7 @@ namespace Squadio.BLL.Services.Users.Implementation
             return result;
         }
 
-        private static string GenerateCode(int length = 6)
+        public string GenerateCode(int length = 6)
         {
             var generator = new Random();
             

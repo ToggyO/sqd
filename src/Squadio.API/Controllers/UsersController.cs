@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Squadio.API.Handlers.Users;
-using Squadio.Domain.Models.Users;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -49,12 +48,6 @@ namespace Squadio.API.Controllers
         public async Task<Response<UserDTO>> UpdateCurrentUser([FromBody] UserUpdateDTO dto)
         {
             return await _handler.UpdateCurrentUser(dto, User);
-        }
-        
-        [HttpPost("signup")]
-        public async Task<Response> SignUp([Required, FromBody] UserEmailDTO email)
-        {
-            return await _handler.SignUp(email.Email);
         }
         
         [HttpPut("passwords/set")]

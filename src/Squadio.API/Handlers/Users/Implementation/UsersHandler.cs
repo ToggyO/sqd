@@ -64,13 +64,6 @@ namespace Squadio.API.Handlers.Users.Implementation
             return result;
         }
 
-        public async Task<Response> SignUp(string email)
-        {
-            await _service.SignUp(email);
-            var result = new Response();
-            return result;
-        }
-
         public async Task<Response> ResetPasswordRequest(string email)
         {
             await _service.ResetPasswordRequest(email);

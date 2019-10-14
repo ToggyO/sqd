@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Squadio.Domain.Models.Companies;
-using Squadio.Domain.Models.Companies.Administrators;
 using Squadio.Domain.Models.Users;
 
 namespace Squadio.DAL
@@ -8,9 +7,10 @@ namespace Squadio.DAL
     public class SquadioDbContext : DbContext
     {
         public DbSet<UserModel> Users { get; set; }
+        public DbSet<UserRegistrationStepModel> UsersRegistrationStep { get; set; }
         public DbSet<UserPasswordRequestModel> UserPasswordRequests { get; set; }
         public DbSet<CompanyModel> Companies { get; set; }
-        public DbSet<CompanyAdministrator> CompaniesAdministrators { get; set; }
+        public DbSet<CompanyUser> CompaniesUsers { get; set; }
         
 
         public SquadioDbContext(DbContextOptions<SquadioDbContext> options)

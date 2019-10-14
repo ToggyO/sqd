@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Users;
 
 namespace Squadio.DAL.Repository.Users.Implementation
@@ -64,6 +64,37 @@ namespace Squadio.DAL.Repository.Users.Implementation
                 Console.WriteLine(e);
                 throw;
             }
+        }
+
+        public async Task<UserRegistrationStepModel> GetRegistrationStepByEmail(string email)
+        {
+            var item = (await _context.UsersRegistrationStep
+                    .Include(x => x.User)
+                    .ToListAsync())
+                .FirstOrDefault(x => string.Equals(x.User.Email, email, StringComparison.OrdinalIgnoreCase));
+            return item;
+        }
+
+        public async Task<UserRegistrationStepModel> SetRegistrationStep(Guid userId, RegistrationStep step)
+        {
+            var item = await _context.UsersRegistrationStep
+                .Where(x => x.UserId == userId)
+                .FirstOrDefaultAsync();
+
+            if (step == RegistrationStep.New || item == null)
+            {
+                item = new UserRegistrationStepModel { UserId = userId };
+            }
+
+            item.Step = step;
+            item.StepName = step.ToString();
+            
+            if(step == RegistrationStep.New)
+                _context.UsersRegistrationStep.Add(item);
+            else 
+                _context.Update(item);
+            await _context.SaveChangesAsync();
+            return item;
         }
 
         public async Task<UserPasswordRequestModel> GetChangePasswordRequests(string email, string code)
