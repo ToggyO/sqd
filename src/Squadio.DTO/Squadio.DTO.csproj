@@ -18,6 +18,9 @@
       <Compile Update="Users\UserRegistrationStepMapper.cs">
         <DependentUpon>UserRegistrationStepDTO.cs</DependentUpon>
       </Compile>
+      <Compile Update="Teams\TeamModelMapper.cs">
+        <DependentUpon>TeamDTO.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

@@ -12,14 +12,17 @@ namespace Squadio.DAL.Repository.Teams.Implementation
             _context = context;
         }
 
-        public Task<TeamModel> GetById(Guid id)
+        public async Task<TeamModel> GetById(Guid id)
         {
-            throw new NotImplementedException();
+            var item = await _context.Teams.FindAsync(id);
+            return item;
         }
 
-        public Task<TeamModel> Create(TeamModel entity)
+        public async Task<TeamModel> Create(TeamModel entity)
         {
-            throw new NotImplementedException();
+            var item = _context.Teams.Add(entity);
+            await _context.SaveChangesAsync();
+            return item.Entity;
         }
 
         public Task<TeamModel> Delete(Guid id)
@@ -27,9 +30,13 @@ namespace Squadio.DAL.Repository.Teams.Implementation
             throw new NotImplementedException();
         }
 
-        public Task<TeamModel> Update(TeamModel entity)
+        public async Task<TeamModel> Update(TeamModel entity)
         {
-            throw new NotImplementedException();
+            var item = await _context.Teams.FindAsync(entity.Id);
+            item.Name = entity.Name;
+            _context.Update(item);
+            await _context.SaveChangesAsync();
+            return item;
         }
     }
 }
