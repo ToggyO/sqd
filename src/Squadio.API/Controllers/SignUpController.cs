@@ -73,8 +73,14 @@ namespace Squadio.API.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<Response<ProjectDTO>> CreateProject([Required, FromBody] CreateProjectDTO dto)
         {
-            //return await _handler.SignUpProject(dto, User);
-            return null;
+            return await _handler.SignUpProject(dto, User);
+        }
+        
+        [HttpPut("done")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<Response> SignUpDone()
+        {
+            return await _handler.SignUpDone(User);
         }
     }
 }

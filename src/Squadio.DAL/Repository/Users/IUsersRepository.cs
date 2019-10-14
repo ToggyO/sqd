@@ -11,6 +11,7 @@ namespace Squadio.DAL.Repository.Users
         Task<IEnumerable<UserModel>> GetAll();
         Task<UserModel> GetByEmail(string email);
         Task<UserRegistrationStepModel> GetRegistrationStepByEmail(string email);
+        Task<UserRegistrationStepModel> GetRegistrationStepByUserId(Guid userId);
         /// <summary>
         /// If step == New then entity will be created, else - updated
         /// </summary>

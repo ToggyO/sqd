@@ -3,9 +3,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Squadio.API.Handlers.Projects;
-using Squadio.API.Handlers.Teams;
 using Squadio.Common.Models.Responses;
-using Squadio.DTO.Teams;
+using Squadio.DTO.Projects;
 
 namespace Squadio.API.Controllers
 {
@@ -17,6 +16,24 @@ namespace Squadio.API.Controllers
         public ProjectsController(IProjectsHandler handler)
         {
             _handler = handler;
+        }
+        
+        [HttpGet]
+        public string GetTeam()
+        {
+            return "Get from project controller";
+        }
+        
+        [HttpGet("{id}")]
+        public async Task<Response<ProjectDTO>> GetProject([Required, FromRoute] Guid id)
+        {
+            return await _handler.GetById(id);
+        }
+        
+        [HttpPost]
+        public async Task<Response<ProjectDTO>> Create([FromBody] CreateProjectDTO dto)
+        {
+            return await _handler.Create(dto, User);
         }
     }
 }

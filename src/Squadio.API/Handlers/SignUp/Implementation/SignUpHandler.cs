@@ -8,6 +8,7 @@ using Squadio.Common.Extensions;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Auth;
 using Squadio.DTO.Companies;
+using Squadio.DTO.Projects;
 using Squadio.DTO.Teams;
 using Squadio.DTO.Users;
 
@@ -26,7 +27,16 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             _service = service;
             _tokensService = tokensService;
         }
-        
+
+        public async Task<Response<UserRegistrationStepDTO>> GetRegistrationStep(string email)
+        {
+            var item = await _provider.GetRegistrationStep(email);
+            var result = new Response<UserRegistrationStepDTO>
+            {
+                Data = item
+            };
+            return result;
+        }
 
         public async Task<Response> SignUp(string email)
         {
@@ -90,13 +100,20 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             return result;
         }
 
-        public async Task<Response<UserRegistrationStepDTO>> GetRegistrationStep(string email)
+        public async Task<Response<ProjectDTO>> SignUpProject(CreateProjectDTO dto, ClaimsPrincipal claims)
         {
-            var item = await _provider.GetRegistrationStep(email);
-            var result = new Response<UserRegistrationStepDTO>
+            var company = await _service.SignUpProject(claims.GetUserId() ?? throw new PermissionException(), dto);
+            var result = new Response<ProjectDTO>()
             {
-                Data = item
+                Data = company
             };
+            return result;
+        }
+
+        public async Task<Response> SignUpDone(ClaimsPrincipal claims)
+        {
+            await _service.SignUpDone(claims.GetUserId() ?? throw new PermissionException());
+            var result = new Response();
             return result;
         }
     }
