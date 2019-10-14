@@ -33,6 +33,16 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             return result;
         }
 
+        public async Task<Response<UserDTO>> SignUpGoogle(string googleToken)
+        {
+            var user = await _service.SignUpGoogle(googleToken);
+            var result = new Response<UserDTO>
+            {
+                Data = user
+            };
+            return result;
+        }
+
         public async Task<Response<AuthInfoDTO>> SignUpPassword(UserSetPasswordDTO dto)
         {
             await _service.SignUpPassword(dto.Email, dto.Code, dto.Password);

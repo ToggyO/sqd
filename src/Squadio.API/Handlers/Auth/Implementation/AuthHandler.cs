@@ -32,9 +32,9 @@ namespace Squadio.API.Handlers.Auth.Implementation
             };
         }
 
-        public async Task<Response<AuthInfoDTO>> GoogleAuthenticate(string gmailToken)
+        public async Task<Response<AuthInfoDTO>> GoogleAuthenticate(string googleToken)
         {
-            var userAuthDTO = await _tokensService.GoogleAuthenticate(gmailToken);
+            var userAuthDTO = await _tokensService.GoogleAuthenticate(googleToken);
             return new Response<AuthInfoDTO>
             {
                 Data = userAuthDTO

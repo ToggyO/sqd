@@ -33,6 +33,12 @@ namespace Squadio.API.Controllers
             return await _handler.SignUp(dto.Email);
         }
         
+        [HttpPost("google")]
+        public async Task<Response> SignUpGoogle([Required, FromBody] GmailTokenDTO dto)
+        {
+            return await _handler.SignUpGoogle(dto.Token);
+        }
+        
         [HttpPut("password")]
         public async Task<Response<AuthInfoDTO>> SetPassword([FromBody] UserSetPasswordDTO dto)
         {

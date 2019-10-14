@@ -20,7 +20,6 @@
       }
     </script>
     <input hidden id="google-token-input">
-    </button>
     <script>
       function validate() {
         var id_token = document.getElementById('google-token-input').value;
@@ -31,7 +30,7 @@
           token: id_token
         });
         
-        xhr.open('POST', 'http://localhost:5005/api/auth/token/google');
+        xhr.open('POST', 'http://localhost:5005/api/signup/google');
         xhr.setRequestHeader('Content-Type', 'application/json');
         
         xhr.onload = function () {

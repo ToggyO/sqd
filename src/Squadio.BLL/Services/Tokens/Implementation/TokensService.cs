@@ -71,9 +71,9 @@ namespace Squadio.BLL.Services.Tokens.Implementation
             return tokenDTO;
         }
 
-        public async Task<AuthInfoDTO> GoogleAuthenticate(string gmailToken)
+        public async Task<AuthInfoDTO> GoogleAuthenticate(string googleToken)
         {
-            var infoFromGoogleToken = await GoogleJsonWebSignature.ValidateAsync(gmailToken);
+            var infoFromGoogleToken = await GoogleJsonWebSignature.ValidateAsync(googleToken);
             
             if((string) infoFromGoogleToken.Audience != _googleSettings.Value.ClientId)
                 throw new SecurityException("Incorrect google token");

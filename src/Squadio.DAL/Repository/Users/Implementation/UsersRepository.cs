@@ -81,18 +81,21 @@ namespace Squadio.DAL.Repository.Users.Implementation
                 .Where(x => x.UserId == userId)
                 .FirstOrDefaultAsync();
 
-            if (step == RegistrationStep.New || item == null)
+            var stepExisted = true;
+
+            if (item == null)
             {
                 item = new UserRegistrationStepModel { UserId = userId };
+                stepExisted = false;
             }
 
             item.Step = step;
             item.StepName = step.ToString();
             
-            if(step == RegistrationStep.New)
-                _context.UsersRegistrationStep.Add(item);
-            else 
+            if(stepExisted)
                 _context.Update(item);
+            else 
+                _context.UsersRegistrationStep.Add(item);
             await _context.SaveChangesAsync();
             return item;
         }
