@@ -10,7 +10,7 @@ namespace Squadio.DAL
         public DbSet<UserRegistrationStepModel> UsersRegistrationStep { get; set; }
         public DbSet<UserPasswordRequestModel> UserPasswordRequests { get; set; }
         public DbSet<CompanyModel> Companies { get; set; }
-        public DbSet<CompanyUser> CompaniesUsers { get; set; }
+        public DbSet<CompanyUserModel> CompaniesUsers { get; set; }
         
 
         public SquadioDbContext(DbContextOptions<SquadioDbContext> options)

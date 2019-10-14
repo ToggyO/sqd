@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using Mapper;
 using Squadio.DAL.Repository.Companies;
+using Squadio.DAL.Repository.CompaniesUsers;
+using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Companies;
 using Squadio.DTO.Companies;
 
@@ -10,11 +12,14 @@ namespace Squadio.BLL.Services.Companies.Implementation
     public class CompaniesService : ICompaniesService
     {
         private readonly ICompaniesRepository _repository;
+        private readonly ICompaniesUsersRepository _companiesUsersRepository;
         private readonly IMapper _mapper;
         public CompaniesService(ICompaniesRepository repository
+            , ICompaniesUsersRepository companiesUsersRepository
             , IMapper mapper)
         {
             _repository = repository;
+            _companiesUsersRepository = companiesUsersRepository;
             _mapper = mapper;
         }
 
@@ -26,8 +31,8 @@ namespace Squadio.BLL.Services.Companies.Implementation
             };
             
             entityCompany = await _repository.Create(entityCompany);
-            
-            //TODO: Add admin
+
+            await _companiesUsersRepository.AddCompanyUser(entityCompany.Id, userId, UserStatus.SuperAdmin);
             
             var result = _mapper.Map<CompanyModel, CompanyDTO>(entityCompany);
             return result;

@@ -4,7 +4,7 @@ using Squadio.Domain.Models.Users;
 
 namespace Squadio.Domain.Models.Companies
 {
-    public class CompanyUser
+    public class CompanyUserModel
     {
         public Guid Id { get; set; }
         public Guid CompanyId { get; set; }
