@@ -6,6 +6,8 @@ using Squadio.DAL.Repository.Companies;
 using Squadio.DAL.Repository.Companies.Implementation;
 using Squadio.DAL.Repository.CompaniesUsers;
 using Squadio.DAL.Repository.CompaniesUsers.Implementation;
+using Squadio.DAL.Repository.Teams;
+using Squadio.DAL.Repository.Teams.Implementation;
 
 namespace Squadio.DAL
 {
@@ -16,6 +18,7 @@ namespace Squadio.DAL
             services.Add<IUsersRepository, UsersRepository>(serviceLifetime);
             services.Add<ICompaniesRepository, CompaniesRepository>(serviceLifetime);;
             services.Add<ICompaniesUsersRepository, CompaniesUsersRepository>(serviceLifetime);
+            services.Add<ITeamsRepository, TeamsRepository>(serviceLifetime);
         }
     }
 }

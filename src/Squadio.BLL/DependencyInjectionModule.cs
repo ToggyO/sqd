@@ -8,6 +8,8 @@ using Squadio.BLL.Providers.Companies;
 using Squadio.BLL.Providers.Companies.Implementation;
 using Squadio.BLL.Providers.SignUp;
 using Squadio.BLL.Providers.SignUp.Implementation;
+using Squadio.BLL.Providers.Teams;
+using Squadio.BLL.Providers.Teams.Implementation;
 using Squadio.BLL.Providers.Users;
 using Squadio.BLL.Providers.Users.Implementation;
 using Squadio.BLL.Services.Companies;
@@ -18,6 +20,8 @@ using Squadio.BLL.Services.Email.Sender;
 using Squadio.BLL.Services.Email.Sender.Implementation;
 using Squadio.BLL.Services.SignUp;
 using Squadio.BLL.Services.SignUp.Implementation;
+using Squadio.BLL.Services.Teams;
+using Squadio.BLL.Services.Teams.Implementation;
 using Squadio.BLL.Services.Tokens;
 using Squadio.BLL.Services.Tokens.Implementation;
 using Squadio.BLL.Services.Users;
@@ -47,6 +51,9 @@ namespace Squadio.BLL
             
             services.Add<ICompaniesProvider, CompaniesProvider>(serviceLifetime);
             services.Add<ICompaniesService, CompaniesService>(serviceLifetime);
+            
+            services.Add<ITeamsProvider, TeamsProvider>(serviceLifetime);
+            services.Add<ITeamsService, TeamsService>(serviceLifetime);
             
             services.Add<ITokensFactory, TokensFactory>(serviceLifetime);
             services.AddMapper();
