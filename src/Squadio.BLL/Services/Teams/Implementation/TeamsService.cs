@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Mapper;
+using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Teams;
 using Squadio.DAL.Repository.TeamsUsers;
 using Squadio.Domain.Enums;
@@ -26,7 +27,7 @@ namespace Squadio.BLL.Services.Teams.Implementation
             _mapper = mapper;
         }
 
-        public async Task<TeamDTO> Create(Guid userId, CreateTeamDTO dto)
+        public async Task<Response<TeamDTO>> Create(Guid userId, CreateTeamDTO dto)
         {
             var entityTeam = new TeamModel
             {
@@ -41,7 +42,10 @@ namespace Squadio.BLL.Services.Teams.Implementation
             // p.s. NOT ADD IMMEDIATELY to team.
             
             var result = _mapper.Map<TeamModel, TeamDTO>(entityTeam);
-            return result;
+            return new Response<TeamDTO>
+            {
+                Data = result
+            };
         }
     }
 }

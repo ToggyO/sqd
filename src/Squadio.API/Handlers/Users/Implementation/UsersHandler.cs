@@ -46,11 +46,7 @@ namespace Squadio.API.Handlers.Users.Implementation
 
         public async Task<Response<UserDTO>> UpdateCurrentUser(UserUpdateDTO dto, ClaimsPrincipal claims)
         {
-            var user = await _service.UpdateUser(claims.GetUserId() ?? throw new PermissionException(), dto);
-            var result = new Response<UserDTO>()
-            {
-                Data = user
-            };
+            var result = await _service.UpdateUser(claims.GetUserId() ?? throw new PermissionException(), dto);
             return result;
         }
 
@@ -73,11 +69,7 @@ namespace Squadio.API.Handlers.Users.Implementation
 
         public async Task<Response<UserDTO>> SetPassword(UserSetPasswordDTO dto)
         {
-            var item = await _service.SetPassword(dto.Email, dto.Code, dto.Password);
-            var result = new Response<UserDTO>
-            {
-                Data = item
-            };
+            var result = await _service.SetPassword(dto.Email, dto.Code, dto.Password);
             return result;
         }
     }

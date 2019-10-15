@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using Google.Apis.Auth;
 using Mapper;
@@ -11,6 +12,8 @@ using Squadio.BLL.Services.Users;
 using Squadio.Common.Exceptions.BusinessLogicExceptions;
 using Squadio.Common.Exceptions.SecurityExceptions;
 using Squadio.Common.Models.Email;
+using Squadio.Common.Models.Errors;
+using Squadio.Common.Models.Responses;
 using Squadio.Common.Settings;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Enums;
@@ -53,7 +56,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             _mapper = mapper;
         }
 
-        public async Task SignUp(string email)
+        public async Task<Response> SignUp(string email)
         {
             var user = await _repository.GetByEmail(email);
             if (user != null)
@@ -78,9 +81,11 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             await _repository.AddPasswordRequest(user.Id, code);
 
             await _repository.SetRegistrationStep(user.Id, RegistrationStep.New);
+            
+            return new Response();
         }
 
-        public async Task<UserDTO> SignUpGoogle(string googleToken)
+        public async Task<Response<UserDTO>> SignUpGoogle(string googleToken)
         {
             var infoFromGoogleToken = await GoogleJsonWebSignature.ValidateAsync(googleToken);
 
@@ -110,39 +115,74 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             await _repository.AddPasswordRequest(user.Id, code);
 
             var result = _mapper.Map<UserModel, UserDTO>(user);
-            return result;
+
+            //return result;
+            return new Response<UserDTO>();
         }
 
-        public async Task<UserDTO> SignUpPassword(string email, string code, string password)
+        public async Task<Response<UserDTO>> SignUpPassword(string email, string code, string password)
         {
             var step = await _repository.GetRegistrationStepByEmail(email);
 
             if (step.Step >= RegistrationStep.PasswordEntered)
-                throw new Exception("DALSHE!");
+            {
+                return new ErrorResponse<UserDTO>
+                {
+                    Code = ErrorCodes.Business.InvalidRegistrationStep,
+                    Message = ErrorMessages.Business.InvalidRegistrationStep,
+                    // TODO: find correct http code for this
+                    HttpStatusCode = HttpStatusCode.Conflict
+                };
+            }
 
-            var user = await _usersService.SetPassword(email, code, password);
+            var userResponse = await _usersService.SetPassword(email, code, password);
+            var user = userResponse.Data;
 
             await _repository.SetRegistrationStep(user.Id, RegistrationStep.PasswordEntered);
 
-            return user;
+            //return user;
+            return new Response<UserDTO>();
         }
 
-        public async Task<UserDTO> SignUpUsername(Guid id, UserUpdateDTO updateDTO)
+        public async Task<Response<UserDTO>> SignUpUsername(Guid id, UserUpdateDTO updateDTO)
         {
             var step = await _repository.GetRegistrationStepByUserId(id);
 
-            if (step.Step >= RegistrationStep.PasswordEntered)
-                throw new Exception("DALSHE!");
+            if (step.Step >= RegistrationStep.UsernameEntered)
+            {
+                return new ErrorResponse<UserDTO>
+                {
+                    Code = ErrorCodes.Business.InvalidRegistrationStep,
+                    Message = ErrorMessages.Business.InvalidRegistrationStep,
+                    // TODO: find correct http code for this
+                    HttpStatusCode = HttpStatusCode.Conflict
+                };
+            }
 
-            var user = await _usersService.UpdateUser(id, updateDTO);
+            var userResponse = await _usersService.UpdateUser(id, updateDTO);
+            var user = userResponse.Data;
 
             await _repository.SetRegistrationStep(user.Id, RegistrationStep.UsernameEntered);
 
-            return user;
+            //return user;
+            return new Response<UserDTO>();
         }
 
-        public async Task<CompanyDTO> SignUpCompany(Guid userId, CreateCompanyDTO dto)
+        public async Task<Response<CompanyDTO>> SignUpCompany(Guid userId, CreateCompanyDTO dto)
         {
+            var step = await _repository.GetRegistrationStepByUserId(userId);
+
+            if (step.Step >= RegistrationStep.CompanyCreated)
+            {
+                return new ErrorResponse<CompanyDTO>
+                {
+                    Code = ErrorCodes.Business.InvalidRegistrationStep,
+                    Message = ErrorMessages.Business.InvalidRegistrationStep,
+                    // TODO: find correct http code for this
+                    HttpStatusCode = HttpStatusCode.Conflict
+                };
+            }
+            
             var company = await _companiesService.Create(userId, dto);
 
             await _repository.SetRegistrationStep(userId, RegistrationStep.CompanyCreated);
@@ -150,27 +190,69 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             return company;
         }
 
-        public async Task<TeamDTO> SignUpTeam(Guid userId, CreateTeamDTO dto)
+        public async Task<Response<TeamDTO>> SignUpTeam(Guid userId, CreateTeamDTO dto)
         {
+            var step = await _repository.GetRegistrationStepByUserId(userId);
+
+            if (step.Step >= RegistrationStep.TeamCreated)
+            {
+                return new ErrorResponse<TeamDTO>
+                {
+                    Code = ErrorCodes.Business.InvalidRegistrationStep,
+                    Message = ErrorMessages.Business.InvalidRegistrationStep,
+                    // TODO: find correct http code for this
+                    HttpStatusCode = HttpStatusCode.Conflict
+                };
+            }
+            
             var team = await _teamsService.Create(userId, dto);
 
             await _repository.SetRegistrationStep(userId, RegistrationStep.TeamCreated);
 
-            return team;
+            //return team;
+            return new Response<TeamDTO>();
         }
 
-        public async Task<ProjectDTO> SignUpProject(Guid userId, CreateProjectDTO dto)
+        public async Task<Response<ProjectDTO>> SignUpProject(Guid userId, CreateProjectDTO dto)
         {
+            var step = await _repository.GetRegistrationStepByUserId(userId);
+
+            if (step.Step >= RegistrationStep.ProjectCreated)
+            {
+                return new ErrorResponse<ProjectDTO>
+                {
+                    Code = ErrorCodes.Business.InvalidRegistrationStep,
+                    Message = ErrorMessages.Business.InvalidRegistrationStep,
+                    // TODO: find correct http code for this
+                    HttpStatusCode = HttpStatusCode.Conflict
+                };
+            }
+            
             var team = await _projectsService.Create(userId, dto);
 
             await _repository.SetRegistrationStep(userId, RegistrationStep.ProjectCreated);
 
-            return team;
+            //return team;
+            return new Response<ProjectDTO>();
         }
 
-        public async Task SignUpDone(Guid userId)
+        public async Task<Response> SignUpDone(Guid userId)
         {
+            var step = await _repository.GetRegistrationStepByUserId(userId);
+
+            if (step.Step >= RegistrationStep.Done)
+            {
+                return new ErrorResponse<ProjectDTO>
+                {
+                    Code = ErrorCodes.Business.InvalidRegistrationStep,
+                    Message = ErrorMessages.Business.InvalidRegistrationStep,
+                    // TODO: find correct http code for this
+                    HttpStatusCode = HttpStatusCode.Conflict
+                };
+            }
+            
             await _repository.SetRegistrationStep(userId, RegistrationStep.Done);
+            return new Response();
         }
     }
 }

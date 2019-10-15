@@ -47,73 +47,57 @@ namespace Squadio.API.Handlers.SignUp.Implementation
 
         public async Task<Response<UserDTO>> SignUpGoogle(string googleToken)
         {
-            var user = await _service.SignUpGoogle(googleToken);
-            var result = new Response<UserDTO>
-            {
-                Data = user
-            };
+            var result = await _service.SignUpGoogle(googleToken);
             return result;
         }
 
         public async Task<Response<AuthInfoDTO>> SignUpPassword(UserSetPasswordDTO dto)
         {
-            await _service.SignUpPassword(dto.Email, dto.Code, dto.Password);
-            var tokenUser = await _tokensService.Authenticate(new CredentialsDTO
+            var signUpPasswordResult = await _service.SignUpPassword(dto.Email, dto.Code, dto.Password);
+            if (!signUpPasswordResult.IsSuccess)
+            {
+                return new Response<AuthInfoDTO>
+                {
+                    HttpStatusCode = signUpPasswordResult.HttpStatusCode,
+                    Code = signUpPasswordResult.Code
+                };
+            }
+            
+            var result = await _tokensService.Authenticate(new CredentialsDTO
             {
                 Password = dto.Password,
                 Email = dto.Email
             });
-            var result = new Response<AuthInfoDTO>
-            {
-                Data = tokenUser
-            };
             return result;
         }
 
         public async Task<Response<UserDTO>> SignUpUsername(UserUpdateDTO dto, ClaimsPrincipal claims)
         {
-            var user = await _service.SignUpUsername(claims.GetUserId() ?? throw new PermissionException(), dto);
-            var result = new Response<UserDTO>()
-            {
-                Data = user
-            };
+            var result = await _service.SignUpUsername(claims.GetUserId() ?? throw new PermissionException(), dto);
             return result;
         }
 
         public async Task<Response<CompanyDTO>> SignUpCompany(CreateCompanyDTO dto, ClaimsPrincipal claims)
         {
-            var company = await _service.SignUpCompany(claims.GetUserId() ?? throw new PermissionException(), dto);
-            var result = new Response<CompanyDTO>()
-            {
-                Data = company
-            };
+            var result = await _service.SignUpCompany(claims.GetUserId() ?? throw new PermissionException(), dto);
             return result;
         }
 
         public async Task<Response<TeamDTO>> SignUpTeam(CreateTeamDTO dto, ClaimsPrincipal claims)
         {
-            var company = await _service.SignUpTeam(claims.GetUserId() ?? throw new PermissionException(), dto);
-            var result = new Response<TeamDTO>()
-            {
-                Data = company
-            };
+            var result = await _service.SignUpTeam(claims.GetUserId() ?? throw new PermissionException(), dto);
             return result;
         }
 
         public async Task<Response<ProjectDTO>> SignUpProject(CreateProjectDTO dto, ClaimsPrincipal claims)
         {
-            var company = await _service.SignUpProject(claims.GetUserId() ?? throw new PermissionException(), dto);
-            var result = new Response<ProjectDTO>()
-            {
-                Data = company
-            };
+            var result = await _service.SignUpProject(claims.GetUserId() ?? throw new PermissionException(), dto);
             return result;
         }
 
         public async Task<Response> SignUpDone(ClaimsPrincipal claims)
         {
-            await _service.SignUpDone(claims.GetUserId() ?? throw new PermissionException());
-            var result = new Response();
+            var result = await _service.SignUpDone(claims.GetUserId() ?? throw new PermissionException());
             return result;
         }
     }

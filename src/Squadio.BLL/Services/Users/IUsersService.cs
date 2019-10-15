@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Squadio.Common.Models.Responses;
 using Squadio.DTO.Users;
 
 namespace Squadio.BLL.Services.Users
 {
     public interface IUsersService
     {
-        Task<UserDTO> SetPassword(string email, string code, string password);
-        Task ResetPasswordRequest(string email);
-        Task<UserDTO> UpdateUser(Guid id, UserUpdateDTO updateDTO);
+        Task<Response<UserDTO>> SetPassword(string email, string code, string password);
+        Task<Response> ResetPasswordRequest(string email);
+        Task<Response<UserDTO>> UpdateUser(Guid id, UserUpdateDTO updateDTO);
         /// <summary>
         /// Generate number code
         /// </summary>

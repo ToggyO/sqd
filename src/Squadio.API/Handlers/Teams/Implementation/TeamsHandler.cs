@@ -33,11 +33,7 @@ namespace Squadio.API.Handlers.Teams.Implementation
 
         public async Task<Response<TeamDTO>> Create(CreateTeamDTO dto, ClaimsPrincipal claims)
         {
-            var item = await _service.Create(claims.GetUserId() ?? throw new PermissionException(), dto);
-            var result = new Response<TeamDTO>
-            {
-                Data = item
-            };
+            var result = await _service.Create(claims.GetUserId() ?? throw new PermissionException(), dto);
             return result;
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Mapper;
+using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Companies;
 using Squadio.DAL.Repository.CompaniesUsers;
 using Squadio.Domain.Enums;
@@ -23,7 +24,7 @@ namespace Squadio.BLL.Services.Companies.Implementation
             _mapper = mapper;
         }
 
-        public async Task<CompanyDTO> Create(Guid userId, CreateCompanyDTO dto)
+        public async Task<Response<CompanyDTO>> Create(Guid userId, CreateCompanyDTO dto)
         {
             var entityCompany = new CompanyModel
             {
@@ -36,7 +37,11 @@ namespace Squadio.BLL.Services.Companies.Implementation
             await _companiesUsersRepository.AddCompanyUser(entityCompany.Id, userId, UserStatus.SuperAdmin);
             
             var result = _mapper.Map<CompanyModel, CompanyDTO>(entityCompany);
-            return result;
+            
+            return new Response<CompanyDTO>
+            {
+                Data = result
+            };
         }
     }
 }

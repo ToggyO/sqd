@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Mapper;
+using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Projects;
 using Squadio.DAL.Repository.ProjectsUsers;
 using Squadio.Domain.Models.Projects;
@@ -25,7 +26,7 @@ namespace Squadio.BLL.Services.Projects.Implementation
             _mapper = mapper;
         }
 
-        public async Task<ProjectDTO> Create(Guid userId, CreateProjectDTO dto)
+        public async Task<Response<ProjectDTO>> Create(Guid userId, CreateProjectDTO dto)
         {
             var entity = new ProjectModel
             {
@@ -40,7 +41,10 @@ namespace Squadio.BLL.Services.Projects.Implementation
             // p.s. NOT ADD IMMEDIATELY to projects.
             
             var result = _mapper.Map<ProjectModel, ProjectDTO>(entity);
-            return result;
+            return new Response<ProjectDTO>
+            {
+                Data = result
+            };
         }
     }
 }

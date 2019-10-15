@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Magora.Passwords;
@@ -35,7 +36,7 @@ namespace Squadio.BLL.Services.Users.Implementation
             _mapper = mapper;
         }
 
-        public async Task<UserDTO> SetPassword(string email, string code, string password)
+        public async Task<Response<UserDTO>> SetPassword(string email, string code, string password)
         {
             var userPasswordRequest = await _repository.GetChangePasswordRequests(email, code);
             if(userPasswordRequest.IsActivated)
@@ -49,14 +50,34 @@ namespace Squadio.BLL.Services.Users.Implementation
             var user = await _repository.GetById(userPasswordRequest.UserId);
 
             var userDTO = _mapper.Map<UserModel, UserDTO>(user);
-            return userDTO;
+            return new Response<UserDTO>
+            {
+                Data = userDTO
+            };
         }
 
-        public async Task ResetPasswordRequest(string email)
+        public async Task<Response> ResetPasswordRequest(string email)
         {
             var user = await _repository.GetByEmail(email);
             if(user == null)
-                throw new Exception("User not found");
+            {
+                return new ErrorResponse
+                {
+                    Code = ErrorCodes.Common.NotFound,
+                    Message = ErrorMessages.Common.NotFound,
+                    // TODO: find correct http code for this
+                    HttpStatusCode = HttpStatusCode.Conflict,
+                    Errors = new List<Error>
+                    {
+                        new Error
+                        {
+                            Code = ErrorCodes.Business.UserDoesNotExists,
+                            Message = ErrorMessages.Business.UserDoesNotExists,
+                            Field = ErrorFields.User.Email
+                        }
+                    }
+                };
+            }
             
             var code = GenerateCode();
             
@@ -67,39 +88,41 @@ namespace Squadio.BLL.Services.Users.Implementation
                 Code = code,
                 To = email
             });
+            
+            return new Response();
         }
 
-        public async Task<UserDTO> UpdateUser(Guid id, UserUpdateDTO updateDTO)
+        public async Task<Response<UserDTO>> UpdateUser(Guid id, UserUpdateDTO updateDTO)
         {
             var userEntity = await _repository.GetById(id);
             if (userEntity == null)
             {
-                throw new BusinessLogicException("", "User not found", "userId");
-                
-                /*
                 return new ErrorResponse<UserDTO>
                 {
-                    Code = ErrorCodes.Global.BusinessConflict,
-                    Message = ErrorMessages.Global.BusinessConflict,
+                    Code = ErrorCodes.Common.NotFound,
+                    Message = ErrorMessages.Common.NotFound,
+                    // TODO: find correct http code for this
                     HttpStatusCode = HttpStatusCode.Conflict,
-                    Errors = new[]
+                    Errors = new List<Error>
                     {
                         new Error
                         {
-                            Code = ErrorCodes.Business.EmailExists,
-                            Message = ErrorMessages.Business.EmailExists,
-                            Field = "newEmail"
+                            Code = ErrorCodes.Business.UserDoesNotExists,
+                            Message = ErrorMessages.Business.UserDoesNotExists,
+                            Field = ErrorFields.User.Id
                         }
                     }
                 };
-                */
             }
 
             userEntity.Name = updateDTO.Name;
             userEntity = await _repository.Update(userEntity);
             
             var result = _mapper.Map<UserModel, UserDTO>(userEntity);
-            return result;
+            return new Response<UserDTO>
+            {
+                Data = result
+            };
         }
 
         public string GenerateCode(int length = 6)

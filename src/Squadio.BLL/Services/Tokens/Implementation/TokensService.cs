@@ -7,6 +7,7 @@ using Mapper;
 using Microsoft.Extensions.Options;
 using Squadio.BLL.Factories;
 using Squadio.Common.Extensions;
+using Squadio.Common.Models.Responses;
 using Squadio.Common.Settings;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Models.Users;
@@ -36,7 +37,7 @@ namespace Squadio.BLL.Services.Tokens.Implementation
             _googleSettings = googleSettings;
         }
         
-        public async Task<AuthInfoDTO> Authenticate(CredentialsDTO dto)
+        public async Task<Response<AuthInfoDTO>> Authenticate(CredentialsDTO dto)
         {
             var user = await _usersRepository.GetByEmail(dto.Email);
             var isPasswordValid = await ValidatePassword(dto.Password, user);
@@ -52,11 +53,14 @@ namespace Squadio.BLL.Services.Tokens.Implementation
                 User = userDTO,
                 Token = tokenDTO
             };
-            
-            return result;
+
+            return new Response<AuthInfoDTO>
+            {
+                Data = result
+            };
         }
 
-        public async Task<TokenDTO> RefreshToken(string refreshToken)
+        public async Task<Response<TokenDTO>> RefreshToken(string refreshToken)
         {
             var isTokenValid = _tokenFactory.ValidateToken(refreshToken, out var tokenPrincipal);
             
@@ -68,10 +72,14 @@ namespace Squadio.BLL.Services.Tokens.Implementation
                        ?? throw new SecurityException("Refresh token invalid");
             
             var tokenDTO = await _tokenFactory.CreateToken(user);
-            return tokenDTO;
+
+            return new Response<TokenDTO>
+            {
+                Data = tokenDTO
+            };
         }
 
-        public async Task<AuthInfoDTO> GoogleAuthenticate(string googleToken)
+        public async Task<Response<AuthInfoDTO>> GoogleAuthenticate(string googleToken)
         {
             var infoFromGoogleToken = await GoogleJsonWebSignature.ValidateAsync(googleToken);
             
@@ -91,7 +99,10 @@ namespace Squadio.BLL.Services.Tokens.Implementation
                 Token = tokenDTO
             };
             
-            return result;
+            return new Response<AuthInfoDTO>
+            {
+                Data = result
+            };
         }
 
         /// <summary>

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Squadio.Common.Models.Responses;
 using Squadio.DTO.Teams;
 
 namespace Squadio.BLL.Services.Teams
 {
     public interface ITeamsService
     {
-        Task<TeamDTO> Create(Guid userId, CreateTeamDTO dto);
+        Task<Response<TeamDTO>> Create(Guid userId, CreateTeamDTO dto);
     }
 }
