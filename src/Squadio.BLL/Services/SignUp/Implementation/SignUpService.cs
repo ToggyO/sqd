@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Google.Apis.Auth;
@@ -60,7 +61,23 @@ namespace Squadio.BLL.Services.SignUp.Implementation
         {
             var user = await _repository.GetByEmail(email);
             if (user != null)
-                throw new Exception("Email already used");
+            {
+                return new ErrorResponse<UserDTO>
+                {
+                    Code = ErrorCodes.Business.EmailExists,
+                    Message = ErrorMessages.Business.EmailExists,
+                    HttpStatusCode = HttpStatusCode.BadRequest,
+                    Errors = new List<Error>
+                    {
+                        new Error
+                        {
+                            Code = ErrorCodes.Business.EmailExists,
+                            Message = ErrorMessages.Business.EmailExists,
+                            Field = ErrorFields.User.Email
+                        }
+                    }
+                };
+            }
 
             var code = _usersService.GenerateCode();
 
@@ -81,7 +98,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             await _repository.AddPasswordRequest(user.Id, code);
 
             await _repository.SetRegistrationStep(user.Id, RegistrationStep.New);
-            
+
             return new Response();
         }
 
@@ -90,11 +107,34 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             var infoFromGoogleToken = await GoogleJsonWebSignature.ValidateAsync(googleToken);
 
             if ((string) infoFromGoogleToken.Audience != _googleSettings.Value.ClientId)
-                throw new SecurityException("security_error", "Incorrect google token");
+            {
+                return new ErrorResponse<UserDTO>
+                {
+                    Code = ErrorCodes.Security.GoogleAccessTokenInvalid,
+                    Message = ErrorMessages.Security.GoogleAccessTokenInvalid,
+                    HttpStatusCode = HttpStatusCode.BadRequest
+                };
+            }
 
             var user = await _repository.GetByEmail(infoFromGoogleToken.Email);
             if (user != null)
-                throw new BusinessLogicException("business_conflict", "User already exist");
+            {
+                return new ErrorResponse<UserDTO>
+                {
+                    Code = ErrorCodes.Business.EmailExists,
+                    Message = ErrorMessages.Business.EmailExists,
+                    HttpStatusCode = HttpStatusCode.BadRequest,
+                    Errors = new List<Error>
+                    {
+                        new Error
+                        {
+                            Code = ErrorCodes.Business.EmailExists,
+                            Message = ErrorMessages.Business.EmailExists,
+                            Field = ErrorFields.User.Email
+                        }
+                    }
+                };
+            }
 
             user = new UserModel
             {
@@ -188,7 +228,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                     HttpStatusCode = HttpStatusCode.Conflict
                 };
             }
-            
+
             var company = await _companiesService.Create(userId, dto);
 
             await _repository.SetRegistrationStep(userId, RegistrationStep.CompanyCreated);
@@ -210,7 +250,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                     HttpStatusCode = HttpStatusCode.Conflict
                 };
             }
-            
+
             var team = await _teamsService.Create(userId, dto);
 
             await _repository.SetRegistrationStep(userId, RegistrationStep.TeamCreated);
@@ -232,7 +272,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                     HttpStatusCode = HttpStatusCode.Conflict
                 };
             }
-            
+
             var project = await _projectsService.Create(userId, dto);
 
             await _repository.SetRegistrationStep(userId, RegistrationStep.ProjectCreated);
@@ -254,7 +294,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                     HttpStatusCode = HttpStatusCode.Conflict
                 };
             }
-            
+
             await _repository.SetRegistrationStep(userId, RegistrationStep.Done);
             return new Response();
         }

@@ -29,6 +29,7 @@
             public const string Unauthorized = "Unauthorized";
             public const string AuthDataInvalid = "Auth data invalid";
             public const string AccessTokenInvalid = "Access token invalid";
+            public const string GoogleAccessTokenInvalid = "Google access token invalid";
             public const string RefreshTokenInvalid = "Refresh token invalid";
         }
 

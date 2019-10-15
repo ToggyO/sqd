@@ -36,8 +36,7 @@ namespace Squadio.API.Handlers.SignUp.Implementation
 
         public async Task<Response> SignUp(string email)
         {
-            await _service.SignUp(email);
-            var result = new Response();
+            var result = await _service.SignUp(email);
             return result;
         }
 
