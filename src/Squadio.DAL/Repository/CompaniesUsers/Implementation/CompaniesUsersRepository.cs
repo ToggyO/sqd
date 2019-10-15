@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,21 @@ namespace Squadio.DAL.Repository.CompaniesUsers.Implementation
                 CreatedDate = DateTime.UtcNow
             };
             _context.CompaniesUsers.Add(item);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task AddRangeCompanyUser(Guid companyId, IEnumerable<Guid> userIds, UserStatus userStatus)
+        {
+            var items = userIds.Select(userId => new CompanyUserModel
+                    {
+                        CompanyId = companyId, 
+                        UserId = userId, 
+                        Status = userStatus, 
+                        CreatedDate = DateTime.UtcNow
+                    })
+                .ToList();
+
+            _context.CompaniesUsers.AddRange(items);
             await _context.SaveChangesAsync();
         }
 

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Mapper;
 using Squadio.DAL.Repository.Teams;
+using Squadio.DAL.Repository.TeamsUsers;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Companies;
 using Squadio.Domain.Models.Teams;
@@ -13,12 +14,15 @@ namespace Squadio.BLL.Services.Teams.Implementation
     public class TeamsService : ITeamsService
     {
         private readonly ITeamsRepository _repository;
+        private readonly ITeamsUsersRepository _teamsUsersRepository;
         private readonly IMapper _mapper;
 
         public TeamsService(ITeamsRepository repository
+            , ITeamsUsersRepository teamsUsersRepository
             , IMapper mapper)
         {
             _repository = repository;
+            _teamsUsersRepository = teamsUsersRepository;
             _mapper = mapper;
         }
 
@@ -33,8 +37,8 @@ namespace Squadio.BLL.Services.Teams.Implementation
             
             entityTeam = await _repository.Create(entityTeam);
 
-            // TODO: add members to teams
-            //await _companiesUsersRepository.AddCompanyUser(entityCompany.Id, userId, UserStatus.SuperAdmin);
+            // TODO: send to members invites to team across email
+            // p.s. NOT ADD IMMEDIATELY to team.
             
             var result = _mapper.Map<TeamModel, TeamDTO>(entityTeam);
             return result;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,6 @@ namespace Squadio.DAL.Repository.TeamsUsers.Implementation
 
         public async Task AddTeamUser(Guid teamId, Guid userId, UserStatus userStatus)
         {
-            
             var item = new TeamUserModel
             {
                 TeamId = teamId,
@@ -26,6 +26,21 @@ namespace Squadio.DAL.Repository.TeamsUsers.Implementation
                 CreatedDate = DateTime.UtcNow
             };
             _context.TeamsUsers.Add(item);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task AddRangeTeamUser(Guid teamId, IEnumerable<Guid> userIds, UserStatus userStatus)
+        {
+            var items = userIds.Select(userId => new TeamUserModel
+                {
+                    TeamId = teamId, 
+                    UserId = userId, 
+                    Status = userStatus, 
+                    CreatedDate = DateTime.UtcNow
+                })
+                .ToList();
+
+            _context.TeamsUsers.AddRange(items);
             await _context.SaveChangesAsync();
         }
 
