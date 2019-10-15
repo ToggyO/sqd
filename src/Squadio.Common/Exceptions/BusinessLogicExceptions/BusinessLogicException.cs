@@ -2,6 +2,7 @@
 
 namespace Squadio.Common.Exceptions.BusinessLogicExceptions
 {
+    // TODO: Remove and replace everywhere like in ANOVA
     public class BusinessLogicException: Exception
     {
         public string Code { get; }

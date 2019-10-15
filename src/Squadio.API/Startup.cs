@@ -173,7 +173,7 @@ namespace Squadio.API
             app.UseAuthentication();
             app.UseAuthorization();
             
-            app.UseMiddleware(typeof(BaseErrorsMiddleware));
+            app.UseMiddleware(typeof(ExceptionMiddleware));
 
             app.UseCors(MyAllowSpecificOrigins);
             app.UseStaticFiles();

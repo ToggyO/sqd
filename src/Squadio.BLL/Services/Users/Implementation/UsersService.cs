@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using Magora.Passwords;
 using Mapper;
 using Squadio.BLL.Services.Email;
 using Squadio.Common.Exceptions.BusinessLogicExceptions;
 using Squadio.Common.Models.Email;
+using Squadio.Common.Models.Errors;
+using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Users;
@@ -69,9 +72,29 @@ namespace Squadio.BLL.Services.Users.Implementation
         public async Task<UserDTO> UpdateUser(Guid id, UserUpdateDTO updateDTO)
         {
             var userEntity = await _repository.GetById(id);
-            if(userEntity == null) 
-                throw new BusinessLogicException("","User not found","userId");
-            
+            if (userEntity == null)
+            {
+                throw new BusinessLogicException("", "User not found", "userId");
+                
+                /*
+                return new ErrorResponse<UserDTO>
+                {
+                    Code = ErrorCodes.Global.BusinessConflict,
+                    Message = ErrorMessages.Global.BusinessConflict,
+                    HttpStatusCode = HttpStatusCode.Conflict,
+                    Errors = new[]
+                    {
+                        new Error
+                        {
+                            Code = ErrorCodes.Business.EmailExists,
+                            Message = ErrorMessages.Business.EmailExists,
+                            Field = "newEmail"
+                        }
+                    }
+                };
+                */
+            }
+
             userEntity.Name = updateDTO.Name;
             userEntity = await _repository.Update(userEntity);
             

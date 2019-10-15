@@ -2,6 +2,7 @@
 
 namespace Squadio.Common.Exceptions.PermissionException
 {
+    // TODO: Remove and replace everywhere like in ANOVA
     public class PermissionException: Exception
     {
         public string Code { get; }

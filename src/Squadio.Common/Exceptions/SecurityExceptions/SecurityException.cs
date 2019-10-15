@@ -2,6 +2,7 @@
 
 namespace Squadio.Common.Exceptions.SecurityExceptions
 {
+    // TODO: Remove and replace everywhere like in ANOVA
     public class SecurityException: Exception
     {
         public string Code { get; }
