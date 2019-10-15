@@ -116,8 +116,10 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             var result = _mapper.Map<UserModel, UserDTO>(user);
 
-            //return result;
-            return new Response<UserDTO>();
+            return new Response<UserDTO>
+            {
+                Data = result
+            };
         }
 
         public async Task<Response<UserDTO>> SignUpPassword(string email, string code, string password)
@@ -140,8 +142,10 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             await _repository.SetRegistrationStep(user.Id, RegistrationStep.PasswordEntered);
 
-            //return user;
-            return new Response<UserDTO>();
+            return new Response<UserDTO>
+            {
+                Data = user
+            };
         }
 
         public async Task<Response<UserDTO>> SignUpUsername(Guid id, UserUpdateDTO updateDTO)
@@ -164,8 +168,10 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             await _repository.SetRegistrationStep(user.Id, RegistrationStep.UsernameEntered);
 
-            //return user;
-            return new Response<UserDTO>();
+            return new Response<UserDTO>
+            {
+                Data = user
+            };
         }
 
         public async Task<Response<CompanyDTO>> SignUpCompany(Guid userId, CreateCompanyDTO dto)
@@ -209,8 +215,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             await _repository.SetRegistrationStep(userId, RegistrationStep.TeamCreated);
 
-            //return team;
-            return new Response<TeamDTO>();
+            return team;
         }
 
         public async Task<Response<ProjectDTO>> SignUpProject(Guid userId, CreateProjectDTO dto)
@@ -228,12 +233,11 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 };
             }
             
-            var team = await _projectsService.Create(userId, dto);
+            var project = await _projectsService.Create(userId, dto);
 
             await _repository.SetRegistrationStep(userId, RegistrationStep.ProjectCreated);
 
-            //return team;
-            return new Response<ProjectDTO>();
+            return project;
         }
 
         public async Task<Response> SignUpDone(Guid userId)
@@ -242,7 +246,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             if (step.Step >= RegistrationStep.Done)
             {
-                return new ErrorResponse<ProjectDTO>
+                return new ErrorResponse
                 {
                     Code = ErrorCodes.Business.InvalidRegistrationStep,
                     Message = ErrorMessages.Business.InvalidRegistrationStep,

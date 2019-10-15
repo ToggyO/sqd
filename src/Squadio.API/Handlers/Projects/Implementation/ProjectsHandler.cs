@@ -24,11 +24,7 @@ namespace Squadio.API.Handlers.Projects.Implementation
 
         public async Task<Response<ProjectDTO>> GetById(Guid id)
         {
-            var item = await _provider.GetById(id);
-            var result = new Response<ProjectDTO>
-            {
-                Data = item
-            };
+            var result = await _provider.GetById(id);
             return result;
         }
 

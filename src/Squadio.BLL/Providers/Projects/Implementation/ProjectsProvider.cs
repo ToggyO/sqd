@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Mapper;
+using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Projects;
 using Squadio.Domain.Models.Projects;
 using Squadio.DTO.Projects;
@@ -19,14 +20,17 @@ namespace Squadio.BLL.Providers.Projects.Implementation
             _mapper = mapper;
         }
 
-        public async Task<ProjectDTO> GetById(Guid id)
+        public async Task<Response<ProjectDTO>> GetById(Guid id)
         {
             
             var entity = await _repository.GetById(id);
 
             var result = _mapper.Map<ProjectModel, ProjectDTO>(entity);
 
-            return result;
+            return new Response<ProjectDTO>
+            {
+                Data = result
+            };
         }
     }
 }

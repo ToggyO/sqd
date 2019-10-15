@@ -77,7 +77,10 @@ namespace Squadio.DAL.Repository.Users.Implementation
 
         public async Task<UserRegistrationStepModel> GetRegistrationStepByUserId(Guid userId)
         {
-            var item = await _context.UsersRegistrationStep.FindAsync(userId);
+            var item = await _context.UsersRegistrationStep
+                .Include(x => x.User)
+                .Where(x => x.UserId == userId)
+                .FirstOrDefaultAsync();
             return item;
         }
 

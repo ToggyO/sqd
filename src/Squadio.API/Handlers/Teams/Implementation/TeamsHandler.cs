@@ -23,11 +23,7 @@ namespace Squadio.API.Handlers.Teams.Implementation
 
         public async Task<Response<TeamDTO>> GetById(Guid id)
         {
-            var item = await _provider.GetById(id);
-            var result = new Response<TeamDTO>
-            {
-                Data = item
-            };
+            var result = await _provider.GetById(id);
             return result;
         }
 

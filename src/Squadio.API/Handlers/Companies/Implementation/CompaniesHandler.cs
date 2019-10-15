@@ -25,11 +25,7 @@ namespace Squadio.API.Handlers.Companies.Implementation
 
         public async Task<Response<CompanyDTO>> GetCompany(Guid id)
         {
-            var company = await _provider.GetById(id);
-            var result = new Response<CompanyDTO>()
-            {
-                Data = company
-            };
+            var result = await _provider.GetById(id);
             return result;
         }
 

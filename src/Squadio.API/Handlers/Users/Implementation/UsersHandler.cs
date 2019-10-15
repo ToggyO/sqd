@@ -26,21 +26,13 @@ namespace Squadio.API.Handlers.Users.Implementation
 
         public async Task<Response<IEnumerable<UserDTO>>> GetAll()
         {
-            var items = await _provider.GetAll();
-            var result = new Response<IEnumerable<UserDTO>>()
-            {
-                Data = items
-            };
+            var result = await _provider.GetAll();
             return result;
         }
 
         public async Task<Response<UserDTO>> GetCurrentUser(ClaimsPrincipal claims)
         {
-            var user = await _provider.GetById(claims.GetUserId() ?? throw new PermissionException());
-            var result = new Response<UserDTO>()
-            {
-                Data = user
-            };
+            var result = await _provider.GetById(claims.GetUserId() ?? throw new PermissionException());
             return result;
         }
 
@@ -52,11 +44,7 @@ namespace Squadio.API.Handlers.Users.Implementation
 
         public async Task<Response<UserDTO>> GetById(Guid id)
         {
-            var user = await _provider.GetById(id);
-            var result = new Response<UserDTO>()
-            {
-                Data = user
-            };
+            var result = await _provider.GetById(id);
             return result;
         }
 

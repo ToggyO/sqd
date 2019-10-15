@@ -30,11 +30,7 @@ namespace Squadio.API.Handlers.SignUp.Implementation
 
         public async Task<Response<UserRegistrationStepDTO>> GetRegistrationStep(string email)
         {
-            var item = await _provider.GetRegistrationStep(email);
-            var result = new Response<UserRegistrationStepDTO>
-            {
-                Data = item
-            };
+            var result = await _provider.GetRegistrationStep(email);
             return result;
         }
 
