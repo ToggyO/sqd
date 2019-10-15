@@ -29,6 +29,10 @@
   <ItemGroup>
     <EmbeddedResource Include="Services\Email\Templates\ResetPasswordTemplate.html" />
     <EmbeddedResource Include="Services\Email\Templates\SetPasswordTemplate.html" />
+    <None Remove="Services\Email\Templates\InviteToProjectTemplate.html" />
+    <EmbeddedResource Include="Services\Email\Templates\InviteToProjectTemplate.html" />
+    <None Remove="Services\Email\Templates\InviteToTeamTemplate.html" />
+    <EmbeddedResource Include="Services\Email\Templates\InviteToTeamTemplate.html" />
   </ItemGroup>
 
 </Project>

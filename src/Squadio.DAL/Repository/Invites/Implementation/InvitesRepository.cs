@@ -16,7 +16,7 @@ namespace Squadio.DAL.Repository.Invites.Implementation
 
         public async Task<InviteModel> CreateInvite(string email)
         {
-            var code = new Guid().ToString("N");
+            var code = Guid.NewGuid().ToString("N");
             var item = new InviteModel
             {
                 Email = email,
