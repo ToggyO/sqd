@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Mapper;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
-using Squadio.DAL.Repository.Users;
+using Squadio.DAL.Repository.SignUp;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Users;
 
@@ -12,9 +12,9 @@ namespace Squadio.BLL.Providers.SignUp.Implementation
 {
     public class SignUpProvider : ISignUpProvider
     {
-        private readonly IUsersRepository _repository;
+        private readonly ISignUpRepository _repository;
         private readonly IMapper _mapper;
-        public SignUpProvider(IUsersRepository repository
+        public SignUpProvider(ISignUpRepository repository
             , IMapper mapper)
         {
             _repository = repository;

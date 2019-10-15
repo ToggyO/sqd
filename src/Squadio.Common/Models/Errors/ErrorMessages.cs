@@ -33,6 +33,7 @@
             public const string AccessTokenInvalid = "Access token invalid";
             public const string GoogleAccessTokenInvalid = "Google access token invalid";
             public const string RefreshTokenInvalid = "Refresh token invalid";
+            public const string InviteInvalid = "Invite is invalid";
         }
 
         public static class System

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Companies;
 using Squadio.DTO.Projects;
+using Squadio.DTO.SignUp;
 using Squadio.DTO.Teams;
 using Squadio.DTO.Users;
 
@@ -11,6 +12,8 @@ namespace Squadio.BLL.Services.SignUp
     public interface ISignUpService
     {
         Task<Response> SignUp(string email);
+        Task<Response<UserDTO>> SignUpMemberEmail(SignUpMemberDTO dto);
+        Task<Response<UserDTO>> SignUpMemberGoogle(SignUpMemberGoogleDTO dto);
         Task<Response<UserDTO>> SignUpGoogle(string googleToken);
         Task<Response<UserDTO>> SignUpPassword(string email, string code, string password);
         Task<Response<UserDTO>> SignUpUsername(Guid id, UserUpdateDTO updateDTO);

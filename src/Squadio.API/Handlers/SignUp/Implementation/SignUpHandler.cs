@@ -8,6 +8,7 @@ using Squadio.Common.Models.Responses;
 using Squadio.DTO.Auth;
 using Squadio.DTO.Companies;
 using Squadio.DTO.Projects;
+using Squadio.DTO.SignUp;
 using Squadio.DTO.Teams;
 using Squadio.DTO.Users;
 
@@ -33,6 +34,44 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             return result;
         }
 
+        public async Task<Response<AuthInfoDTO>> SignUpMemberEmail(SignUpMemberDTO dto)
+        {
+            var signUpResult = await _service.SignUpMemberEmail(dto);
+            if (!signUpResult.IsSuccess)
+            {
+                return new ErrorResponse<AuthInfoDTO>
+                {
+                    Message = ((ErrorResponse<UserDTO>) signUpResult).Message,
+                    HttpStatusCode = signUpResult.HttpStatusCode,
+                    Code = signUpResult.Code
+                };
+            }
+            
+            var result = await _tokensService.Authenticate(new CredentialsDTO
+            {
+                Password = dto.Password,
+                Email = dto.Email
+            });
+            return result;
+        }
+
+        public async Task<Response<AuthInfoDTO>> SignUpMemberGoogle(SignUpMemberGoogleDTO dto)
+        {
+            var signUpResult = await _service.SignUpMemberGoogle(dto);
+            if (!signUpResult.IsSuccess)
+            {
+                return new ErrorResponse<AuthInfoDTO>
+                {
+                    Message = ((ErrorResponse<UserDTO>) signUpResult).Message,
+                    HttpStatusCode = signUpResult.HttpStatusCode,
+                    Code = signUpResult.Code
+                };
+            }
+            
+            var result = await _tokensService.GoogleAuthenticate(dto.Token);
+            return result;
+        }
+
         public async Task<Response> SignUp(string email)
         {
             var result = await _service.SignUp(email);
@@ -50,8 +89,9 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             var signUpPasswordResult = await _service.SignUpPassword(dto.Email, dto.Code, dto.Password);
             if (!signUpPasswordResult.IsSuccess)
             {
-                return new Response<AuthInfoDTO>
+                return new ErrorResponse<AuthInfoDTO>
                 {
+                    Message = ((ErrorResponse<UserDTO>) signUpPasswordResult).Message,
                     HttpStatusCode = signUpPasswordResult.HttpStatusCode,
                     Code = signUpPasswordResult.Code
                 };

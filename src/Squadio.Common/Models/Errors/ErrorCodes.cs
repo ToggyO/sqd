@@ -40,6 +40,7 @@ namespace Squadio.Common.Models.Errors
             public const string AccessTokenInvalid = "sec.access_token_invalid";
             public const string GoogleAccessTokenInvalid = "sec.google_access_token_invalid";
             public const string RefreshTokenInvalid = "sec.refresh_token_invalid";
+            public const string InviteInvalid = "sec.invite_invalid";
         }
 
         public static class System

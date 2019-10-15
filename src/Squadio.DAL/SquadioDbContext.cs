@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Squadio.Domain.Models.Companies;
+using Squadio.Domain.Models.Invites;
 using Squadio.Domain.Models.Projects;
 using Squadio.Domain.Models.Teams;
 using Squadio.Domain.Models.Users;
@@ -17,6 +18,7 @@ namespace Squadio.DAL
         public DbSet<TeamUserModel> TeamsUsers { get; set; }
         public DbSet<ProjectModel> Projects { get; set; }
         public DbSet<ProjectUserModel> ProjectsUsers { get; set; }
+        public DbSet<InviteModel> Invites { get; set; }
         
 
         public SquadioDbContext(DbContextOptions<SquadioDbContext> options)

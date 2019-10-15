@@ -1,6 +1,6 @@
 ﻿namespace Squadio.DTO.Auth
 {
-    public class GmailTokenDTO
+    public class GoogleTokenDTO
     {
         public string Token { get; set; }
     }

@@ -6,10 +6,14 @@ using Squadio.DAL.Repository.Companies;
 using Squadio.DAL.Repository.Companies.Implementation;
 using Squadio.DAL.Repository.CompaniesUsers;
 using Squadio.DAL.Repository.CompaniesUsers.Implementation;
+using Squadio.DAL.Repository.Invites;
+using Squadio.DAL.Repository.Invites.Implementation;
 using Squadio.DAL.Repository.Projects;
 using Squadio.DAL.Repository.Projects.Implementation;
 using Squadio.DAL.Repository.ProjectsUsers;
 using Squadio.DAL.Repository.ProjectsUsers.Implementation;
+using Squadio.DAL.Repository.SignUp;
+using Squadio.DAL.Repository.SignUp.Implementation;
 using Squadio.DAL.Repository.Teams;
 using Squadio.DAL.Repository.Teams.Implementation;
 using Squadio.DAL.Repository.TeamsUsers;
@@ -31,6 +35,10 @@ namespace Squadio.DAL
             
             services.Add<IProjectsRepository, ProjectsRepository>(serviceLifetime);
             services.Add<IProjectsUsersRepository, ProjectsUsersRepository>(serviceLifetime);
+            
+            services.Add<IInvitesRepository, InvitesRepository>(serviceLifetime);
+            
+            services.Add<ISignUpRepository, SignUpRepository>(serviceLifetime);
         }
     }
 }

@@ -66,49 +66,6 @@ namespace Squadio.DAL.Repository.Users.Implementation
             }
         }
 
-        public async Task<UserRegistrationStepModel> GetRegistrationStepByEmail(string email)
-        {
-            var item = await _context.UsersRegistrationStep
-                .Include(x => x.User)
-                .Where(x => x.User.Email.ToUpper() == email.ToUpper())
-                .FirstOrDefaultAsync();
-            return item;
-        }
-
-        public async Task<UserRegistrationStepModel> GetRegistrationStepByUserId(Guid userId)
-        {
-            var item = await _context.UsersRegistrationStep
-                .Include(x => x.User)
-                .Where(x => x.UserId == userId)
-                .FirstOrDefaultAsync();
-            return item;
-        }
-
-        public async Task<UserRegistrationStepModel> SetRegistrationStep(Guid userId, RegistrationStep step)
-        {
-            var item = await _context.UsersRegistrationStep
-                .Where(x => x.UserId == userId)
-                .FirstOrDefaultAsync();
-
-            var stepExisted = true;
-
-            if (item == null)
-            {
-                item = new UserRegistrationStepModel { UserId = userId };
-                stepExisted = false;
-            }
-
-            item.Step = step;
-            item.UpdatedDate = DateTime.UtcNow;
-            
-            if(stepExisted)
-                _context.Update(item);
-            else 
-                _context.UsersRegistrationStep.Add(item);
-            await _context.SaveChangesAsync();
-            return item;
-        }
-
         public async Task<UserPasswordRequestModel> GetChangePasswordRequests(string email, string code)
         {
             var item = await _context.UserPasswordRequests
@@ -129,7 +86,7 @@ namespace Squadio.DAL.Repository.Users.Implementation
             await _context.SaveChangesAsync();
         }
 
-        public async Task<UserPasswordRequestModel> AddPasswordRequest(Guid userId, string code)
+        public async Task<UserPasswordRequestModel> AddChangePasswordRequest(Guid userId, string code)
         {
             var user = await GetById(userId);
             var newRequest = new UserPasswordRequestModel
@@ -144,10 +101,10 @@ namespace Squadio.DAL.Repository.Users.Implementation
             return newRequest;
         }
 
-        public async Task ActivateChangePasswordRequestsCode(string code)
+        public async Task ActivateChangePasswordRequestsCode(Guid userId, string code)
         {
             var item = await _context.UserPasswordRequests
-                .Where(x => x.Code == code)
+                .Where(x => x.Code == code && x.UserId == userId)
                 .FirstOrDefaultAsync();
             item.ActivatedDate = DateTime.UtcNow;
             item.IsActivated = true;

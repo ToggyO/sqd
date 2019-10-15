@@ -31,7 +31,7 @@ namespace Squadio.API.Controllers
         }
         
         [HttpPost("token/google")]
-        public async Task<Response<AuthInfoDTO>> GoogleAuthenticate([Required] GmailTokenDTO request)
+        public async Task<Response<AuthInfoDTO>> GoogleAuthenticate([Required] GoogleTokenDTO request)
         {
             return await _handler.GoogleAuthenticate(request.Token);
         }

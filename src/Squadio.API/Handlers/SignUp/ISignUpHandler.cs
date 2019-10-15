@@ -4,6 +4,7 @@ using Squadio.Common.Models.Responses;
 using Squadio.DTO.Auth;
 using Squadio.DTO.Companies;
 using Squadio.DTO.Projects;
+using Squadio.DTO.SignUp;
 using Squadio.DTO.Teams;
 using Squadio.DTO.Users;
 
@@ -12,6 +13,8 @@ namespace Squadio.API.Handlers.SignUp
     public interface ISignUpHandler
     {
         Task<Response<UserRegistrationStepDTO>> GetRegistrationStep(string email);
+        Task<Response<AuthInfoDTO>> SignUpMemberEmail(SignUpMemberDTO dto);
+        Task<Response<AuthInfoDTO>> SignUpMemberGoogle(SignUpMemberGoogleDTO dto);
         Task<Response> SignUp(string email);
         Task<Response<UserDTO>> SignUpGoogle(string googleToken);
         Task<Response<AuthInfoDTO>> SignUpPassword(UserSetPasswordDTO dto);

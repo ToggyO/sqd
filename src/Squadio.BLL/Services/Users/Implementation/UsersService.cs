@@ -35,6 +35,20 @@ namespace Squadio.BLL.Services.Users.Implementation
             _mapper = mapper;
         }
 
+        public async Task<Response<UserDTO>> SetPassword(string email, string password)
+        {
+            var user = await _repository.GetByEmail(email);
+            
+            var passwordModel = await _passwordService.CreatePassword(password);
+            await _repository.SavePassword(user.Id, passwordModel.Hash, passwordModel.Salt);
+
+            var userDTO = _mapper.Map<UserModel, UserDTO>(user);
+            return new Response<UserDTO>
+            {
+                Data = userDTO
+            };
+        }
+
         public async Task<Response<UserDTO>> SetPassword(string email, string code, string password)
         {
             var userPasswordRequest = await _repository.GetChangePasswordRequests(email, code);
@@ -51,7 +65,7 @@ namespace Squadio.BLL.Services.Users.Implementation
             var passwordModel = await _passwordService.CreatePassword(password);
             await _repository.SavePassword(userPasswordRequest.UserId, passwordModel.Hash, passwordModel.Salt);
             
-            await _repository.ActivateChangePasswordRequestsCode(code);
+            await _repository.ActivateChangePasswordRequestsCode(userPasswordRequest.UserId, code);
 
             var user = await _repository.GetById(userPasswordRequest.UserId);
 
@@ -87,7 +101,7 @@ namespace Squadio.BLL.Services.Users.Implementation
             
             var code = GenerateCode();
             
-            await _repository.AddPasswordRequest(user.Id, code);
+            await _repository.AddChangePasswordRequest(user.Id, code);
 
             await _passwordResetMailService.Send(new PasswordResetEmailModel
             {

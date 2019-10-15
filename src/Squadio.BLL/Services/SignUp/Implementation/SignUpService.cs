@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Google.Apis.Auth;
 using Mapper;
 using Microsoft.Extensions.Options;
+using Squadio.BLL.Providers.Invites;
 using Squadio.BLL.Services.Companies;
 using Squadio.BLL.Services.Email;
 using Squadio.BLL.Services.Projects;
@@ -14,11 +15,13 @@ using Squadio.Common.Models.Email;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
 using Squadio.Common.Settings;
+using Squadio.DAL.Repository.SignUp;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Companies;
 using Squadio.DTO.Projects;
+using Squadio.DTO.SignUp;
 using Squadio.DTO.Teams;
 using Squadio.DTO.Users;
 
@@ -26,18 +29,22 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 {
     public class SignUpService : ISignUpService
     {
-        private readonly IUsersRepository _repository;
+        private readonly ISignUpRepository _repository;
+        private readonly IUsersRepository _usersRepository;
         private readonly IEmailService<PasswordSetEmailModel> _passwordSetMailService;
         private readonly IOptions<GoogleSettings> _googleSettings;
+        private readonly IInvitesProvider _invitesProvider;
         private readonly IUsersService _usersService;
         private readonly ICompaniesService _companiesService;
         private readonly ITeamsService _teamsService;
         private readonly IProjectsService _projectsService;
         private readonly IMapper _mapper;
 
-        public SignUpService(IUsersRepository repository
+        public SignUpService(ISignUpRepository repository
+            , IUsersRepository usersRepository
             , IEmailService<PasswordSetEmailModel> passwordSetMailService
             , IOptions<GoogleSettings> googleSettings
+            , IInvitesProvider invitesProvider
             , IUsersService usersService
             , ICompaniesService companiesService
             , ITeamsService teamsService
@@ -46,8 +53,10 @@ namespace Squadio.BLL.Services.SignUp.Implementation
         )
         {
             _repository = repository;
+            _usersRepository = usersRepository;
             _passwordSetMailService = passwordSetMailService;
             _googleSettings = googleSettings;
+            _invitesProvider = invitesProvider;
             _usersService = usersService;
             _companiesService = companiesService;
             _teamsService = teamsService;
@@ -55,9 +64,86 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             _mapper = mapper;
         }
 
+        public async Task<Response<UserDTO>> SignUpMemberEmail(SignUpMemberDTO dto)
+        {
+            var user = await _usersRepository.GetByEmail(dto.Email);
+            if (user != null)
+            {
+                return new ErrorResponse<UserDTO>
+                {
+                    Code = ErrorCodes.Business.EmailExists,
+                    Message = ErrorMessages.Business.EmailExists,
+                    HttpStatusCode = HttpStatusCode.BadRequest,
+                    Errors = new List<Error>
+                    {
+                        new Error
+                        {
+                            Code = ErrorCodes.Business.EmailExists,
+                            Message = ErrorMessages.Business.EmailExists,
+                            Field = ErrorFields.User.Email
+                        }
+                    }
+                };
+            }
+
+            var inviteResponse = await _invitesProvider.GetInviteByEmail(dto.Email);
+            
+            if(inviteResponse.IsSuccess || inviteResponse.Data?.Code != dto.InviteCode || inviteResponse.Data?.Activated == true)
+            {
+                return new ErrorResponse<UserDTO>
+                {
+                    Code = ErrorCodes.Security.InviteInvalid,
+                    Message = ErrorMessages.Security.InviteInvalid,
+                    HttpStatusCode = HttpStatusCode.BadRequest
+                };
+            }
+
+            user = new UserModel
+            {
+                Name = dto.Username,
+                Email = dto.Email,
+                CreatedDate = DateTime.UtcNow
+            };
+
+            user = await _usersRepository.Create(user);
+
+            var setPasswordResponse = await _usersService.SetPassword(dto.Email, dto.Password);
+            var result = setPasswordResponse.Data;
+
+            await _repository.SetRegistrationStep(user.Id, RegistrationStep.Done);
+
+            return new Response<UserDTO>
+            {
+                Data = result
+            };
+        }
+
+        public async Task<Response<UserDTO>> SignUpMemberGoogle(SignUpMemberGoogleDTO dto)
+        {
+            var infoFromGoogleToken = await GoogleJsonWebSignature.ValidateAsync(dto.Token);
+
+            if ((string) infoFromGoogleToken.Audience != _googleSettings.Value.ClientId)
+            {
+                return new ErrorResponse<UserDTO>
+                {
+                    Code = ErrorCodes.Security.GoogleAccessTokenInvalid,
+                    Message = ErrorMessages.Security.GoogleAccessTokenInvalid,
+                    HttpStatusCode = HttpStatusCode.BadRequest
+                };
+            }
+
+            return await SignUpMemberEmail(new SignUpMemberDTO
+            {
+                Email = infoFromGoogleToken.Email,
+                Username = infoFromGoogleToken.Name,
+                Password = dto.Password,
+                InviteCode = dto.InviteCode
+            });
+        }
+
         public async Task<Response> SignUp(string email)
         {
-            var user = await _repository.GetByEmail(email);
+            var user = await _usersRepository.GetByEmail(email);
             if (user != null)
             {
                 return new ErrorResponse<UserDTO>
@@ -91,9 +177,9 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 CreatedDate = DateTime.UtcNow
             };
 
-            user = await _repository.Create(user);
+            user = await _usersRepository.Create(user);
 
-            await _repository.AddPasswordRequest(user.Id, code);
+            await _usersRepository.AddChangePasswordRequest(user.Id, code);
 
             await _repository.SetRegistrationStep(user.Id, RegistrationStep.New);
 
@@ -114,7 +200,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 };
             }
 
-            var user = await _repository.GetByEmail(infoFromGoogleToken.Email);
+            var user = await _usersRepository.GetByEmail(infoFromGoogleToken.Email);
             if (user != null)
             {
                 return new ErrorResponse<UserDTO>
@@ -140,7 +226,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 Email = infoFromGoogleToken.Email,
                 CreatedDate = DateTime.Now
             };
-            user = await _repository.Create(user);
+            user = await _usersRepository.Create(user);
 
             await _repository.SetRegistrationStep(user.Id, RegistrationStep.EmailConfirmed);
 
@@ -150,7 +236,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 Code = code,
                 To = user.Email
             });
-            await _repository.AddPasswordRequest(user.Id, code);
+            await _usersRepository.AddChangePasswordRequest(user.Id, code);
 
             var result = _mapper.Map<UserModel, UserDTO>(user);
 

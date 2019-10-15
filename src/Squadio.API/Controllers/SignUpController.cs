@@ -8,6 +8,7 @@ using Squadio.Common.Models.Responses;
 using Squadio.DTO.Auth;
 using Squadio.DTO.Companies;
 using Squadio.DTO.Projects;
+using Squadio.DTO.SignUp;
 using Squadio.DTO.Teams;
 using Squadio.DTO.Users;
 
@@ -30,53 +31,65 @@ namespace Squadio.API.Controllers
             return await _handler.GetRegistrationStep(dto.Email);
         }
         
-        [HttpPost]
+        [HttpPost("member/email")]
+        public async Task<Response<AuthInfoDTO>> SignUpMemberEmail([Required, FromBody] SignUpMemberDTO dto)
+        {
+            return await _handler.SignUpMemberEmail(dto);
+        }
+        
+        [HttpPost("member/google")]
+        public async Task<Response<AuthInfoDTO>> SignUpMemberGoogle([Required, FromBody] SignUpMemberGoogleDTO dto)
+        {
+            return await _handler.SignUpMemberGoogle(dto);
+        }
+        
+        [HttpPost("admin/email")]
         public async Task<Response> SignUp([Required, FromBody] UserEmailDTO dto)
         {
             return await _handler.SignUp(dto.Email);
         }
         
-        [HttpPost("google")]
-        public async Task<Response> SignUpGoogle([Required, FromBody] GmailTokenDTO dto)
+        [HttpPost("admin/google")]
+        public async Task<Response> SignUpGoogle([Required, FromBody] GoogleTokenDTO dto)
         {
             return await _handler.SignUpGoogle(dto.Token);
         }
         
-        [HttpPut("password")]
+        [HttpPut("admin/password")]
         public async Task<Response<AuthInfoDTO>> SetPassword([FromBody] UserSetPasswordDTO dto)
         {
             return await _handler.SignUpPassword(dto);
         }
         
-        [HttpPut("username")]
+        [HttpPut("admin/username")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<Response<UserDTO>> UpdateCurrentUser([FromBody] UserUpdateDTO dto)
         {
             return await _handler.SignUpUsername(dto, User);
         }
         
-        [HttpPut("company")]
+        [HttpPut("admin/company")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<Response<CompanyDTO>> CreateCompany([Required, FromBody] CreateCompanyDTO dto)
         {
             return await _handler.SignUpCompany(dto, User);
         }
         
-        [HttpPut("team")]
+        [HttpPut("admin/team")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<Response<TeamDTO>> CreateTeam([Required, FromBody] CreateTeamDTO dto)
         {
             return await _handler.SignUpTeam(dto, User);
         }
         
-        [HttpPut("project")]
+        [HttpPut("admin/project")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<Response<ProjectDTO>> CreateProject([Required, FromBody] CreateProjectDTO dto)
         {
             return await _handler.SignUpProject(dto, User);
         }
         
-        [HttpPut("done")]
+        [HttpPut("admin/done")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<Response> SignUpDone()
         {
