@@ -3,11 +3,9 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Squadio.BLL.Providers.Companies;
 using Squadio.BLL.Services.Companies;
-using Squadio.Common.Exceptions.PermissionException;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Companies;
-using Squadio.DTO.Users;
 
 namespace Squadio.API.Handlers.Companies.Implementation
 {
@@ -31,7 +29,8 @@ namespace Squadio.API.Handlers.Companies.Implementation
 
         public async Task<Response<CompanyDTO>> CreateCompany(CreateCompanyDTO dto, ClaimsPrincipal claims)
         {
-            var result = await _service.Create(claims.GetUserId() ?? throw new PermissionException(), dto);
+            var userId = claims.GetUserId();
+            var result = await _service.Create(userId, dto);
             return result;
         }
     }

@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Squadio.BLL.Providers.SignUp;
 using Squadio.BLL.Services.SignUp;
 using Squadio.BLL.Services.Tokens;
-using Squadio.Common.Exceptions.PermissionException;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Auth;
@@ -68,31 +67,31 @@ namespace Squadio.API.Handlers.SignUp.Implementation
 
         public async Task<Response<UserDTO>> SignUpUsername(UserUpdateDTO dto, ClaimsPrincipal claims)
         {
-            var result = await _service.SignUpUsername(claims.GetUserId() ?? throw new PermissionException(), dto);
+            var result = await _service.SignUpUsername(claims.GetUserId(), dto);
             return result;
         }
 
         public async Task<Response<CompanyDTO>> SignUpCompany(CreateCompanyDTO dto, ClaimsPrincipal claims)
         {
-            var result = await _service.SignUpCompany(claims.GetUserId() ?? throw new PermissionException(), dto);
+            var result = await _service.SignUpCompany(claims.GetUserId(), dto);
             return result;
         }
 
         public async Task<Response<TeamDTO>> SignUpTeam(CreateTeamDTO dto, ClaimsPrincipal claims)
         {
-            var result = await _service.SignUpTeam(claims.GetUserId() ?? throw new PermissionException(), dto);
+            var result = await _service.SignUpTeam(claims.GetUserId(), dto);
             return result;
         }
 
         public async Task<Response<ProjectDTO>> SignUpProject(CreateProjectDTO dto, ClaimsPrincipal claims)
         {
-            var result = await _service.SignUpProject(claims.GetUserId() ?? throw new PermissionException(), dto);
+            var result = await _service.SignUpProject(claims.GetUserId(), dto);
             return result;
         }
 
         public async Task<Response> SignUpDone(ClaimsPrincipal claims)
         {
-            var result = await _service.SignUpDone(claims.GetUserId() ?? throw new PermissionException());
+            var result = await _service.SignUpDone(claims.GetUserId());
             return result;
         }
     }

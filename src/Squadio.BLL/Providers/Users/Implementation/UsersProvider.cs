@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Mapper;
-using Squadio.Common.Exceptions.BusinessLogicExceptions;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Models.Users;

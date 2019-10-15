@@ -4,11 +4,8 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Squadio.BLL.Providers.Users;
 using Squadio.BLL.Services.Users;
-using Squadio.Common.Exceptions.PermissionException;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Responses;
-using Squadio.Domain.Models.Users;
-using Squadio.DTO.Auth;
 using Squadio.DTO.Users;
 
 namespace Squadio.API.Handlers.Users.Implementation
@@ -32,13 +29,13 @@ namespace Squadio.API.Handlers.Users.Implementation
 
         public async Task<Response<UserDTO>> GetCurrentUser(ClaimsPrincipal claims)
         {
-            var result = await _provider.GetById(claims.GetUserId() ?? throw new PermissionException());
+            var result = await _provider.GetById(claims.GetUserId());
             return result;
         }
 
         public async Task<Response<UserDTO>> UpdateCurrentUser(UserUpdateDTO dto, ClaimsPrincipal claims)
         {
-            var result = await _service.UpdateUser(claims.GetUserId() ?? throw new PermissionException(), dto);
+            var result = await _service.UpdateUser(claims.GetUserId(), dto);
             return result;
         }
 

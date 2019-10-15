@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Magora.Passwords;
 using Mapper;
 using Squadio.BLL.Services.Email;
-using Squadio.Common.Exceptions.BusinessLogicExceptions;
 using Squadio.Common.Models.Email;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
@@ -39,8 +38,15 @@ namespace Squadio.BLL.Services.Users.Implementation
         public async Task<Response<UserDTO>> SetPassword(string email, string code, string password)
         {
             var userPasswordRequest = await _repository.GetChangePasswordRequests(email, code);
-            if(userPasswordRequest.IsActivated)
-                throw new Exception("Code already used");
+            if (userPasswordRequest.IsActivated)
+            {
+                return new ErrorResponse<UserDTO>
+                {
+                    Code = ErrorCodes.Business.PasswordChangeRequestInvalid,
+                    Message = ErrorMessages.Business.PasswordChangeCodeInvalid,
+                    HttpStatusCode = HttpStatusCode.Conflict
+                };
+            }
             
             var passwordModel = await _passwordService.CreatePassword(password);
             await _repository.SavePassword(userPasswordRequest.UserId, passwordModel.Hash, passwordModel.Salt);

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Security;
 using System.Threading.Tasks;
 using Google.Apis.Auth;
@@ -7,6 +9,7 @@ using Mapper;
 using Microsoft.Extensions.Options;
 using Squadio.BLL.Factories;
 using Squadio.Common.Extensions;
+using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
 using Squadio.Common.Settings;
 using Squadio.DAL.Repository.Users;
@@ -43,7 +46,14 @@ namespace Squadio.BLL.Services.Tokens.Implementation
             var isPasswordValid = await ValidatePassword(dto.Password, user);
             
             if(user == null || !isPasswordValid)
-                throw new SecurityException("Email or password incorrect");
+            {
+                return new ErrorResponse<AuthInfoDTO>
+                {
+                    Code = ErrorCodes.Security.AuthDataInvalid,
+                    Message = ErrorMessages.Security.AuthDataInvalid,
+                    HttpStatusCode = HttpStatusCode.Conflict
+                };
+            }
 
             var tokenDTO = await _tokenFactory.CreateToken(user);
             var userDTO = _mapper.Map<UserModel, UserDTO>(user);
@@ -65,12 +75,46 @@ namespace Squadio.BLL.Services.Tokens.Implementation
             var isTokenValid = _tokenFactory.ValidateToken(refreshToken, out var tokenPrincipal);
             
             if (!isTokenValid)
-                throw new SecurityException("Refresh token invalid");
+            {
+                return new ErrorResponse<TokenDTO>
+                {
+                    HttpStatusCode = HttpStatusCode.Forbidden,
+                    Message = ErrorMessages.Security.Unauthorized,
+                    Code = ErrorCodes.Security.Unauthorized,
 
-            var user = await _usersRepository.GetById(tokenPrincipal.GetUserId() 
-                                                    ?? throw new SecurityException("Refresh token invalid")) 
-                       ?? throw new SecurityException("Refresh token invalid");
-            
+                    Errors = new List<Error>
+                    {
+                        new Error
+                        {
+                            Message = ErrorMessages.Security.RefreshTokenInvalid,
+                            Code = ErrorCodes.Security.RefreshTokenInvalid,
+                            Field = "refreshToken"
+                        }
+                    }
+                };
+            }
+
+            var user = await _usersRepository.GetById(tokenPrincipal.GetUserId());
+
+            if (user == null)
+            {
+                return new ErrorResponse<TokenDTO>
+                {
+                    Code = ErrorCodes.Business.UserDoesNotExists,
+                    Message = ErrorMessages.Business.UserDoesNotExists,
+                    HttpStatusCode = HttpStatusCode.BadRequest,
+                    Errors = new List<Error>
+                    {
+                        new Error
+                        {
+                            Code = ErrorCodes.Business.UserDoesNotExists,
+                            Message = ErrorMessages.Business.UserDoesNotExists,
+                            Field = ErrorFields.User.Email
+                        }
+                    }
+                };
+            }
+
             var tokenDTO = await _tokenFactory.CreateToken(user);
 
             return new Response<TokenDTO>
@@ -82,13 +126,36 @@ namespace Squadio.BLL.Services.Tokens.Implementation
         public async Task<Response<AuthInfoDTO>> GoogleAuthenticate(string googleToken)
         {
             var infoFromGoogleToken = await GoogleJsonWebSignature.ValidateAsync(googleToken);
-            
-            if((string) infoFromGoogleToken.Audience != _googleSettings.Value.ClientId)
-                throw new SecurityException("Incorrect google token");
+
+            if ((string) infoFromGoogleToken.Audience != _googleSettings.Value.ClientId)
+            {
+                return new ErrorResponse<AuthInfoDTO>
+                {
+                    Code = ErrorCodes.Security.GoogleAccessTokenInvalid,
+                    Message = ErrorMessages.Security.GoogleAccessTokenInvalid,
+                    HttpStatusCode = HttpStatusCode.BadRequest
+                };
+            }
             
             var user = await _usersRepository.GetByEmail(infoFromGoogleToken.Email);
             if(user == null)
-                throw new SecurityException("User not exist incorrect");
+            {
+                return new ErrorResponse<AuthInfoDTO>
+                {
+                    Code = ErrorCodes.Business.UserDoesNotExists,
+                    Message = ErrorMessages.Business.UserDoesNotExists,
+                    HttpStatusCode = HttpStatusCode.BadRequest,
+                    Errors = new List<Error>
+                    {
+                        new Error
+                        {
+                            Code = ErrorCodes.Business.UserDoesNotExists,
+                            Message = ErrorMessages.Business.UserDoesNotExists,
+                            Field = ErrorFields.User.Email
+                        }
+                    }
+                };
+            }
             
             var tokenDTO = await _tokenFactory.CreateToken(user);
             var userDTO = _mapper.Map<UserModel, UserDTO>(user);

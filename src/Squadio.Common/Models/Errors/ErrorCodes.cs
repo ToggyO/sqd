@@ -13,6 +13,7 @@ namespace Squadio.Common.Models.Errors
             public const string UserIsDeleted = "bus.user_is_deleted";
             public const string UserIsBlocked = "bus.user_is_blocked";
             public const string InvalidRegistrationStep = "bus.invalid_registration_step";
+            public const string PasswordChangeRequestInvalid = "bus.password_change_request_invalid";
         }
 
         public static class Global

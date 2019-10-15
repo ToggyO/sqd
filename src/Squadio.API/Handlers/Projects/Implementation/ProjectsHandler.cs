@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Squadio.BLL.Providers.Projects;
 using Squadio.BLL.Services.Projects;
-using Squadio.Common.Exceptions.PermissionException;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Projects;
@@ -30,7 +29,7 @@ namespace Squadio.API.Handlers.Projects.Implementation
 
         public async Task<Response<ProjectDTO>> Create(CreateProjectDTO dto, ClaimsPrincipal claims)
         {
-            var result = await _service.Create(claims.GetUserId() ?? throw new PermissionException(), dto);
+            var result = await _service.Create(claims.GetUserId(), dto);
             return result;
         }
     }

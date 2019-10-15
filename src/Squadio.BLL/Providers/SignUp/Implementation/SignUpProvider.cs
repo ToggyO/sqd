@@ -2,7 +2,6 @@
 using System.Net;
 using System.Threading.Tasks;
 using Mapper;
-using Squadio.Common.Exceptions.SecurityExceptions;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Users;

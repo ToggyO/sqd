@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Squadio.BLL.Providers.Teams;
 using Squadio.BLL.Services.Teams;
-using Squadio.Common.Exceptions.PermissionException;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Teams;
@@ -29,7 +28,7 @@ namespace Squadio.API.Handlers.Teams.Implementation
 
         public async Task<Response<TeamDTO>> Create(CreateTeamDTO dto, ClaimsPrincipal claims)
         {
-            var result = await _service.Create(claims.GetUserId() ?? throw new PermissionException(), dto);
+            var result = await _service.Create(claims.GetUserId(), dto);
             return result;
         }
     }

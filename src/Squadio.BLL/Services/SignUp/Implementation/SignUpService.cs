@@ -10,8 +10,6 @@ using Squadio.BLL.Services.Email;
 using Squadio.BLL.Services.Projects;
 using Squadio.BLL.Services.Teams;
 using Squadio.BLL.Services.Users;
-using Squadio.Common.Exceptions.BusinessLogicExceptions;
-using Squadio.Common.Exceptions.SecurityExceptions;
 using Squadio.Common.Models.Email;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
