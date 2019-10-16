@@ -33,7 +33,7 @@ namespace Squadio.BLL.Services.Email.Implementations
 
         protected override string GetSubject(InviteToTeamEmailModel emailModel)
         {
-            return "Reset password";
+            return "Invite to Squad.io team";
         }
     }
 }

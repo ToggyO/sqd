@@ -92,7 +92,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             var inviteResponse = await _invitesProvider.GetInviteByEmail(dto.Email);
 
-            if (inviteResponse.IsSuccess || inviteResponse.Data?.Code != dto.InviteCode ||
+            if (!inviteResponse.IsSuccess || inviteResponse.Data?.Code != dto.InviteCode ||
                 inviteResponse.Data?.Activated == true)
             {
                 return new ErrorResponse<UserDTO>
@@ -348,14 +348,13 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             {
                 if (dto.Emails?.Length > 0)
                 {
-                    Parallel.ForEach(dto.Emails,
-                        email =>
-                        {
-                            var res = _invitesService.InviteToTeam(step.User.Name
-                                , team.Data.Name
-                                , team.Data.Id
-                                , email).Result;
-                        });
+                    foreach (var email in dto.Emails)
+                    {
+                        var res = await _invitesService.InviteToTeam(step.User.Name
+                            , team.Data.Name
+                            , team.Data.Id
+                            , email);
+                    }
                 }
             }
             catch (Exception e)
