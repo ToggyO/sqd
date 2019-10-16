@@ -8,6 +8,7 @@ using Squadio.DAL.Repository.ProjectsUsers;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Projects;
 using Squadio.Domain.Models.Teams;
+using Squadio.DTO.Invites;
 using Squadio.DTO.Projects;
 using Squadio.DTO.Teams;
 
@@ -44,28 +45,15 @@ namespace Squadio.BLL.Services.Projects.Implementation
 
             await _projectsUsersRepository.AddProjectUser(entity.Id, userId, UserStatus.SuperAdmin);
             
-            var result = _mapper.Map<ProjectModel, ProjectDTO>(entity);
-            
-            try
-            {
-                if (dto.Emails?.Length > 0)
+            await _invitesService.InviteToProject(
+                entity.Id,
+                userId,
+                new CreateInvitesDTO
                 {
-                    foreach (var email in dto.Emails)
-                    {
-                        var res = await _invitesService.InviteToProject(
-                            "> Придумаю как сюда вставить имя позже <"
-                            , entity.Name
-                            , entity.Id
-                            , email);
-                    }
-                }
-            }
-            catch
-            {
-                // ignored
-                // logger here may be
-            }
-
+                    Emails = dto.Emails
+                });
+            
+            var result = _mapper.Map<ProjectModel, ProjectDTO>(entity);
             return new Response<ProjectDTO>
             {
                 Data = result

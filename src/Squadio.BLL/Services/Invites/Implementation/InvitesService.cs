@@ -22,6 +22,8 @@ namespace Squadio.BLL.Services.Invites.Implementation
 {
     public class InvitesService : IInvitesService
     {
+        #region Repository variables and constructor
+        
         private readonly IInvitesRepository _repository;
         private readonly IEmailService<InviteToTeamEmailModel> _inviteToTeamMailService;
         private readonly IEmailService<InviteToProjectEmailModel> _inviteToProjectMailService;
@@ -54,6 +56,8 @@ namespace Squadio.BLL.Services.Invites.Implementation
             _projectsUsersRepository = projectsUsersRepository;
             _mapper = mapper;
         }
+        
+        #endregion
 
         public async Task<Response<IEnumerable<InviteDTO>>> InviteToTeam(Guid teamId, Guid authorId, CreateInvitesDTO dto)
         {

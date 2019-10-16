@@ -9,6 +9,7 @@ using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Companies;
 using Squadio.Domain.Models.Teams;
 using Squadio.DTO.Companies;
+using Squadio.DTO.Invites;
 using Squadio.DTO.Teams;
 
 namespace Squadio.BLL.Services.Teams.Implementation
@@ -39,31 +40,19 @@ namespace Squadio.BLL.Services.Teams.Implementation
                 CompanyId = dto.CompanyId,
                 CreatedDate = DateTime.UtcNow
             };
-            
+
             entity = await _repository.Create(entity);
 
             await _teamsUsersRepository.AddTeamUser(entity.Id, userId, UserStatus.SuperAdmin);
-            
-            try
-            {
-                if (dto.Emails?.Length > 0)
+
+            await _invitesService.InviteToTeam(
+                entity.Id,
+                userId,
+                new CreateInvitesDTO
                 {
-                    foreach (var email in dto.Emails)
-                    {
-                        var res = await _invitesService.InviteToTeam(
-                            "> Придумаю как сюда вставить имя позже <"
-                            , entity.Name
-                            , entity.Id
-                            , email);
-                    }
-                }
-            }
-            catch
-            {
-                // ignored
-                // logger here may be
-            }
-            
+                    Emails = dto.Emails
+                });
+
             var result = _mapper.Map<TeamModel, TeamDTO>(entity);
             return new Response<TeamDTO>
             {
