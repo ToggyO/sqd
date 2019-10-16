@@ -35,7 +35,6 @@ namespace Squadio.BLL.Services.SignUp.Implementation
         private readonly IEmailService<PasswordSetEmailModel> _passwordSetMailService;
         private readonly IOptions<GoogleSettings> _googleSettings;
         private readonly IInvitesProvider _invitesProvider;
-        private readonly IInvitesService _invitesService;
         private readonly IUsersService _usersService;
         private readonly ICompaniesService _companiesService;
         private readonly ITeamsService _teamsService;
@@ -47,7 +46,6 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             , IEmailService<PasswordSetEmailModel> passwordSetMailService
             , IOptions<GoogleSettings> googleSettings
             , IInvitesProvider invitesProvider
-            , IInvitesService invitesService
             , IUsersService usersService
             , ICompaniesService companiesService
             , ITeamsService teamsService
@@ -60,7 +58,6 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             _passwordSetMailService = passwordSetMailService;
             _googleSettings = googleSettings;
             _invitesProvider = invitesProvider;
-            _invitesService = invitesService;
             _usersService = usersService;
             _companiesService = companiesService;
             _teamsService = teamsService;
@@ -342,28 +339,9 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             var team = await _teamsService.Create(userId, dto);
 
-            await _repository.SetRegistrationStep(userId, RegistrationStep.TeamCreated);
-
-            try
+            if (team.IsSuccess)
             {
-                if (dto.Emails?.Length > 0)
-                {
-                    foreach (var email in dto.Emails)
-                    {
-                        var res = await _invitesService.InviteToTeam(step.User.Name
-                            , team.Data.Name
-                            , team.Data.Id
-                            , email);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                // TODO: make it correct
-                return new ErrorResponse<TeamDTO>
-                {
-                    Message = "Not all emails sent"
-                };
+                await _repository.SetRegistrationStep(userId, RegistrationStep.TeamCreated);
             }
 
             return team;
@@ -386,7 +364,10 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             var project = await _projectsService.Create(userId, dto);
 
-            await _repository.SetRegistrationStep(userId, RegistrationStep.ProjectCreated);
+            if (project.IsSuccess)
+            {
+                await _repository.SetRegistrationStep(userId, RegistrationStep.ProjectCreated);
+            }
 
             return project;
         }
