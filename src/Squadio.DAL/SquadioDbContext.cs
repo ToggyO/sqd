@@ -27,8 +27,90 @@ namespace Squadio.DAL
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<UserModel>(entity =>
+            modelBuilder.Entity<UserModel>(item =>
             {
+                item.HasKey(c => c.Id);
+            });
+            modelBuilder.Entity<UserRegistrationStepModel>(item =>
+            {
+                item.HasKey(c => c.Id);
+                item.HasIndex(p => p.UserId)
+                    .IsUnique();
+                item.HasOne(p => p.User)
+                    .WithOne();
+            });
+            modelBuilder.Entity<UserRegistrationStepModel>(item =>
+            {
+                item.HasKey(c => c.Id);
+                item.HasOne(p => p.User)
+                    .WithOne();
+            });
+            
+            
+            modelBuilder.Entity<CompanyModel>(item =>
+            {
+                item.HasKey(c => c.Id);
+                item.Property(x => x.Name)
+                    .IsRequired();
+                item.Property(x => x.CreatedDate)
+                    .IsRequired();
+            });
+            modelBuilder.Entity<CompanyUserModel>(item =>
+            {
+                item.HasKey(c => c.Id);
+                item.HasOne(p => p.User)
+                    .WithMany();
+                item.HasOne(p => p.Company)
+                    .WithMany();
+                item.HasIndex(p => new { p.CompanyId, p.UserId })
+                    .IsUnique();
+            });
+            
+            
+            modelBuilder.Entity<TeamModel>(item =>
+            {
+                item.HasKey(c => c.Id);
+                item.Property(x => x.Name)
+                    .IsRequired();
+                item.Property(x => x.CreatedDate)
+                    .IsRequired();
+                item.HasOne(p => p.Company)
+                    .WithMany()
+                    .IsRequired();
+            });
+            modelBuilder.Entity<TeamUserModel>(item =>
+            {
+                item.HasKey(c => c.Id);
+                item.HasOne(p => p.User)
+                    .WithMany();
+                item.HasOne(p => p.Team)
+                    .WithMany();
+                item.HasIndex(p => new { p.TeamId, p.UserId })
+                    .IsUnique();
+            });
+            
+            
+            
+            modelBuilder.Entity<ProjectModel>(item =>
+            {
+                item.HasKey(c => c.Id);
+                item.Property(x => x.Name)
+                    .IsRequired();
+                item.Property(x => x.CreatedDate)
+                    .IsRequired();
+                item.HasOne(p => p.Company)
+                    .WithMany()
+                    .IsRequired();
+            });
+            modelBuilder.Entity<ProjectUserModel>(item =>
+            {
+                item.HasKey(c => c.Id);
+                item.HasOne(p => p.User)
+                    .WithMany();
+                item.HasOne(p => p.Project)
+                    .WithMany();
+                item.HasIndex(p => new { p.ProjectId, p.UserId })
+                    .IsUnique();
             });
         }
     }

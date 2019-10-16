@@ -30,6 +30,6 @@
         /// User created project
         /// </summary>
         ProjectCreated = 7,
-        Done
+        Done = 8
     }
 }
