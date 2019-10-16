@@ -62,7 +62,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
         public async Task<Response<IEnumerable<InviteDTO>>> InviteToTeam(Guid teamId, Guid authorId, CreateInvitesDTO dto)
         {
             var teamUser = await _teamsUsersRepository.GetTeamUser(teamId, authorId);
-            if (teamUser.Status == UserStatus.Member)
+            if (teamUser == null || teamUser?.Status == UserStatus.Member)
             {
                 return new ErrorResponse<IEnumerable<InviteDTO>>()
                 {
@@ -121,7 +121,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
         {
             
             var projectUser = await _projectsUsersRepository.GetProjectUser(projectId, authorId);
-            if (projectUser.Status == UserStatus.Member)
+            if (projectUser == null || projectUser?.Status == UserStatus.Member)
             {
                 return new ErrorResponse<IEnumerable<InviteDTO>>()
                 {
@@ -134,7 +134,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
             var result = new List<InviteDTO>();
             foreach (var email in dto.Emails)
             {
-                var itemResult = await InviteToTeam(
+                var itemResult = await InviteToProject(
                     projectUser.User.Name, 
                     projectUser.Project.Name, 
                     projectUser.ProjectId, 
@@ -191,7 +191,10 @@ namespace Squadio.BLL.Services.Invites.Implementation
 
             var teamUser = await _teamsUsersRepository.GetTeamUser(teamId, userId);
             if(teamUser != null)
+            {
+                await _repository.ActivateInvite(invite.Id);
                 return new Response();
+            }
             
             var team = await _teamsRepository.GetById(teamId);
             if (team == null)
@@ -260,9 +263,12 @@ namespace Squadio.BLL.Services.Invites.Implementation
             }
 
             var projectUser = await _projectsUsersRepository.GetProjectUser(projectId, userId);
-            if(projectUser != null)
+            if (projectUser != null)
+            {
+                await _repository.ActivateInvite(invite.Id);
                 return new Response();
-            
+            }
+
             await _projectsUsersRepository.AddProjectUser(projectId, userId, UserStatus.Member);
             await _repository.ActivateInvite(invite.Id);
             
