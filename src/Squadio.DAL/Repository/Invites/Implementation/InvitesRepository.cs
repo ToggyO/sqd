@@ -29,14 +29,6 @@ namespace Squadio.DAL.Repository.Invites.Implementation
             return item;
         }
 
-        public async Task<InviteModel> GetInviteByEmail(string email)
-        {
-            var item = await _context.Invites
-                .Where(x => x.Email.ToUpper() == email.ToUpper())
-                .FirstOrDefaultAsync();
-            return item;
-        }
-
         public async Task<InviteModel> GetInviteByCode(string code)
         {
             var item = await _context.Invites

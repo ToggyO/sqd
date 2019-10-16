@@ -6,6 +6,6 @@ namespace Squadio.BLL.Providers.Invites
 {
     public interface IInvitesProvider
     {
-        Task<Response<InviteModel>> GetInviteByEmail(string email);
+        Task<Response<InviteModel>> GetInviteByCode(string code);
     }
 }

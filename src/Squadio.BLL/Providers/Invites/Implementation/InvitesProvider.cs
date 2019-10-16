@@ -16,9 +16,9 @@ namespace Squadio.BLL.Providers.Invites.Implementation
             _repository = repository;
         }
         
-        public async Task<Response<InviteModel>> GetInviteByEmail(string email)
+        public async Task<Response<InviteModel>> GetInviteByCode(string code)
         {
-            var item = await _repository.GetInviteByEmail(email);
+            var item = await _repository.GetInviteByCode(code);
             if (item == null)
             {
                 return new ErrorResponse<InviteModel>

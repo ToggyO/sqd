@@ -87,7 +87,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 };
             }
 
-            var inviteResponse = await _invitesProvider.GetInviteByEmail(dto.Email);
+            var inviteResponse = await _invitesProvider.GetInviteByCode(dto.InviteCode);
 
             if (!inviteResponse.IsSuccess || inviteResponse.Data?.Code != dto.InviteCode ||
                 inviteResponse.Data?.Activated == true)
