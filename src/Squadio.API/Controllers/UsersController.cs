@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Squadio.Common.Models.Responses;
+using Squadio.DTO.Pages;
 using Squadio.DTO.Users;
 
 namespace Squadio.API.Controllers
@@ -20,6 +21,12 @@ namespace Squadio.API.Controllers
         public UsersController(IUsersHandler handler)
         {
             _handler = handler;
+        }
+        
+        [HttpGet]
+        public async Task<Response<PageModel<UserDTO>>> GetById([FromQuery] PageModel model)
+        {
+            return await _handler.GetPage(model);
         }
         
         [HttpGet("{id}")]

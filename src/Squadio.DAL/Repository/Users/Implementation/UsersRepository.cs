@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Users;
+using Squadio.DTO.Pages;
 
 namespace Squadio.DAL.Repository.Users.Implementation
 {
@@ -44,10 +45,21 @@ namespace Squadio.DAL.Repository.Users.Implementation
             return entity;
         }
 
-        public async Task<IEnumerable<UserModel>> GetAll()
+        public async Task<PageModel<UserModel>> GetPage(PageModel model)
         {
-            var entities = await _context.Users.ToListAsync();
-            return entities;
+            var total = await _context.Users.CountAsync();
+            var items = await _context.Users
+                .Skip((model.Page - 1) * model.PageSize)
+                .Take(model.PageSize)
+                .ToListAsync();
+            var result = new PageModel<UserModel>
+            {
+                Page = model.Page,
+                PageSize = model.PageSize,
+                Total = total,
+                Items = items
+            };
+            return result;
         }
 
         public async Task<UserModel> GetByEmail(string email)

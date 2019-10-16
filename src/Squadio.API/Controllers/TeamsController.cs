@@ -7,6 +7,7 @@ using Squadio.API.Handlers.Invites;
 using Squadio.API.Handlers.Teams;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Invites;
+using Squadio.DTO.Pages;
 using Squadio.DTO.Teams;
 
 namespace Squadio.API.Controllers
@@ -22,6 +23,11 @@ namespace Squadio.API.Controllers
         {
             _handler = handler;
             _invitesHandler = invitesHandler;
+        }
+        [HttpGet]
+        public async Task<Response<PageModel<TeamDTO>>> GetTeams([FromQuery] PageModel model)
+        {
+            return await _handler.GetTeams(model);
         }
         
         [HttpGet("{id}")]

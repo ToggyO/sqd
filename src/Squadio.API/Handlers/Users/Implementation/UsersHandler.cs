@@ -6,6 +6,7 @@ using Squadio.BLL.Providers.Users;
 using Squadio.BLL.Services.Users;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Responses;
+using Squadio.DTO.Pages;
 using Squadio.DTO.Users;
 
 namespace Squadio.API.Handlers.Users.Implementation
@@ -21,9 +22,9 @@ namespace Squadio.API.Handlers.Users.Implementation
             _provider = provider;
         }
 
-        public async Task<Response<IEnumerable<UserDTO>>> GetAll()
+        public async Task<Response<PageModel<UserDTO>>> GetPage(PageModel model)
         {
-            var result = await _provider.GetAll();
+            var result = await _provider.GetPage(model);
             return result;
         }
 

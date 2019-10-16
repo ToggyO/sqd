@@ -5,6 +5,7 @@ using Mapper;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Models.Users;
+using Squadio.DTO.Pages;
 using Squadio.DTO.Users;
 
 namespace Squadio.BLL.Providers.Users.Implementation
@@ -20,11 +21,20 @@ namespace Squadio.BLL.Providers.Users.Implementation
             _mapper = mapper;
         }
 
-        public async Task<Response<IEnumerable<UserDTO>>> GetAll()
+        public async Task<Response<PageModel<UserDTO>>> GetPage(PageModel model)
         {
-            var userEntities = await _repository.GetAll();
-            var result = _mapper.Map<IEnumerable<UserModel>, IEnumerable<UserDTO>>(userEntities);
-            return new Response<IEnumerable<UserDTO>>
+            
+            var page = await _repository.GetPage(model);
+
+            var result = new PageModel<UserDTO>
+            {
+                Page = page.Page,
+                PageSize = page.PageSize,
+                Total = page.Total,
+                Items = _mapper.Map<IEnumerable<UserModel>,IEnumerable<UserDTO>>(page.Items)
+            };
+            
+            return new Response<PageModel<UserDTO>>
             {
                 Data = result
             };

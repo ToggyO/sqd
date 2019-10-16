@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Squadio.Common.Models.Responses;
 using Squadio.Domain.Models.Teams;
+using Squadio.DTO.Pages;
 
 namespace Squadio.DAL.Repository.Teams.Implementation
 {
@@ -37,6 +41,23 @@ namespace Squadio.DAL.Repository.Teams.Implementation
             _context.Update(item);
             await _context.SaveChangesAsync();
             return item;
+        }
+
+        public async Task<PageModel<TeamModel>> GetTeams(PageModel model)
+        {
+            var total = await _context.Teams.CountAsync();
+            var items = await _context.Teams
+                .Skip((model.Page - 1) * model.PageSize)
+                .Take(model.PageSize)
+                .ToListAsync();
+            var result = new PageModel<TeamModel>
+            {
+                Page = model.Page,
+                PageSize = model.PageSize,
+                Total = total,
+                Items = items
+            };
+            return result;
         }
     }
 }

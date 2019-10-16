@@ -5,6 +5,7 @@ using Squadio.BLL.Providers.Teams;
 using Squadio.BLL.Services.Teams;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Responses;
+using Squadio.DTO.Pages;
 using Squadio.DTO.Teams;
 
 namespace Squadio.API.Handlers.Teams.Implementation
@@ -18,6 +19,12 @@ namespace Squadio.API.Handlers.Teams.Implementation
         {
             _provider = provider;
             _service = service;
+        }
+
+        public async Task<Response<PageModel<TeamDTO>>> GetTeams(PageModel model)
+        {
+            var result = await _provider.GetTeams(model);
+            return result;
         }
 
         public async Task<Response<TeamDTO>> GetById(Guid id)
