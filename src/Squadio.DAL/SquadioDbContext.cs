@@ -30,6 +30,8 @@ namespace Squadio.DAL
             modelBuilder.Entity<UserModel>(item =>
             {
                 item.HasKey(c => c.Id);
+                item.HasIndex(p => p.Email)
+                    .IsUnique();
             });
             modelBuilder.Entity<UserRegistrationStepModel>(item =>
             {
