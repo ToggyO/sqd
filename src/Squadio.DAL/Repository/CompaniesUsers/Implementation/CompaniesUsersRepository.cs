@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Companies;
+using Squadio.Domain.Models.Users;
+using Squadio.DTO.Pages;
 
 namespace Squadio.DAL.Repository.CompaniesUsers.Implementation
 {
@@ -14,6 +16,29 @@ namespace Squadio.DAL.Repository.CompaniesUsers.Implementation
         public CompaniesUsersRepository(SquadioDbContext context)
         {
             _context = context;
+        }
+
+        public async Task<PageModel<UserModel>> GetCompanyUsers(Guid companyId, PageModel model)
+        {
+            var query = _context.CompaniesUsers
+                .Include(x => x.User)
+                .Where(x => x.CompanyId == companyId);
+            
+            var total = await query.CountAsync();
+            var items = await query
+                .Skip((model.Page - 1) * model.PageSize)
+                .Take(model.PageSize)
+                .Select(x => x.User)
+                .ToListAsync();
+            
+            var result = new PageModel<UserModel>
+            {
+                Page = model.Page,
+                PageSize = model.PageSize,
+                Total = total,
+                Items = items
+            };
+            return result;
         }
 
         public async Task<CompanyUserModel> GetCompanyUser(Guid companyId, Guid userId)

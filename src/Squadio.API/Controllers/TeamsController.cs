@@ -9,6 +9,7 @@ using Squadio.Common.Models.Responses;
 using Squadio.DTO.Invites;
 using Squadio.DTO.Pages;
 using Squadio.DTO.Teams;
+using Squadio.DTO.Users;
 
 namespace Squadio.API.Controllers
 {
@@ -34,6 +35,13 @@ namespace Squadio.API.Controllers
         public async Task<Response<TeamDTO>> GetTeam([Required, FromRoute] Guid id)
         {
             return await _handler.GetById(id);
+        }
+        
+        [HttpGet("{id}/users")]
+        public Task<Response<PageModel<UserDTO>>> GetTeamUsers([Required, FromRoute] Guid id
+            , [FromQuery] PageModel model)
+        {
+            return _handler.GetTeamUsers(id, model);
         }
         
         [HttpPost]

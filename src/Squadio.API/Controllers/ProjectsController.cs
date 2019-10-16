@@ -7,7 +7,9 @@ using Squadio.API.Handlers.Invites;
 using Squadio.API.Handlers.Projects;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Invites;
+using Squadio.DTO.Pages;
 using Squadio.DTO.Projects;
+using Squadio.DTO.Users;
 
 namespace Squadio.API.Controllers
 {
@@ -28,6 +30,13 @@ namespace Squadio.API.Controllers
         public async Task<Response<ProjectDTO>> GetProject([Required, FromRoute] Guid id)
         {
             return await _handler.GetById(id);
+        }
+        
+        [HttpGet("{id}/users")]
+        public Task<Response<PageModel<UserDTO>>> GetProjectUsers([Required, FromRoute] Guid id
+            , [FromQuery] PageModel model)
+        {
+            return _handler.GetProjectUsers(id, model);
         }
         
         [HttpPost]

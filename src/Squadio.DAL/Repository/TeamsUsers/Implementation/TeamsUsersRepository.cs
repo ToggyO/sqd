@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Teams;
+using Squadio.Domain.Models.Users;
+using Squadio.DTO.Pages;
 
 namespace Squadio.DAL.Repository.TeamsUsers.Implementation
 {
@@ -14,6 +16,30 @@ namespace Squadio.DAL.Repository.TeamsUsers.Implementation
         public TeamsUsersRepository(SquadioDbContext context)
         {
             _context = context;
+        }
+
+        public async Task<PageModel<UserModel>> GetTeamUsers(Guid teamId, PageModel model)
+        {
+            
+            var query = _context.TeamsUsers
+                .Include(x => x.User)
+                .Where(x => x.TeamId == teamId);
+            
+            var total = await query.CountAsync();
+            var items = await query
+                .Skip((model.Page - 1) * model.PageSize)
+                .Take(model.PageSize)
+                .Select(x => x.User)
+                .ToListAsync();
+            
+            var result = new PageModel<UserModel>
+            {
+                Page = model.Page,
+                PageSize = model.PageSize,
+                Total = total,
+                Items = items
+            };
+            return result;
         }
 
         public async Task<TeamUserModel> GetTeamUser(Guid teamId, Guid userId)

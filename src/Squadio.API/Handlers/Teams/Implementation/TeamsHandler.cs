@@ -7,6 +7,7 @@ using Squadio.Common.Extensions;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Pages;
 using Squadio.DTO.Teams;
+using Squadio.DTO.Users;
 
 namespace Squadio.API.Handlers.Teams.Implementation
 {
@@ -19,6 +20,12 @@ namespace Squadio.API.Handlers.Teams.Implementation
         {
             _provider = provider;
             _service = service;
+        }
+
+        public async Task<Response<PageModel<UserDTO>>> GetTeamUsers(Guid teamId, PageModel model)
+        {
+            var result = await _provider.GetTeamUsers(teamId, model);
+            return result;
         }
 
         public async Task<Response<PageModel<TeamDTO>>> GetTeams(PageModel model)

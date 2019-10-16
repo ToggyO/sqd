@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Squadio.API.Handlers.Companies;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Companies;
+using Squadio.DTO.Pages;
+using Squadio.DTO.Users;
 
 namespace Squadio.API.Controllers
 {
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/company")]
     public class CompanyController : ControllerBase
     {
@@ -26,6 +28,13 @@ namespace Squadio.API.Controllers
         public Task<Response<CompanyDTO>> GetCompany([Required, FromRoute] Guid id)
         {
             return _handler.GetCompany(id);
+        }
+        
+        [HttpGet("{id}/users")]
+        public Task<Response<PageModel<UserDTO>>> GetCompanyUsers([Required, FromRoute] Guid id
+            , [FromQuery] PageModel model)
+        {
+            return _handler.GetCompanyUsers(id, model);
         }
         
         [HttpPost]

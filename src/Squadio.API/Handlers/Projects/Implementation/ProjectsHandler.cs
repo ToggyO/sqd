@@ -5,7 +5,9 @@ using Squadio.BLL.Providers.Projects;
 using Squadio.BLL.Services.Projects;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Responses;
+using Squadio.DTO.Pages;
 using Squadio.DTO.Projects;
+using Squadio.DTO.Users;
 
 namespace Squadio.API.Handlers.Projects.Implementation
 {
@@ -19,6 +21,12 @@ namespace Squadio.API.Handlers.Projects.Implementation
         {
             _provider = provider;
             _service = service;
+        }
+
+        public async Task<Response<PageModel<UserDTO>>> GetProjectUsers(Guid projectId, PageModel model)
+        {
+            var result = await _provider.GetProjectUsers(projectId, model);
+            return result;
         }
 
         public async Task<Response<ProjectDTO>> GetById(Guid id)
