@@ -18,12 +18,6 @@ namespace Squadio.API.Controllers
             _handler = handler;
         }
         
-        [HttpGet]
-        public string GetTeam()
-        {
-            return "Get from team controller";
-        }
-        
         [HttpGet("{id}")]
         public async Task<Response<TeamDTO>> GetTeam([Required, FromRoute] Guid id)
         {

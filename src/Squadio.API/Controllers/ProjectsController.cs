@@ -18,12 +18,6 @@ namespace Squadio.API.Controllers
             _handler = handler;
         }
         
-        [HttpGet]
-        public string GetTeam()
-        {
-            return "Get from project controller";
-        }
-        
         [HttpGet("{id}")]
         public async Task<Response<ProjectDTO>> GetProject([Required, FromRoute] Guid id)
         {

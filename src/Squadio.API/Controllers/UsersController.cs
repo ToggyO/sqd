@@ -22,13 +22,6 @@ namespace Squadio.API.Controllers
             _handler = handler;
         }
         
-        [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<Response<IEnumerable<UserDTO>>> GetAll()
-        {
-            return await _handler.GetAll();
-        }
-        
         [HttpGet("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<Response<UserDTO>> GetById([Required, FromRoute] Guid id)
@@ -56,7 +49,7 @@ namespace Squadio.API.Controllers
             return await _handler.SetPassword(dto);
         }
         
-        [HttpPost("passwords/reset")]
+        [HttpPost("passwords/request")]
         public async Task<Response> ResetPasswordRequest([FromBody, Required] UserEmailDTO dto)
         {
             return await _handler.ResetPasswordRequest(dto.Email);
