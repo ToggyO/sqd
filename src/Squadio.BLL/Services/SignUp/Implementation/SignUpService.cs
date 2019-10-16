@@ -300,6 +300,25 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             };
         }
 
+        public async Task<Response> SignUpAgreement(Guid userId)
+        {
+            var step = await _repository.GetRegistrationStepByUserId(userId);
+
+            if (step.Step >= RegistrationStep.Agreement)
+            {
+                return new ErrorResponse
+                {
+                    Code = ErrorCodes.Business.InvalidRegistrationStep,
+                    Message = ErrorMessages.Business.InvalidRegistrationStep,
+                    // TODO: find correct http code for this
+                    HttpStatusCode = HttpStatusCode.Conflict
+                };
+            }
+
+            await _repository.SetRegistrationStep(userId, RegistrationStep.Agreement);
+            return new Response();
+        }
+
         public async Task<Response<CompanyDTO>> SignUpCompany(Guid userId, CreateCompanyDTO dto)
         {
             var step = await _repository.GetRegistrationStepByUserId(userId);
