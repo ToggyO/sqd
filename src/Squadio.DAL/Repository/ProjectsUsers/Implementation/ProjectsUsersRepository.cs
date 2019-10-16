@@ -16,6 +16,16 @@ namespace Squadio.DAL.Repository.ProjectsUsers.Implementation
             _context = context;
         }
 
+        public async Task<ProjectUserModel> GetProjectUser(Guid projectId, Guid userId)
+        {
+            var item = await _context.ProjectsUsers
+                .Include(x => x.Project)
+                .Include(x => x.User)
+                .Where(x => x.ProjectId == projectId && x.UserId == userId)
+                .FirstOrDefaultAsync();
+            return item;
+        }
+
         public async Task AddProjectUser(Guid projectId, Guid userId, UserStatus userStatus)
         {
             var item = new ProjectUserModel

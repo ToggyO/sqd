@@ -45,7 +45,7 @@ namespace Squadio.DAL.Repository.Invites.Implementation
             return item;
         }
 
-        public async Task<InviteModel> AcceptInvite(Guid inviteId)
+        public async Task<InviteModel> ActivateInvite(Guid inviteId)
         {
             var item = await _context.Invites.FindAsync(inviteId);
             item.Activated = true;

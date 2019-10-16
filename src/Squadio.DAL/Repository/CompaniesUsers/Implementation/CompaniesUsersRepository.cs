@@ -16,6 +16,16 @@ namespace Squadio.DAL.Repository.CompaniesUsers.Implementation
             _context = context;
         }
 
+        public async Task<CompanyUserModel> GetCompanyUser(Guid companyId, Guid userId)
+        {
+            var item = await _context.CompaniesUsers
+                .Include(x => x.Company)
+                .Include(x => x.User)
+                .Where(x => x.CompanyId == companyId && x.UserId == userId)
+                .FirstOrDefaultAsync();
+            return item;
+        }
+
         public async Task AddCompanyUser(Guid companyId, Guid userId, UserStatus userStatus)
         {
             var item = new CompanyUserModel

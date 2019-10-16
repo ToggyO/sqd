@@ -16,6 +16,16 @@ namespace Squadio.DAL.Repository.TeamsUsers.Implementation
             _context = context;
         }
 
+        public async Task<TeamUserModel> GetTeamUser(Guid teamId, Guid userId)
+        {
+            var item = await _context.TeamsUsers
+                .Include(x => x.Team)
+                .Include(x => x.User)
+                .Where(x => x.TeamId == teamId && x.UserId == userId)
+                .FirstOrDefaultAsync();
+            return item;
+        }
+
         public async Task AddTeamUser(Guid teamId, Guid userId, UserStatus userStatus)
         {
             var item = new TeamUserModel
