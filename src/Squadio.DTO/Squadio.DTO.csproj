@@ -21,6 +21,9 @@
       <Compile Update="Teams\TeamModelMapper.cs">
         <DependentUpon>TeamDTO.cs</DependentUpon>
       </Compile>
+      <Compile Update="Invites\InviteModelMapper.cs">
+        <DependentUpon>InviteDTO.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

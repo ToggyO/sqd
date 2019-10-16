@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Mapper;
 using Squadio.BLL.Services.Email;
 using Squadio.Common.Models.Email;
 using Squadio.Common.Models.Errors;
@@ -13,6 +15,8 @@ using Squadio.DAL.Repository.Teams;
 using Squadio.DAL.Repository.TeamsUsers;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Enums;
+using Squadio.Domain.Models.Invites;
+using Squadio.DTO.Invites;
 
 namespace Squadio.BLL.Services.Invites.Implementation
 {
@@ -27,6 +31,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
         private readonly ITeamsRepository _teamsRepository;
         private readonly ITeamsUsersRepository _teamsUsersRepository;
         private readonly IProjectsUsersRepository _projectsUsersRepository;
+        private readonly IMapper _mapper;
         public InvitesService(IInvitesRepository repository
             , IEmailService<InviteToTeamEmailModel> inviteToTeamMailService
             , IEmailService<InviteToProjectEmailModel> inviteToProjectMailService
@@ -35,7 +40,8 @@ namespace Squadio.BLL.Services.Invites.Implementation
             , ICompaniesUsersRepository companiesUsersRepository
             , ITeamsRepository teamsRepository
             , ITeamsUsersRepository teamsUsersRepository
-            , IProjectsUsersRepository projectsUsersRepository)
+            , IProjectsUsersRepository projectsUsersRepository
+            , IMapper mapper)
         {
             _repository = repository;
             _inviteToTeamMailService = inviteToTeamMailService;
@@ -46,38 +52,123 @@ namespace Squadio.BLL.Services.Invites.Implementation
             _teamsRepository = teamsRepository;
             _teamsUsersRepository = teamsUsersRepository;
             _projectsUsersRepository = projectsUsersRepository;
+            _mapper = mapper;
         }
 
-        public async Task<Response> InviteToTeam(string authorName, string teamName, Guid teamId, string email)
+        public async Task<Response<IEnumerable<InviteDTO>>> InviteToTeam(Guid teamId, Guid authorId, CreateInvitesDTO dto)
         {
-            var invite = await _repository.CreateInvite(email);
-
-            await _inviteToTeamMailService.Send(new InviteToTeamEmailModel
+            var teamUser = await _teamsUsersRepository.GetTeamUser(teamId, authorId);
+            if (teamUser.Status == UserStatus.Member)
             {
-                To = email,
-                AuthorName = authorName,
-                Code = invite.Code,
-                TeamId = teamId.ToString(),
-                TeamName = teamName
-            });
+                return new ErrorResponse<IEnumerable<InviteDTO>>()
+                {
+                    Code = ErrorCodes.Security.Forbidden,
+                    Message = ErrorMessages.Security.Forbidden,
+                    HttpStatusCode = HttpStatusCode.Forbidden
+                };
+            }
 
-            return new Response();
+            var result = new List<InviteDTO>();
+            foreach (var email in dto.Emails)
+            {
+                var itemResult = await InviteToTeam(
+                    teamUser.User.Name, 
+                    teamUser.Team.Name, 
+                    teamUser.TeamId, 
+                    email);
+                result.Add(itemResult.Data);
+            }
+
+            return new Response<IEnumerable<InviteDTO>>
+            {
+                Data = result
+            };
         }
 
-        public async Task<Response> InviteToProject(string authorName, string projectName, Guid projectId, string email)
+        public async Task<Response<InviteDTO>> InviteToTeam(string authorName, string teamName, Guid teamId, string email)
         {
             var invite = await _repository.CreateInvite(email);
+            var result = _mapper.Map<InviteModel, InviteDTO>(invite);
 
-            await _inviteToProjectMailService.Send(new InviteToProjectEmailModel
+            try
             {
-                To = email,
-                AuthorName = authorName,
-                Code = invite.Code,
-                ProjectId = projectId.ToString(),
-                ProjectName = projectName
-            });
+                await _inviteToTeamMailService.Send(new InviteToTeamEmailModel
+                {
+                    To = email,
+                    AuthorName = authorName,
+                    Code = invite.Code,
+                    TeamId = teamId.ToString(),
+                    TeamName = teamName
+                });
+                result.IsSent = true;
+            }
+            catch
+            {
+                result.IsSent = false;
+            }
 
-            return new Response();
+            return new Response<InviteDTO>
+            {
+                Data = result
+            };
+        }
+
+        public async Task<Response<IEnumerable<InviteDTO>>> InviteToProject(Guid projectId, Guid authorId, CreateInvitesDTO dto)
+        {
+            
+            var projectUser = await _projectsUsersRepository.GetProjectUser(projectId, authorId);
+            if (projectUser.Status == UserStatus.Member)
+            {
+                return new ErrorResponse<IEnumerable<InviteDTO>>()
+                {
+                    Code = ErrorCodes.Security.Forbidden,
+                    Message = ErrorMessages.Security.Forbidden,
+                    HttpStatusCode = HttpStatusCode.Forbidden
+                };
+            }
+
+            var result = new List<InviteDTO>();
+            foreach (var email in dto.Emails)
+            {
+                var itemResult = await InviteToTeam(
+                    projectUser.User.Name, 
+                    projectUser.Project.Name, 
+                    projectUser.ProjectId, 
+                    email);
+                result.Add(itemResult.Data);
+            }
+
+            return new Response<IEnumerable<InviteDTO>>
+            {
+                Data = result
+            };
+        }
+
+        public async Task<Response<InviteDTO>> InviteToProject(string authorName, string projectName, Guid projectId, string email)
+        {
+            var invite = await _repository.CreateInvite(email);
+            var result = _mapper.Map<InviteModel, InviteDTO>(invite);
+
+            try
+            {
+                await _inviteToProjectMailService.Send(new InviteToProjectEmailModel
+                {
+                    To = email,
+                    AuthorName = authorName,
+                    Code = invite.Code,
+                    ProjectId = projectId.ToString(),
+                    ProjectName = projectName
+                });
+            }
+            catch
+            {
+                result.IsSent = false;
+            }
+
+            return new Response<InviteDTO>
+            {
+                Data = result
+            };
         }
 
         public async Task<Response> AcceptInviteToTeam(Guid userId, Guid teamId, string code)

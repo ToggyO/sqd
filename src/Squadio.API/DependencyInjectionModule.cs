@@ -3,6 +3,8 @@ using Squadio.API.Handlers.Auth;
 using Squadio.API.Handlers.Auth.Implementation;
 using Squadio.API.Handlers.Companies;
 using Squadio.API.Handlers.Companies.Implementation;
+using Squadio.API.Handlers.Invites;
+using Squadio.API.Handlers.Invites.Implementation;
 using Squadio.API.Handlers.Projects;
 using Squadio.API.Handlers.Projects.Implementation;
 using Squadio.API.Handlers.SignUp;
@@ -27,6 +29,7 @@ namespace Squadio.API
             services.Add<ICompaniesHandler, CompaniesHandler>(serviceLifetime);
             services.Add<ITeamsHandler, TeamsHandler>(serviceLifetime);
             services.Add<IProjectsHandler, ProjectsHandler>(serviceLifetime);
+            services.Add<IInvitesHandler, InvitesHandler>(serviceLifetime);
         }
     }
 }

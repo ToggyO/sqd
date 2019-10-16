@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Squadio.API.Handlers.Invites;
 using Squadio.API.Handlers.Projects;
 using Squadio.Common.Models.Responses;
+using Squadio.DTO.Invites;
 using Squadio.DTO.Projects;
 
 namespace Squadio.API.Controllers
@@ -13,9 +16,12 @@ namespace Squadio.API.Controllers
     public class ProjectsController : ControllerBase
     {
         private readonly IProjectsHandler _handler;
-        public ProjectsController(IProjectsHandler handler)
+        private readonly IInvitesHandler _invitesHandler;
+        public ProjectsController(IProjectsHandler handler
+            , IInvitesHandler invitesHandler)
         {
             _handler = handler;
+            _invitesHandler = invitesHandler;
         }
         
         [HttpGet("{id}")]
@@ -28,6 +34,13 @@ namespace Squadio.API.Controllers
         public async Task<Response<ProjectDTO>> Create([FromBody] CreateProjectDTO dto)
         {
             return await _handler.Create(dto, User);
+        }
+        
+        [HttpPost("{id}/invite")]
+        public async Task<Response<IEnumerable<InviteDTO>>> CreateInvites([Required, FromRoute] Guid id
+            , [Required, FromBody] CreateInvitesDTO dto)
+        {
+            return await _invitesHandler.InviteToProject(id, dto, User);
         }
     }
 }

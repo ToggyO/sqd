@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Squadio.API.Handlers.Invites;
 using Squadio.API.Handlers.Teams;
 using Squadio.Common.Models.Responses;
+using Squadio.DTO.Invites;
 using Squadio.DTO.Teams;
 
 namespace Squadio.API.Controllers
@@ -13,9 +16,12 @@ namespace Squadio.API.Controllers
     public class TeamsController : ControllerBase
     {
         private readonly ITeamsHandler _handler;
-        public TeamsController(ITeamsHandler handler)
+        private readonly IInvitesHandler _invitesHandler;
+        public TeamsController(ITeamsHandler handler
+            , IInvitesHandler invitesHandler)
         {
             _handler = handler;
+            _invitesHandler = invitesHandler;
         }
         
         [HttpGet("{id}")]
@@ -28,6 +34,13 @@ namespace Squadio.API.Controllers
         public async Task<Response<TeamDTO>> Create([FromBody] CreateTeamDTO dto)
         {
             return await _handler.Create(dto, User);
+        }
+        
+        [HttpPost("{id}/invite")]
+        public async Task<Response<IEnumerable<InviteDTO>>> CreateInvites([Required, FromRoute] Guid id
+            , [Required, FromBody] CreateInvitesDTO dto)
+        {
+            return await _invitesHandler.InviteToTeam(id, dto, User);
         }
     }
 }
