@@ -28,15 +28,17 @@ services:
     links:
       - sql-dev
     ports:
-      - 5005:5005
+      - 5005:5000
     networks:
       - squadio-network
     environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5000/
       - ASPNETCORE_ENVIRONMENT=Development
       - DB_HOST=sql-dev
       - DB_PORT=5432
       - DB_NAME=squadio_dev
       - DB_USER=user_dev
+      - DB_PASSWORD=135642QWSX
       - AppSettings:APISettings:PublicKey=AAAAB3NzaC1yc2EAAAADAQABAAABAQCkkTqYqjfy11DUtK6rhiQutHiBnQgNVq
       - AppSettings:APISettings:ISSUER=Squad
       - AppSettings:APISettings:AUDIENCE=IO
