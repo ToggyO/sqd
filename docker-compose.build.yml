@@ -1,0 +1,10 @@
+version: '3.3'
+
+services:
+  build:
+    image: mcr.microsoft.com/dotnet/core/aspnet:3.0
+    container_name: squadio-build
+    volumes:
+      - .:/src
+    working_dir: /src
+    command: /bin/bash -c "dotnet restore -s https://api.nuget.org/v3/index.json -s http://nuget.magora.team/nuget ./squadio.sln && dotnet publish ./squadio.sln -c Release -o ./obj/Docker/publish"

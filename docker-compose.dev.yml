@@ -1,0 +1,51 @@
+version: '3.3'
+
+networks:
+  squadio-network:
+
+services:
+  sql-dev:
+    image: postgres:10.4
+    container_name: squadio-sql-dev
+    hostname: sql-dev
+    restart: always
+    ports:
+      - 15432:5432
+    networks:
+      - squadio-network
+    environment:
+      - POSTGRES_USER=user_dev
+      - POSTGRES_PASSWORD=135642QWSX
+      - POSTGRES_DB=squadio_dev
+      - POSTGRES_HOST=sql-dev
+    volumes:
+      - /var/db/data-dev/postgresql:/var/lib/postgresql
+  
+  api-dev:
+    container_name: squadio-dev
+    build: ./src/Squadio.API/
+    restart: always
+    links:
+      - sql-dev
+    ports:
+      - 5005:5005
+    networks:
+      - squadio-network
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DB_HOST=sql-dev
+      - DB_PORT=5432
+      - DB_NAME=squadio_dev
+      - DB_USER=user_dev
+      - AppSettings:APISettings:PublicKey=AAAAB3NzaC1yc2EAAAADAQABAAABAQCkkTqYqjfy11DUtK6rhiQutHiBnQgNVq
+      - AppSettings:APISettings:ISSUER=Squad
+      - AppSettings:APISettings:AUDIENCE=IO
+      - AppSettings:APISettings:RefreshTokenExpiresInMinutes=10080
+      - AppSettings:APISettings:AccessTokenExpiresInMinutes=1440
+      - GoogleOAuth:ClientId=63806648351-k2ebqg66tab5760qa4i3mmomfslbmuvd.apps.googleusercontent.com
+      - GoogleOAuth:ClientSecret=yY2sMMKF-a3JRheGcMMOSFpx
+      - MicrosoftOAuth:ClientId=e0b221ed-d1ab-42b9-a33d-16410a9572ee
+      - StaticUrls:SetPasswordUrl=http://localhost:5005/api/users/password/set
+      - StaticUrls:ResetPasswordUrl=http://localhost:5005/api/users/password/reset
+      - StaticUrls:InviteToTeamPageUrl=http://localhost:5005/team/invite
+      - StaticUrls:InviteToProjectPageUrl=http://localhost:5005/project/invite
