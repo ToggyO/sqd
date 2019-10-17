@@ -9,3 +9,5 @@ docker container rm squadio-dev
 docker rmi squadio-dev
 
 docker-compose -f docker-compose.dev.yml up -d --build
+
+read -p "Press enter to continue"

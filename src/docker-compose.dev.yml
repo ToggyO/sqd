@@ -23,7 +23,7 @@ services:
   
   api-dev:
     container_name: squadio-dev
-    build: ./src/Squadio.API/
+    build: ./Squadio.API/
     restart: always
     links:
       - sql-dev
