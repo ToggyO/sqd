@@ -90,6 +90,7 @@ namespace Squadio.BLL.Services.Email.Sender.Implementation
 
                 _logger.LogInformation(email.Body);
 
+                ServicePointManager.ServerCertificateValidationCallback = (s, certificate, chain, sslPolicyErrors) => true;
                 smtp.Send(email);
 
                 email.Dispose();
@@ -160,7 +161,7 @@ namespace Squadio.BLL.Services.Email.Sender.Implementation
                         smtp.EnableSsl = true;
                         
                         //_logger.LogInformation(email.Body);
-
+                        ServicePointManager.ServerCertificateValidationCallback = (s, certificate, chain, sslPolicyErrors) => true;
                         await smtp.SendMailAsync(email);
                     }
                 }
