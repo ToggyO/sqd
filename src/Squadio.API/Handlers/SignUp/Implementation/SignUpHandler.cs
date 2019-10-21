@@ -72,9 +72,9 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             return result;
         }
 
-        public async Task<Response> SignUp(string email)
+        public async Task<Response> SignUp(string email, string password)
         {
-            var result = await _service.SignUp(email);
+            var result = await _service.SignUp(email, password);
             return result;
         }
 
@@ -84,6 +84,7 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             return result;
         }
 
+        /*
         public async Task<Response<AuthInfoDTO>> SignUpPassword(UserSetPasswordDTO dto)
         {
             var signUpPasswordResult = await _service.SignUpPassword(dto.Email, dto.Code, dto.Password);
@@ -104,6 +105,7 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             });
             return result;
         }
+        */
 
         public async Task<Response<UserDTO>> SignUpUsername(UserUpdateDTO dto, ClaimsPrincipal claims)
         {

@@ -44,9 +44,9 @@ namespace Squadio.API.Controllers
         }
         
         [HttpPost("admin/email")]
-        public async Task<Response> SignUp([Required, FromBody] UserEmailDTO dto)
+        public async Task<Response> SignUp([Required, FromBody] SignUpDTO dto)
         {
-            return await _handler.SignUp(dto.Email);
+            return await _handler.SignUp(dto.Email, dto.Password);
         }
         
         [HttpPost("admin/google")]
@@ -55,11 +55,13 @@ namespace Squadio.API.Controllers
             return await _handler.SignUpGoogle(dto.Token);
         }
         
+        /*
         [HttpPut("admin/password")]
         public async Task<Response<AuthInfoDTO>> SetPassword([FromBody] UserSetPasswordDTO dto)
         {
             return await _handler.SignUpPassword(dto);
         }
+        */
         
         [HttpPut("admin/username")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

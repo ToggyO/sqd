@@ -143,7 +143,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             });
         }
 
-        public async Task<Response> SignUp(string email)
+        public async Task<Response> SignUp(string email, string password)
         {
             var user = await _usersRepository.GetByEmail(email);
             if (user != null)
@@ -164,9 +164,14 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                     }
                 };
             }
+            
+            // TODO: protection of changing models
+            return new Response();
 
             var code = _usersService.GenerateCode();
 
+            // TODO: here must be other emailService 
+            // for example 'SignUpRequest', not 'SetPassword'
             await _passwordSetMailService.Send(new PasswordSetEmailModel
             {
                 Code = code,
@@ -180,7 +185,19 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             };
 
             user = await _usersRepository.Create(user);
+            
+            
+            var userResponse = await _usersService.SetPassword(email, password);
+            var userDTO = userResponse.Data;
 
+            return new Response<UserDTO>
+            {
+                Data = userDTO
+            };
+
+            // TODO: here must be adding signup request
+            // need add new entity SignUpRequestModel for saving CODE
+            // which will be used for confirming email
             await _usersRepository.AddChangePasswordRequest(user.Id, code);
 
             await _repository.SetRegistrationStep(user.Id, RegistrationStep.New);
@@ -248,6 +265,8 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             };
         }
 
+        // TODO: password set in SignUp. Here should be email confirming.
+        /*
         public async Task<Response<UserDTO>> SignUpPassword(string email, string code, string password)
         {
             var step = await _repository.GetRegistrationStepByEmail(email);
@@ -273,6 +292,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 Data = user
             };
         }
+        */
 
         public async Task<Response<UserDTO>> SignUpUsername(Guid id, UserUpdateDTO updateDTO)
         {

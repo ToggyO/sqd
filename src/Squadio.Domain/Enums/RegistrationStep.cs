@@ -11,10 +11,6 @@
         /// </summary>
         EmailConfirmed = 2,
         /// <summary>
-        /// User entered password
-        /// </summary>
-        PasswordEntered = 3,
-        /// <summary>
         /// User entered name
         /// </summary>
         UsernameEntered = 4,

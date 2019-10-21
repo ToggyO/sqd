@@ -11,11 +11,11 @@ namespace Squadio.BLL.Services.SignUp
 {
     public interface ISignUpService
     {
-        Task<Response> SignUp(string email);
+        Task<Response> SignUp(string email, string password);
         Task<Response<UserDTO>> SignUpMemberEmail(SignUpMemberDTO dto);
         Task<Response<UserDTO>> SignUpMemberGoogle(SignUpMemberGoogleDTO dto);
         Task<Response<UserDTO>> SignUpGoogle(string googleToken);
-        Task<Response<UserDTO>> SignUpPassword(string email, string code, string password);
+        //Task<Response<UserDTO>> SignUpPassword(string email, string code, string password);
         Task<Response<UserDTO>> SignUpUsername(Guid userId, UserUpdateDTO updateDTO);
         Task<Response> SignUpAgreement(Guid userId);
         Task<Response<CompanyDTO>> SignUpCompany(Guid userId, CreateCompanyDTO dto);
