@@ -13,16 +13,17 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-
+using Newtonsoft.Json;
 using Squadio.DAL;
 using Squadio.API.Extensions;
+using Squadio.API.Filters;
 using Squadio.Common.Settings;
 
 namespace Squadio.API
 {
     public class Startup
     {
-        private const string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+        private const string MyAllowSquadioOrigins = "_myAllowSquadioOrigins";
         private readonly IConfiguration Configuration;
 
         public Startup(IWebHostEnvironment env)
@@ -40,7 +41,7 @@ namespace Squadio.API
         {
             services.AddCors(options =>
             {
-                options.AddPolicy(MyAllowSpecificOrigins,
+                options.AddPolicy(MyAllowSquadioOrigins,
                     builder =>
                     {
                         builder.WithOrigins("http://localhost:5005")
@@ -49,7 +50,10 @@ namespace Squadio.API
                     });
             });
 
-            services.AddMvcCore()
+            services.AddMvcCore(options =>
+                {
+                    options.Filters.Add(typeof(StatusCodeFilter));
+                })
                 .AddApiExplorer();
 
             var apiSettings = Configuration.GetSection("AppSettings:APISettings").Get<ApiSettings>();
@@ -150,8 +154,6 @@ namespace Squadio.API
             
             services.AddAuthorization();
 
-            //services.AddMvc().AddControllersAsServices();
-
             DependencyInjectionModule.Load(services);
         }
 
@@ -175,7 +177,7 @@ namespace Squadio.API
             
             app.UseMiddleware(typeof(ExceptionMiddleware));
 
-            app.UseCors(MyAllowSpecificOrigins);
+            app.UseCors(MyAllowSquadioOrigins);
             app.UseStaticFiles();
 
             app.UseSwagger();
@@ -190,9 +192,6 @@ namespace Squadio.API
             {
                 endpoints.MapControllers();
             });
-
-            //app.UseMvcWithDefaultRoute();
-            //app.UseRequestLocalization();
         }
     }
 }
