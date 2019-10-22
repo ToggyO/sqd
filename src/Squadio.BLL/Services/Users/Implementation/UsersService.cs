@@ -51,12 +51,14 @@ namespace Squadio.BLL.Services.Users.Implementation
             var userPasswordRequest = await _repository.GetChangePasswordRequests(email, code);
             if (userPasswordRequest.IsActivated)
             {
-                return new ErrorResponse<UserDTO>
+                return new BusinessConflictErrorResponse<UserDTO>(new []
                 {
-                    Code = ErrorCodes.Business.PasswordChangeRequestInvalid,
-                    Message = ErrorMessages.Business.PasswordChangeCodeInvalid,
-                    HttpStatusCode = HttpStatusCode.Conflict
-                };
+                    new Error
+                    {
+                        Code = ErrorCodes.Business.PasswordChangeRequestInvalid,
+                        Message = ErrorMessages.Business.PasswordChangeRequestInvalid
+                    }
+                });
             }
             
             var passwordModel = await _passwordService.CreatePassword(password);
@@ -78,22 +80,15 @@ namespace Squadio.BLL.Services.Users.Implementation
             var user = await _repository.GetByEmail(email);
             if(user == null)
             {
-                return new ErrorResponse
+                return new BusinessConflictErrorResponse(new []
                 {
-                    Code = ErrorCodes.Common.NotFound,
-                    Message = ErrorMessages.Common.NotFound,
-                    // TODO: find correct http code for this
-                    HttpStatusCode = HttpStatusCode.Conflict,
-                    Errors = new List<Error>
+                    new Error
                     {
-                        new Error
-                        {
-                            Code = ErrorCodes.Business.UserDoesNotExists,
-                            Message = ErrorMessages.Business.UserDoesNotExists,
-                            Field = ErrorFields.User.Email
-                        }
+                        Code = ErrorCodes.Business.UserDoesNotExists,
+                        Message = ErrorMessages.Business.UserDoesNotExists,
+                        Field = ErrorFields.User.Email
                     }
-                };
+                });
             }
             
             var code = GenerateCode();
@@ -114,22 +109,15 @@ namespace Squadio.BLL.Services.Users.Implementation
             var userEntity = await _repository.GetById(id);
             if (userEntity == null)
             {
-                return new ErrorResponse<UserDTO>
+                return new BusinessConflictErrorResponse<UserDTO>(new []
                 {
-                    Code = ErrorCodes.Common.NotFound,
-                    Message = ErrorMessages.Common.NotFound,
-                    // TODO: find correct http code for this
-                    HttpStatusCode = HttpStatusCode.Conflict,
-                    Errors = new List<Error>
+                    new Error
                     {
-                        new Error
-                        {
-                            Code = ErrorCodes.Business.UserDoesNotExists,
-                            Message = ErrorMessages.Business.UserDoesNotExists,
-                            Field = ErrorFields.User.Id
-                        }
+                        Code = ErrorCodes.Business.UserDoesNotExists,
+                        Message = ErrorMessages.Business.UserDoesNotExists,
+                        Field = ErrorFields.User.Id
                     }
-                };
+                });
             }
 
             userEntity.Name = updateDTO.Name;

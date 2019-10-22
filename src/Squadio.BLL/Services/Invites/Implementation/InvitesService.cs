@@ -64,12 +64,14 @@ namespace Squadio.BLL.Services.Invites.Implementation
             var teamUser = await _teamsUsersRepository.GetTeamUser(teamId, authorId);
             if (teamUser == null || teamUser?.Status == UserStatus.Member)
             {
-                return new ErrorResponse<IEnumerable<InviteDTO>>()
+                return new ForbiddenErrorResponse<IEnumerable<InviteDTO>>(new []
                 {
-                    Code = ErrorCodes.Security.Forbidden,
-                    Message = ErrorMessages.Security.Forbidden,
-                    HttpStatusCode = HttpStatusCode.Forbidden
-                };
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.Forbidden,
+                        Message = ErrorMessages.Security.Forbidden,
+                    }
+                });
             }
 
             var result = new List<InviteDTO>();
@@ -123,12 +125,14 @@ namespace Squadio.BLL.Services.Invites.Implementation
             var projectUser = await _projectsUsersRepository.GetProjectUser(projectId, authorId);
             if (projectUser == null || projectUser?.Status == UserStatus.Member)
             {
-                return new ErrorResponse<IEnumerable<InviteDTO>>()
+                return new ForbiddenErrorResponse<IEnumerable<InviteDTO>>(new []
                 {
-                    Code = ErrorCodes.Security.Forbidden,
-                    Message = ErrorMessages.Security.Forbidden,
-                    HttpStatusCode = HttpStatusCode.Forbidden
-                };
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.Forbidden,
+                        Message = ErrorMessages.Security.Forbidden,
+                    }
+                });
             }
 
             var result = new List<InviteDTO>();
@@ -181,12 +185,14 @@ namespace Squadio.BLL.Services.Invites.Implementation
             
             if (invite == null || invite?.Activated == true)
             {
-                return new ErrorResponse
+                return new SecurityErrorResponse(new []
                 {
-                    Code = ErrorCodes.Security.InviteInvalid,
-                    Message = ErrorMessages.Security.InviteInvalid,
-                    HttpStatusCode = HttpStatusCode.BadRequest
-                };
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.InviteInvalid,
+                        Message = ErrorMessages.Security.InviteInvalid
+                    }
+                });
             }
 
             var teamUser = await _teamsUsersRepository.GetTeamUser(teamId, userId);
@@ -199,21 +205,15 @@ namespace Squadio.BLL.Services.Invites.Implementation
             var team = await _teamsRepository.GetById(teamId);
             if (team == null)
             {
-                return new ErrorResponse
+                return new BusinessConflictErrorResponse(new []
                 {
-                    Code = ErrorCodes.Common.NotFound,
-                    Message = ErrorMessages.Common.NotFound,
-                    HttpStatusCode = HttpStatusCode.BadRequest,
-                    Errors = new []
+                    new Error
                     {
-                        new Error
-                        {
-                            Code = ErrorCodes.Common.NotFound,
-                            Message = ErrorMessages.Common.NotFound,
-                            Field = ErrorFields.Team.Id
-                        }
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound,
+                        Field = ErrorFields.Team.Id
                     }
-                };
+                });
             }
 
             var companyUser = await _companiesUsersRepository.GetCompanyUser(team.CompanyId, userId);
@@ -222,21 +222,15 @@ namespace Squadio.BLL.Services.Invites.Implementation
                 var company = await _companiesRepository.GetById(team.CompanyId);
                 if (company == null)
                 {
-                    return new ErrorResponse
+                    return new BusinessConflictErrorResponse(new []
                     {
-                        Code = ErrorCodes.Common.NotFound,
-                        Message = ErrorMessages.Common.NotFound,
-                        HttpStatusCode = HttpStatusCode.BadRequest,
-                        Errors = new[]
+                        new Error
                         {
-                            new Error
-                            {
-                                Code = ErrorCodes.Common.NotFound,
-                                Message = ErrorMessages.Common.NotFound,
-                                Field = ErrorFields.Company.Id
-                            }
+                            Code = ErrorCodes.Common.NotFound,
+                            Message = ErrorMessages.Common.NotFound,
+                            Field = ErrorFields.Company.Id
                         }
-                    };
+                    });
                 }
 
                 await _companiesUsersRepository.AddCompanyUser(company.Id, userId, UserStatus.Member);
@@ -254,12 +248,14 @@ namespace Squadio.BLL.Services.Invites.Implementation
             
             if (invite == null || invite?.Activated == true)
             {
-                return new ErrorResponse
+                return new SecurityErrorResponse(new []
                 {
-                    Code = ErrorCodes.Security.InviteInvalid,
-                    Message = ErrorMessages.Security.InviteInvalid,
-                    HttpStatusCode = HttpStatusCode.BadRequest
-                };
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.InviteInvalid,
+                        Message = ErrorMessages.Security.InviteInvalid
+                    }
+                });
             }
 
             var projectUser = await _projectsUsersRepository.GetProjectUser(projectId, userId);

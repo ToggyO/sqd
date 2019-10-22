@@ -47,12 +47,14 @@ namespace Squadio.BLL.Services.Tokens.Implementation
             
             if(user == null || !isPasswordValid)
             {
-                return new ErrorResponse<AuthInfoDTO>
+                return new SecurityErrorResponse<AuthInfoDTO>(new []
                 {
-                    Code = ErrorCodes.Security.AuthDataInvalid,
-                    Message = ErrorMessages.Security.AuthDataInvalid,
-                    HttpStatusCode = HttpStatusCode.Conflict
-                };
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.AuthDataInvalid,
+                        Message = ErrorMessages.Security.AuthDataInvalid
+                    }
+                });
             }
 
             var tokenDTO = await _tokenFactory.CreateToken(user);
@@ -76,43 +78,29 @@ namespace Squadio.BLL.Services.Tokens.Implementation
             
             if (!isTokenValid)
             {
-                return new ErrorResponse<TokenDTO>
+                return new ForbiddenErrorResponse<TokenDTO>(new []
                 {
-                    HttpStatusCode = HttpStatusCode.Forbidden,
-                    Message = ErrorMessages.Security.Unauthorized,
-                    Code = ErrorCodes.Security.Unauthorized,
-
-                    Errors = new List<Error>
+                    new Error
                     {
-                        new Error
-                        {
-                            Message = ErrorMessages.Security.RefreshTokenInvalid,
-                            Code = ErrorCodes.Security.RefreshTokenInvalid,
-                            Field = "refreshToken"
-                        }
+                        Code = ErrorCodes.Security.RefreshTokenInvalid,
+                        Message = ErrorMessages.Security.RefreshTokenInvalid
                     }
-                };
+                });
             }
 
             var user = await _usersRepository.GetById(tokenPrincipal.GetUserId());
 
             if (user == null)
             {
-                return new ErrorResponse<TokenDTO>
+                return new BusinessConflictErrorResponse<TokenDTO>(new []
                 {
-                    Code = ErrorCodes.Business.UserDoesNotExists,
-                    Message = ErrorMessages.Business.UserDoesNotExists,
-                    HttpStatusCode = HttpStatusCode.BadRequest,
-                    Errors = new List<Error>
+                    new Error
                     {
-                        new Error
-                        {
-                            Code = ErrorCodes.Business.UserDoesNotExists,
-                            Message = ErrorMessages.Business.UserDoesNotExists,
-                            Field = ErrorFields.User.Email
-                        }
+                        Code = ErrorCodes.Business.UserDoesNotExists,
+                        Message = ErrorMessages.Business.UserDoesNotExists,
+                        Field = ErrorFields.User.Id
                     }
-                };
+                });
             }
 
             var tokenDTO = await _tokenFactory.CreateToken(user);
@@ -129,32 +117,28 @@ namespace Squadio.BLL.Services.Tokens.Implementation
 
             if ((string) infoFromGoogleToken.Audience != _googleSettings.Value.ClientId)
             {
-                return new ErrorResponse<AuthInfoDTO>
+                return new ForbiddenErrorResponse<AuthInfoDTO>(new []
                 {
-                    Code = ErrorCodes.Security.GoogleAccessTokenInvalid,
-                    Message = ErrorMessages.Security.GoogleAccessTokenInvalid,
-                    HttpStatusCode = HttpStatusCode.BadRequest
-                };
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.GoogleAccessTokenInvalid,
+                        Message = ErrorMessages.Security.GoogleAccessTokenInvalid
+                    }
+                });
             }
             
             var user = await _usersRepository.GetByEmail(infoFromGoogleToken.Email);
             if(user == null)
             {
-                return new ErrorResponse<AuthInfoDTO>
+                return new BusinessConflictErrorResponse<AuthInfoDTO>(new []
                 {
-                    Code = ErrorCodes.Business.UserDoesNotExists,
-                    Message = ErrorMessages.Business.UserDoesNotExists,
-                    HttpStatusCode = HttpStatusCode.BadRequest,
-                    Errors = new List<Error>
+                    new Error
                     {
-                        new Error
-                        {
-                            Code = ErrorCodes.Business.UserDoesNotExists,
-                            Message = ErrorMessages.Business.UserDoesNotExists,
-                            Field = ErrorFields.User.Email
-                        }
+                        Code = ErrorCodes.Business.UserDoesNotExists,
+                        Message = ErrorMessages.Business.UserDoesNotExists,
+                        Field = ErrorFields.User.Email
                     }
-                };
+                });
             }
             
             var tokenDTO = await _tokenFactory.CreateToken(user);

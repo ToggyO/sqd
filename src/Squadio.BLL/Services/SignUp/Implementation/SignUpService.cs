@@ -8,7 +8,6 @@ using Microsoft.Extensions.Options;
 using Squadio.BLL.Providers.Invites;
 using Squadio.BLL.Services.Companies;
 using Squadio.BLL.Services.Email;
-using Squadio.BLL.Services.Invites;
 using Squadio.BLL.Services.Projects;
 using Squadio.BLL.Services.Teams;
 using Squadio.BLL.Services.Users;
@@ -92,12 +91,14 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             if (!inviteResponse.IsSuccess || inviteResponse.Data?.Code != dto.InviteCode ||
                 inviteResponse.Data?.Activated == true)
             {
-                return new ErrorResponse<UserDTO>
+                return new SecurityErrorResponse<UserDTO>(new []
                 {
-                    Code = ErrorCodes.Security.InviteInvalid,
-                    Message = ErrorMessages.Security.InviteInvalid,
-                    HttpStatusCode = HttpStatusCode.BadRequest
-                };
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.InviteInvalid,
+                        Message = ErrorMessages.Security.InviteInvalid
+                    }
+                });
             }
 
             user = new UserModel
@@ -126,12 +127,14 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             if ((string) infoFromGoogleToken.Audience != _googleSettings.Value.ClientId)
             {
-                return new ErrorResponse<UserDTO>
+                return new SecurityErrorResponse<UserDTO>(new []
                 {
-                    Code = ErrorCodes.Security.GoogleAccessTokenInvalid,
-                    Message = ErrorMessages.Security.GoogleAccessTokenInvalid,
-                    HttpStatusCode = HttpStatusCode.BadRequest
-                };
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.InviteInvalid,
+                        Message = ErrorMessages.Security.InviteInvalid
+                    }
+                });
             }
 
             return await SignUpMemberEmail(new SignUpMemberDTO
@@ -148,21 +151,15 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             var user = await _usersRepository.GetByEmail(email);
             if (user != null)
             {
-                return new ErrorResponse<UserDTO>
+                return new BusinessConflictErrorResponse<UserDTO>(new []
                 {
-                    Code = ErrorCodes.Business.EmailExists,
-                    Message = ErrorMessages.Business.EmailExists,
-                    HttpStatusCode = HttpStatusCode.BadRequest,
-                    Errors = new List<Error>
+                    new Error
                     {
-                        new Error
-                        {
-                            Code = ErrorCodes.Business.EmailExists,
-                            Message = ErrorMessages.Business.EmailExists,
-                            Field = ErrorFields.User.Email
-                        }
+                        Code = ErrorCodes.Business.EmailExists,
+                        Message = ErrorMessages.Business.EmailExists,
+                        Field = ErrorFields.User.Email
                     }
-                };
+                });
             }
 
             var code = _usersService.GenerateCode();
@@ -201,32 +198,28 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             if ((string) infoFromGoogleToken.Audience != _googleSettings.Value.ClientId)
             {
-                return new ErrorResponse<UserDTO>
+                return new SecurityErrorResponse<UserDTO>(new []
                 {
-                    Code = ErrorCodes.Security.GoogleAccessTokenInvalid,
-                    Message = ErrorMessages.Security.GoogleAccessTokenInvalid,
-                    HttpStatusCode = HttpStatusCode.BadRequest
-                };
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.InviteInvalid,
+                        Message = ErrorMessages.Security.InviteInvalid
+                    }
+                });
             }
 
             var user = await _usersRepository.GetByEmail(infoFromGoogleToken.Email);
             if (user != null)
             {
-                return new ErrorResponse<UserDTO>
+                return new BusinessConflictErrorResponse<UserDTO>(new []
                 {
-                    Code = ErrorCodes.Business.EmailExists,
-                    Message = ErrorMessages.Business.EmailExists,
-                    HttpStatusCode = HttpStatusCode.BadRequest,
-                    Errors = new List<Error>
+                    new Error
                     {
-                        new Error
-                        {
-                            Code = ErrorCodes.Business.EmailExists,
-                            Message = ErrorMessages.Business.EmailExists,
-                            Field = ErrorFields.User.Email
-                        }
+                        Code = ErrorCodes.Business.EmailExists,
+                        Message = ErrorMessages.Business.EmailExists,
+                        Field = ErrorFields.User.Email
                     }
-                };
+                });
             }
 
             user = new UserModel
@@ -254,13 +247,14 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             if (step.Step >= RegistrationStep.EmailConfirmed)
             {
-                return new ErrorResponse<UserDTO>
+                return new BusinessConflictErrorResponse(new []
                 {
-                    Code = ErrorCodes.Business.InvalidRegistrationStep,
-                    Message = ErrorMessages.Business.InvalidRegistrationStep,
-                    // TODO: find correct http code for this
-                    HttpStatusCode = HttpStatusCode.Conflict
-                };
+                    new Error
+                    {
+                        Code = ErrorCodes.Business.InvalidRegistrationStep,
+                        Message = ErrorMessages.Business.InvalidRegistrationStep
+                    }
+                });
             }
 
             var request = await _repository.GetRequest(userId, code);
@@ -280,13 +274,14 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             if (step.Step >= RegistrationStep.UsernameEntered)
             {
-                return new ErrorResponse<UserDTO>
+                return new BusinessConflictErrorResponse<UserDTO>(new []
                 {
-                    Code = ErrorCodes.Business.InvalidRegistrationStep,
-                    Message = ErrorMessages.Business.InvalidRegistrationStep,
-                    // TODO: find correct http code for this
-                    HttpStatusCode = HttpStatusCode.Conflict
-                };
+                    new Error
+                    {
+                        Code = ErrorCodes.Business.InvalidRegistrationStep,
+                        Message = ErrorMessages.Business.InvalidRegistrationStep
+                    }
+                });
             }
 
             var userResponse = await _usersService.UpdateUser(id, updateDTO);
@@ -306,13 +301,14 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             if (step.Step >= RegistrationStep.Agreement)
             {
-                return new ErrorResponse
+                return new BusinessConflictErrorResponse(new []
                 {
-                    Code = ErrorCodes.Business.InvalidRegistrationStep,
-                    Message = ErrorMessages.Business.InvalidRegistrationStep,
-                    // TODO: find correct http code for this
-                    HttpStatusCode = HttpStatusCode.Conflict
-                };
+                    new Error
+                    {
+                        Code = ErrorCodes.Business.InvalidRegistrationStep,
+                        Message = ErrorMessages.Business.InvalidRegistrationStep
+                    }
+                });
             }
 
             await _repository.SetRegistrationStep(userId, RegistrationStep.Agreement);
@@ -325,13 +321,14 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             if (step.Step >= RegistrationStep.CompanyCreated)
             {
-                return new ErrorResponse<CompanyDTO>
+                return new BusinessConflictErrorResponse<CompanyDTO>(new []
                 {
-                    Code = ErrorCodes.Business.InvalidRegistrationStep,
-                    Message = ErrorMessages.Business.InvalidRegistrationStep,
-                    // TODO: find correct http code for this
-                    HttpStatusCode = HttpStatusCode.Conflict
-                };
+                    new Error
+                    {
+                        Code = ErrorCodes.Business.InvalidRegistrationStep,
+                        Message = ErrorMessages.Business.InvalidRegistrationStep
+                    }
+                });
             }
 
             var company = await _companiesService.Create(userId, dto);
@@ -347,13 +344,14 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             if (step.Step >= RegistrationStep.TeamCreated)
             {
-                return new ErrorResponse<TeamDTO>
+                return new BusinessConflictErrorResponse<TeamDTO>(new []
                 {
-                    Code = ErrorCodes.Business.InvalidRegistrationStep,
-                    Message = ErrorMessages.Business.InvalidRegistrationStep,
-                    // TODO: find correct http code for this
-                    HttpStatusCode = HttpStatusCode.Conflict
-                };
+                    new Error
+                    {
+                        Code = ErrorCodes.Business.InvalidRegistrationStep,
+                        Message = ErrorMessages.Business.InvalidRegistrationStep
+                    }
+                });
             }
 
             var team = await _teamsService.Create(userId, dto);
@@ -372,13 +370,14 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             if (step.Step >= RegistrationStep.ProjectCreated)
             {
-                return new ErrorResponse<ProjectDTO>
+                return new BusinessConflictErrorResponse<ProjectDTO>(new []
                 {
-                    Code = ErrorCodes.Business.InvalidRegistrationStep,
-                    Message = ErrorMessages.Business.InvalidRegistrationStep,
-                    // TODO: find correct http code for this
-                    HttpStatusCode = HttpStatusCode.Conflict
-                };
+                    new Error
+                    {
+                        Code = ErrorCodes.Business.InvalidRegistrationStep,
+                        Message = ErrorMessages.Business.InvalidRegistrationStep
+                    }
+                });
             }
 
             var project = await _projectsService.Create(userId, dto);
@@ -397,13 +396,14 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             if (step.Step >= RegistrationStep.Done)
             {
-                return new ErrorResponse
+                return new BusinessConflictErrorResponse(new []
                 {
-                    Code = ErrorCodes.Business.InvalidRegistrationStep,
-                    Message = ErrorMessages.Business.InvalidRegistrationStep,
-                    // TODO: find correct http code for this
-                    HttpStatusCode = HttpStatusCode.Conflict
-                };
+                    new Error
+                    {
+                        Code = ErrorCodes.Business.InvalidRegistrationStep,
+                        Message = ErrorMessages.Business.InvalidRegistrationStep
+                    }
+                });
             }
 
             await _repository.SetRegistrationStep(userId, RegistrationStep.Done);

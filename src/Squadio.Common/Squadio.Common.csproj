@@ -12,4 +12,10 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Models\Responses\CustomResponses.cs">
+      <DependentUpon>Response.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
 </Project>

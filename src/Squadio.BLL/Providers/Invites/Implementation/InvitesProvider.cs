@@ -21,12 +21,14 @@ namespace Squadio.BLL.Providers.Invites.Implementation
             var item = await _repository.GetInviteByCode(code);
             if (item == null)
             {
-                return new ErrorResponse<InviteModel>
+                return new SecurityErrorResponse<InviteModel>(new []
                 {
-                    Code = ErrorCodes.Security.InviteInvalid,
-                    Message = ErrorMessages.Security.InviteInvalid,
-                    HttpStatusCode = HttpStatusCode.BadRequest
-                };
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.InviteInvalid,
+                        Message = ErrorMessages.Security.InviteInvalid
+                    }
+                });
             }
 
             return new Response<InviteModel>
