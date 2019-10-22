@@ -13,23 +13,23 @@
         /// <summary>
         /// User entered name
         /// </summary>
-        UsernameEntered = 4,
+        UsernameEntered = 3,
         /// <summary>
         /// User accepted agreement with terms and privacy policy 
         /// </summary>
-        Agreement = 5,
+        Agreement = 4,
         /// <summary>
         /// User created company
         /// </summary>
-        CompanyCreated = 6,
+        CompanyCreated = 5,
         /// <summary>
         /// User created team
         /// </summary>
-        TeamCreated = 7,
+        TeamCreated = 6,
         /// <summary>
         /// User created project
         /// </summary>
-        ProjectCreated = 8,
-        Done = 9
+        ProjectCreated = 7,
+        Done = 8
     }
 }

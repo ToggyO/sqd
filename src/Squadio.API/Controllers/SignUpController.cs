@@ -75,21 +75,21 @@ namespace Squadio.API.Controllers
             return await _handler.SignUpAgreement(User);
         }
         
-        [HttpPut("admin/company")]
+        [HttpPost("admin/company")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<Response<CompanyDTO>> CreateCompany([Required, FromBody] CreateCompanyDTO dto)
         {
             return await _handler.SignUpCompany(dto, User);
         }
         
-        [HttpPut("admin/team")]
+        [HttpPost("admin/team")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<Response<TeamDTO>> CreateTeam([Required, FromBody] CreateTeamDTO dto)
         {
             return await _handler.SignUpTeam(dto, User);
         }
         
-        [HttpPut("admin/project")]
+        [HttpPost("admin/project")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<Response<ProjectDTO>> CreateProject([Required, FromBody] CreateProjectDTO dto)
         {

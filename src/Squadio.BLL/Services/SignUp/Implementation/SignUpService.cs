@@ -194,16 +194,32 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
         public async Task<Response<UserDTO>> SignUpGoogle(string googleToken)
         {
-            var infoFromGoogleToken = await GoogleJsonWebSignature.ValidateAsync(googleToken);
+            GoogleJsonWebSignature.Payload infoFromGoogleToken;
 
-            if ((string) infoFromGoogleToken.Audience != _googleSettings.Value.ClientId)
+            try
             {
-                return new SecurityErrorResponse<UserDTO>(new []
+                infoFromGoogleToken = await GoogleJsonWebSignature.ValidateAsync(googleToken);
+            }
+            catch
+            {
+                return new SecurityErrorResponse<UserDTO>(new[]
                 {
                     new Error
                     {
-                        Code = ErrorCodes.Security.InviteInvalid,
-                        Message = ErrorMessages.Security.InviteInvalid
+                        Code = ErrorCodes.Security.GoogleTokenInvalid,
+                        Message = ErrorMessages.Security.GoogleTokenInvalid
+                    }
+                });
+            }
+
+            if ((string) infoFromGoogleToken.Audience != _googleSettings.Value.ClientId)
+            {
+                return new SecurityErrorResponse<UserDTO>(new[]
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.GoogleTokenInvalid,
+                        Message = ErrorMessages.Security.GoogleTokenInvalid
                     }
                 });
             }

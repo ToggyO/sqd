@@ -3,7 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
-using Squadio.Common.Models.Requests;
+using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
 
 namespace Squadio.API.Extensions
@@ -41,7 +41,7 @@ namespace Squadio.API.Extensions
             var error = new ErrorResponse
             {
                 Message = exception.Message,
-                Code = RequestResult.Fatal.ApiCode.Code,
+                Code = ErrorCodes.System.InternalError,
             };
 
             var result = JsonConvert.SerializeObject(error);

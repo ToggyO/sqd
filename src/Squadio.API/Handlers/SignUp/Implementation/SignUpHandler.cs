@@ -98,11 +98,14 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             var signUpResult = await _service.SignUpGoogle(googleToken);
             if (!signUpResult.IsSuccess)
             {
+                var errorResponse = (ErrorResponse<UserDTO>) signUpResult;
+                
                 return new ErrorResponse<AuthInfoDTO>
                 {
-                    Message = ((ErrorResponse<UserDTO>) signUpResult).Message,
-                    HttpStatusCode = signUpResult.HttpStatusCode,
-                    Code = signUpResult.Code
+                    Message = errorResponse.Message,
+                    Code = errorResponse.Code,
+                    Errors = errorResponse.Errors,
+                    HttpStatusCode = errorResponse.HttpStatusCode
                 };
             }
             

@@ -121,8 +121,8 @@ namespace Squadio.BLL.Services.Tokens.Implementation
                 {
                     new Error
                     {
-                        Code = ErrorCodes.Security.GoogleAccessTokenInvalid,
-                        Message = ErrorMessages.Security.GoogleAccessTokenInvalid
+                        Code = ErrorCodes.Security.GoogleTokenInvalid,
+                        Message = ErrorMessages.Security.GoogleTokenInvalid
                     }
                 });
             }

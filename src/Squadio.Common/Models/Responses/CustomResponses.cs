@@ -36,22 +36,6 @@ namespace Squadio.Common.Models.Responses
         }
     }
 
-    public class ForbiddenErrorResponse : ErrorResponse
-    {
-        public ForbiddenErrorResponse(IEnumerable<Error> errors)
-        {
-            Code = ErrorCodes.Security.Forbidden;
-            Message = ErrorMessages.Security.Forbidden;
-            HttpStatusCode = HttpStatusCode.Forbidden;
-
-            Errors = errors;
-        }
-
-        public ForbiddenErrorResponse(Error error) : this(new[] {error})
-        {
-        }
-    }
-
     public class ForbiddenErrorResponse<T> : ErrorResponse<T> where T : class
     {
         public ForbiddenErrorResponse(IEnumerable<Error> errors)
@@ -68,7 +52,23 @@ namespace Squadio.Common.Models.Responses
         }
     }
 
-    public class SecurityErrorResponse : ErrorResponse
+    public class ForbiddenErrorResponse : ErrorResponse
+    {
+        public ForbiddenErrorResponse(IEnumerable<Error> errors)
+        {
+            Code = ErrorCodes.Security.Forbidden;
+            Message = ErrorMessages.Security.Forbidden;
+            HttpStatusCode = HttpStatusCode.Forbidden;
+
+            Errors = errors;
+        }
+
+        public ForbiddenErrorResponse(Error error) : this(new[] {error})
+        {
+        }
+    }
+
+    public class SecurityErrorResponse<T> : ErrorResponse<T> where T : class
     {
         public SecurityErrorResponse(IEnumerable<Error> errors)
         {
@@ -84,7 +84,7 @@ namespace Squadio.Common.Models.Responses
         }
     }
 
-    public class SecurityErrorResponse<T> : ErrorResponse<T> where T : class
+    public class SecurityErrorResponse : ErrorResponse
     {
         public SecurityErrorResponse(IEnumerable<Error> errors)
         {

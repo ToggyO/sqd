@@ -11,7 +11,7 @@
 
         public static class Business
         {
-            public const string EmailExists = "Email is already registered";
+            public const string EmailExists = "Email already exists";
             public const string UserDoesNotExists = "User does not exists";
             public const string UserIsDeleted = "You don't have access to Anova system - your account is deleted";
             public const string UserIsBlocked = "You cannot request profile information from Research site(s) - your account is blocked";
@@ -31,7 +31,7 @@
             public const string Unauthorized = "Unauthorized";
             public const string AuthDataInvalid = "Auth data invalid";
             public const string AccessTokenInvalid = "Access token invalid";
-            public const string GoogleAccessTokenInvalid = "Google access token invalid";
+            public const string GoogleTokenInvalid = "Google token invalid";
             public const string RefreshTokenInvalid = "Refresh token invalid";
             public const string InviteInvalid = "Invite is invalid";
         }
