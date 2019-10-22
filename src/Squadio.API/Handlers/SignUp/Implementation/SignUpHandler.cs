@@ -72,40 +72,49 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             return result;
         }
 
-        public async Task<Response> SignUp(string email, string password)
+        public async Task<Response<AuthInfoDTO>> SignUp(string email, string password)
         {
-            var result = await _service.SignUp(email, password);
-            return result;
-        }
-
-        public async Task<Response<UserDTO>> SignUpGoogle(string googleToken)
-        {
-            var result = await _service.SignUpGoogle(googleToken);
-            return result;
-        }
-
-        /*
-        public async Task<Response<AuthInfoDTO>> SignUpPassword(UserSetPasswordDTO dto)
-        {
-            var signUpPasswordResult = await _service.SignUpPassword(dto.Email, dto.Code, dto.Password);
-            if (!signUpPasswordResult.IsSuccess)
+            var signUpResult = await _service.SignUp(email, password);
+            if (!signUpResult.IsSuccess)
             {
                 return new ErrorResponse<AuthInfoDTO>
                 {
-                    Message = ((ErrorResponse<UserDTO>) signUpPasswordResult).Message,
-                    HttpStatusCode = signUpPasswordResult.HttpStatusCode,
-                    Code = signUpPasswordResult.Code
+                    Message = ((ErrorResponse<UserDTO>) signUpResult).Message,
+                    HttpStatusCode = signUpResult.HttpStatusCode,
+                    Code = signUpResult.Code
                 };
             }
             
             var result = await _tokensService.Authenticate(new CredentialsDTO
             {
-                Password = dto.Password,
-                Email = dto.Email
+                Password = password,
+                Email = email
             });
             return result;
         }
-        */
+
+        public async Task<Response<AuthInfoDTO>> SignUpGoogle(string googleToken)
+        {
+            var signUpResult = await _service.SignUpGoogle(googleToken);
+            if (!signUpResult.IsSuccess)
+            {
+                return new ErrorResponse<AuthInfoDTO>
+                {
+                    Message = ((ErrorResponse<UserDTO>) signUpResult).Message,
+                    HttpStatusCode = signUpResult.HttpStatusCode,
+                    Code = signUpResult.Code
+                };
+            }
+            
+            var result = await _tokensService.GoogleAuthenticate(googleToken);
+            return result;
+        }
+
+        public async Task<Response> SignUpConfirm(string code, ClaimsPrincipal claims)
+        {
+            var result = await _service.SignUpConfirm(claims.GetUserId(), code);
+            return result;
+        }
 
         public async Task<Response<UserDTO>> SignUpUsername(UserUpdateDTO dto, ClaimsPrincipal claims)
         {

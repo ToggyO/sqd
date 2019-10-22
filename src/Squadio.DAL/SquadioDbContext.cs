@@ -46,13 +46,13 @@ namespace Squadio.DAL
             {
                 item.HasKey(c => c.Id);
                 item.HasOne(p => p.User)
-                    .WithOne();
+                    .WithMany();
             });
             modelBuilder.Entity<UserSignUpRequestModel>(item =>
             {
                 item.HasKey(c => c.Id);
                 item.HasOne(p => p.User)
-                    .WithOne();
+                    .WithMany();
             });
             
             
