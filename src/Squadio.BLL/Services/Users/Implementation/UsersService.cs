@@ -17,19 +17,16 @@ namespace Squadio.BLL.Services.Users.Implementation
     public class UsersService : IUsersService
     {
         private readonly IUsersRepository _repository;
-        private readonly IEmailService<PasswordSetEmailModel> _passwordSetMailService;
         private readonly IEmailService<PasswordResetEmailModel> _passwordResetMailService;
         private readonly IPasswordService _passwordService;
         private readonly IMapper _mapper;
         public UsersService(IUsersRepository repository
-            , IEmailService<PasswordSetEmailModel> passwordSetMailService
             , IEmailService<PasswordResetEmailModel> passwordResetMailService
             , IPasswordService passwordService
             , IMapper mapper
             )
         {
             _repository = repository;
-            _passwordSetMailService = passwordSetMailService;
             _passwordResetMailService = passwordResetMailService;
             _passwordService = passwordService;
             _mapper = mapper;

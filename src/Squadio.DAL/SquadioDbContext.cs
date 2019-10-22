@@ -12,6 +12,7 @@ namespace Squadio.DAL
         public DbSet<UserModel> Users { get; set; }
         public DbSet<UserRegistrationStepModel> UsersRegistrationStep { get; set; }
         public DbSet<UserPasswordRequestModel> UserPasswordRequests { get; set; }
+        public DbSet<UserSignUpRequestModel> UserSignUpRequests { get; set; }
         public DbSet<CompanyModel> Companies { get; set; }
         public DbSet<CompanyUserModel> CompaniesUsers { get; set; }
         public DbSet<TeamModel> Teams { get; set; }
@@ -41,7 +42,13 @@ namespace Squadio.DAL
                 item.HasOne(p => p.User)
                     .WithOne();
             });
-            modelBuilder.Entity<UserRegistrationStepModel>(item =>
+            modelBuilder.Entity<UserPasswordRequestModel>(item =>
+            {
+                item.HasKey(c => c.Id);
+                item.HasOne(p => p.User)
+                    .WithOne();
+            });
+            modelBuilder.Entity<UserSignUpRequestModel>(item =>
             {
                 item.HasKey(c => c.Id);
                 item.HasOne(p => p.User)

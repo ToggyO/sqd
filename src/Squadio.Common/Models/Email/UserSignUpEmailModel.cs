@@ -1,6 +1,6 @@
 ﻿namespace Squadio.Common.Models.Email
 {
-    public class PasswordSetEmailModel : EmailAbstractModel
+    public class UserSignUpEmailModel : EmailAbstractModel
     {
         public string Code { get; set; }
     }

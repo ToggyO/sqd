@@ -6,32 +6,32 @@ using Squadio.Common.Settings;
 
 namespace Squadio.BLL.Services.Email.Implementations
 {
-    public class SetPasswordEmailService: BaseEmailService<PasswordSetEmailModel>
+    public class UserSignUpEmailService: BaseEmailService<UserSignUpEmailModel>
     {
         private readonly IOptions<StaticUrlsSettingsModel> _options;
         
-        public SetPasswordEmailService(IOptions<EmailSettingsModel> emailSettings
+        public UserSignUpEmailService(IOptions<EmailSettingsModel> emailSettings
             , IEmailSender emailSender
             , IOptions<StaticUrlsSettingsModel> options) : base(emailSettings, emailSender)
         {
             _options = options;
         }
 
-        protected override string GetHtmlTemplate(PasswordSetEmailModel model)
+        protected override string GetHtmlTemplate(UserSignUpEmailModel model)
         {
             
             var resource = EmbeddedResources
                 .GetResource(
-                    "Squadio.BLL.Services.Email.Templates.SetPasswordTemplate.html")
+                    "Squadio.BLL.Services.Email.Templates.SignUpRequestTemplate.html")
                 .Replace("{{SetPasswordUrl}}", _options.Value.SetPasswordUrl)
                 .Replace("{{Code}}", model.Code);
 
             return resource;
         }
 
-        protected override string GetSubject(PasswordSetEmailModel emailModel)
+        protected override string GetSubject(UserSignUpEmailModel emailModel)
         {
-            return "Set password";
+            return "SignUp request";
         }
     }
 }

@@ -57,5 +57,48 @@ namespace Squadio.DAL.Repository.SignUp.Implementation
             await _context.SaveChangesAsync();
             return item;
         }
+
+        public async Task<UserSignUpRequestModel> AddRequest(Guid userId, string code)
+        {
+            var newRequest = new UserSignUpRequestModel
+            {
+                UserId = userId,
+                Code = code,
+                CreatedDate = DateTime.UtcNow,
+                IsActivated = false
+            };
+            await _context.UserSignUpRequests.AddAsync(newRequest);
+            await _context.SaveChangesAsync();
+            return newRequest;
+        }
+
+        public async Task<UserSignUpRequestModel> GetRequest(Guid userId, string code)
+        {
+            var item = await _context.UserSignUpRequests
+                .Where(x => x.Code == code && x.UserId == userId)
+                .OrderByDescending(x => x.CreatedDate)
+                .FirstOrDefaultAsync();
+            return item;
+        }
+
+        public async Task<UserSignUpRequestModel> GetRequest(string email, string code)
+        {
+            var item = await _context.UserSignUpRequests
+                .Include(x => x.User)
+                .Where(x => x.Code == code && x.User.Email.ToUpper() == email.ToUpper())
+                .OrderByDescending(x => x.CreatedDate)
+                .FirstOrDefaultAsync();
+            return item;
+        }
+
+        public async Task<UserSignUpRequestModel> ActivateRequest(Guid requestId)
+        {
+            var item = await _context.UserSignUpRequests.FindAsync(requestId);
+            item.ActivatedDate = DateTime.UtcNow;
+            item.IsActivated = true;
+            _context.UserSignUpRequests.Update(item);
+            await _context.SaveChangesAsync();
+            return item;
+        }
     }
 }

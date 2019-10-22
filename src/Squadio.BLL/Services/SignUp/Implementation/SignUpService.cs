@@ -32,7 +32,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
     {
         private readonly ISignUpRepository _repository;
         private readonly IUsersRepository _usersRepository;
-        private readonly IEmailService<PasswordSetEmailModel> _passwordSetMailService;
+        private readonly IEmailService<UserSignUpEmailModel> _signUpMailService;
         private readonly IOptions<GoogleSettings> _googleSettings;
         private readonly IInvitesProvider _invitesProvider;
         private readonly IUsersService _usersService;
@@ -43,7 +43,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
         public SignUpService(ISignUpRepository repository
             , IUsersRepository usersRepository
-            , IEmailService<PasswordSetEmailModel> passwordSetMailService
+            , IEmailService<UserSignUpEmailModel> passwordSetMailService
             , IOptions<GoogleSettings> googleSettings
             , IInvitesProvider invitesProvider
             , IUsersService usersService
@@ -55,7 +55,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
         {
             _repository = repository;
             _usersRepository = usersRepository;
-            _passwordSetMailService = passwordSetMailService;
+            _signUpMailService = passwordSetMailService;
             _googleSettings = googleSettings;
             _invitesProvider = invitesProvider;
             _usersService = usersService;
@@ -143,7 +143,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             });
         }
 
-        public async Task<Response> SignUp(string email, string password)
+        public async Task<Response<UserDTO>> SignUp(string email, string password)
         {
             var user = await _usersRepository.GetByEmail(email);
             if (user != null)
@@ -164,15 +164,10 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                     }
                 };
             }
-            
-            // TODO: protection of changing models
-            return new Response();
 
             var code = _usersService.GenerateCode();
-
-            // TODO: here must be other emailService 
-            // for example 'SignUpRequest', not 'SetPassword'
-            await _passwordSetMailService.Send(new PasswordSetEmailModel
+            
+            await _signUpMailService.Send(new UserSignUpEmailModel()
             {
                 Code = code,
                 To = email
@@ -189,20 +184,15 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             
             var userResponse = await _usersService.SetPassword(email, password);
             var userDTO = userResponse.Data;
+            
+            await _repository.AddRequest(user.Id, code);
+
+            await _repository.SetRegistrationStep(user.Id, RegistrationStep.New);
 
             return new Response<UserDTO>
             {
                 Data = userDTO
             };
-
-            // TODO: here must be adding signup request
-            // need add new entity SignUpRequestModel for saving CODE
-            // which will be used for confirming email
-            await _usersRepository.AddChangePasswordRequest(user.Id, code);
-
-            await _repository.SetRegistrationStep(user.Id, RegistrationStep.New);
-
-            return new Response();
         }
 
         public async Task<Response<UserDTO>> SignUpGoogle(string googleToken)
@@ -245,17 +235,10 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 Email = infoFromGoogleToken.Email,
                 CreatedDate = DateTime.Now
             };
+            
             user = await _usersRepository.Create(user);
 
             await _repository.SetRegistrationStep(user.Id, RegistrationStep.EmailConfirmed);
-
-            var code = _usersService.GenerateCode();
-            await _passwordSetMailService.Send(new PasswordSetEmailModel
-            {
-                Code = code,
-                To = user.Email
-            });
-            await _usersRepository.AddChangePasswordRequest(user.Id, code);
 
             var result = _mapper.Map<UserModel, UserDTO>(user);
 
@@ -265,13 +248,11 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             };
         }
 
-        // TODO: password set in SignUp. Here should be email confirming.
-        /*
-        public async Task<Response<UserDTO>> SignUpPassword(string email, string code, string password)
+        public async Task<Response> SignUpConfirm(Guid userId, string code)
         {
-            var step = await _repository.GetRegistrationStepByEmail(email);
+            var step = await _repository.GetRegistrationStepByUserId(userId);
 
-            if (step.Step >= RegistrationStep.PasswordEntered)
+            if (step.Step >= RegistrationStep.EmailConfirmed)
             {
                 return new ErrorResponse<UserDTO>
                 {
@@ -282,17 +263,16 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 };
             }
 
-            var userResponse = await _usersService.SetPassword(email, code, password);
-            var user = userResponse.Data;
+            var request = await _repository.GetRequest(userId, code);
+            
+            // TODO: Check lifetime of request if needed
 
-            await _repository.SetRegistrationStep(user.Id, RegistrationStep.PasswordEntered);
+            await _repository.ActivateRequest(request.Id);
 
-            return new Response<UserDTO>
-            {
-                Data = user
-            };
+            await _repository.SetRegistrationStep(userId, RegistrationStep.EmailConfirmed);
+            
+            return new Response();
         }
-        */
 
         public async Task<Response<UserDTO>> SignUpUsername(Guid id, UserUpdateDTO updateDTO)
         {
