@@ -11,16 +11,16 @@ namespace Squadio.BLL.Services.SignUp
 {
     public interface ISignUpService
     {
-        Task<Response<UserDTO>> SignUpMemberEmail(SignUpMemberDTO dto);
-        Task<Response<UserDTO>> SignUpMemberGoogle(SignUpMemberGoogleDTO dto);
-        Task<Response<UserDTO>> SignUp(string email, string password);
-        Task<Response<UserDTO>> SignUpGoogle(string googleToken);
-        Task<Response> SignUpConfirm(Guid userId, string code);
-        Task<Response<UserDTO>> SignUpUsername(Guid userId, UserUpdateDTO updateDTO);
-        Task<Response> SignUpAgreement(Guid userId);
-        Task<Response<CompanyDTO>> SignUpCompany(Guid userId, CreateCompanyDTO dto);
-        Task<Response<TeamDTO>> SignUpTeam(Guid userId, CreateTeamDTO dto);
-        Task<Response<ProjectDTO>> SignUpProject(Guid userId, CreateProjectDTO dto);
-        Task<Response> SignUpDone(Guid userId);
+        Task<Response> SignUpMemberEmail(SignUpMemberDTO dto);
+        Task<Response> SignUpMemberGoogle(SignUpMemberGoogleDTO dto);
+        Task<Response> SignUp(string email, string password);
+        Task<Response> SignUpGoogle(string googleToken);
+        Task<Response<UserRegistrationStepDTO>> SignUpConfirm(Guid userId, string code);
+        Task<Response<UserRegistrationStepDTO<UserDTO>>> SignUpUsername(Guid userId, UserUpdateDTO updateDTO);
+        Task<Response<UserRegistrationStepDTO>> SignUpAgreement(Guid userId);
+        Task<Response<UserRegistrationStepDTO<CompanyDTO>>> SignUpCompany(Guid userId, CreateCompanyDTO dto);
+        Task<Response<UserRegistrationStepDTO<TeamDTO>>> SignUpTeam(Guid userId, CreateTeamDTO dto);
+        Task<Response<UserRegistrationStepDTO<ProjectDTO>>> SignUpProject(Guid userId, CreateProjectDTO dto);
+        Task<Response<UserRegistrationStepDTO>> SignUpDone(Guid userId);
     }
 }

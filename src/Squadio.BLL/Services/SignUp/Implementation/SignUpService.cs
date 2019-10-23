@@ -64,7 +64,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             _mapper = mapper;
         }
 
-        public async Task<Response<UserDTO>> SignUpMemberEmail(SignUpMemberDTO dto)
+        public async Task<Response> SignUpMemberEmail(SignUpMemberDTO dto)
         {
             var user = await _usersRepository.GetByEmail(dto.Email);
             if (user != null)
@@ -121,7 +121,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             };
         }
 
-        public async Task<Response<UserDTO>> SignUpMemberGoogle(SignUpMemberGoogleDTO dto)
+        public async Task<Response> SignUpMemberGoogle(SignUpMemberGoogleDTO dto)
         {
             GoogleJsonWebSignature.Payload infoFromGoogleToken;
 
@@ -151,7 +151,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             });
         }
 
-        public async Task<Response<UserDTO>> SignUp(string email, string password)
+        public async Task<Response> SignUp(string email, string password)
         {
             var user = await _usersRepository.GetByEmail(email);
             if (user != null)
@@ -197,7 +197,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             };
         }
 
-        public async Task<Response<UserDTO>> SignUpGoogle(string googleToken)
+        public async Task<Response> SignUpGoogle(string googleToken)
         {
             GoogleJsonWebSignature.Payload infoFromGoogleToken;
 
@@ -264,7 +264,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             };
         }
 
-        public async Task<Response> SignUpConfirm(Guid userId, string code)
+        public async Task<Response<UserRegistrationStepDTO>> SignUpConfirm(Guid userId, string code)
         {
             var step = await _repository.GetRegistrationStepByUserId(userId);
 
@@ -291,7 +291,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             return new Response();
         }
 
-        public async Task<Response<UserDTO>> SignUpUsername(Guid id, UserUpdateDTO updateDTO)
+        public async Task<Response<UserRegistrationStepDTO<UserDTO>>> SignUpUsername(Guid id, UserUpdateDTO updateDTO)
         {
             var step = await _repository.GetRegistrationStepByUserId(id);
 
@@ -318,7 +318,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             };
         }
 
-        public async Task<Response> SignUpAgreement(Guid userId)
+        public async Task<Response<UserRegistrationStepDTO>> SignUpAgreement(Guid userId)
         {
             var step = await _repository.GetRegistrationStepByUserId(userId);
 
@@ -338,7 +338,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             return new Response();
         }
 
-        public async Task<Response<CompanyDTO>> SignUpCompany(Guid userId, CreateCompanyDTO dto)
+        public async Task<Response<UserRegistrationStepDTO<CompanyDTO>>> SignUpCompany(Guid userId, CreateCompanyDTO dto)
         {
             var step = await _repository.GetRegistrationStepByUserId(userId);
 
@@ -361,7 +361,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             return company;
         }
 
-        public async Task<Response<TeamDTO>> SignUpTeam(Guid userId, CreateTeamDTO dto)
+        public async Task<Response<UserRegistrationStepDTO<TeamDTO>>> SignUpTeam(Guid userId, CreateTeamDTO dto)
         {
             var step = await _repository.GetRegistrationStepByUserId(userId);
 
@@ -387,13 +387,13 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             return team;
         }
 
-        public async Task<Response<ProjectDTO>> SignUpProject(Guid userId, CreateProjectDTO dto)
+        public async Task<Response<UserRegistrationStepDTO<ProjectDTO>>> SignUpProject(Guid userId, CreateProjectDTO dto)
         {
             var step = await _repository.GetRegistrationStepByUserId(userId);
 
             if (step.Step >= RegistrationStep.ProjectCreated)
             {
-                return new BusinessConflictErrorResponse<ProjectDTO>(new []
+                return new BusinessConflictErrorResponse<UserRegistrationStepDTO<ProjectDTO>>(new []
                 {
                     new Error
                     {
@@ -407,19 +407,26 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             if (project.IsSuccess)
             {
-                await _repository.SetRegistrationStep(userId, RegistrationStep.ProjectCreated);
+                step = await _repository.SetRegistrationStep(userId, RegistrationStep.ProjectCreated);
             }
-
-            return project;
+            
+            return new Response<UserRegistrationStepDTO<ProjectDTO>>
+            {
+                Data = new UserRegistrationStepDTO<ProjectDTO>
+                {
+                    Step = (int) step.Step,
+                    StepName = step.Step.ToString()
+                }
+            };
         }
 
-        public async Task<Response> SignUpDone(Guid userId)
+        public async Task<Response<UserRegistrationStepDTO>> SignUpDone(Guid userId)
         {
             var step = await _repository.GetRegistrationStepByUserId(userId);
 
             if (step.Step >= RegistrationStep.Done)
             {
-                return new BusinessConflictErrorResponse(new []
+                return new BusinessConflictErrorResponse<UserRegistrationStepDTO>(new []
                 {
                     new Error
                     {
@@ -429,8 +436,16 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 });
             }
 
-            await _repository.SetRegistrationStep(userId, RegistrationStep.Done);
-            return new Response();
+            step = await _repository.SetRegistrationStep(userId, RegistrationStep.Done);
+            
+            return new Response<UserRegistrationStepDTO>
+            {
+                Data = new UserRegistrationStepDTO
+                {
+                    Step = (int) step.Step,
+                    StepName = step.Step.ToString()
+                }
+            };
         }
     }
 }

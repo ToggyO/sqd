@@ -5,6 +5,7 @@ using Squadio.BLL.Services.SignUp;
 using Squadio.BLL.Services.Tokens;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Responses;
+using Squadio.Domain.Enums;
 using Squadio.DTO.Auth;
 using Squadio.DTO.Companies;
 using Squadio.DTO.Projects;
@@ -34,52 +35,76 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             return result;
         }
 
-        public async Task<Response<AuthInfoDTO>> SignUpMemberEmail(SignUpMemberDTO dto)
+        public async Task<Response<UserRegistrationStepDTO<AuthInfoDTO>>> SignUpMemberEmail(SignUpMemberDTO dto)
         {
             var signUpResult = await _service.SignUpMemberEmail(dto);
             if (!signUpResult.IsSuccess)
             {
-                return new ErrorResponse<AuthInfoDTO>
+                var errorResponse = (ErrorResponse) signUpResult;
+                
+                return new ErrorResponse<UserRegistrationStepDTO<AuthInfoDTO>>
                 {
-                    Message = ((ErrorResponse<UserDTO>) signUpResult).Message,
-                    HttpStatusCode = signUpResult.HttpStatusCode,
-                    Code = signUpResult.Code
+                    Message = errorResponse.Message,
+                    Code = errorResponse.Code,
+                    Errors = errorResponse.Errors,
+                    HttpStatusCode = errorResponse.HttpStatusCode
                 };
             }
             
-            var result = await _tokensService.Authenticate(new CredentialsDTO
+            var resultToken = await _tokensService.Authenticate(new CredentialsDTO
             {
                 Password = dto.Password,
                 Email = dto.Email
             });
-            return result;
+            
+            return new Response<UserRegistrationStepDTO<AuthInfoDTO>>
+            {
+                Data = new UserRegistrationStepDTO<AuthInfoDTO>
+                {
+                    Data = resultToken.Data,
+                    Step = (int) RegistrationStep.Done,
+                    StepName = RegistrationStep.Done.ToString()
+                }
+            };
         }
 
-        public async Task<Response<AuthInfoDTO>> SignUpMemberGoogle(SignUpMemberGoogleDTO dto)
+        public async Task<Response<UserRegistrationStepDTO<AuthInfoDTO>>> SignUpMemberGoogle(SignUpMemberGoogleDTO dto)
         {
             var signUpResult = await _service.SignUpMemberGoogle(dto);
             if (!signUpResult.IsSuccess)
             {
-                return new ErrorResponse<AuthInfoDTO>
+                var errorResponse = (ErrorResponse) signUpResult;
+                
+                return new ErrorResponse<UserRegistrationStepDTO<AuthInfoDTO>>
                 {
-                    Message = ((ErrorResponse<UserDTO>) signUpResult).Message,
-                    HttpStatusCode = signUpResult.HttpStatusCode,
-                    Code = signUpResult.Code
+                    Message = errorResponse.Message,
+                    Code = errorResponse.Code,
+                    Errors = errorResponse.Errors,
+                    HttpStatusCode = errorResponse.HttpStatusCode
                 };
             }
             
-            var result = await _tokensService.GoogleAuthenticate(dto.Token);
-            return result;
+            var resultToken = await _tokensService.GoogleAuthenticate(dto.Token);
+            
+            return new Response<UserRegistrationStepDTO<AuthInfoDTO>>
+            {
+                Data = new UserRegistrationStepDTO<AuthInfoDTO>
+                {
+                    Data = resultToken.Data,
+                    Step = (int) RegistrationStep.Done,
+                    StepName = RegistrationStep.Done.ToString()
+                }
+            };
         }
 
-        public async Task<Response<AuthInfoDTO>> SignUp(string email, string password)
+        public async Task<Response<UserRegistrationStepDTO<AuthInfoDTO>>> SignUp(string email, string password)
         {
             var signUpResult = await _service.SignUp(email, password);
             if (!signUpResult.IsSuccess)
             {
-                var errorResponse = (ErrorResponse<UserDTO>) signUpResult;
+                var errorResponse = (ErrorResponse) signUpResult;
                 
-                return new ErrorResponse<AuthInfoDTO>
+                return new ErrorResponse<UserRegistrationStepDTO<AuthInfoDTO>>
                 {
                     Message = errorResponse.Message,
                     Code = errorResponse.Code,
@@ -88,22 +113,31 @@ namespace Squadio.API.Handlers.SignUp.Implementation
                 };
             }
             
-            var result = await _tokensService.Authenticate(new CredentialsDTO
+            var resultToken = await _tokensService.Authenticate(new CredentialsDTO
             {
                 Password = password,
                 Email = email
             });
-            return result;
+            
+            return new Response<UserRegistrationStepDTO<AuthInfoDTO>>
+            {
+                Data = new UserRegistrationStepDTO<AuthInfoDTO>
+                {
+                    Data = resultToken.Data,
+                    Step = (int) RegistrationStep.New,
+                    StepName = RegistrationStep.New.ToString()
+                }
+            };
         }
 
-        public async Task<Response<AuthInfoDTO>> SignUpGoogle(string googleToken)
+        public async Task<Response<UserRegistrationStepDTO<AuthInfoDTO>>> SignUpGoogle(string googleToken)
         {
             var signUpResult = await _service.SignUpGoogle(googleToken);
             if (!signUpResult.IsSuccess)
             {
-                var errorResponse = (ErrorResponse<UserDTO>) signUpResult;
+                var errorResponse = (ErrorResponse) signUpResult;
                 
-                return new ErrorResponse<AuthInfoDTO>
+                return new ErrorResponse<UserRegistrationStepDTO<AuthInfoDTO>>
                 {
                     Message = errorResponse.Message,
                     Code = errorResponse.Code,
@@ -112,82 +146,90 @@ namespace Squadio.API.Handlers.SignUp.Implementation
                 };
             }
             
-            var result = await _tokensService.GoogleAuthenticate(googleToken);
-            return result;
+            var resultToken = await _tokensService.GoogleAuthenticate(googleToken);
+            return new Response<UserRegistrationStepDTO<AuthInfoDTO>>
+            {
+                Data = new UserRegistrationStepDTO<AuthInfoDTO>
+                {
+                    Data = resultToken.Data,
+                    Step = (int) RegistrationStep.EmailConfirmed,
+                    StepName = RegistrationStep.EmailConfirmed.ToString()
+                }
+            };
         }
 
-        public async Task<Response> SignUpConfirm(string code, ClaimsPrincipal claims)
+        public async Task<Response<UserRegistrationStepDTO>> SignUpConfirm(string code, ClaimsPrincipal claims)
         {
             var userId = claims.GetUserId();
             if (!userId.HasValue)
             {
-                return claims.Unauthorized();
+                return claims.Unauthorized<UserRegistrationStepDTO>();
             }
             var result = await _service.SignUpConfirm(userId.Value, code);
             return result;
         }
 
-        public async Task<Response<UserDTO>> SignUpUsername(UserUpdateDTO dto, ClaimsPrincipal claims)
+        public async Task<Response<UserRegistrationStepDTO<UserDTO>>> SignUpUsername(UserUpdateDTO dto, ClaimsPrincipal claims)
         {
             var userId = claims.GetUserId();
             if (!userId.HasValue)
             {
-                return claims.Unauthorized<UserDTO>();
+                return claims.Unauthorized<UserRegistrationStepDTO<UserDTO>>();
             }
             var result = await _service.SignUpUsername(userId.Value, dto);
             return result;
         }
 
-        public async Task<Response> SignUpAgreement(ClaimsPrincipal claims)
+        public async Task<Response<UserRegistrationStepDTO>> SignUpAgreement(ClaimsPrincipal claims)
         {
             var userId = claims.GetUserId();
             if (!userId.HasValue)
             {
-                return claims.Unauthorized();
+                return claims.Unauthorized<UserRegistrationStepDTO>();
             }
             var result = await _service.SignUpAgreement(userId.Value);
             return result;
         }
 
-        public async Task<Response<CompanyDTO>> SignUpCompany(CreateCompanyDTO dto, ClaimsPrincipal claims)
+        public async Task<Response<UserRegistrationStepDTO<CompanyDTO>>> SignUpCompany(CreateCompanyDTO dto, ClaimsPrincipal claims)
         {
             var userId = claims.GetUserId();
             if (!userId.HasValue)
             {
-                return claims.Unauthorized<CompanyDTO>();
+                return claims.Unauthorized<UserRegistrationStepDTO<CompanyDTO>>();
             }
             var result = await _service.SignUpCompany(userId.Value, dto);
             return result;
         }
 
-        public async Task<Response<TeamDTO>> SignUpTeam(CreateTeamDTO dto, ClaimsPrincipal claims)
+        public async Task<Response<UserRegistrationStepDTO<TeamDTO>>> SignUpTeam(CreateTeamDTO dto, ClaimsPrincipal claims)
         {
             var userId = claims.GetUserId();
             if (!userId.HasValue)
             {
-                return claims.Unauthorized<TeamDTO>();
+                return claims.Unauthorized<UserRegistrationStepDTO<TeamDTO>>();
             }
             var result = await _service.SignUpTeam(userId.Value, dto);
             return result;
         }
 
-        public async Task<Response<ProjectDTO>> SignUpProject(CreateProjectDTO dto, ClaimsPrincipal claims)
+        public async Task<Response<UserRegistrationStepDTO<ProjectDTO>>> SignUpProject(CreateProjectDTO dto, ClaimsPrincipal claims)
         {
             var userId = claims.GetUserId();
             if (!userId.HasValue)
             {
-                return claims.Unauthorized<ProjectDTO>();
+                return claims.Unauthorized<UserRegistrationStepDTO<ProjectDTO>>();
             }
             var result = await _service.SignUpProject(userId.Value, dto);
             return result;
         }
 
-        public async Task<Response> SignUpDone(ClaimsPrincipal claims)
+        public async Task<Response<UserRegistrationStepDTO>> SignUpDone(ClaimsPrincipal claims)
         {
             var userId = claims.GetUserId();
             if (!userId.HasValue)
             {
-                return claims.Unauthorized();
+                return claims.Unauthorized<UserRegistrationStepDTO>();
             }
             var result = await _service.SignUpDone(userId.Value);
             return result;
