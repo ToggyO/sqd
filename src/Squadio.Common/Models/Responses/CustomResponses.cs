@@ -99,4 +99,26 @@ namespace Squadio.Common.Models.Responses
         {
         }
     }
+
+    public class InternalErrorResponse
+    {
+        public string Message { get; set; }
+        public IEnumerable<Error> Errors { get; set; }
+        public string Code { get; set; }
+        
+        public InternalErrorResponse(IEnumerable<Error> errors)
+        {
+            Code = ErrorCodes.System.InternalError;
+            Message = ErrorMessages.System.InternalError;
+            Errors = errors;
+        }
+
+        public InternalErrorResponse(Error error) : this(new[] {error})
+        {
+        }
+
+        public InternalErrorResponse() : this(new List<Error>())
+        {
+        }
+    }
 }

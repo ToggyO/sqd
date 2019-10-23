@@ -37,7 +37,12 @@ namespace Squadio.API.Handlers.Projects.Implementation
 
         public async Task<Response<ProjectDTO>> Create(CreateProjectDTO dto, ClaimsPrincipal claims)
         {
-            var result = await _service.Create(claims.GetUserId(), dto);
+            var userId = claims.GetUserId();
+            if (!userId.HasValue)
+            {
+                return claims.Unauthorized<ProjectDTO>();
+            }
+            var result = await _service.Create(userId.Value, dto);
             return result;
         }
     }

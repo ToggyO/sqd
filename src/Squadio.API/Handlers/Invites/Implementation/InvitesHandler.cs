@@ -24,25 +24,45 @@ namespace Squadio.API.Handlers.Invites.Implementation
         
         public async Task<Response<IEnumerable<InviteDTO>>> InviteToTeam(Guid teamId, CreateInvitesDTO dto, ClaimsPrincipal claims)
         {
-            var result = await _service.InviteToTeam(teamId, claims.GetUserId(), dto);
+            var userId = claims.GetUserId();
+            if (!userId.HasValue)
+            {
+                return claims.Unauthorized<IEnumerable<InviteDTO>>();
+            }
+            var result = await _service.InviteToTeam(teamId, userId.Value, dto);
             return result;
         }
 
         public async Task<Response<IEnumerable<InviteDTO>>> InviteToProject(Guid projectId, CreateInvitesDTO dto, ClaimsPrincipal claims)
         {
-            var result = await _service.InviteToProject(projectId, claims.GetUserId(), dto);
+            var userId = claims.GetUserId();
+            if (!userId.HasValue)
+            {
+                return claims.Unauthorized<IEnumerable<InviteDTO>>();
+            }
+            var result = await _service.InviteToProject(projectId, userId.Value, dto);
             return result;
         }
 
         public async Task<Response> AcceptInviteToTeam(Guid teamId, ClaimsPrincipal claims, string code)
         {
-            var result = await _service.AcceptInviteToTeam(claims.GetUserId(), teamId, code);
+            var userId = claims.GetUserId();
+            if (!userId.HasValue)
+            {
+                return claims.Unauthorized();
+            }
+            var result = await _service.AcceptInviteToTeam(userId.Value, teamId, code);
             return result;
         }
 
         public async Task<Response> AcceptInviteToProject(Guid projectId, ClaimsPrincipal claims, string code)
         {
-            var result = await _service.AcceptInviteToProject(claims.GetUserId(), projectId, code);
+            var userId = claims.GetUserId();
+            if (!userId.HasValue)
+            {
+                return claims.Unauthorized();
+            }
+            var result = await _service.AcceptInviteToProject(userId.Value, projectId, code);
             return result;
         }
     }

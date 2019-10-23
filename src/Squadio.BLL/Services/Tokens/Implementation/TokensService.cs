@@ -87,8 +87,14 @@ namespace Squadio.BLL.Services.Tokens.Implementation
                     }
                 });
             }
+            
+            var userId = tokenPrincipal.GetUserId();
+            if (!userId.HasValue)
+            {
+                return tokenPrincipal.Unauthorized<TokenDTO>();
+            }
 
-            var user = await _usersRepository.GetById(tokenPrincipal.GetUserId());
+            var user = await _usersRepository.GetById(userId.Value);
 
             if (user == null)
             {

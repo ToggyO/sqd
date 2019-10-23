@@ -38,11 +38,11 @@ namespace Squadio.API.Extensions
         {
             context.Response.ContentType = "application/json";
 
-            var error = new ErrorResponse
+            var error = new InternalErrorResponse(new Error
             {
-                Message = exception.Message,
                 Code = ErrorCodes.System.InternalError,
-            };
+                Message = exception.Message
+            });
 
             var result = JsonConvert.SerializeObject(error);
 
