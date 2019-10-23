@@ -24,9 +24,15 @@ namespace Squadio.API.Controllers
         }
         
         [HttpGet]
-        public async Task<Response<PageModel<UserDTO>>> GetById([FromQuery] PageModel model)
+        public async Task<Response<PageModel<UserDTO>>> GetPage([FromQuery] PageModel model)
         {
             return await _handler.GetPage(model);
+        }
+        
+        [HttpDelete("{id}")]
+        public async Task<Response<UserDTO>> DeleteUser([Required, FromRoute] Guid id)
+        {
+            return await _handler.DeleteUser(id);
         }
         
         [HttpGet("{id}")]

@@ -130,6 +130,18 @@ namespace Squadio.BLL.Services.Users.Implementation
             };
         }
 
+        public async Task<Response<UserDTO>> DeleteUser(Guid id)
+        {
+            var resultEntity = await _repository.Delete(id);
+            
+            var result = _mapper.Map<UserModel, UserDTO>(resultEntity);
+            
+            return new Response<UserDTO>
+            {
+                Data = result
+            };
+        }
+
         public string GenerateCode(int length = 6)
         {
             var generator = new Random();

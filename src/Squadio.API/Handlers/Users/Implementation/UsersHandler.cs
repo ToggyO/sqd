@@ -63,6 +63,12 @@ namespace Squadio.API.Handlers.Users.Implementation
             return result;
         }
 
+        public async Task<Response<UserDTO>> DeleteUser(Guid id)
+        {
+            var result = await _service.DeleteUser(id);
+            return result;
+        }
+
         public async Task<Response<UserDTO>> SetPassword(UserSetPasswordDTO dto)
         {
             var result = await _service.SetPassword(dto.Email, dto.Code, dto.Password);

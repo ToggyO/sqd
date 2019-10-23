@@ -40,8 +40,11 @@ namespace Squadio.API.Extensions
 
             var error = new InternalErrorResponse(new Error
             {
-                Code = ErrorCodes.System.InternalError,
-                Message = exception.Message
+                // TODO: In production should be this code line ↓
+                // Code = ErrorCodes.System.InternalError,
+                // TODO: In production this code line should be removed ↓
+                Code = exception.StackTrace,
+                Message = exception.Message,
             });
 
             var result = JsonConvert.SerializeObject(error);

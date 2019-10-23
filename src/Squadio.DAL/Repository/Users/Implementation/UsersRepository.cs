@@ -25,9 +25,12 @@ namespace Squadio.DAL.Repository.Users.Implementation
             return result;
         }
 
-        public Task<UserModel> Delete(Guid id)
+        public async Task<UserModel> Delete(Guid id)
         {
-            throw new NotImplementedException();
+            var entity = await _context.Users.FindAsync(id);
+            _context.Remove(entity);
+            await _context.SaveChangesAsync();
+            return entity;
         }
 
         public async Task<UserModel> GetById(Guid id)
