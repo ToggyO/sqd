@@ -136,7 +136,8 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                     new Error
                     {
                         Code = ErrorCodes.Security.GoogleTokenInvalid,
-                        Message = ErrorMessages.Security.GoogleTokenInvalid
+                        Message = ErrorMessages.Security.GoogleTokenInvalid,
+                        Field = ErrorFields.User.GoogleToken
                     }
                 });
             }
@@ -211,7 +212,8 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                     new Error
                     {
                         Code = ErrorCodes.Security.GoogleTokenInvalid,
-                        Message = ErrorMessages.Security.GoogleTokenInvalid
+                        Message = ErrorMessages.Security.GoogleTokenInvalid,
+                        Field = ErrorFields.User.GoogleToken
                     }
                 });
             }
@@ -223,7 +225,8 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                     new Error
                     {
                         Code = ErrorCodes.Security.GoogleTokenInvalid,
-                        Message = ErrorMessages.Security.GoogleTokenInvalid
+                        Message = ErrorMessages.Security.GoogleTokenInvalid,
+                        Field = ErrorFields.User.GoogleToken
                     }
                 });
             }
