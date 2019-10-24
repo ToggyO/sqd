@@ -40,7 +40,7 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             var signUpResult = await _service.SignUpMemberEmail(dto);
             if (!signUpResult.IsSuccess)
             {
-                var errorResponse = (ErrorResponse) signUpResult;
+                var errorResponse = (ErrorResponse<UserDTO>) signUpResult;
                 
                 return new ErrorResponse<AuthInfoDTO>
                 {
@@ -65,7 +65,7 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             var signUpResult = await _service.SignUpMemberGoogle(dto);
             if (!signUpResult.IsSuccess)
             {
-                var errorResponse = (ErrorResponse) signUpResult;
+                var errorResponse = (ErrorResponse<UserDTO>) signUpResult;
                 
                 return new ErrorResponse<AuthInfoDTO>
                 {
@@ -86,7 +86,7 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             var signUpResult = await _service.SignUp(email, password);
             if (!signUpResult.IsSuccess)
             {
-                var errorResponse = (ErrorResponse) signUpResult;
+                var errorResponse = (ErrorResponse<UserDTO>) signUpResult;
                 
                 return new ErrorResponse<AuthInfoDTO>
                 {
@@ -111,7 +111,7 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             var signUpResult = await _service.SignUpGoogle(googleToken);
             if (!signUpResult.IsSuccess)
             {
-                var errorResponse = (ErrorResponse) signUpResult;
+                var errorResponse = (ErrorResponse<UserDTO>) signUpResult;
                 
                 return new ErrorResponse<AuthInfoDTO>
                 {

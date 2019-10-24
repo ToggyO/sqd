@@ -126,11 +126,15 @@ namespace Squadio.BLL.Services.Tokens.Implementation
 
         public async Task<Response<AuthInfoDTO>> GoogleAuthenticate(string googleToken)
         {
-            var infoFromGoogleToken = await GoogleJsonWebSignature.ValidateAsync(googleToken);
+            GoogleJsonWebSignature.Payload infoFromGoogleToken;
 
-            if ((string) infoFromGoogleToken.Audience != _googleSettings.Value.ClientId)
+            try
             {
-                return new ForbiddenErrorResponse<AuthInfoDTO>(new []
+                infoFromGoogleToken = await GoogleJsonWebSignature.ValidateAsync(googleToken);
+            }
+            catch
+            {
+                return new ForbiddenErrorResponse<AuthInfoDTO>(new[]
                 {
                     new Error
                     {
