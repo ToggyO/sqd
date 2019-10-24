@@ -180,17 +180,6 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             return result;
         }
 
-        public async Task<Response<UserRegistrationStepDTO>> SignUpAgreement(ClaimsPrincipal claims)
-        {
-            var userId = claims.GetUserId();
-            if (!userId.HasValue)
-            {
-                return claims.Unauthorized<UserRegistrationStepDTO>();
-            }
-            var result = await _service.SignUpAgreement(userId.Value);
-            return result;
-        }
-
         public async Task<Response<UserRegistrationStepDTO<CompanyDTO>>> SignUpCompany(CreateCompanyDTO dto, ClaimsPrincipal claims)
         {
             var userId = claims.GetUserId();

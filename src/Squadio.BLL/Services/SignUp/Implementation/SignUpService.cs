@@ -270,7 +270,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             if (step.Step >= RegistrationStep.EmailConfirmed)
             {
-                return new BusinessConflictErrorResponse(new []
+                return new BusinessConflictErrorResponse<UserRegistrationStepDTO>(new []
                 {
                     new Error
                     {
@@ -286,9 +286,16 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             await _repository.ActivateRequest(request.Id);
 
-            await _repository.SetRegistrationStep(userId, RegistrationStep.EmailConfirmed);
+            step = await _repository.SetRegistrationStep(userId, RegistrationStep.EmailConfirmed);
             
-            return new Response();
+            return new Response<UserRegistrationStepDTO>
+            {
+                Data = new UserRegistrationStepDTO
+                {
+                    Step = (int) step.Step,
+                    StepName = step.Step.ToString()
+                }
+            };
         }
 
         public async Task<Response<UserRegistrationStepDTO<UserDTO>>> SignUpUsername(Guid id, UserUpdateDTO updateDTO)
@@ -297,7 +304,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             if (step.Step >= RegistrationStep.UsernameEntered)
             {
-                return new BusinessConflictErrorResponse<UserDTO>(new []
+                return new BusinessConflictErrorResponse<UserRegistrationStepDTO<UserDTO>>(new []
                 {
                     new Error
                     {
@@ -310,32 +317,17 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             var userResponse = await _usersService.UpdateUser(id, updateDTO);
             var user = userResponse.Data;
 
-            await _repository.SetRegistrationStep(user.Id, RegistrationStep.UsernameEntered);
+            step = await _repository.SetRegistrationStep(user.Id, RegistrationStep.UsernameEntered);
 
-            return new Response<UserDTO>
+            return new Response<UserRegistrationStepDTO<UserDTO>>
             {
-                Data = user
-            };
-        }
-
-        public async Task<Response<UserRegistrationStepDTO>> SignUpAgreement(Guid userId)
-        {
-            var step = await _repository.GetRegistrationStepByUserId(userId);
-
-            if (step.Step >= RegistrationStep.Agreement)
-            {
-                return new BusinessConflictErrorResponse(new []
+                Data = new UserRegistrationStepDTO<UserDTO>
                 {
-                    new Error
-                    {
-                        Code = ErrorCodes.Business.InvalidRegistrationStep,
-                        Message = ErrorMessages.Business.InvalidRegistrationStep
-                    }
-                });
-            }
-
-            await _repository.SetRegistrationStep(userId, RegistrationStep.Agreement);
-            return new Response();
+                    Data = user,
+                    Step = (int) step.Step,
+                    StepName = step.Step.ToString()
+                }
+            };
         }
 
         public async Task<Response<UserRegistrationStepDTO<CompanyDTO>>> SignUpCompany(Guid userId, CreateCompanyDTO dto)
@@ -344,7 +336,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             if (step.Step >= RegistrationStep.CompanyCreated)
             {
-                return new BusinessConflictErrorResponse<CompanyDTO>(new []
+                return new BusinessConflictErrorResponse<UserRegistrationStepDTO<CompanyDTO>>(new []
                 {
                     new Error
                     {
@@ -356,9 +348,21 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             var company = await _companiesService.Create(userId, dto);
 
-            await _repository.SetRegistrationStep(userId, RegistrationStep.CompanyCreated);
+            if (company.IsSuccess)
+            {
+                step = await _repository.SetRegistrationStep(userId, RegistrationStep.CompanyCreated);
+            }
 
-            return company;
+            
+            return new Response<UserRegistrationStepDTO<CompanyDTO>>
+            {
+                Data = new UserRegistrationStepDTO<CompanyDTO>
+                {
+                    Data = company.Data,
+                    Step = (int) step.Step,
+                    StepName = step.Step.ToString()
+                }
+            };
         }
 
         public async Task<Response<UserRegistrationStepDTO<TeamDTO>>> SignUpTeam(Guid userId, CreateTeamDTO dto)
@@ -367,7 +371,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             if (step.Step >= RegistrationStep.TeamCreated)
             {
-                return new BusinessConflictErrorResponse<TeamDTO>(new []
+                return new BusinessConflictErrorResponse<UserRegistrationStepDTO<TeamDTO>>(new []
                 {
                     new Error
                     {
@@ -381,10 +385,19 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             if (team.IsSuccess)
             {
-                await _repository.SetRegistrationStep(userId, RegistrationStep.TeamCreated);
+                step = await _repository.SetRegistrationStep(userId, RegistrationStep.TeamCreated);
             }
 
-            return team;
+            
+            return new Response<UserRegistrationStepDTO<TeamDTO>>
+            {
+                Data = new UserRegistrationStepDTO<TeamDTO>
+                {
+                    Data = team.Data,
+                    Step = (int) step.Step,
+                    StepName = step.Step.ToString()
+                }
+            };
         }
 
         public async Task<Response<UserRegistrationStepDTO<ProjectDTO>>> SignUpProject(Guid userId, CreateProjectDTO dto)
@@ -414,6 +427,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             {
                 Data = new UserRegistrationStepDTO<ProjectDTO>
                 {
+                    Data = project.Data,
                     Step = (int) step.Step,
                     StepName = step.Step.ToString()
                 }
