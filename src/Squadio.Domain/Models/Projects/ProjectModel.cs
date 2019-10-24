@@ -10,5 +10,6 @@ namespace Squadio.Domain.Models.Projects
         public Guid CompanyId { get; set; }
         public CompanyModel Company { get; set; }
         public DateTime CreatedDate { get; set; }
+        public string ColorHex { get; set; }
     }
 }

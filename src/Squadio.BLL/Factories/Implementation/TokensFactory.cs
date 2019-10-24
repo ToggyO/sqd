@@ -47,7 +47,7 @@ namespace Squadio.BLL.Factories.Implementation
                 return (securityToken is JwtSecurityToken jwtSecurityToken &&
                         jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase));
             }
-            catch (SecurityTokenValidationException)
+            catch
             {
                 principal = null;
                 return false;

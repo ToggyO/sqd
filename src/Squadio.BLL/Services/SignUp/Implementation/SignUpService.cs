@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Google.Apis.Auth;
 using Mapper;
 using Microsoft.Extensions.Options;
+using Squadio.BLL.Providers.Companies;
 using Squadio.BLL.Providers.Invites;
 using Squadio.BLL.Services.Companies;
 using Squadio.BLL.Services.Email;
@@ -20,6 +22,7 @@ using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Companies;
+using Squadio.DTO.Pages;
 using Squadio.DTO.Projects;
 using Squadio.DTO.SignUp;
 using Squadio.DTO.Teams;
@@ -36,6 +39,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
         private readonly IInvitesProvider _invitesProvider;
         private readonly IUsersService _usersService;
         private readonly ICompaniesService _companiesService;
+        private readonly ICompaniesProvider _companiesProvider;
         private readonly ITeamsService _teamsService;
         private readonly IProjectsService _projectsService;
         private readonly IMapper _mapper;
@@ -47,6 +51,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             , IInvitesProvider invitesProvider
             , IUsersService usersService
             , ICompaniesService companiesService
+            , ICompaniesProvider companiesProvider
             , ITeamsService teamsService
             , IProjectsService projectsService
             , IMapper mapper
@@ -59,6 +64,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             _invitesProvider = invitesProvider;
             _usersService = usersService;
             _companiesService = companiesService;
+            _companiesProvider = companiesProvider;
             _teamsService = teamsService;
             _projectsService = projectsService;
             _mapper = mapper;
@@ -277,7 +283,14 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                         Code = ErrorCodes.Business.InvalidRegistrationStep,
                         Message = ErrorMessages.Business.InvalidRegistrationStep
                     }
-                });
+                })
+                {
+                    Data = new UserRegistrationStepDTO
+                    {
+                        Step = (int) step.Step,
+                        StepName = step.Step.ToString()
+                    }
+                };
             }
 
             var request = await _repository.GetRequest(userId, code);
@@ -323,7 +336,14 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                         Code = ErrorCodes.Business.InvalidRegistrationStep,
                         Message = ErrorMessages.Business.InvalidRegistrationStep
                     }
-                });
+                })
+                {
+                    Data = new UserRegistrationStepDTO<UserDTO>
+                    {
+                        Step = (int) step.Step,
+                        StepName = step.Step.ToString()
+                    }
+                };
             }
 
             var userResponse = await _usersService.UpdateUser(id, updateDTO);
@@ -355,7 +375,14 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                         Code = ErrorCodes.Business.InvalidRegistrationStep,
                         Message = ErrorMessages.Business.InvalidRegistrationStep
                     }
-                });
+                })
+                {
+                    Data = new UserRegistrationStepDTO<CompanyDTO>
+                    {
+                        Step = (int) step.Step,
+                        StepName = step.Step.ToString()
+                    }
+                };
             }
 
             var company = await _companiesService.Create(userId, dto);
@@ -390,10 +417,41 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                         Code = ErrorCodes.Business.InvalidRegistrationStep,
                         Message = ErrorMessages.Business.InvalidRegistrationStep
                     }
-                });
+                })
+                {
+                    Data = new UserRegistrationStepDTO<TeamDTO>
+                    {
+                        Step = (int) step.Step,
+                        StepName = step.Step.ToString()
+                    }
+                };
             }
 
-            var team = await _teamsService.Create(userId, dto);
+            var companyPage = await _companiesProvider.GetCompaniesOfUser(userId, new PageModel());
+            var company = companyPage.Data.Items.FirstOrDefault();
+
+            if (company == null)
+            {
+                step = await _repository.SetRegistrationStep(userId, RegistrationStep.UsernameEntered);
+                
+                return new BusinessConflictErrorResponse<UserRegistrationStepDTO<TeamDTO>>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Business.InvalidRegistrationStep,
+                        Message = ErrorMessages.Business.InvalidRegistrationStep
+                    }
+                })
+                {
+                    Data = new UserRegistrationStepDTO<TeamDTO>
+                    {
+                        Step = (int) step.Step,
+                        StepName = step.Step.ToString()
+                    }
+                };
+            }
+
+            var team = await _teamsService.Create(userId, company.Id, dto);
 
             if (team.IsSuccess)
             {
@@ -425,10 +483,41 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                         Code = ErrorCodes.Business.InvalidRegistrationStep,
                         Message = ErrorMessages.Business.InvalidRegistrationStep
                     }
-                });
+                })
+                {
+                    Data = new UserRegistrationStepDTO<ProjectDTO>
+                    {
+                        Step = (int) step.Step,
+                        StepName = step.Step.ToString()
+                    }
+                };
             }
 
-            var project = await _projectsService.Create(userId, dto);
+            var companyPage = await _companiesProvider.GetCompaniesOfUser(userId, new PageModel());
+            var company = companyPage.Data.Items.FirstOrDefault();
+
+            if (company == null)
+            {
+                step = await _repository.SetRegistrationStep(userId, RegistrationStep.UsernameEntered);
+                
+                return new BusinessConflictErrorResponse<UserRegistrationStepDTO<ProjectDTO>>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Business.InvalidRegistrationStep,
+                        Message = ErrorMessages.Business.InvalidRegistrationStep
+                    }
+                })
+                {
+                    Data = new UserRegistrationStepDTO<ProjectDTO>
+                    {
+                        Step = (int) step.Step,
+                        StepName = step.Step.ToString()
+                    }
+                };
+            }
+
+            var project = await _projectsService.Create(userId, company.Id, dto);
 
             if (project.IsSuccess)
             {
@@ -459,7 +548,14 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                         Code = ErrorCodes.Business.InvalidRegistrationStep,
                         Message = ErrorMessages.Business.InvalidRegistrationStep
                     }
-                });
+                })
+                {
+                    Data = new UserRegistrationStepDTO
+                    {
+                        Step = (int) step.Step,
+                        StepName = step.Step.ToString()
+                    }
+                };
             }
 
             step = await _repository.SetRegistrationStep(userId, RegistrationStep.Done);

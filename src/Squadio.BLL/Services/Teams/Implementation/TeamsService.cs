@@ -32,13 +32,14 @@ namespace Squadio.BLL.Services.Teams.Implementation
             _mapper = mapper;
         }
 
-        public async Task<Response<TeamDTO>> Create(Guid userId, CreateTeamDTO dto)
+        public async Task<Response<TeamDTO>> Create(Guid userId, Guid companyId, CreateTeamDTO dto)
         {
             var entity = new TeamModel
             {
                 Name = dto.Name,
-                CompanyId = dto.CompanyId,
-                CreatedDate = DateTime.UtcNow
+                CompanyId = companyId,
+                CreatedDate = DateTime.UtcNow,
+                ColorHex = dto.ColorHex
             };
 
             entity = await _repository.Create(entity);

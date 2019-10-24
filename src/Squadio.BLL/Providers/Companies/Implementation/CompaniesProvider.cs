@@ -5,6 +5,7 @@ using Mapper;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Companies;
 using Squadio.DAL.Repository.CompaniesUsers;
+using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Companies;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Companies;
@@ -25,6 +26,24 @@ namespace Squadio.BLL.Providers.Companies.Implementation
             _repository = repository;
             _companiesUsersRepository = companiesUsersRepository;
             _mapper = mapper;
+        }
+
+        public async Task<Response<PageModel<CompanyDTO>>> GetCompaniesOfUser(Guid userId, PageModel model, UserStatus? status = null)
+        {
+            var page = await _repository.GetCompaniesOfUser(userId, model, status);
+
+            var result = new PageModel<CompanyDTO>
+            {
+                Page = page.Page,
+                PageSize = page.PageSize,
+                Total = page.Total,
+                Items = _mapper.Map<IEnumerable<CompanyModel>,IEnumerable<CompanyDTO>>(page.Items)
+            };
+            
+            return new Response<PageModel<CompanyDTO>>
+            {
+                Data = result
+            };
         }
 
         public async Task<Response<PageModel<UserDTO>>> GetCompanyUsers(Guid companyId, PageModel model)

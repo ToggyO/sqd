@@ -7,6 +7,6 @@ namespace Squadio.BLL.Services.Teams
 {
     public interface ITeamsService
     {
-        Task<Response<TeamDTO>> Create(Guid userId, CreateTeamDTO dto);
+        Task<Response<TeamDTO>> Create(Guid userId, Guid companyId, CreateTeamDTO dto);
     }
 }
