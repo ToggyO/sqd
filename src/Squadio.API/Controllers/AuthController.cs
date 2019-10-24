@@ -26,7 +26,6 @@ namespace Squadio.API.Controllers
         }
         
         [HttpPut("token")]
-        [AuthorizationFilter]
         public async Task<ActionResult<Response<TokenDTO>>> RefreshToken([Required] RefreshTokenDTO request)
         {
             return await _handler.RefreshToken(request.RefreshToken);
