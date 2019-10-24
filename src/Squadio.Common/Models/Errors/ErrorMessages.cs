@@ -34,6 +34,7 @@
             public const string GoogleTokenInvalid = "Google token invalid";
             public const string RefreshTokenInvalid = "Refresh token invalid";
             public const string InviteInvalid = "Invite is invalid";
+            public const string ConfirmationCodeInvalid = "Confirmation code is invalid";
         }
 
         public static class System

@@ -281,6 +281,18 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             }
 
             var request = await _repository.GetRequest(userId, code);
+
+            if (request == null || request?.IsActivated == true)
+            {
+                return new ForbiddenErrorResponse<UserRegistrationStepDTO>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.ConfirmationCodeInvalid,
+                        Message = ErrorMessages.Security.ConfirmationCodeInvalid
+                    }
+                });
+            }
             
             // TODO: Check lifetime of request if needed
 

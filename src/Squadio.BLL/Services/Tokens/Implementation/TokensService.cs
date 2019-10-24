@@ -12,6 +12,7 @@ using Squadio.Common.Extensions;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
 using Squadio.Common.Settings;
+using Squadio.DAL.Repository.SignUp;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Auth;
@@ -23,18 +24,21 @@ namespace Squadio.BLL.Services.Tokens.Implementation
     {
         private readonly IUsersRepository _usersRepository;
         private readonly IPasswordService _passwordService;
+        private readonly ISignUpRepository _signUpRepository;
         private readonly IMapper _mapper;
         private readonly ITokensFactory _tokenFactory;
         private readonly IOptions<GoogleSettings> _googleSettings;
 
         public TokensService(IUsersRepository usersRepository
             , IPasswordService passwordService
+            , ISignUpRepository signUpRepository
             , IMapper mapper
             , ITokensFactory tokenFactory
             , IOptions<GoogleSettings> googleSettings)
         {
             _usersRepository = usersRepository;
             _passwordService = passwordService;
+            _signUpRepository = signUpRepository;
             _mapper = mapper;
             _tokenFactory = tokenFactory;
             _googleSettings = googleSettings;
@@ -59,10 +63,13 @@ namespace Squadio.BLL.Services.Tokens.Implementation
 
             var tokenDTO = await _tokenFactory.CreateToken(user);
             var userDTO = _mapper.Map<UserModel, UserDTO>(user);
+            var step = await _signUpRepository.GetRegistrationStepByUserId(user.Id);
+            var stepDTO = _mapper.Map<UserRegistrationStepModel, UserRegistrationStepDTO>(step);
 
             var result = new AuthInfoDTO
             {
                 User = userDTO,
+                RegistrationStep = stepDTO,
                 Token = tokenDTO
             };
 
@@ -150,10 +157,13 @@ namespace Squadio.BLL.Services.Tokens.Implementation
             
             var tokenDTO = await _tokenFactory.CreateToken(user);
             var userDTO = _mapper.Map<UserModel, UserDTO>(user);
+            var step = await _signUpRepository.GetRegistrationStepByUserId(user.Id);
+            var stepDTO = _mapper.Map<UserRegistrationStepModel, UserRegistrationStepDTO>(step);
 
             var result = new AuthInfoDTO
             {
                 User = userDTO,
+                RegistrationStep = stepDTO,
                 Token = tokenDTO
             };
             
