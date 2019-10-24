@@ -30,23 +30,13 @@ namespace Squadio.API.Handlers.Users.Implementation
 
         public async Task<Response<UserDTO>> GetCurrentUser(ClaimsPrincipal claims)
         {
-            var userId = claims.GetUserId();
-            if (!userId.HasValue)
-            {
-                return claims.Unauthorized<UserDTO>();
-            }
-            var result = await _provider.GetById(userId.Value);
+            var result = await _provider.GetById(claims.GetUserId());
             return result;
         }
 
         public async Task<Response<UserDTO>> UpdateCurrentUser(UserUpdateDTO dto, ClaimsPrincipal claims)
         {
-            var userId = claims.GetUserId();
-            if (!userId.HasValue)
-            {
-                return claims.Unauthorized<UserDTO>();
-            }
-            var result = await _service.UpdateUser(userId.Value, dto);
+            var result = await _service.UpdateUser(claims.GetUserId(), dto);
             return result;
         }
 

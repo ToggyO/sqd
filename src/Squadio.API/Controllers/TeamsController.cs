@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Squadio.API.Filters;
 using Squadio.API.Handlers.Invites;
 using Squadio.API.Handlers.Teams;
 using Squadio.Common.Models.Responses;
@@ -14,6 +15,7 @@ using Squadio.DTO.Users;
 namespace Squadio.API.Controllers
 {
     [ApiController]
+    [AuthorizationFilter]
     [Route("api/teams")]
     public class TeamsController : ControllerBase
     {

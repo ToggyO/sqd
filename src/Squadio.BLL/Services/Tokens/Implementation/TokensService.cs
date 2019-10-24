@@ -96,12 +96,17 @@ namespace Squadio.BLL.Services.Tokens.Implementation
             }
             
             var userId = tokenPrincipal.GetUserId();
-            if (!userId.HasValue)
+            if (userId == Guid.Empty)
             {
-                return tokenPrincipal.Unauthorized<TokenDTO>();
+                return new SecurityErrorResponse<TokenDTO>(new Error
+                {
+                    Code = ErrorCodes.Security.Unauthorized,
+                    Field = ErrorFields.User.Token,
+                    Message = ErrorMessages.Security.Unauthorized
+                });
             }
 
-            var user = await _usersRepository.GetById(userId.Value);
+            var user = await _usersRepository.GetById(userId);
 
             if (user == null)
             {

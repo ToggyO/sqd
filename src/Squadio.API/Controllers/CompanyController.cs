@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Squadio.API.Filters;
 using Squadio.API.Handlers.Companies;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Companies;
@@ -13,7 +14,7 @@ using Squadio.DTO.Users;
 namespace Squadio.API.Controllers
 {
     [ApiController]
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [AuthorizationFilter]
     [Route("api/company")]
     public class CompanyController : ControllerBase
     {

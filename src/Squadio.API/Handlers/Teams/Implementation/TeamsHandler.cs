@@ -42,12 +42,7 @@ namespace Squadio.API.Handlers.Teams.Implementation
 
         public async Task<Response<TeamDTO>> Create(CreateTeamDTO dto, ClaimsPrincipal claims)
         {
-            var userId = claims.GetUserId();
-            if (!userId.HasValue)
-            {
-                return claims.Unauthorized<TeamDTO>();
-            }
-            var result = await _service.Create(userId.Value, dto);
+            var result = await _service.Create(claims.GetUserId(), dto);
             return result;
         }
     }

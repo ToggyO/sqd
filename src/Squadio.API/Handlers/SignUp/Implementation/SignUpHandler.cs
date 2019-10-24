@@ -129,67 +129,37 @@ namespace Squadio.API.Handlers.SignUp.Implementation
 
         public async Task<Response<UserRegistrationStepDTO>> SignUpConfirm(string code, ClaimsPrincipal claims)
         {
-            var userId = claims.GetUserId();
-            if (!userId.HasValue)
-            {
-                return claims.Unauthorized<UserRegistrationStepDTO>();
-            }
-            var result = await _service.SignUpConfirm(userId.Value, code);
+            var result = await _service.SignUpConfirm(claims.GetUserId(), code);
             return result;
         }
 
         public async Task<Response<UserRegistrationStepDTO<UserDTO>>> SignUpUsername(UserUpdateDTO dto, ClaimsPrincipal claims)
         {
-            var userId = claims.GetUserId();
-            if (!userId.HasValue)
-            {
-                return claims.Unauthorized<UserRegistrationStepDTO<UserDTO>>();
-            }
-            var result = await _service.SignUpUsername(userId.Value, dto);
+            var result = await _service.SignUpUsername(claims.GetUserId(), dto);
             return result;
         }
 
         public async Task<Response<UserRegistrationStepDTO<CompanyDTO>>> SignUpCompany(CreateCompanyDTO dto, ClaimsPrincipal claims)
         {
-            var userId = claims.GetUserId();
-            if (!userId.HasValue)
-            {
-                return claims.Unauthorized<UserRegistrationStepDTO<CompanyDTO>>();
-            }
-            var result = await _service.SignUpCompany(userId.Value, dto);
+            var result = await _service.SignUpCompany(claims.GetUserId(), dto);
             return result;
         }
 
         public async Task<Response<UserRegistrationStepDTO<TeamDTO>>> SignUpTeam(CreateTeamDTO dto, ClaimsPrincipal claims)
         {
-            var userId = claims.GetUserId();
-            if (!userId.HasValue)
-            {
-                return claims.Unauthorized<UserRegistrationStepDTO<TeamDTO>>();
-            }
-            var result = await _service.SignUpTeam(userId.Value, dto);
+            var result = await _service.SignUpTeam(claims.GetUserId(), dto);
             return result;
         }
 
         public async Task<Response<UserRegistrationStepDTO<ProjectDTO>>> SignUpProject(CreateProjectDTO dto, ClaimsPrincipal claims)
         {
-            var userId = claims.GetUserId();
-            if (!userId.HasValue)
-            {
-                return claims.Unauthorized<UserRegistrationStepDTO<ProjectDTO>>();
-            }
-            var result = await _service.SignUpProject(userId.Value, dto);
+            var result = await _service.SignUpProject(claims.GetUserId(), dto);
             return result;
         }
 
         public async Task<Response<UserRegistrationStepDTO>> SignUpDone(ClaimsPrincipal claims)
         {
-            var userId = claims.GetUserId();
-            if (!userId.HasValue)
-            {
-                return claims.Unauthorized<UserRegistrationStepDTO>();
-            }
-            var result = await _service.SignUpDone(userId.Value);
+            var result = await _service.SignUpDone(claims.GetUserId());
             return result;
         }
     }

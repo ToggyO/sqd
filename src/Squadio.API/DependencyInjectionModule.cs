@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Squadio.API.Filters;
 using Squadio.API.Handlers.Auth;
 using Squadio.API.Handlers.Auth.Implementation;
 using Squadio.API.Handlers.Companies;
@@ -30,6 +31,8 @@ namespace Squadio.API
             services.Add<ITeamsHandler, TeamsHandler>(serviceLifetime);
             services.Add<IProjectsHandler, ProjectsHandler>(serviceLifetime);
             services.Add<IInvitesHandler, InvitesHandler>(serviceLifetime);
+            
+            services.Add<AuthorizationFilter>(serviceLifetime);
         }
     }
 }

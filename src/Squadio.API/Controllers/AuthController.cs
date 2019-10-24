@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using Squadio.API.Filters;
 using Squadio.API.Handlers.Auth;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Auth;
@@ -25,6 +26,7 @@ namespace Squadio.API.Controllers
         }
         
         [HttpPut("token")]
+        [AuthorizationFilter]
         public async Task<ActionResult<Response<TokenDTO>>> RefreshToken([Required] RefreshTokenDTO request)
         {
             return await _handler.RefreshToken(request.RefreshToken);

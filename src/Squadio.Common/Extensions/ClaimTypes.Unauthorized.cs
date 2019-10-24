@@ -1,8 +1,7 @@
-﻿using System;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
-
+/*
 namespace Squadio.Common.Extensions
 {
     public static partial class ClaimTypes
@@ -28,3 +27,4 @@ namespace Squadio.Common.Extensions
         }
     }
 }
+*/
