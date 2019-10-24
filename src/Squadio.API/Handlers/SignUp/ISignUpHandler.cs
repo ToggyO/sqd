@@ -13,10 +13,10 @@ namespace Squadio.API.Handlers.SignUp
     public interface ISignUpHandler
     {
         Task<Response<UserRegistrationStepDTO>> GetRegistrationStep(string email);
-        Task<Response<UserRegistrationStepDTO<AuthInfoDTO>>> SignUpMemberEmail(SignUpMemberDTO dto);
-        Task<Response<UserRegistrationStepDTO<AuthInfoDTO>>> SignUpMemberGoogle(SignUpMemberGoogleDTO dto);
-        Task<Response<UserRegistrationStepDTO<AuthInfoDTO>>> SignUp(string email, string password);
-        Task<Response<UserRegistrationStepDTO<AuthInfoDTO>>> SignUpGoogle(string googleToken);
+        Task<Response<AuthInfoDTO>> SignUpMemberEmail(SignUpMemberDTO dto);
+        Task<Response<AuthInfoDTO>> SignUpMemberGoogle(SignUpMemberGoogleDTO dto);
+        Task<Response<AuthInfoDTO>> SignUp(string email, string password);
+        Task<Response<AuthInfoDTO>> SignUpGoogle(string googleToken);
         Task<Response<UserRegistrationStepDTO>> SignUpConfirm(string code, ClaimsPrincipal claims);
         Task<Response<UserRegistrationStepDTO<UserDTO>>> SignUpUsername(UserUpdateDTO dto, ClaimsPrincipal claims);
         Task<Response<UserRegistrationStepDTO<CompanyDTO>>> SignUpCompany(CreateCompanyDTO dto, ClaimsPrincipal claims);

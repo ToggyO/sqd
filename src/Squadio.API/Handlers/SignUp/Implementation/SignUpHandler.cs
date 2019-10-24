@@ -35,14 +35,14 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             return result;
         }
 
-        public async Task<Response<UserRegistrationStepDTO<AuthInfoDTO>>> SignUpMemberEmail(SignUpMemberDTO dto)
+        public async Task<Response<AuthInfoDTO>> SignUpMemberEmail(SignUpMemberDTO dto)
         {
             var signUpResult = await _service.SignUpMemberEmail(dto);
             if (!signUpResult.IsSuccess)
             {
                 var errorResponse = (ErrorResponse) signUpResult;
                 
-                return new ErrorResponse<UserRegistrationStepDTO<AuthInfoDTO>>
+                return new ErrorResponse<AuthInfoDTO>
                 {
                     Message = errorResponse.Message,
                     Code = errorResponse.Code,
@@ -56,26 +56,18 @@ namespace Squadio.API.Handlers.SignUp.Implementation
                 Password = dto.Password,
                 Email = dto.Email
             });
-            
-            return new Response<UserRegistrationStepDTO<AuthInfoDTO>>
-            {
-                Data = new UserRegistrationStepDTO<AuthInfoDTO>
-                {
-                    Data = resultToken.Data,
-                    Step = (int) RegistrationStep.Done,
-                    StepName = RegistrationStep.Done.ToString()
-                }
-            };
+
+            return resultToken;
         }
 
-        public async Task<Response<UserRegistrationStepDTO<AuthInfoDTO>>> SignUpMemberGoogle(SignUpMemberGoogleDTO dto)
+        public async Task<Response<AuthInfoDTO>> SignUpMemberGoogle(SignUpMemberGoogleDTO dto)
         {
             var signUpResult = await _service.SignUpMemberGoogle(dto);
             if (!signUpResult.IsSuccess)
             {
                 var errorResponse = (ErrorResponse) signUpResult;
                 
-                return new ErrorResponse<UserRegistrationStepDTO<AuthInfoDTO>>
+                return new ErrorResponse<AuthInfoDTO>
                 {
                     Message = errorResponse.Message,
                     Code = errorResponse.Code,
@@ -85,26 +77,18 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             }
             
             var resultToken = await _tokensService.GoogleAuthenticate(dto.Token);
-            
-            return new Response<UserRegistrationStepDTO<AuthInfoDTO>>
-            {
-                Data = new UserRegistrationStepDTO<AuthInfoDTO>
-                {
-                    Data = resultToken.Data,
-                    Step = (int) RegistrationStep.Done,
-                    StepName = RegistrationStep.Done.ToString()
-                }
-            };
+
+            return resultToken;
         }
 
-        public async Task<Response<UserRegistrationStepDTO<AuthInfoDTO>>> SignUp(string email, string password)
+        public async Task<Response<AuthInfoDTO>> SignUp(string email, string password)
         {
             var signUpResult = await _service.SignUp(email, password);
             if (!signUpResult.IsSuccess)
             {
                 var errorResponse = (ErrorResponse) signUpResult;
                 
-                return new ErrorResponse<UserRegistrationStepDTO<AuthInfoDTO>>
+                return new ErrorResponse<AuthInfoDTO>
                 {
                     Message = errorResponse.Message,
                     Code = errorResponse.Code,
@@ -118,26 +102,18 @@ namespace Squadio.API.Handlers.SignUp.Implementation
                 Password = password,
                 Email = email
             });
-            
-            return new Response<UserRegistrationStepDTO<AuthInfoDTO>>
-            {
-                Data = new UserRegistrationStepDTO<AuthInfoDTO>
-                {
-                    Data = resultToken.Data,
-                    Step = (int) RegistrationStep.New,
-                    StepName = RegistrationStep.New.ToString()
-                }
-            };
+
+            return resultToken;
         }
 
-        public async Task<Response<UserRegistrationStepDTO<AuthInfoDTO>>> SignUpGoogle(string googleToken)
+        public async Task<Response<AuthInfoDTO>> SignUpGoogle(string googleToken)
         {
             var signUpResult = await _service.SignUpGoogle(googleToken);
             if (!signUpResult.IsSuccess)
             {
                 var errorResponse = (ErrorResponse) signUpResult;
                 
-                return new ErrorResponse<UserRegistrationStepDTO<AuthInfoDTO>>
+                return new ErrorResponse<AuthInfoDTO>
                 {
                     Message = errorResponse.Message,
                     Code = errorResponse.Code,
@@ -147,15 +123,8 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             }
             
             var resultToken = await _tokensService.GoogleAuthenticate(googleToken);
-            return new Response<UserRegistrationStepDTO<AuthInfoDTO>>
-            {
-                Data = new UserRegistrationStepDTO<AuthInfoDTO>
-                {
-                    Data = resultToken.Data,
-                    Step = (int) RegistrationStep.EmailConfirmed,
-                    StepName = RegistrationStep.EmailConfirmed.ToString()
-                }
-            };
+
+            return resultToken;
         }
 
         public async Task<Response<UserRegistrationStepDTO>> SignUpConfirm(string code, ClaimsPrincipal claims)

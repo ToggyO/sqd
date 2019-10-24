@@ -25,32 +25,34 @@ namespace Squadio.API.Controllers
             _handler = handler;
         }
         
+        /*
         [HttpGet("step")]
         public async Task<Response<UserRegistrationStepDTO>> GetStatus([Required, FromQuery] UserEmailDTO dto)
         {
             return await _handler.GetRegistrationStep(dto.Email);
         }
+        */
         
         [HttpPost("member/email")]
-        public async Task<Response<UserRegistrationStepDTO<AuthInfoDTO>>> SignUpMemberEmail([Required, FromBody] SignUpMemberDTO dto)
+        public async Task<Response<AuthInfoDTO>> SignUpMemberEmail([Required, FromBody] SignUpMemberDTO dto)
         {
             return await _handler.SignUpMemberEmail(dto);
         }
         
         [HttpPost("member/google")]
-        public async Task<Response<UserRegistrationStepDTO<AuthInfoDTO>>> SignUpMemberGoogle([Required, FromBody] SignUpMemberGoogleDTO dto)
+        public async Task<Response<AuthInfoDTO>> SignUpMemberGoogle([Required, FromBody] SignUpMemberGoogleDTO dto)
         {
             return await _handler.SignUpMemberGoogle(dto);
         }
         
         [HttpPost("admin/email")]
-        public async Task<Response<UserRegistrationStepDTO<AuthInfoDTO>>> SignUp([Required, FromBody] SignUpDTO dto)
+        public async Task<Response<AuthInfoDTO>> SignUp([Required, FromBody] SignUpDTO dto)
         {
             return await _handler.SignUp(dto.Email, dto.Password);
         }
         
         [HttpPost("admin/google")]
-        public async Task<Response<UserRegistrationStepDTO<AuthInfoDTO>>> SignUpGoogle([Required, FromBody] GoogleTokenDTO dto)
+        public async Task<Response<AuthInfoDTO>> SignUpGoogle([Required, FromBody] GoogleTokenDTO dto)
         {
             return await _handler.SignUpGoogle(dto.Token);
         }
