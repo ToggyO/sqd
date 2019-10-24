@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Auth;
@@ -21,6 +22,7 @@ namespace Squadio.API.Handlers.SignUp
         Task<Response<UserRegistrationStepDTO<UserDTO>>> SignUpUsername(UserUpdateDTO dto, ClaimsPrincipal claims);
         Task<Response<UserRegistrationStepDTO<CompanyDTO>>> SignUpCompany(CreateCompanyDTO dto, ClaimsPrincipal claims);
         Task<Response<UserRegistrationStepDTO<TeamDTO>>> SignUpTeam(CreateTeamDTO dto, ClaimsPrincipal claims);
+        Task<Response<IEnumerable<string>>> GetTeamInvites(ClaimsPrincipal claims);
         Task<Response<UserRegistrationStepDTO<ProjectDTO>>> SignUpProject(CreateProjectDTO dto, ClaimsPrincipal claims);
         Task<Response<UserRegistrationStepDTO>> SignUpDone(ClaimsPrincipal claims);
     }

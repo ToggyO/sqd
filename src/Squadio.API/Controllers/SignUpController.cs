@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -85,6 +86,12 @@ namespace Squadio.API.Controllers
         public async Task<Response<UserRegistrationStepDTO<TeamDTO>>> CreateTeam([Required, FromBody] CreateTeamDTO dto)
         {
             return await _handler.SignUpTeam(dto, User);
+        }
+        
+        [HttpGet("admin/team/invites")]
+        public async Task<Response<IEnumerable<string>>> GetTeamInvites()
+        {
+            return await _handler.GetTeamInvites(User);
         }
         
         [HttpPost("admin/project")]

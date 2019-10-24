@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Squadio.BLL.Providers.SignUp;
 using Squadio.BLL.Services.SignUp;
@@ -148,6 +149,12 @@ namespace Squadio.API.Handlers.SignUp.Implementation
         public async Task<Response<UserRegistrationStepDTO<TeamDTO>>> SignUpTeam(CreateTeamDTO dto, ClaimsPrincipal claims)
         {
             var result = await _service.SignUpTeam(claims.GetUserId(), dto);
+            return result;
+        }
+
+        public async Task<Response<IEnumerable<string>>> GetTeamInvites(ClaimsPrincipal claims)
+        {
+            var result = await _provider.GetTeamInvites(claims.GetUserId());
             return result;
         }
 

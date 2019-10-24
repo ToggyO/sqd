@@ -93,7 +93,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
 
         public async Task<Response<InviteDTO>> InviteToTeam(string authorName, string teamName, Guid teamId, string email)
         {
-            var invite = await _repository.CreateInvite(email);
+            var invite = await _repository.CreateTeamInvite(email, teamId);
             var result = _mapper.Map<InviteModel, InviteDTO>(invite);
 
             try
@@ -154,7 +154,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
 
         public async Task<Response<InviteDTO>> InviteToProject(string authorName, string projectName, Guid projectId, string email)
         {
-            var invite = await _repository.CreateInvite(email);
+            var invite = await _repository.CreateProjectInvite(email, projectId);
             var result = _mapper.Map<InviteModel, InviteDTO>(invite);
 
             try

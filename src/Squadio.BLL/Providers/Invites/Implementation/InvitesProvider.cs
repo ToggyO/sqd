@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
@@ -34,6 +35,24 @@ namespace Squadio.BLL.Providers.Invites.Implementation
             return new Response<InviteModel>
             {
                 Data = item
+            };
+        }
+
+        public async Task<Response<IEnumerable<InviteModel>>> GetProjectInvites(Guid projectId)
+        {
+            var invites = await _repository.GetProjectInvites(projectId);
+            return new Response<IEnumerable<InviteModel>>
+            {
+                Data = invites
+            };
+        }
+
+        public async Task<Response<IEnumerable<InviteModel>>> GetTeamInvites(Guid teamId)
+        {
+            var invites = await _repository.GetTeamInvites(teamId);
+            return new Response<IEnumerable<InviteModel>>
+            {
+                Data = invites
             };
         }
     }
