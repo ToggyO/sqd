@@ -30,13 +30,12 @@ namespace Squadio.API.Controllers
             _handler = handler;
         }
         
-        /*
         [HttpGet("step")]
+        [AllowAnonymous]
         public async Task<Response<SignUpStepDTO>> GetStatus([Required, FromQuery] UserEmailDTO dto)
         {
             return await _handler.GetRegistrationStep(dto.Email);
         }
-        */
         
         [HttpPost("member/email")]
         [AllowAnonymous]
