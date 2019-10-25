@@ -15,11 +15,11 @@ namespace Squadio.BLL.Services.SignUp
         Task<Response> SignUpMemberGoogle(SignUpMemberGoogleDTO dto);
         Task<Response> SignUp(string email, string password);
         Task<Response> SignUpGoogle(string googleToken);
-        Task<Response<UserRegistrationStepDTO>> SignUpConfirm(Guid userId, string code);
-        Task<Response<UserRegistrationStepDTO<UserDTO>>> SignUpUsername(Guid userId, UserUpdateDTO updateDTO);
-        Task<Response<UserRegistrationStepDTO<CompanyDTO>>> SignUpCompany(Guid userId, CreateCompanyDTO dto);
-        Task<Response<UserRegistrationStepDTO<TeamDTO>>> SignUpTeam(Guid userId, CreateTeamDTO dto);
-        Task<Response<UserRegistrationStepDTO<ProjectDTO>>> SignUpProject(Guid userId, CreateProjectDTO dto);
-        Task<Response<UserRegistrationStepDTO>> SignUpDone(Guid userId);
+        Task<Response<SignUpStepDTO>> SignUpConfirm(Guid userId, string code);
+        Task<Response<SignUpStepDTO<UserDTO>>> SignUpUsername(Guid userId, UserUpdateDTO updateDTO);
+        Task<Response<SignUpStepDTO<CompanyDTO>>> SignUpCompany(Guid userId, CreateCompanyDTO dto);
+        Task<Response<SignUpStepDTO<TeamDTO>>> SignUpTeam(Guid userId, CreateTeamDTO dto);
+        Task<Response<SignUpStepDTO<ProjectDTO>>> SignUpProject(Guid userId, CreateProjectDTO dto);
+        Task<Response<SignUpStepDTO>> SignUpDone(Guid userId);
     }
 }

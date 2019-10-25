@@ -15,7 +15,7 @@
       <Compile Update="Companies\CompanyModelMapper.cs">
         <DependentUpon>CompanyDTO.cs</DependentUpon>
       </Compile>
-      <Compile Update="Users\UserRegistrationStepMapper.cs">
+      <Compile Update="Users\SignUpStepMapper.cs">
         <DependentUpon>UserRegistrationStepDTO.cs</DependentUpon>
       </Compile>
       <Compile Update="Teams\TeamModelMapper.cs">
@@ -23,6 +23,9 @@
       </Compile>
       <Compile Update="Invites\InviteModelMapper.cs">
         <DependentUpon>InviteDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Users\UserRegistrationStepMapper.cs">
+        <DependentUpon>UserRegistrationStepDTO.cs</DependentUpon>
       </Compile>
     </ItemGroup>
 

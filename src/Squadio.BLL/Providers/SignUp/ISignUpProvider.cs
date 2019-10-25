@@ -8,7 +8,7 @@ namespace Squadio.BLL.Providers.SignUp
 {
     public interface ISignUpProvider
     {
-        Task<Response<UserRegistrationStepDTO>> GetRegistrationStep(string email);
+        Task<Response<SignUpStepDTO>> GetRegistrationStep(string email);
         Task<Response<IEnumerable<string>>> GetTeamInvites(Guid userId);
     }
 }

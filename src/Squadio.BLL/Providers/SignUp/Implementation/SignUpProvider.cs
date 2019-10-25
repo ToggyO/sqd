@@ -36,12 +36,12 @@ namespace Squadio.BLL.Providers.SignUp.Implementation
             _mapper = mapper;
         }
 
-        public async Task<Response<UserRegistrationStepDTO>> GetRegistrationStep(string email)
+        public async Task<Response<SignUpStepDTO>> GetRegistrationStep(string email)
         {
             var entity = await _repository.GetRegistrationStepByEmail(email);
             if (entity == null)
             {
-                return new BusinessConflictErrorResponse<UserRegistrationStepDTO>(new []
+                return new BusinessConflictErrorResponse<SignUpStepDTO>(new []
                 {
                     new Error
                     {
@@ -52,8 +52,8 @@ namespace Squadio.BLL.Providers.SignUp.Implementation
                 });
             }
             
-            var result = _mapper.Map<UserRegistrationStepModel, UserRegistrationStepDTO>(entity);
-            return new Response<UserRegistrationStepDTO>
+            var result = _mapper.Map<UserRegistrationStepModel, SignUpStepDTO>(entity);
+            return new Response<SignUpStepDTO>
             {
                 Data = result
             };

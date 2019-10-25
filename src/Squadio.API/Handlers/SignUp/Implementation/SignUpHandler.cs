@@ -30,7 +30,7 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             _tokensService = tokensService;
         }
 
-        public async Task<Response<UserRegistrationStepDTO>> GetRegistrationStep(string email)
+        public async Task<Response<SignUpStepDTO>> GetRegistrationStep(string email)
         {
             var result = await _provider.GetRegistrationStep(email);
             return result;
@@ -128,25 +128,25 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             return resultToken;
         }
 
-        public async Task<Response<UserRegistrationStepDTO>> SignUpConfirm(string code, ClaimsPrincipal claims)
+        public async Task<Response<SignUpStepDTO>> SignUpConfirm(string code, ClaimsPrincipal claims)
         {
             var result = await _service.SignUpConfirm(claims.GetUserId(), code);
             return result;
         }
 
-        public async Task<Response<UserRegistrationStepDTO<UserDTO>>> SignUpUsername(UserUpdateDTO dto, ClaimsPrincipal claims)
+        public async Task<Response<SignUpStepDTO<UserDTO>>> SignUpUsername(UserUpdateDTO dto, ClaimsPrincipal claims)
         {
             var result = await _service.SignUpUsername(claims.GetUserId(), dto);
             return result;
         }
 
-        public async Task<Response<UserRegistrationStepDTO<CompanyDTO>>> SignUpCompany(CreateCompanyDTO dto, ClaimsPrincipal claims)
+        public async Task<Response<SignUpStepDTO<CompanyDTO>>> SignUpCompany(CreateCompanyDTO dto, ClaimsPrincipal claims)
         {
             var result = await _service.SignUpCompany(claims.GetUserId(), dto);
             return result;
         }
 
-        public async Task<Response<UserRegistrationStepDTO<TeamDTO>>> SignUpTeam(CreateTeamDTO dto, ClaimsPrincipal claims)
+        public async Task<Response<SignUpStepDTO<TeamDTO>>> SignUpTeam(CreateTeamDTO dto, ClaimsPrincipal claims)
         {
             var result = await _service.SignUpTeam(claims.GetUserId(), dto);
             return result;
@@ -158,13 +158,13 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             return result;
         }
 
-        public async Task<Response<UserRegistrationStepDTO<ProjectDTO>>> SignUpProject(CreateProjectDTO dto, ClaimsPrincipal claims)
+        public async Task<Response<SignUpStepDTO<ProjectDTO>>> SignUpProject(CreateProjectDTO dto, ClaimsPrincipal claims)
         {
             var result = await _service.SignUpProject(claims.GetUserId(), dto);
             return result;
         }
 
-        public async Task<Response<UserRegistrationStepDTO>> SignUpDone(ClaimsPrincipal claims)
+        public async Task<Response<SignUpStepDTO>> SignUpDone(ClaimsPrincipal claims)
         {
             var result = await _service.SignUpDone(claims.GetUserId());
             return result;

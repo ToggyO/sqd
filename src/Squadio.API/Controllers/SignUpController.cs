@@ -16,6 +16,8 @@ using Squadio.DTO.Users;
 
 namespace Squadio.API.Controllers
 {
+        
+    // TODO: Add request new code!
     [ApiController]
     [AuthorizationFilter]
     [Route("api/signup")]
@@ -30,7 +32,7 @@ namespace Squadio.API.Controllers
         
         /*
         [HttpGet("step")]
-        public async Task<Response<UserRegistrationStepDTO>> GetStatus([Required, FromQuery] UserEmailDTO dto)
+        public async Task<Response<SignUpStepDTO>> GetStatus([Required, FromQuery] UserEmailDTO dto)
         {
             return await _handler.GetRegistrationStep(dto.Email);
         }
@@ -65,25 +67,25 @@ namespace Squadio.API.Controllers
         }
         
         [HttpPut("admin/confirm")]
-        public async Task<Response<UserRegistrationStepDTO>> SignUpConfirm([Required, FromBody] SignUpCodeDTO dto)
+        public async Task<Response<SignUpStepDTO>> SignUpConfirm([Required, FromBody] SignUpCodeDTO dto)
         {
             return await _handler.SignUpConfirm(dto.Code, User);
         }
         
         [HttpPut("admin/username")]
-        public async Task<Response<UserRegistrationStepDTO<UserDTO>>> UpdateCurrentUser([FromBody] UserUpdateDTO dto)
+        public async Task<Response<SignUpStepDTO<UserDTO>>> UpdateCurrentUser([FromBody] UserUpdateDTO dto)
         {
             return await _handler.SignUpUsername(dto, User);
         }
         
         [HttpPost("admin/company")]
-        public async Task<Response<UserRegistrationStepDTO<CompanyDTO>>> CreateCompany([Required, FromBody] CreateCompanyDTO dto)
+        public async Task<Response<SignUpStepDTO<CompanyDTO>>> CreateCompany([Required, FromBody] CreateCompanyDTO dto)
         {
             return await _handler.SignUpCompany(dto, User);
         }
         
         [HttpPost("admin/team")]
-        public async Task<Response<UserRegistrationStepDTO<TeamDTO>>> CreateTeam([Required, FromBody] CreateTeamDTO dto)
+        public async Task<Response<SignUpStepDTO<TeamDTO>>> CreateTeam([Required, FromBody] CreateTeamDTO dto)
         {
             return await _handler.SignUpTeam(dto, User);
         }
@@ -95,13 +97,13 @@ namespace Squadio.API.Controllers
         }
         
         [HttpPost("admin/project")]
-        public async Task<Response<UserRegistrationStepDTO<ProjectDTO>>> CreateProject([Required, FromBody] CreateProjectDTO dto)
+        public async Task<Response<SignUpStepDTO<ProjectDTO>>> CreateProject([Required, FromBody] CreateProjectDTO dto)
         {
             return await _handler.SignUpProject(dto, User);
         }
         
         [HttpPut("admin/done")]
-        public async Task<Response<UserRegistrationStepDTO>> SignUpDone()
+        public async Task<Response<SignUpStepDTO>> SignUpDone()
         {
             return await _handler.SignUpDone(User);
         }

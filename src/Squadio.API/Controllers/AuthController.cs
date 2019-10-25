@@ -19,6 +19,7 @@ namespace Squadio.API.Controllers
             _handler = handler;
         }
         
+        // TODO: If user not found return 422!
         [HttpPost("token")]
         public async Task<Response<AuthInfoDTO>> Authenticate([Required] CredentialsDTO request)
         {
@@ -31,6 +32,7 @@ namespace Squadio.API.Controllers
             return await _handler.RefreshToken(request.RefreshToken);
         }
         
+        // TODO: If user not found return 422!
         [HttpPost("token/google")]
         public async Task<Response<AuthInfoDTO>> GoogleAuthenticate([Required] GoogleTokenDTO request)
         {

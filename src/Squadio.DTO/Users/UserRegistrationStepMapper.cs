@@ -5,11 +5,11 @@ using Squadio.Domain.Models.Users;
 
 namespace Squadio.DTO.Users
 {
-    public class UserRegistrationStepMapper : IMapper<UserRegistrationStepModel, UserRegistrationStepDTO>
+    public class UserRegistrationStepDTOStepMapper : IMapper<UserRegistrationStepModel, UserRegistrationStepDTO>
     {
         private readonly IMapper _mapper;
 
-        public UserRegistrationStepMapper(IMapper mapper)
+        public UserRegistrationStepDTOStepMapper(IMapper mapper)
         {
             _mapper = mapper;
         }
