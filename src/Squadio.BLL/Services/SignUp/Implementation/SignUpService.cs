@@ -246,7 +246,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                     {
                         Code = ErrorCodes.Business.EmailExists,
                         Message = ErrorMessages.Business.EmailExists,
-                        Field = ErrorFields.User.Email
+                        Field = ErrorFields.User.GoogleToken
                     }
                 });
             }

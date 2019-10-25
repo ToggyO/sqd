@@ -58,7 +58,10 @@ namespace Squadio.BLL.Services.Tokens.Implementation
                         Code = ErrorCodes.Security.AuthDataInvalid,
                         Message = ErrorMessages.Security.AuthDataInvalid
                     }
-                });
+                })
+                {
+                    HttpStatusCode = ErrorCodes.UnprocessableEntity
+                };
             }
 
             var tokenDTO = await _tokenFactory.CreateToken(user);
@@ -147,7 +150,10 @@ namespace Squadio.BLL.Services.Tokens.Implementation
                         Message = ErrorMessages.Security.GoogleTokenInvalid,
                         Field = ErrorFields.User.GoogleToken
                     }
-                });
+                })
+                {
+                    HttpStatusCode = ErrorCodes.UnprocessableEntity
+                };
             }
             
             var user = await _usersRepository.GetByEmail(infoFromGoogleToken.Email);
@@ -159,9 +165,12 @@ namespace Squadio.BLL.Services.Tokens.Implementation
                     {
                         Code = ErrorCodes.Business.UserDoesNotExists,
                         Message = ErrorMessages.Business.UserDoesNotExists,
-                        Field = ErrorFields.User.Email
+                        Field = ErrorFields.User.GoogleToken
                     }
-                });
+                })
+                {
+                    HttpStatusCode = ErrorCodes.UnprocessableEntity
+                };
             }
             
             var tokenDTO = await _tokenFactory.CreateToken(user);
