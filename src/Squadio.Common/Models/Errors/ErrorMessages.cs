@@ -11,6 +11,7 @@
 
         public static class Business
         {
+            public const string InvalidEmail = "Email is invalid";
             public const string EmailExists = "Email already exists";
             public const string UserDoesNotExists = "User does not exists";
             public const string UserIsDeleted = "You don't have access to Anova system - your account is deleted";

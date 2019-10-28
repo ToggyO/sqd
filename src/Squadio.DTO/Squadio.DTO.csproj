@@ -5,6 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Squadio.Common\Squadio.Common.csproj" />
       <ProjectReference Include="..\Squadio.Domain\Squadio.Domain.csproj" />
     </ItemGroup>
 
@@ -27,9 +28,19 @@
       <Compile Update="Users\UserRegistrationStepMapper.cs">
         <DependentUpon>UserRegistrationStepDTO.cs</DependentUpon>
       </Compile>
+      <Compile Update="SignUp\SignUpMemberDTO.Validator.cs">
+        <DependentUpon>SignUpMemberDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="SignUp\SignUpDTO.Validator.cs">
+        <DependentUpon>SignUpDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Users\UserEmailDTO.Validator.cs">
+        <DependentUpon>UserEmailDTO.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="FluentValidation.AspNetCore" Version="8.5.0" />
       <PackageReference Include="Mapper" Version="0.1.1" />
     </ItemGroup>
 

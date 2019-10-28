@@ -9,6 +9,7 @@ namespace Squadio.Common.Models.Errors
         public static class Business
         {
             public const string EmailExists = "bus.email_already_exists";
+            public const string InvalidEmail = "bus.invalid_email";
             public const string UserDoesNotExists = "bus.user_does_not_exists";
             public const string UserIsDeleted = "bus.user_is_deleted";
             public const string UserIsBlocked = "bus.user_is_blocked";

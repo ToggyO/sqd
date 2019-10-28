@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
-
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
 using Squadio.DAL;
 using Squadio.API.Extensions;
 using Squadio.API.Filters;
@@ -52,9 +51,12 @@ namespace Squadio.API
 
             services.AddMvcCore(options =>
                 {
+                    options.Filters.Add(typeof(ValidateModelAttribute));
                     options.Filters.Add(typeof(StatusCodeFilter));
                 })
-                .AddApiExplorer();
+                .AddApiExplorer()
+                .AddFluentValidation(configuration =>
+                    configuration.RegisterValidatorsFromAssemblyContaining<DTO.DependencyInjectionModule>());;
 
             var apiSettings = Configuration.GetSection("AppSettings:APISettings").Get<ApiSettings>();
 
