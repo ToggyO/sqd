@@ -100,5 +100,21 @@ namespace Squadio.DAL.Repository.SignUp.Implementation
             await _context.SaveChangesAsync();
             return item;
         }
+
+        public async Task ActivateAllRequestsForUser(Guid userId)
+        {
+            var items = _context.UserSignUpRequests
+                .Where(x => x.UserId == userId
+                            && !x.IsActivated);
+            
+            await items.ForEachAsync(x =>
+            {
+                x.ActivatedDate = DateTime.UtcNow;
+                x.IsActivated = true;
+            });
+            
+            _context.UserSignUpRequests.UpdateRange(items);
+            await _context.SaveChangesAsync();
+        }
     }
 }

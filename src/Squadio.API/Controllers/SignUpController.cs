@@ -65,6 +65,13 @@ namespace Squadio.API.Controllers
             return await _handler.SignUpGoogle(dto.Token);
         }
         
+        [HttpPost("admin/send-new-code")]
+        [AllowAnonymous]
+        public async Task<Response<SignUpStepDTO>> SendNewCode([Required, FromBody] UserEmailDTO dto)
+        {
+            return await _handler.SendNewCode(dto.Email);
+        }
+        
         [HttpPut("admin/confirm")]
         public async Task<Response<SignUpStepDTO>> SignUpConfirm([Required, FromBody] SignUpCodeDTO dto)
         {

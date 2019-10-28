@@ -128,6 +128,12 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             return resultToken;
         }
 
+        public async Task<Response<SignUpStepDTO>> SendNewCode(string email)
+        {
+            var result = await _service.SendNewCode(email);
+            return result;
+        }
+
         public async Task<Response<SignUpStepDTO>> SignUpConfirm(string code, ClaimsPrincipal claims)
         {
             var result = await _service.SignUpConfirm(claims.GetUserId(), code);

@@ -270,6 +270,60 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             };
         }
 
+        public async Task<Response<SignUpStepDTO>> SendNewCode(string email)
+        {
+            var user = await _usersRepository.GetByEmail(email);
+            if (user == null)
+            {
+                return new BusinessConflictErrorResponse<SignUpStepDTO>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Business.UserDoesNotExists,
+                        Message = ErrorMessages.Business.UserDoesNotExists,
+                        Field = ErrorFields.User.Email
+                    }
+                });
+            }
+            
+            var step = await _repository.GetRegistrationStepByUserId(user.Id);
+
+            if (step.Step >= RegistrationStep.EmailConfirmed)
+            {
+                return new BusinessConflictErrorResponse<SignUpStepDTO>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Business.InvalidRegistrationStep,
+                        Message = ErrorMessages.Business.InvalidRegistrationStep
+                    }
+                })
+                {
+                    Data = new SignUpStepDTO
+                    {
+                        RegistrationStep = new UserRegistrationStepDTO()
+                        {
+                            Step = (int) step.Step,
+                            StepName = step.Step.ToString()
+                        }
+                    }
+                };
+            }
+
+            var code = _usersService.GenerateCode();
+            
+            await _signUpMailService.Send(new UserSignUpEmailModel()
+            {
+                Code = code,
+                To = email
+            });
+
+            await _repository.ActivateAllRequestsForUser(user.Id);
+            await _repository.AddRequest(user.Id, code);
+            
+            return new Response<SignUpStepDTO>();
+        }
+
         public async Task<Response<SignUpStepDTO>> SignUpConfirm(Guid userId, string code)
         {
             var step = await _repository.GetRegistrationStepByUserId(userId);

@@ -17,5 +17,6 @@ namespace Squadio.DAL.Repository.SignUp
         Task<UserSignUpRequestModel> GetRequest(Guid userId, string code);
         Task<UserSignUpRequestModel> GetRequest(string email, string code);
         Task<UserSignUpRequestModel> ActivateRequest(Guid requestId);
+        Task ActivateAllRequestsForUser(Guid userId);
     }
 }
