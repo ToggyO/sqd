@@ -321,7 +321,17 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             await _repository.ActivateAllRequestsForUser(user.Id);
             await _repository.AddRequest(user.Id, code);
             
-            return new Response<SignUpStepDTO>();
+            return new Response<SignUpStepDTO>
+            {
+                Data = new SignUpStepDTO
+                {
+                    RegistrationStep = new UserRegistrationStepDTO()
+                    {
+                        Step = (int) step.Step,
+                        StepName = step.Step.ToString()
+                    }
+                }
+            };
         }
 
         public async Task<Response<SignUpStepDTO>> SignUpConfirm(Guid userId, string code)
