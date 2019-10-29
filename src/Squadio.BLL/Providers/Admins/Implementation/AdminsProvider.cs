@@ -50,12 +50,14 @@ namespace Squadio.BLL.Providers.Admins.Implementation
             
             foreach (var user in users)
             {
+                /*
                 var companiesResponse = await _companiesProvider.GetCompaniesOfUser(user.Id);
                 resultDataItems.Add(new UserWithCompaniesDTO
                 {
                     User = user,
                     Companies = companiesResponse.Data
                 });
+                */
             }
 
             resultData.Items = resultDataItems;
