@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Squadio.Common.Models.Responses;
 using Squadio.Domain.Enums;
@@ -10,7 +11,7 @@ namespace Squadio.BLL.Providers.Companies
 {
     public interface ICompaniesProvider
     {
-        Task<Response<PageModel<CompanyDTO>>> GetCompaniesOfUser(Guid userId, PageModel model, UserStatus? status = null);
+        Task<Response<IEnumerable<CompanyOfUserDTO>>> GetCompaniesOfUser(Guid? userId, UserStatus? status = null);
         Task<Response<PageModel<UserDTO>>> GetCompanyUsers(Guid companyId, PageModel model);
         Task<Response<CompanyDTO>> GetById(Guid id);
     }

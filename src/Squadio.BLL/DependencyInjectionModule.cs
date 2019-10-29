@@ -4,6 +4,8 @@ using Mapper;
 using Microsoft.Extensions.DependencyInjection;
 using Squadio.BLL.Factories;
 using Squadio.BLL.Factories.Implementation;
+using Squadio.BLL.Providers.Admins;
+using Squadio.BLL.Providers.Admins.Implementation;
 using Squadio.BLL.Providers.Companies;
 using Squadio.BLL.Providers.Companies.Implementation;
 using Squadio.BLL.Providers.Invites;
@@ -16,6 +18,8 @@ using Squadio.BLL.Providers.Teams;
 using Squadio.BLL.Providers.Teams.Implementation;
 using Squadio.BLL.Providers.Users;
 using Squadio.BLL.Providers.Users.Implementation;
+using Squadio.BLL.Services.Admins;
+using Squadio.BLL.Services.Admins.Implementation;
 using Squadio.BLL.Services.Companies;
 using Squadio.BLL.Services.Companies.Implementation;
 using Squadio.BLL.Services.Email;
@@ -68,6 +72,9 @@ namespace Squadio.BLL
             
             services.Add<IInvitesProvider, InvitesProvider>(serviceLifetime);
             services.Add<IInvitesService, InvitesService>(serviceLifetime);
+            
+            services.Add<IAdminsProvider, AdminsProvider>(serviceLifetime);
+            services.Add<IAdminsService, AdminsService>(serviceLifetime);
             
             services.Add<ITokensFactory, TokensFactory>(serviceLifetime);
             services.AddMapper();

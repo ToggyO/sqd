@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -72,6 +73,34 @@ namespace Squadio.DAL.Repository.Companies.Implementation
                 Items = items
             };
             return result;
+        }
+
+        public async Task<IEnumerable<CompanyUserModel>> Get(Guid? userId, Guid? companyId, UserStatus? status = null)
+        {
+            IQueryable<CompanyUserModel> query = _context.CompaniesUsers;
+
+            if (status.HasValue)
+            {
+                query = query.Where(x => x.Status == status);
+            }
+
+            if (userId.HasValue)
+            {
+                query = query.Where(x => x.UserId == userId);
+            }
+
+            if (companyId.HasValue)
+            {
+                query = query.Where(x => x.CompanyId == companyId);
+            }
+
+            query
+                .Include(x => x.Company)
+                .Include(x => x.User);
+            
+            var items = await query.ToListAsync();
+            
+            return items;
         }
     }
 }

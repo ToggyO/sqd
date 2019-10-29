@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Mapper;
 using Squadio.Common.Models.Responses;
@@ -28,21 +29,21 @@ namespace Squadio.BLL.Providers.Companies.Implementation
             _mapper = mapper;
         }
 
-        public async Task<Response<PageModel<CompanyDTO>>> GetCompaniesOfUser(Guid userId, PageModel model, UserStatus? status = null)
+        public async Task<Response<IEnumerable<CompanyOfUserDTO>>> GetCompaniesOfUser(Guid? userId, UserStatus? status = null)
         {
-            var page = await _repository.GetCompaniesOfUser(userId, model, status);
+            var items = await _repository.Get(userId, null, status);
 
-            var result = new PageModel<CompanyDTO>
+            var resultItems = items.Select(x => new CompanyOfUserDTO
             {
-                Page = page.Page,
-                PageSize = page.PageSize,
-                Total = page.Total,
-                Items = _mapper.Map<IEnumerable<CompanyModel>,IEnumerable<CompanyDTO>>(page.Items)
-            };
+                Id = x.CompanyId,
+                Name = x.Company?.Name,
+                Status = (int) x.Status,
+                StatusName = x.Status.ToString()
+            });
             
-            return new Response<PageModel<CompanyDTO>>
+            return new Response<IEnumerable<CompanyOfUserDTO>>
             {
-                Data = result
+                Data = resultItems
             };
         }
 
