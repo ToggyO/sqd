@@ -13,7 +13,7 @@ namespace Squadio.DAL.Repository.Users
         Task<UserModel> GetByEmail(string email);
         Task<UserPasswordRequestModel> AddChangePasswordRequest(Guid userId, string code);
         Task<UserPasswordRequestModel> GetChangePasswordRequests(string email, string code);
-        Task ActivateChangePasswordRequestsCode(Guid userId, string code);
+        Task ActivateChangePasswordRequestsCode(Guid userId);
         Task SavePassword(Guid userId, string hash, string salt);
     }
 }

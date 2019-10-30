@@ -58,12 +58,14 @@ namespace Squadio.API.Controllers
         }
         
         [HttpPut("passwords/set")]
+        [AllowAnonymous]
         public async Task<Response<UserDTO>> SetPassword([FromBody] UserSetPasswordDTO dto)
         {
             return await _handler.SetPassword(dto);
         }
         
         [HttpPost("passwords/request")]
+        [AllowAnonymous]
         public async Task<Response> ResetPasswordRequest([FromBody, Required] UserEmailDTO dto)
         {
             return await _handler.ResetPasswordRequest(dto.Email);

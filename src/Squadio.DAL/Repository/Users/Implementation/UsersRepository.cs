@@ -116,14 +116,18 @@ namespace Squadio.DAL.Repository.Users.Implementation
             return newRequest;
         }
 
-        public async Task ActivateChangePasswordRequestsCode(Guid userId, string code)
+        public async Task ActivateChangePasswordRequestsCode(Guid userId)
         {
-            var item = await _context.UserPasswordRequests
-                .Where(x => x.Code == code && x.UserId == userId)
-                .FirstOrDefaultAsync();
-            item.ActivatedDate = DateTime.UtcNow;
-            item.IsActivated = true;
-            _context.UserPasswordRequests.Update(item);
+            var items = _context.UserPasswordRequests
+                .Where(x => x.UserId == userId && x.IsActivated == false);
+
+            await items.ForEachAsync(x =>
+            {
+                x.ActivatedDate = DateTime.UtcNow;
+                x.IsActivated = true;
+            });
+            
+            _context.UserPasswordRequests.UpdateRange(items);
             await _context.SaveChangesAsync();
         }
     }

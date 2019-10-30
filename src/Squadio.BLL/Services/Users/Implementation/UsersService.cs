@@ -49,7 +49,7 @@ namespace Squadio.BLL.Services.Users.Implementation
         public async Task<Response<UserDTO>> SetPassword(string email, string code, string password)
         {
             var userPasswordRequest = await _repository.GetChangePasswordRequests(email, code);
-            if (userPasswordRequest.IsActivated)
+            if (userPasswordRequest == null || userPasswordRequest?.IsActivated == true)
             {
                 return new BusinessConflictErrorResponse<UserDTO>(new []
                 {
@@ -64,7 +64,7 @@ namespace Squadio.BLL.Services.Users.Implementation
             var passwordModel = await _passwordService.CreatePassword(password);
             await _repository.SavePassword(userPasswordRequest.UserId, passwordModel.Hash, passwordModel.Salt);
             
-            await _repository.ActivateChangePasswordRequestsCode(userPasswordRequest.UserId, code);
+            await _repository.ActivateChangePasswordRequestsCode(userPasswordRequest.UserId);
 
             var user = await _repository.GetById(userPasswordRequest.UserId);
 
