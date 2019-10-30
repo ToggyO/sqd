@@ -7,6 +7,6 @@ namespace Squadio.BLL.Providers.Admins
 {
     public interface IAdminsProvider
     {
-        Task<Response<PageModel<UserWithCompaniesDTO>>> GetPage(PageModel model);
+        Task<Response<PageModel<UserWithCompaniesDTO>>> GetPage(PageModel model, string search);
     }
 }

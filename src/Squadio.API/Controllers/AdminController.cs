@@ -25,9 +25,9 @@ namespace Squadio.API.Controllers
         }
         
         [HttpGet("/users")]
-        public async Task<Response<PageModel<UserWithCompaniesDTO>>> GetPage([FromQuery] PageModel model)
+        public async Task<Response<PageModel<UserWithCompaniesDTO>>> GetPage([FromQuery] PageModel model, [FromQuery] string search)
         {
-            return await _handler.GetPage(model);
+            return await _handler.GetPage(model, search);
         }
     }
 }

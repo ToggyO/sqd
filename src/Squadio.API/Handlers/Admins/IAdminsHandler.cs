@@ -7,6 +7,6 @@ namespace Squadio.API.Handlers.Admins
 {
     public interface IAdminsHandler
     {
-        Task<Response<PageModel<UserWithCompaniesDTO>>> GetPage(PageModel model);
+        Task<Response<PageModel<UserWithCompaniesDTO>>> GetPage(PageModel model, string search);
     }
 }

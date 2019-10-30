@@ -18,9 +18,9 @@ namespace Squadio.API.Handlers.Admins.Implementation
             _provider = provider;
             _service = service;
         }
-        public async Task<Response<PageModel<UserWithCompaniesDTO>>> GetPage(PageModel model)
+        public async Task<Response<PageModel<UserWithCompaniesDTO>>> GetPage(PageModel model, string search)
         {
-            var result = await _provider.GetPage(model);
+            var result = await _provider.GetPage(model, search);
             return result;
         }
     }

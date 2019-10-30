@@ -27,22 +27,9 @@ namespace Squadio.BLL.Providers.Admins.Implementation
             _usersProvider = usersProvider;
         }
         
-        public async Task<Response<PageModel<UserWithCompaniesDTO>>> GetPage(PageModel model)
+        public async Task<Response<PageModel<UserWithCompaniesDTO>>> GetPage(PageModel model, string search)
         {
-            var usersResponse = await _usersProvider.GetPage(model);
-            if (!usersResponse.IsSuccess)
-            {
-                var error = (ErrorResponse<PageModel<UserDTO>>) usersResponse;
-                return new ErrorResponse<PageModel<UserWithCompaniesDTO>>
-                {
-                    Code = error.Code,
-                    Message = error.Message,
-                    HttpStatusCode = error.HttpStatusCode,
-                    Errors = error.Errors
-                };
-            }
-
-            var usersPage = usersResponse.Data;
+            var usersPage = await _repository.GetUsers(model, search);
 
             var resultData = new PageModel<UserWithCompaniesDTO>()
             {
@@ -60,7 +47,7 @@ namespace Squadio.BLL.Providers.Admins.Implementation
                 var items = await _repository.GetCompanyUser(userId: user.Id);
                 resultDataItems.Add(new UserWithCompaniesDTO
                 {
-                    User = user,
+                    User = _mapper.Map<UserModel, UserDTO>(user),
                     Companies = items.Select(x => new CompanyOfUserDTO
                     {
                         Id = x.CompanyId,
