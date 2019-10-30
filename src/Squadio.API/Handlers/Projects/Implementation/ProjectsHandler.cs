@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using Squadio.BLL.Providers.Projects;
 using Squadio.BLL.Services.Projects;
 using Squadio.Common.Extensions;
+using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
-using Squadio.DTO.Pages;
 using Squadio.DTO.Projects;
 using Squadio.DTO.Users;
 

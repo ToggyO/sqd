@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
+using Squadio.Common.Models.Filters;
+using Squadio.Common.Models.Pages;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Companies;
 using Squadio.Domain.Models.Users;
-using Squadio.DTO.Pages;
 
 namespace Squadio.DAL.Repository.Admins.Implementation
 {
@@ -43,7 +44,7 @@ namespace Squadio.DAL.Repository.Admins.Implementation
             return await query.ToListAsync();
         }
 
-        public async Task<PageModel<UserModel>> GetUsers(PageModel pageModel, string search)
+        public async Task<PageModel<UserModel>> GetUsers(PageModel pageModel, string search, UserWithCompaniesFilter filter)
         {
             IQueryable<CompanyUserModel> query = _context.CompaniesUsers
                 .Include(x => x.Company)
@@ -56,6 +57,14 @@ namespace Squadio.DAL.Repository.Admins.Implementation
                 query = query.Where(x => x.User.Name.ToUpper().Contains(searchUpper)
                                          || x.User.Email.ToUpper().Contains(searchUpper)
                                          || x.Company.Name.ToUpper().Contains(searchUpper));
+            }
+
+            if (filter != null)
+            {
+                if (filter.Status != null)
+                {
+                    query = query.Where(x => x.Status == filter.Status);
+                }
             }
 
             var queryUsers = query

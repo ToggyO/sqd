@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Squadio.DTO.Pages
+namespace Squadio.Common.Models.Pages
 {
     public class PageModel
     {

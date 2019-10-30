@@ -117,6 +117,7 @@ namespace Squadio.API
                         new string[0] 
                     }
                 });
+                options.DescribeAllEnumsAsStrings();
             });
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

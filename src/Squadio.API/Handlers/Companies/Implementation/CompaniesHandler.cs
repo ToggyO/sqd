@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Squadio.BLL.Providers.Companies;
 using Squadio.BLL.Services.Companies;
 using Squadio.Common.Extensions;
+using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Companies;
-using Squadio.DTO.Pages;
 using Squadio.DTO.Users;
 
 namespace Squadio.API.Handlers.Companies.Implementation

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Squadio.Common.Models.Pages;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Companies;
-using Squadio.DTO.Pages;
 
 namespace Squadio.DAL.Repository.Companies.Implementation
 {

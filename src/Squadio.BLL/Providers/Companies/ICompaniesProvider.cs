@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.Domain.Enums;
 using Squadio.DTO.Companies;
-using Squadio.DTO.Pages;
 using Squadio.DTO.Users;
 
 namespace Squadio.BLL.Providers.Companies

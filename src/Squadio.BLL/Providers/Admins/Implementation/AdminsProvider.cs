@@ -3,11 +3,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Mapper;
 using Squadio.BLL.Providers.Users;
+using Squadio.Common.Models.Filters;
+using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Admins;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Companies;
-using Squadio.DTO.Pages;
 using Squadio.DTO.Users;
 
 namespace Squadio.BLL.Providers.Admins.Implementation
@@ -27,9 +28,9 @@ namespace Squadio.BLL.Providers.Admins.Implementation
             _usersProvider = usersProvider;
         }
         
-        public async Task<Response<PageModel<UserWithCompaniesDTO>>> GetPage(PageModel model, string search)
+        public async Task<Response<PageModel<UserWithCompaniesDTO>>> GetPage(PageModel model, string search, UserWithCompaniesFilter filter)
         {
-            var usersPage = await _repository.GetUsers(model, search);
+            var usersPage = await _repository.GetUsers(model, search, filter);
 
             var resultData = new PageModel<UserWithCompaniesDTO>()
             {

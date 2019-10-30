@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Squadio.Common.Models.Pages;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Companies;
-using Squadio.DTO.Pages;
 
 namespace Squadio.DAL.Repository.Companies
 {

@@ -7,11 +7,11 @@ using Squadio.BLL.Providers.Companies;
 using Squadio.BLL.Providers.Invites;
 using Squadio.BLL.Providers.Teams;
 using Squadio.Common.Models.Errors;
+using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.SignUp;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Users;
-using Squadio.DTO.Pages;
 using Squadio.DTO.Users;
 
 namespace Squadio.BLL.Providers.SignUp.Implementation
