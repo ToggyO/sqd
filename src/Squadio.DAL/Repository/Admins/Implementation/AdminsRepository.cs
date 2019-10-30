@@ -21,7 +21,9 @@ namespace Squadio.DAL.Repository.Admins.Implementation
 
         public async Task<IEnumerable<CompanyUserModel>> GetCompanyUser(Guid? userId = null, Guid? companyId = null, UserStatus? status = null)
         {
-            IQueryable<CompanyUserModel> query = _context.CompaniesUsers;
+            IQueryable<CompanyUserModel> query = _context.CompaniesUsers
+                .Include(x => x.User)
+                .Include(x => x.Company);
 
             if (status.HasValue)
             {
@@ -37,10 +39,6 @@ namespace Squadio.DAL.Repository.Admins.Implementation
             {
                 query = query.Where(x => x.CompanyId == companyId);
             }
-
-            query
-                .Include(x => x.Company)
-                .Include(x => x.User);
 
             return await query.ToListAsync();
         }
