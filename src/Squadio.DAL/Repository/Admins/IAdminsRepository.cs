@@ -12,7 +12,9 @@ namespace Squadio.DAL.Repository.Admins
 {
     public interface IAdminsRepository
     {
-        Task<IEnumerable<CompanyUserModel>> GetCompanyUser(Guid? userId = null, Guid? companyId = null, UserStatus? status = null);
+        Task<IEnumerable<CompanyUserModel>> GetCompanyUser(Guid? userId = null, Guid? companyId = null, IEnumerable<UserStatus> statuses = null);
         Task<PageModel<UserModel>> GetUsers(PageModel pageModel, string search, UserWithCompaniesFilter filter);
+        Task<PageModel<CompanyModel>> GetCompanies(PageModel pageModel, CompaniesFilter filter, string search);
+        Task<int> GetCompanyUsersCount(Guid companyId);
     }
 }

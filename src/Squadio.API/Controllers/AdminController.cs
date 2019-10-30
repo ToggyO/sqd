@@ -9,6 +9,7 @@ using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Auth;
+using Squadio.DTO.Companies;
 using Squadio.DTO.Users;
 
 namespace Squadio.API.Controllers
@@ -26,11 +27,19 @@ namespace Squadio.API.Controllers
         }
         
         [HttpGet("/users")]
-        public async Task<Response<PageModel<UserWithCompaniesDTO>>> GetPage([FromQuery] PageModel model
+        public async Task<Response<PageModel<UserWithCompaniesDTO>>> GetUsersPage([FromQuery] PageModel model
             , [FromQuery] UserWithCompaniesFilter filter
             , [FromQuery] string search)
         {
-            return await _handler.GetPage(model, search, filter);
+            return await _handler.GetUsersPage(model, search, filter);
+        }
+        
+        [HttpGet("/companies")]
+        public async Task<Response<PageModel<CompanyListDTO>>> GetCompaniesPage([FromQuery] PageModel model
+            , [FromQuery] CompaniesFilter filter
+            , [FromQuery] string search)
+        {
+            return await _handler.GetCompaniesPage(model, filter, search);
         }
     }
 }

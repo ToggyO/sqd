@@ -19,7 +19,8 @@ namespace Squadio.DTO.Companies
             return new CompanyDTO
             {
                 Id = item.Id,
-                Name = item.Name
+                Name = item.Name,
+                CreatedDate = item.CreatedDate
             };
         }
     }
