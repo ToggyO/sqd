@@ -8,7 +8,7 @@ namespace Squadio.API.Controllers
     [Route("api/versions")]
     public class VersionController : ControllerBase
     {
-        private const string Version = "0.0.9 b"; 
+        private const string Version = "0.0.10 b"; 
 
         [HttpGet]
         [AllowAnonymous]
