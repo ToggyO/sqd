@@ -39,6 +39,7 @@ namespace Squadio.API.Controllers
             }
             else
             {
+                //TODO: remove email from this endpoint. Get only from 'User'
                 return await _handler.GetRegistrationStep(dto.Email);
             }
         }
