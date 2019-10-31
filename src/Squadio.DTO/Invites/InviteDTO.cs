@@ -6,6 +6,5 @@ namespace Squadio.DTO.Invites
     {
         public Guid? Id { get; set; }
         public string Email { get; set; }
-        public bool IsSent { get; set; }
     }
 }

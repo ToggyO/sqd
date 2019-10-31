@@ -98,7 +98,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
 
             try
             {
-                await _inviteToTeamMailService.Send(new InviteToTeamEmailModel
+                _inviteToTeamMailService.Send(new InviteToTeamEmailModel
                 {
                     To = email,
                     AuthorName = authorName,
@@ -106,12 +106,8 @@ namespace Squadio.BLL.Services.Invites.Implementation
                     TeamId = teamId.ToString(),
                     TeamName = teamName
                 });
-                result.IsSent = true;
             }
-            catch
-            {
-                result.IsSent = false;
-            }
+            catch {}
 
             return new Response<InviteDTO>
             {
@@ -159,7 +155,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
 
             try
             {
-                await _inviteToProjectMailService.Send(new InviteToProjectEmailModel
+                _inviteToProjectMailService.Send(new InviteToProjectEmailModel
                 {
                     To = email,
                     AuthorName = authorName,
@@ -168,10 +164,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
                     ProjectName = projectName
                 });
             }
-            catch
-            {
-                result.IsSent = false;
-            }
+            catch {}
 
             return new Response<InviteDTO>
             {
