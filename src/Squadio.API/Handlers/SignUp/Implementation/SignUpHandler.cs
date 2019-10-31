@@ -36,6 +36,12 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             return result;
         }
 
+        public async Task<Response<SignUpStepDTO>> GetRegistrationStep(ClaimsPrincipal claims)
+        {
+            var result = await _provider.GetRegistrationStep(claims.GetUserId());
+            return result;
+        }
+
         public async Task<Response<AuthInfoDTO>> SignUpMemberEmail(SignUpMemberDTO dto)
         {
             var signUpResult = await _service.SignUpMemberEmail(dto);

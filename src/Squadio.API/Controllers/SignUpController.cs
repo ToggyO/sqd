@@ -16,8 +16,6 @@ using Squadio.DTO.Users;
 
 namespace Squadio.API.Controllers
 {
-        
-    // TODO: Add request new code!
     [ApiController]
     [AuthorizationFilter]
     [Route("api/signup")]
@@ -32,9 +30,17 @@ namespace Squadio.API.Controllers
         
         [HttpGet("step")]
         [AllowAnonymous]
-        public async Task<Response<SignUpStepDTO>> GetStatus([Required, FromQuery] UserEmailDTO dto)
+        public async Task<Response<SignUpStepDTO>> GetStatus([FromQuery] UserEmailDTO dto)
         {
-            return await _handler.GetRegistrationStep(dto.Email);
+            //TODO: Temporary shit for frontenders
+            if (dto == null || dto?.Email == null)
+            {
+                return await _handler.GetRegistrationStep(User);
+            }
+            else
+            {
+                return await _handler.GetRegistrationStep(dto.Email);
+            }
         }
         
         [HttpPost("member/email")]
