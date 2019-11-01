@@ -100,9 +100,35 @@ namespace Squadio.BLL.Providers.SignUp.Implementation
             
             var companyPage = await _companiesProvider.GetUserCompanies(userId, new PageModel());
             var company = companyPage.Data.Items.FirstOrDefault();
+            
+            if (company == null)
+            {
+                return new BusinessConflictErrorResponse<IEnumerable<string>>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound,
+                        Field = "companyId"
+                    }
+                });
+            }
 
             var teamPage = await _teamsProvider.GetTeams(new PageModel(), company.CompanyId);
             var team = teamPage.Data.Items.FirstOrDefault();
+            
+            if (team == null)
+            {
+                return new BusinessConflictErrorResponse<IEnumerable<string>>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound,
+                        Field = "teamId"
+                    }
+                });
+            }
             
             var inviteResponse = await _invitesProvider.GetTeamInvites(team.Id);
             return new Response<IEnumerable<string>>
