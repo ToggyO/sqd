@@ -27,21 +27,22 @@ namespace Squadio.BLL.Services.Tokens.Implementation
         private readonly ISignUpRepository _signUpRepository;
         private readonly IMapper _mapper;
         private readonly ITokensFactory _tokenFactory;
-        private readonly IOptions<GoogleSettings> _googleSettings;
+        //private readonly IOptions<GoogleSettings> _googleSettings;
 
         public TokensService(IUsersRepository usersRepository
             , IPasswordService passwordService
             , ISignUpRepository signUpRepository
             , IMapper mapper
             , ITokensFactory tokenFactory
-            , IOptions<GoogleSettings> googleSettings)
+            //, IOptions<GoogleSettings> googleSettings
+            )
         {
             _usersRepository = usersRepository;
             _passwordService = passwordService;
             _signUpRepository = signUpRepository;
             _mapper = mapper;
             _tokenFactory = tokenFactory;
-            _googleSettings = googleSettings;
+            //_googleSettings = googleSettings;
         }
         
         public async Task<Response<AuthInfoDTO>> Authenticate(CredentialsDTO dto)
@@ -155,6 +156,22 @@ namespace Squadio.BLL.Services.Tokens.Implementation
                     HttpStatusCode = ErrorCodes.UnprocessableEntity
                 };
             }
+            
+            //TODO: think how validate google token
+            /*
+            if ((string) infoFromGoogleToken.Audience != _googleSettings.Value.ClientId)
+            {
+                return new ForbiddenErrorResponse<AuthInfoDTO>(new[]
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.GoogleTokenInvalid,
+                        Message = ErrorMessages.Security.GoogleTokenInvalid,
+                        Field = ErrorFields.User.GoogleToken
+                    }
+                });
+            }
+            */
             
             var user = await _usersRepository.GetByEmail(infoFromGoogleToken.Email);
             if(user == null)

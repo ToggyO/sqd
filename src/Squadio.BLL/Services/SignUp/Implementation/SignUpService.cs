@@ -35,7 +35,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
         private readonly ISignUpRepository _repository;
         private readonly IUsersRepository _usersRepository;
         private readonly IEmailService<UserSignUpEmailModel> _signUpMailService;
-        private readonly IOptions<GoogleSettings> _googleSettings;
+        //private readonly IOptions<GoogleSettings> _googleSettings;
         private readonly IInvitesProvider _invitesProvider;
         private readonly IUsersService _usersService;
         private readonly ICompaniesService _companiesService;
@@ -47,7 +47,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
         public SignUpService(ISignUpRepository repository
             , IUsersRepository usersRepository
             , IEmailService<UserSignUpEmailModel> passwordSetMailService
-            , IOptions<GoogleSettings> googleSettings
+            //, IOptions<GoogleSettings> googleSettings
             , IInvitesProvider invitesProvider
             , IUsersService usersService
             , ICompaniesService companiesService
@@ -60,7 +60,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             _repository = repository;
             _usersRepository = usersRepository;
             _signUpMailService = passwordSetMailService;
-            _googleSettings = googleSettings;
+            //_googleSettings = googleSettings;
             _invitesProvider = invitesProvider;
             _usersService = usersService;
             _companiesService = companiesService;
@@ -224,6 +224,8 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 });
             }
 
+            //TODO: think how validate google token
+            /*
             if ((string) infoFromGoogleToken.Audience != _googleSettings.Value.ClientId)
             {
                 return new ForbiddenErrorResponse<UserDTO>(new[]
@@ -236,6 +238,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                     }
                 });
             }
+            */
 
             var user = await _usersRepository.GetByEmail(infoFromGoogleToken.Email);
             if (user != null)
