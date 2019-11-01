@@ -576,7 +576,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 };
             }
 
-            var companyPage = await _companiesProvider.GetCompaniesOfUser(userId, new PageModel());
+            var companyPage = await _companiesProvider.GetUserCompanies(userId, new PageModel());
             var company = companyPage.Data.Items.FirstOrDefault();
 
             if (company == null)
@@ -603,7 +603,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 };
             }
 
-            var team = await _teamsService.Create(userId, company.Id, dto);
+            var team = await _teamsService.Create(userId, company.CompanyId, dto);
 
             if (team.IsSuccess)
             {
@@ -651,7 +651,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 };
             }
 
-            var companyPage = await _companiesProvider.GetCompaniesOfUser(userId, new PageModel());
+            var companyPage = await _companiesProvider.GetUserCompanies(userId, new PageModel());
             var company = companyPage.Data.Items.FirstOrDefault();
 
             if (company == null)
@@ -678,7 +678,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 };
             }
 
-            var project = await _projectsService.Create(userId, company.Id, dto);
+            var project = await _projectsService.Create(userId, company.CompanyId, dto);
 
             if (project.IsSuccess)
             {

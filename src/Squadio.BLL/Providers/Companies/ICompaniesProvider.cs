@@ -10,8 +10,9 @@ namespace Squadio.BLL.Providers.Companies
 {
     public interface ICompaniesProvider
     {
-        Task<Response<PageModel<CompanyDTO>>> GetCompaniesOfUser(Guid userId, PageModel model, UserStatus? status = null);
-        Task<Response<PageModel<UserDTO>>> GetCompanyUsers(Guid companyId, PageModel model);
+        Task<Response<PageModel<CompanyDTO>>> GetCompanies(PageModel model);
+        Task<Response<PageModel<CompanyUserDTO>>> GetUserCompanies(Guid userId, PageModel model);
+        Task<Response<PageModel<CompanyUserDTO>>> GetCompanyUsers(Guid companyId, PageModel model);
         Task<Response<CompanyDTO>> GetById(Guid id);
     }
 }

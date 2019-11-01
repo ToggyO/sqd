@@ -29,37 +29,62 @@ namespace Squadio.BLL.Providers.Companies.Implementation
             _mapper = mapper;
         }
 
-        public async Task<Response<PageModel<CompanyDTO>>> GetCompaniesOfUser(Guid userId, PageModel model, UserStatus? status = null)
+        public async Task<Response<PageModel<CompanyDTO>>> GetCompanies(PageModel model)
         {
-            var page = await _repository.GetCompaniesOfUser(userId, model, status);
+            var page = await _repository.GetCompanies(model);
 
             var result = new PageModel<CompanyDTO>
             {
                 Page = page.Page,
                 PageSize = page.PageSize,
                 Total = page.Total,
-                Items = _mapper.Map<IEnumerable<CompanyModel>,IEnumerable<CompanyDTO>>(page.Items)
+                Items = _mapper.Map<IEnumerable<CompanyModel>, IEnumerable<CompanyDTO>>(page.Items)
             };
-            
             return new Response<PageModel<CompanyDTO>>
             {
                 Data = result
             };
         }
 
-        public async Task<Response<PageModel<UserDTO>>> GetCompanyUsers(Guid companyId, PageModel model)
+        public async Task<Response<PageModel<CompanyUserDTO>>> GetUserCompanies(Guid userId, PageModel model)
         {
-            var page = await _companiesUsersRepository.GetCompanyUsers(companyId, model);
+            var page = await _companiesUsersRepository.GetUserCompanies(userId, model);
 
-            var result = new PageModel<UserDTO>
+            var result = new PageModel<CompanyUserDTO>
             {
                 Page = page.Page,
                 PageSize = page.PageSize,
                 Total = page.Total,
-                Items = page.Items.Select(x=> _mapper.Map<UserModel, UserDTO>(x.User))
+                Items = page.Items.Select(x=>
+                {
+                    x.User = null;
+                    return _mapper.Map<CompanyUserModel, CompanyUserDTO>(x);
+                })
             };
             
-            return new Response<PageModel<UserDTO>>
+            return new Response<PageModel<CompanyUserDTO>>
+            {
+                Data = result
+            };
+        }
+
+        public async Task<Response<PageModel<CompanyUserDTO>>> GetCompanyUsers(Guid companyId, PageModel model)
+        {
+            var page = await _companiesUsersRepository.GetCompanyUsers(companyId, model);
+
+            var result = new PageModel<CompanyUserDTO>
+            {
+                Page = page.Page,
+                PageSize = page.PageSize,
+                Total = page.Total,
+                Items = page.Items.Select(x=>
+                {
+                    x.Company = null;
+                    return _mapper.Map<CompanyUserModel, CompanyUserDTO>(x);
+                })
+            };
+            
+            return new Response<PageModel<CompanyUserDTO>>
             {
                 Data = result
             };

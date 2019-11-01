@@ -76,7 +76,7 @@ namespace Squadio.DAL.Repository.Companies.Implementation
             return result;
         }
 
-        public async Task<PageModel<CompanyModel>> GetCompanies(PageModel pageModel, CompaniesFilter filter, string search)
+        public async Task<PageModel<CompanyModel>> GetCompanies(PageModel pageModel, CompaniesFilter filter = null, string search = null)
         {
             IQueryable<CompanyModel> query = _context.Companies;
 

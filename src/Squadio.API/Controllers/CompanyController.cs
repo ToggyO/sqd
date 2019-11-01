@@ -24,6 +24,12 @@ namespace Squadio.API.Controllers
         {
             _handler = handler;
         }
+
+        [HttpGet]
+        public async Task<Response<PageModel<CompanyDTO>>> GetCompanies([FromQuery] PageModel model)
+        {
+            return await _handler.GetCompanies(model);
+        }
         
         [HttpGet("{id}")]
         public Task<Response<CompanyDTO>> GetCompany([Required, FromRoute] Guid id)
@@ -32,7 +38,7 @@ namespace Squadio.API.Controllers
         }
         
         [HttpGet("{id}/users")]
-        public Task<Response<PageModel<UserDTO>>> GetCompanyUsers([Required, FromRoute] Guid id
+        public Task<Response<PageModel<CompanyUserDTO>>> GetCompanyUsers([Required, FromRoute] Guid id
             , [FromQuery] PageModel model)
         {
             return _handler.GetCompanyUsers(id, model);

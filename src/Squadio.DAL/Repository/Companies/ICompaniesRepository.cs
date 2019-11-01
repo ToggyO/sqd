@@ -10,7 +10,6 @@ namespace Squadio.DAL.Repository.Companies
 {
     public interface ICompaniesRepository : IBaseRepository<CompanyModel>
     {
-        Task<PageModel<CompanyModel>> GetCompaniesOfUser(Guid userId, PageModel model, UserStatus? status = null);
-        Task<PageModel<CompanyModel>> GetCompanies(PageModel pageModel, CompaniesFilter filter, string search);
+        Task<PageModel<CompanyModel>> GetCompanies(PageModel pageModel, CompaniesFilter filter = null, string search = null);
     }
 }

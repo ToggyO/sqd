@@ -98,10 +98,10 @@ namespace Squadio.BLL.Providers.SignUp.Implementation
                 });
             }
             
-            var companyPage = await _companiesProvider.GetCompaniesOfUser(userId, new PageModel());
+            var companyPage = await _companiesProvider.GetUserCompanies(userId, new PageModel());
             var company = companyPage.Data.Items.FirstOrDefault();
 
-            var teamPage = await _teamsProvider.GetTeams(new PageModel(), company.Id);
+            var teamPage = await _teamsProvider.GetTeams(new PageModel(), company.CompanyId);
             var team = teamPage.Data.Items.FirstOrDefault();
             
             var inviteResponse = await _invitesProvider.GetTeamInvites(team.Id);
