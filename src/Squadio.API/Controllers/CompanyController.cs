@@ -14,7 +14,7 @@ using Squadio.DTO.Users;
 namespace Squadio.API.Controllers
 {
     [ApiController]
-    //[AuthorizationFilter]
+    [AuthorizationFilter]
     [Route("api/company")]
     public class CompanyController : ControllerBase
     {

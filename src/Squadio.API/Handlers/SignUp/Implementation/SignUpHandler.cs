@@ -6,7 +6,6 @@ using Squadio.BLL.Services.SignUp;
 using Squadio.BLL.Services.Tokens;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Responses;
-using Squadio.Domain.Enums;
 using Squadio.DTO.Auth;
 using Squadio.DTO.Companies;
 using Squadio.DTO.Projects;
@@ -137,6 +136,12 @@ namespace Squadio.API.Handlers.SignUp.Implementation
         public async Task<Response<SignUpStepDTO>> SendNewCode(string email)
         {
             var result = await _service.SendNewCode(email);
+            return result;
+        }
+
+        public async Task<Response<SignUpStepDTO>> SendNewCode(ClaimsPrincipal claims)
+        {
+            var result = await _service.SendNewCode(claims.GetUserId());
             return result;
         }
 
