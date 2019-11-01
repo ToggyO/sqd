@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Mapper;
+using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Companies;
 using Squadio.DAL.Repository.CompaniesUsers;
@@ -9,7 +11,6 @@ using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Companies;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Companies;
-using Squadio.DTO.Pages;
 using Squadio.DTO.Users;
 
 namespace Squadio.BLL.Providers.Companies.Implementation
@@ -55,7 +56,7 @@ namespace Squadio.BLL.Providers.Companies.Implementation
                 Page = page.Page,
                 PageSize = page.PageSize,
                 Total = page.Total,
-                Items = _mapper.Map<IEnumerable<UserModel>,IEnumerable<UserDTO>>(page.Items)
+                Items = page.Items.Select(x=> _mapper.Map<UserModel, UserDTO>(x.User))
             };
             
             return new Response<PageModel<UserDTO>>

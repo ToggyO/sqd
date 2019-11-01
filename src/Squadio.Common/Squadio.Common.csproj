@@ -18,4 +18,8 @@
     </Compile>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Squadio.Domain\Squadio.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

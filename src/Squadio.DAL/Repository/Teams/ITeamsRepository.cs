@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.Domain.Models.Teams;
-using Squadio.DTO.Pages;
 
 namespace Squadio.DAL.Repository.Teams
 {

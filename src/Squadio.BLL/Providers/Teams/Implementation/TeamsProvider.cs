@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Mapper;
+using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Teams;
 using Squadio.DAL.Repository.TeamsUsers;
 using Squadio.Domain.Models.Teams;
 using Squadio.Domain.Models.Users;
-using Squadio.DTO.Pages;
 using Squadio.DTO.Teams;
 using Squadio.DTO.Users;
 

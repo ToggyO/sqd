@@ -6,16 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 using Squadio.API.Filters;
 using Squadio.API.Handlers.Invites;
 using Squadio.API.Handlers.Projects;
+using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Invites;
-using Squadio.DTO.Pages;
 using Squadio.DTO.Projects;
 using Squadio.DTO.Users;
 
 namespace Squadio.API.Controllers
 {
     [ApiController]
-    [AuthorizationFilter]
+    //[AuthorizationFilter]
     [Route("api/projects")]
     public class ProjectsController : ControllerBase
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
-using Squadio.DTO.Pages;
 using Squadio.DTO.Teams;
 using Squadio.DTO.Users;
 

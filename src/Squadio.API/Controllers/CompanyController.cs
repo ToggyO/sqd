@@ -6,15 +6,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Squadio.API.Filters;
 using Squadio.API.Handlers.Companies;
+using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Companies;
-using Squadio.DTO.Pages;
 using Squadio.DTO.Users;
 
 namespace Squadio.API.Controllers
 {
     [ApiController]
-    [AuthorizationFilter]
+    //[AuthorizationFilter]
     [Route("api/company")]
     public class CompanyController : ControllerBase
     {

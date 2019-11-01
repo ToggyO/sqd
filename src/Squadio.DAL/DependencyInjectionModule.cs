@@ -2,6 +2,8 @@
 using Squadio.DAL.Repository.Users;
 using Squadio.DAL.Repository.Users.Implementation;
 using Squadio.Common.Extensions;
+using Squadio.DAL.Repository.Admins;
+using Squadio.DAL.Repository.Admins.Implementation;
 using Squadio.DAL.Repository.Companies;
 using Squadio.DAL.Repository.Companies.Implementation;
 using Squadio.DAL.Repository.CompaniesUsers;
@@ -39,6 +41,8 @@ namespace Squadio.DAL
             services.Add<IInvitesRepository, InvitesRepository>(serviceLifetime);
             
             services.Add<ISignUpRepository, SignUpRepository>(serviceLifetime);
+            
+            services.Add<IAdminsRepository, AdminsRepository>(serviceLifetime);
         }
     }
 }
