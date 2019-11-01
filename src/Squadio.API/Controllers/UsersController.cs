@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Authorization;
 using Squadio.API.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
+using Squadio.DTO.Companies;
+using Squadio.DTO.Projects;
+using Squadio.DTO.Teams;
 using Squadio.DTO.Users;
 
 namespace Squadio.API.Controllers
@@ -45,10 +48,46 @@ namespace Squadio.API.Controllers
             return await _handler.GetById(id);
         }
         
+        [HttpGet("{id}/companies")]
+        public async Task<Response<PageModel<CompanyUserDTO>>> GetUserCompanies([Required, FromRoute] Guid id, [FromQuery] PageModel model)
+        {
+            return await _handler.GetUserCompanies(id, model);
+        }
+        
+        [HttpGet("{id}/teams")]
+        public async Task<Response<PageModel<TeamUserDTO>>> GetUserTeams([Required, FromRoute] Guid id, [FromQuery] PageModel model)
+        {
+            return await _handler.GetUserTeams(id, model);
+        }
+        
+        [HttpGet("{id}/projects")]
+        public async Task<Response<PageModel<ProjectUserDTO>>> GetUserProjects([Required, FromRoute] Guid id, [FromQuery] PageModel model)
+        {
+            return await _handler.GetUserProjects(id, model);
+        }
+        
         [HttpGet("current")]
         public async Task<Response<UserDTO>> GetCurrentUser()
         {
             return await _handler.GetCurrentUser(User);
+        }
+        
+        [HttpGet("current/companies")]
+        public async Task<Response<PageModel<CompanyUserDTO>>> GetUserCompanies([FromQuery] PageModel model)
+        {
+            return await _handler.GetUserCompanies(User, model);
+        }
+        
+        [HttpGet("current/teams")]
+        public async Task<Response<PageModel<TeamUserDTO>>> GetUserTeams([FromQuery] PageModel model)
+        {
+            return await _handler.GetUserTeams(User, model);
+        }
+        
+        [HttpGet("current/projects")]
+        public async Task<Response<PageModel<ProjectUserDTO>>> GetUserProjects([FromQuery] PageModel model)
+        {
+            return await _handler.GetUserProjects(User, model);
         }
         
         [HttpPut("current")]

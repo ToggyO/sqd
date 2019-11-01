@@ -10,7 +10,7 @@ namespace Squadio.BLL.Providers.Projects
     public interface IProjectsProvider
     {
         Task<Response<PageModel<ProjectDTO>>> GetProjects(PageModel model, Guid? companyId = null);
-        Task<Response<PageModel<ProjectUserDTO>>> GetUserProject(Guid userId, PageModel model, Guid? companyId = null);
+        Task<Response<PageModel<ProjectUserDTO>>> GetUserProjects(Guid userId, PageModel model, Guid? companyId = null);
         Task<Response<PageModel<ProjectUserDTO>>> GetProjectUsers(Guid projectId, PageModel model);
         Task<Response<ProjectDTO>> GetById(Guid id);
     }

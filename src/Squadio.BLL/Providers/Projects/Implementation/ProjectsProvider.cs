@@ -46,7 +46,7 @@ namespace Squadio.BLL.Providers.Projects.Implementation
             };
         }
 
-        public async Task<Response<PageModel<ProjectUserDTO>>> GetUserProject(Guid userId, PageModel model, Guid? companyId = null)
+        public async Task<Response<PageModel<ProjectUserDTO>>> GetUserProjects(Guid userId, PageModel model, Guid? companyId = null)
         {
             var page = await _projectsUsersRepository.GetUserProjects(userId, model);
 
