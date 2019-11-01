@@ -37,6 +37,9 @@
       <Compile Update="Users\UserEmailDTO.Validator.cs">
         <DependentUpon>UserEmailDTO.cs</DependentUpon>
       </Compile>
+      <Compile Update="Companies\CompanyUserModelMapper.cs">
+        <DependentUpon>CompanyUserDTO.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

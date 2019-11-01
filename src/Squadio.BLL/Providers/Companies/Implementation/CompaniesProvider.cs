@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Mapper;
 using Squadio.Common.Models.Pages;
@@ -55,7 +56,7 @@ namespace Squadio.BLL.Providers.Companies.Implementation
                 Page = page.Page,
                 PageSize = page.PageSize,
                 Total = page.Total,
-                Items = _mapper.Map<IEnumerable<UserModel>,IEnumerable<UserDTO>>(page.Items)
+                Items = page.Items.Select(x=> _mapper.Map<UserModel, UserDTO>(x.User))
             };
             
             return new Response<PageModel<UserDTO>>

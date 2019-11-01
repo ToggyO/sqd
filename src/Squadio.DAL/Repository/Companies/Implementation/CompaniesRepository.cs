@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Companies;
@@ -73,6 +74,48 @@ namespace Squadio.DAL.Repository.Companies.Implementation
                 Items = items
             };
             return result;
+        }
+
+        public async Task<PageModel<CompanyModel>> GetCompanies(PageModel pageModel, CompaniesFilter filter, string search)
+        {
+            IQueryable<CompanyModel> query = _context.Companies;
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                var searchUpper = search.ToUpper();
+
+                query = query.Where(x => x.Name.ToUpper().Contains(searchUpper));
+            }
+
+            if (filter != null)
+            {
+                if (filter.FromDate != null)
+                {
+                    query = query.Where(x => x.CreatedDate >= filter.FromDate);
+                }
+                
+                if (filter.ToDate != null)
+                {
+                    query = query.Where(x => x.CreatedDate <= filter.ToDate);
+                }
+            }
+
+            var skip = (pageModel.Page - 1) * pageModel.PageSize;
+            var take = pageModel.PageSize;
+
+            var total = await query.CountAsync();
+            var items = await query
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
+
+            return new PageModel<CompanyModel>
+            {
+                Page = pageModel.Page,
+                PageSize = pageModel.PageSize,
+                Total = total,
+                Items = items
+            };
         }
     }
 }

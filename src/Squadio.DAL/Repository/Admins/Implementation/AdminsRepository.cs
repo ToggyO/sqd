@@ -20,33 +20,6 @@ namespace Squadio.DAL.Repository.Admins.Implementation
             _context = context;
         }
 
-        public async Task<IEnumerable<CompanyUserModel>> GetCompanyUser(Guid? userId = null, Guid? companyId = null, IEnumerable<UserStatus> statuses = null)
-        {
-            IQueryable<CompanyUserModel> query = _context.CompaniesUsers
-                .Include(x => x.User)
-                .Include(x => x.Company);
-
-            if (statuses != null)
-            {
-                if (statuses.Any())
-                {
-                    query = query.Where(x => statuses.Contains(x.Status));
-                }
-            }
-
-            if (userId.HasValue)
-            {
-                query = query.Where(x => x.UserId == userId);
-            }
-
-            if (companyId.HasValue)
-            {
-                query = query.Where(x => x.CompanyId == companyId);
-            }
-
-            return await query.ToListAsync();
-        }
-
         public async Task<PageModel<UserModel>> GetUsers(PageModel pageModel, string search, UserWithCompaniesFilter filter)
         {
             IQueryable<CompanyUserModel> query = _context.CompaniesUsers
@@ -91,55 +64,6 @@ namespace Squadio.DAL.Repository.Admins.Implementation
                 Total = total,
                 Items = items
             };
-        }
-
-        public async Task<PageModel<CompanyModel>> GetCompanies(PageModel pageModel, CompaniesFilter filter, string search)
-        {
-            IQueryable<CompanyModel> query = _context.Companies;
-
-            if (!string.IsNullOrEmpty(search))
-            {
-                var searchUpper = search.ToUpper();
-
-                query = query.Where(x => x.Name.ToUpper().Contains(searchUpper));
-            }
-
-            if (filter != null)
-            {
-                if (filter.FromDate != null)
-                {
-                    query = query.Where(x => x.CreatedDate >= filter.FromDate);
-                }
-                
-                if (filter.ToDate != null)
-                {
-                    query = query.Where(x => x.CreatedDate <= filter.ToDate);
-                }
-            }
-
-            var skip = (pageModel.Page - 1) * pageModel.PageSize;
-            var take = pageModel.PageSize;
-
-            var total = await query.CountAsync();
-            var items = await query
-                .Skip(skip)
-                .Take(take)
-                .ToListAsync();
-
-            return new PageModel<CompanyModel>
-            {
-                Page = pageModel.Page,
-                PageSize = pageModel.PageSize,
-                Total = total,
-                Items = items
-            };
-        }
-
-        public async Task<int> GetCompanyUsersCount(Guid companyId)
-        {
-            IQueryable<CompanyUserModel> query = _context.CompaniesUsers;
-            query = query.Where(x => x.CompanyId == companyId);
-            return await query.CountAsync();
         }
     }
 }

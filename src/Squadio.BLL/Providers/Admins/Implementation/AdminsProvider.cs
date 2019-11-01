@@ -6,6 +6,8 @@ using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Admins;
+using Squadio.DAL.Repository.Companies;
+using Squadio.DAL.Repository.CompaniesUsers;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Companies;
 using Squadio.Domain.Models.Users;
@@ -17,12 +19,18 @@ namespace Squadio.BLL.Providers.Admins.Implementation
     public class AdminsProvider : IAdminsProvider
     {
         private readonly IAdminsRepository _repository;
+        private readonly ICompaniesRepository _companiesRepository;
+        private readonly ICompaniesUsersRepository _companiesUsersRepository;
         private readonly IMapper _mapper;
 
         public AdminsProvider(IAdminsRepository repository
+            , ICompaniesRepository companiesRepository
+            , ICompaniesUsersRepository companiesUsersRepository
             , IMapper mapper)
         {
             _repository = repository;
+            _companiesRepository = companiesRepository;
+            _companiesUsersRepository = companiesUsersRepository;
             _mapper = mapper;
         }
         
@@ -43,16 +51,14 @@ namespace Squadio.BLL.Providers.Admins.Implementation
             
             foreach (var user in users)
             {
-                var items = await _repository.GetCompanyUser(userId: user.Id);
+                var items = await _companiesUsersRepository.GetCompanyUser(userId: user.Id);
                 resultDataItems.Add(new UserWithCompaniesDTO
                 {
                     User = _mapper.Map<UserModel, UserDTO>(user),
-                    Companies = items.Select(x => new CompanyOfUserDTO
+                    Companies = items.Select(x =>
                     {
-                        Id = x.CompanyId,
-                        Name = x.Company?.Name,
-                        Status = (int) x.Status,
-                        StatusName = x.Status.ToString()
+                        x.User = null;
+                        return _mapper.Map<CompanyUserModel, CompanyUserDTO>(x);
                     })
                 });
             }
@@ -69,7 +75,7 @@ namespace Squadio.BLL.Providers.Admins.Implementation
 
         public async Task<Response<PageModel<CompanyListDTO>>> GetCompaniesPage(PageModel model, CompaniesFilter filter, string search)
         {
-            var companiesPage = await _repository.GetCompanies(model, filter, search);
+            var companiesPage = await _companiesRepository.GetCompanies(model, filter, search);
 
             var resultData = new PageModel<CompanyListDTO>()
             {
@@ -84,19 +90,22 @@ namespace Squadio.BLL.Providers.Admins.Implementation
             
             foreach (var company in companies)
             {
-                var admins = (await _repository.GetCompanyUser(
+                var admins = await _companiesUsersRepository.GetCompanyUser(
                         companyId: company.Id,
                         statuses: new[]
                         {
                             UserStatus.SuperAdmin, 
                             UserStatus.Admin
-                        }))
-                    .Select(x => x.User);
+                        });
                 resultDataItems.Add(new CompanyListDTO
                 {
                     Company = _mapper.Map<CompanyModel, CompanyDTO>(company),
-                    UsersCount = await _repository.GetCompanyUsersCount(company.Id),
-                    Admins = _mapper.Map<IEnumerable<UserModel>,IEnumerable<UserDTO>>(admins)
+                    UsersCount = await _companiesUsersRepository.GetCompanyUsersCount(company.Id),
+                    Admins = admins.Select(x =>
+                    {
+                        x.Company = null;
+                        return _mapper.Map<CompanyUserModel, CompanyUserDTO>(x);
+                    })
                 });
             }
 
