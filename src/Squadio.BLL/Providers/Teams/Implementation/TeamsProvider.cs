@@ -28,19 +28,37 @@ namespace Squadio.BLL.Providers.Teams.Implementation
             _mapper = mapper;
         }
 
-        public async Task<Response<PageModel<UserDTO>>> GetTeamUsers(Guid teamId, PageModel model)
+        public async Task<Response<PageModel<TeamUserDTO>>> GetUserTeams(Guid userId, PageModel model, Guid? companyId = null)
         {
-            var page = await _teamsUsersRepository.GetTeamUsers(teamId, model);
+            var page = await _teamsUsersRepository.GetUserTeams(userId, model, companyId);
 
-            var result = new PageModel<UserDTO>
+            var result = new PageModel<TeamUserDTO>
             {
                 Page = page.Page,
                 PageSize = page.PageSize,
                 Total = page.Total,
-                Items = _mapper.Map<IEnumerable<UserModel>,IEnumerable<UserDTO>>(page.Items)
+                Items = _mapper.Map<IEnumerable<TeamUserModel>,IEnumerable<TeamUserDTO>>(page.Items)
             };
             
-            return new Response<PageModel<UserDTO>>
+            return new Response<PageModel<TeamUserDTO>>
+            {
+                Data = result
+            };
+        }
+
+        public async Task<Response<PageModel<TeamUserDTO>>> GetTeamUsers(Guid teamId, PageModel model)
+        {
+            var page = await _teamsUsersRepository.GetTeamUsers(teamId, model);
+
+            var result = new PageModel<TeamUserDTO>
+            {
+                Page = page.Page,
+                PageSize = page.PageSize,
+                Total = page.Total,
+                Items = _mapper.Map<IEnumerable<TeamUserModel>,IEnumerable<TeamUserDTO>>(page.Items)
+            };
+            
+            return new Response<PageModel<TeamUserDTO>>
             {
                 Data = result
             };

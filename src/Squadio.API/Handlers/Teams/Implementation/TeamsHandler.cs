@@ -22,7 +22,7 @@ namespace Squadio.API.Handlers.Teams.Implementation
             _service = service;
         }
 
-        public async Task<Response<PageModel<UserDTO>>> GetTeamUsers(Guid teamId, PageModel model)
+        public async Task<Response<PageModel<TeamUserDTO>>> GetTeamUsers(Guid teamId, PageModel model)
         {
             var result = await _provider.GetTeamUsers(teamId, model);
             return result;

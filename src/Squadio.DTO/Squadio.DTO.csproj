@@ -40,6 +40,9 @@
       <Compile Update="Companies\CompanyUserModelMapper.cs">
         <DependentUpon>CompanyUserDTO.cs</DependentUpon>
       </Compile>
+      <Compile Update="Teams\TeamUserModelMapper.cs">
+        <DependentUpon>TeamUserDTO.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

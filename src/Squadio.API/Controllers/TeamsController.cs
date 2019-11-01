@@ -40,7 +40,7 @@ namespace Squadio.API.Controllers
         }
         
         [HttpGet("{id}/users")]
-        public Task<Response<PageModel<UserDTO>>> GetTeamUsers([Required, FromRoute] Guid id
+        public Task<Response<PageModel<TeamUserDTO>>> GetTeamUsers([Required, FromRoute] Guid id
             , [FromQuery] PageModel model)
         {
             return _handler.GetTeamUsers(id, model);

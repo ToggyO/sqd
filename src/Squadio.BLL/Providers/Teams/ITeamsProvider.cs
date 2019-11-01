@@ -9,8 +9,9 @@ namespace Squadio.BLL.Providers.Teams
 {
     public interface ITeamsProvider
     {
-        Task<Response<PageModel<UserDTO>>> GetTeamUsers(Guid teamId, PageModel model);
         Task<Response<PageModel<TeamDTO>>> GetTeams(PageModel model, Guid? companyId = null);
+        Task<Response<PageModel<TeamUserDTO>>> GetUserTeams(Guid userId, PageModel model, Guid? companyId = null);
+        Task<Response<PageModel<TeamUserDTO>>> GetTeamUsers(Guid teamId, PageModel model);
         Task<Response<TeamDTO>> GetById(Guid id);
     }
 }
