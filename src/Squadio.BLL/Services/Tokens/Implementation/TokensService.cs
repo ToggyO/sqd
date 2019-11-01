@@ -48,7 +48,27 @@ namespace Squadio.BLL.Services.Tokens.Implementation
         public async Task<Response<AuthInfoDTO>> Authenticate(CredentialsDTO dto)
         {
             var user = await _usersRepository.GetByEmail(dto.Email);
-            var isPasswordValid = await ValidatePassword(dto.Password, user);
+
+            var isPasswordValid = false;
+
+            try
+            {
+                isPasswordValid = await ValidatePassword(dto.Password, user);
+            }
+            catch (Exception e)
+            {
+                return new SecurityErrorResponse<AuthInfoDTO>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.AuthDataInvalid,
+                        Message = ErrorMessages.Security.AuthDataInvalid
+                    }
+                })
+                {
+                    HttpStatusCode = ErrorCodes.UnprocessableEntity
+                };
+            }
             
             if(user == null || !isPasswordValid)
             {
