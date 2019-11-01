@@ -55,11 +55,7 @@ namespace Squadio.BLL.Providers.Admins.Implementation
                 resultDataItems.Add(new UserWithCompaniesDTO
                 {
                     User = _mapper.Map<UserModel, UserDTO>(user),
-                    Companies = items.Select(x =>
-                    {
-                        x.User = null;
-                        return _mapper.Map<CompanyUserModel, CompanyUserDTO>(x);
-                    })
+                    Companies = items.Select(x => _mapper.Map<CompanyUserModel, CompanyUserDTO>(x))
                 });
             }
 
@@ -101,11 +97,7 @@ namespace Squadio.BLL.Providers.Admins.Implementation
                 {
                     Company = _mapper.Map<CompanyModel, CompanyDTO>(company),
                     UsersCount = await _companiesUsersRepository.GetCompanyUsersCount(company.Id),
-                    Admins = admins.Select(x =>
-                    {
-                        x.Company = null;
-                        return _mapper.Map<CompanyUserModel, CompanyUserDTO>(x);
-                    })
+                    Admins = admins.Select(x => _mapper.Map<CompanyUserModel, CompanyUserDTO>(x))
                 });
             }
 
