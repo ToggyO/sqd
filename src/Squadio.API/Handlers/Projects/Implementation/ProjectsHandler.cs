@@ -23,7 +23,13 @@ namespace Squadio.API.Handlers.Projects.Implementation
             _service = service;
         }
 
-        public async Task<Response<PageModel<UserDTO>>> GetProjectUsers(Guid projectId, PageModel model)
+        public async Task<Response<PageModel<ProjectDTO>>> GetProjects(PageModel model)
+        {
+            var result = await _provider.GetProjects(model);
+            return result;
+        }
+
+        public async Task<Response<PageModel<ProjectUserDTO>>> GetProjectUsers(Guid projectId, PageModel model)
         {
             var result = await _provider.GetProjectUsers(projectId, model);
             return result;

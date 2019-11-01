@@ -28,19 +28,55 @@ namespace Squadio.BLL.Providers.Projects.Implementation
             _mapper = mapper;
         }
 
-        public async Task<Response<PageModel<UserDTO>>> GetProjectUsers(Guid projectId, PageModel model)
+        public async Task<Response<PageModel<ProjectDTO>>> GetProjects(PageModel model, Guid? companyId = null)
         {
-            var page = await _projectsUsersRepository.GetProjectUsers(projectId, model);
+            var page = await _repository.GetProjects(model, companyId);
 
-            var result = new PageModel<UserDTO>
+            var result = new PageModel<ProjectDTO>
             {
                 Page = page.Page,
                 PageSize = page.PageSize,
                 Total = page.Total,
-                Items = _mapper.Map<IEnumerable<UserModel>,IEnumerable<UserDTO>>(page.Items)
+                Items = _mapper.Map<IEnumerable<ProjectModel>,IEnumerable<ProjectDTO>>(page.Items)
             };
             
-            return new Response<PageModel<UserDTO>>
+            return new Response<PageModel<ProjectDTO>>
+            {
+                Data = result
+            };
+        }
+
+        public async Task<Response<PageModel<ProjectUserDTO>>> GetUserProject(Guid userId, PageModel model, Guid? companyId = null)
+        {
+            var page = await _projectsUsersRepository.GetUserProjects(userId, model);
+
+            var result = new PageModel<ProjectUserDTO>
+            {
+                Page = page.Page,
+                PageSize = page.PageSize,
+                Total = page.Total,
+                Items = _mapper.Map<IEnumerable<ProjectUserModel>,IEnumerable<ProjectUserDTO>>(page.Items)
+            };
+            
+            return new Response<PageModel<ProjectUserDTO>>
+            {
+                Data = result
+            };
+        }
+
+        public async Task<Response<PageModel<ProjectUserDTO>>> GetProjectUsers(Guid projectId, PageModel model)
+        {
+            var page = await _projectsUsersRepository.GetProjectUsers(projectId, model);
+
+            var result = new PageModel<ProjectUserDTO>
+            {
+                Page = page.Page,
+                PageSize = page.PageSize,
+                Total = page.Total,
+                Items = _mapper.Map<IEnumerable<ProjectUserModel>,IEnumerable<ProjectUserDTO>>(page.Items)
+            };
+            
+            return new Response<PageModel<ProjectUserDTO>>
             {
                 Data = result
             };

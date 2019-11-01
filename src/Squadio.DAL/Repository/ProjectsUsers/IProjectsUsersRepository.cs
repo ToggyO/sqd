@@ -11,7 +11,8 @@ namespace Squadio.DAL.Repository.ProjectsUsers
 {
     public interface IProjectsUsersRepository
     {
-        Task<PageModel<UserModel>> GetProjectUsers(Guid projectId, PageModel model);
+        Task<PageModel<ProjectUserModel>> GetUserProjects(Guid userId, PageModel model, Guid? companyId = null);
+        Task<PageModel<ProjectUserModel>> GetProjectUsers(Guid projectId, PageModel model);
         Task<ProjectUserModel> GetProjectUser(Guid projectId, Guid userId);
         Task AddProjectUser(Guid projectId, Guid userId, UserStatus userStatus);
         Task AddRangeProjectUser(Guid projectId, IEnumerable<Guid> userIds, UserStatus userStatus);

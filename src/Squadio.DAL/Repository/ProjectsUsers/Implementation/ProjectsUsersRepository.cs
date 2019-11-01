@@ -18,20 +18,48 @@ namespace Squadio.DAL.Repository.ProjectsUsers.Implementation
             _context = context;
         }
 
-        public async Task<PageModel<UserModel>> GetProjectUsers(Guid projectId, PageModel model)
+        public async Task<PageModel<ProjectUserModel>> GetUserProjects(Guid userId, PageModel model, Guid? companyId = null)
         {
             var query = _context.ProjectsUsers
                 .Include(x => x.User)
+                .Include(x => x.Project)
+                .Where(x => x.UserId == userId);
+
+            if (companyId.HasValue)
+            {
+                query = query.Where(x => x.Project.CompanyId == companyId);
+            }
+            
+            var total = await query.CountAsync();
+            var items = await query
+                .Skip((model.Page - 1) * model.PageSize)
+                .Take(model.PageSize)
+                .ToListAsync();
+            
+            var result = new PageModel<ProjectUserModel>
+            {
+                Page = model.Page,
+                PageSize = model.PageSize,
+                Total = total,
+                Items = items
+            };
+            return result;
+        }
+
+        public async Task<PageModel<ProjectUserModel>> GetProjectUsers(Guid projectId, PageModel model)
+        {
+            var query = _context.ProjectsUsers
+                .Include(x => x.User)
+                .Include(x => x.Project)
                 .Where(x => x.ProjectId == projectId);
             
             var total = await query.CountAsync();
             var items = await query
                 .Skip((model.Page - 1) * model.PageSize)
                 .Take(model.PageSize)
-                .Select(x => x.User)
                 .ToListAsync();
             
-            var result = new PageModel<UserModel>
+            var result = new PageModel<ProjectUserModel>
             {
                 Page = model.Page,
                 PageSize = model.PageSize,

@@ -10,7 +10,8 @@ namespace Squadio.API.Handlers.Projects
 {
     public interface IProjectsHandler
     {
-        Task<Response<PageModel<UserDTO>>> GetProjectUsers(Guid projectId, PageModel model);
+        Task<Response<PageModel<ProjectDTO>>> GetProjects(PageModel model);
+        Task<Response<PageModel<ProjectUserDTO>>> GetProjectUsers(Guid projectId, PageModel model);
         Task<Response<ProjectDTO>> GetById(Guid id);
         Task<Response<ProjectDTO>> Create(Guid companyId, CreateProjectDTO dto, ClaimsPrincipal claims);
     }

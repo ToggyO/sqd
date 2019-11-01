@@ -15,7 +15,7 @@ using Squadio.DTO.Users;
 namespace Squadio.API.Controllers
 {
     [ApiController]
-    [AuthorizationFilter]
+    //[AuthorizationFilter]
     [Route("api/projects")]
     public class ProjectsController : ControllerBase
     {
@@ -28,6 +28,12 @@ namespace Squadio.API.Controllers
             _invitesHandler = invitesHandler;
         }
         
+        [HttpGet]
+        public async Task<Response<PageModel<ProjectDTO>>> GetProjects([FromQuery] PageModel model)
+        {
+            return await _handler.GetProjects(model);
+        }
+        
         [HttpGet("{id}")]
         public async Task<Response<ProjectDTO>> GetProject([Required, FromRoute] Guid id)
         {
@@ -35,7 +41,7 @@ namespace Squadio.API.Controllers
         }
         
         [HttpGet("{id}/users")]
-        public Task<Response<PageModel<UserDTO>>> GetProjectUsers([Required, FromRoute] Guid id
+        public Task<Response<PageModel<ProjectUserDTO>>> GetProjectUsers([Required, FromRoute] Guid id
             , [FromQuery] PageModel model)
         {
             return _handler.GetProjectUsers(id, model);

@@ -27,6 +27,7 @@ namespace Squadio.API.Controllers
             _handler = handler;
             _invitesHandler = invitesHandler;
         }
+        
         [HttpGet]
         public async Task<Response<PageModel<TeamDTO>>> GetTeams([FromQuery] PageModel model)
         {

@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Squadio.Common.Models.Pages;
 using Squadio.Domain.Models.Projects;
 
 namespace Squadio.DAL.Repository.Projects.Implementation
@@ -37,6 +40,32 @@ namespace Squadio.DAL.Repository.Projects.Implementation
             _context.Update(item);
             await _context.SaveChangesAsync();
             return item;
+        }
+
+        public async Task<PageModel<ProjectModel>> GetProjects(PageModel model, Guid? companyId = null)
+        {
+            IQueryable<ProjectModel> query = _context.Projects;
+
+            if (companyId.HasValue)
+            {
+                query = query.Where(x => x.CompanyId == companyId);
+            }
+            
+            var items = await query
+                .Skip((model.Page - 1) * model.PageSize)
+                .Take(model.PageSize)
+                .ToListAsync();
+            
+            var total = await query.CountAsync();
+            
+            var result = new PageModel<ProjectModel>
+            {
+                Page = model.Page,
+                PageSize = model.PageSize,
+                Total = total,
+                Items = items
+            };
+            return result;
         }
     }
 }
