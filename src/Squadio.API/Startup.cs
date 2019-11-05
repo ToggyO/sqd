@@ -22,6 +22,7 @@ namespace Squadio.API
 {
     public class Startup
     {
+        private const string MyAllowSquadioOrigins = "_myAllowSquadioOrigins";
         private readonly IConfiguration Configuration;
 
         public Startup(IWebHostEnvironment env)
@@ -37,7 +38,19 @@ namespace Squadio.API
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors();
+            services.AddCors(options =>
+            {
+                options.AddPolicy(MyAllowSquadioOrigins,
+                    builder =>
+                    {
+                        builder.WithOrigins(
+                                "http://localhost:5005",
+                                "https://squad.api.magora.work",
+                                "https://squad.magora.work")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
+            });
 
             services.AddMvcCore(options =>
                 {
@@ -72,8 +85,7 @@ namespace Squadio.API
             services.AddLogging(builder =>
             {
                 builder.AddConfiguration(Configuration.GetSection("Logging"));
-                if (Configuration.GetSection("ASPNETCORE_ENVIRONMENT").Value != "Uat")
-                    builder.AddConsole();
+                builder.AddConsole();
                 builder.AddDebug();
                 builder.AddEventSourceLogger();
             });
@@ -170,7 +182,7 @@ namespace Squadio.API
             
             app.UseMiddleware(typeof(ExceptionMiddleware));
 
-            app.UseCors(builder => builder.AllowAnyOrigin());
+            app.UseCors(MyAllowSquadioOrigins);
             app.UseStaticFiles();
 
             app.UseSwagger();
