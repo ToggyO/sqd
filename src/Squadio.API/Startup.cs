@@ -22,7 +22,6 @@ namespace Squadio.API
 {
     public class Startup
     {
-        private const string MyAllowSquadioOrigins = "_myAllowSquadioOrigins";
         private readonly IConfiguration Configuration;
 
         public Startup(IWebHostEnvironment env)
@@ -38,16 +37,7 @@ namespace Squadio.API
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors(options =>
-            {
-                options.AddPolicy(MyAllowSquadioOrigins,
-                    builder =>
-                    {
-                        builder.WithOrigins("http://localhost:5005")
-                            .AllowAnyHeader()
-                            .AllowAnyMethod();
-                    });
-            });
+            services.AddCors();
 
             services.AddMvcCore(options =>
                 {
@@ -180,7 +170,7 @@ namespace Squadio.API
             
             app.UseMiddleware(typeof(ExceptionMiddleware));
 
-            app.UseCors(MyAllowSquadioOrigins);
+            app.UseCors(builder => builder.AllowAnyOrigin());
             app.UseStaticFiles();
 
             app.UseSwagger();
