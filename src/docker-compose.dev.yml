@@ -47,7 +47,7 @@ services:
       - GoogleOAuth:ClientId=63806648351-k2ebqg66tab5760qa4i3mmomfslbmuvd.apps.googleusercontent.com
       - GoogleOAuth:ClientSecret=yY2sMMKF-a3JRheGcMMOSFpx
       - MicrosoftOAuth:ClientId=e0b221ed-d1ab-42b9-a33d-16410a9572ee
-      - StaticUrls:SetPasswordUrl=https://squad.magora.work/sign-up/set-password",
-      - StaticUrls:ResetPasswordUrl=https://squad.magora.work/auth/set-password",
-      - StaticUrls:InviteToTeamPageUrl=https://squad.magora.work/team/invite",
-      - StaticUrls:InviteToProjectPageUrl=https://squad.magora.work/project/invite"
+      - StaticUrls:SetPasswordUrl=https://squad.magora.work/sign-up/set-password
+      - StaticUrls:ResetPasswordUrl=https://squad.magora.work/auth/set-password
+      - StaticUrls:InviteToTeamPageUrl=https://squad.magora.work/team/invite
+      - StaticUrls:InviteToProjectPageUrl=https://squad.magora.work/project/invite
