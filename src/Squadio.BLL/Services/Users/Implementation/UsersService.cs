@@ -90,8 +90,8 @@ namespace Squadio.BLL.Services.Users.Implementation
                     }
                 });
             }
-            
-            var code = GenerateCode();
+
+            var code = Guid.NewGuid().ToString("N");
             
             await _repository.AddChangePasswordRequest(user.Id, code);
 
