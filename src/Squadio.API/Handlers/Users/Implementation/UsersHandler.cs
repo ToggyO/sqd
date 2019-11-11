@@ -112,7 +112,7 @@ namespace Squadio.API.Handlers.Users.Implementation
 
         public async Task<Response<UserDTO>> SetPassword(UserSetPasswordDTO dto)
         {
-            var result = await _service.SetPassword(dto.Email, dto.Code, dto.Password);
+            var result = await _service.SetPasswordUsingCode(dto.Code, dto.Password);
             return result;
         }
     }

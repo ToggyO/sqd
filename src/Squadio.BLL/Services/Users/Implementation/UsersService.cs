@@ -46,9 +46,9 @@ namespace Squadio.BLL.Services.Users.Implementation
             };
         }
 
-        public async Task<Response<UserDTO>> SetPassword(string email, string code, string password)
+        public async Task<Response<UserDTO>> SetPasswordUsingCode(string code, string password)
         {
-            var userPasswordRequest = await _repository.GetChangePasswordRequests(email, code);
+            var userPasswordRequest = await _repository.GetChangePasswordRequests(code);
             if (userPasswordRequest == null || userPasswordRequest?.IsActivated == true)
             {
                 return new BusinessConflictErrorResponse<UserDTO>(new []
@@ -92,6 +92,8 @@ namespace Squadio.BLL.Services.Users.Implementation
             }
 
             var code = Guid.NewGuid().ToString("N");
+
+            await _repository.ActivateChangePasswordRequestsCode(user.Id);
             
             await _repository.AddChangePasswordRequest(user.Id, code);
 
@@ -140,20 +142,6 @@ namespace Squadio.BLL.Services.Users.Implementation
             {
                 Data = result
             };
-        }
-
-        public string GenerateCode(int length = 6)
-        {
-            var generator = new Random();
-            
-            var result = "";
-            
-            while (result.Length < length)
-            {
-                result += generator.Next(0, 9);
-            }
-            
-            return result;
         }
     }
 }

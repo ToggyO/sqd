@@ -173,7 +173,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 });
             }
 
-            var code = _usersService.GenerateCode();
+            var code = GenerateCode();
             
             await _signUpMailService.Send(new UserSignUpEmailModel()
             {
@@ -313,7 +313,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 };
             }
 
-            var code = _usersService.GenerateCode();
+            var code = GenerateCode();
             
             await _signUpMailService.Send(new UserSignUpEmailModel()
             {
@@ -377,7 +377,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 };
             }
 
-            var code = _usersService.GenerateCode();
+            var code = GenerateCode();
             
             await _signUpMailService.Send(new UserSignUpEmailModel()
             {
@@ -740,6 +740,20 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                     }
                 }
             };
+        }
+
+        public string GenerateCode(int length = 6)
+        {
+            var generator = new Random();
+            
+            var result = "";
+            
+            while (result.Length < length)
+            {
+                result += generator.Next(0, 9);
+            }
+            
+            return result;
         }
     }
 }

@@ -81,13 +81,13 @@ namespace Squadio.DAL.Repository.Users.Implementation
             }
         }
 
-        public async Task<UserPasswordRequestModel> GetChangePasswordRequests(string email, string code)
+        public async Task<UserPasswordRequestModel> GetChangePasswordRequests(string code)
         {
             var item = await _context.UserPasswordRequests
                 .Include(x => x.User)
-                .Where(x => x.Code.ToUpper() == code.ToUpper() &&
-                            x.User.Email.ToUpper() == email.ToUpper())
                 .OrderByDescending(x => x.CreatedDate)
+                .Where(x => x.Code.ToUpper() == code.ToUpper() &&
+                            x.IsActivated == false)
                 .FirstOrDefaultAsync();
             return item;
         }
@@ -120,7 +120,7 @@ namespace Squadio.DAL.Repository.Users.Implementation
         {
             var items = _context.UserPasswordRequests
                 .Where(x => x.UserId == userId && x.IsActivated == false);
-
+            
             await items.ForEachAsync(x =>
             {
                 x.ActivatedDate = DateTime.UtcNow;
