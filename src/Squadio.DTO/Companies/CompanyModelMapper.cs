@@ -20,6 +20,7 @@ namespace Squadio.DTO.Companies
             {
                 Id = item.Id,
                 Name = item.Name,
+                Address = item.Address,
                 CreatedDate = item.CreatedDate
             };
         }

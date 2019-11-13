@@ -29,7 +29,7 @@ namespace Squadio.BLL.Services.Companies.Implementation
         {
             var companyUser = await _companiesUsersRepository.GetCompanyUser(companyId, userId);
             
-            if (companyUser == null || companyUser?.User == null)
+            if (companyUser == null)
             {
                 return new BusinessConflictErrorResponse<CompanyDTO>(new []
                 {
