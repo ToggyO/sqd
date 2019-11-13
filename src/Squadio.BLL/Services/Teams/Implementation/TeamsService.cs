@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Mapper;
 using Squadio.BLL.Services.Invites;
+using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Teams;
 using Squadio.DAL.Repository.TeamsUsers;
@@ -32,7 +33,7 @@ namespace Squadio.BLL.Services.Teams.Implementation
             _mapper = mapper;
         }
 
-        public async Task<Response<TeamDTO>> Create(Guid userId, Guid companyId, CreateTeamDTO dto)
+        public async Task<Response<TeamDTO>> Create(Guid userId, Guid companyId, TeamCreateDTO dto)
         {
             var entity = new TeamModel
             {
@@ -55,6 +56,64 @@ namespace Squadio.BLL.Services.Teams.Implementation
                 });
 
             var result = _mapper.Map<TeamModel, TeamDTO>(entity);
+            return new Response<TeamDTO>
+            {
+                Data = result
+            };
+        }
+
+        public async Task<Response<TeamDTO>> Update(Guid teamId, Guid userId, TeamUpdateDTO dto)
+        {
+            
+            var teamEntity = await _repository.GetById(teamId);
+            
+            if (teamEntity == null)
+            {
+                return new BusinessConflictErrorResponse<TeamDTO>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound,
+                        Field = "teamId"
+                    }
+                });
+            }
+            
+            var teamUser = await _teamsUsersRepository.GetTeamUser(teamId, userId);
+            
+            if (teamUser == null)
+            {
+                return new BusinessConflictErrorResponse<TeamDTO>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound,
+                        Field = "userId"
+                    }
+                });
+            }
+
+            if (teamUser.Status != UserStatus.SuperAdmin)
+            {
+                return new ForbiddenErrorResponse<TeamDTO>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.Forbidden,
+                        Message = ErrorMessages.Security.Forbidden
+                    }
+                }); 
+            }
+            
+            teamEntity.Name = dto.Name;
+            teamEntity.ColorHex = dto.ColorHex;
+            
+            teamEntity = await _repository.Update(teamEntity);
+            
+            var result = _mapper.Map<TeamModel, TeamDTO>(teamEntity);
+            
             return new Response<TeamDTO>
             {
                 Data = result

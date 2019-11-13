@@ -13,6 +13,7 @@ namespace Squadio.API.Handlers.Teams
         Task<Response<PageModel<TeamUserDTO>>> GetTeamUsers(Guid teamId, PageModel model);
         Task<Response<PageModel<TeamDTO>>> GetTeams(PageModel model);
         Task<Response<TeamDTO>> GetById(Guid id);
-        Task<Response<TeamDTO>> Create(Guid companyId, CreateTeamDTO dto, ClaimsPrincipal claims);
+        Task<Response<TeamDTO>> Create(Guid companyId, TeamCreateDTO dto, ClaimsPrincipal claims);
+        Task<Response<TeamDTO>> Update(Guid teamId, TeamUpdateDTO dto, ClaimsPrincipal claims);
     }
 }

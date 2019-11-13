@@ -442,7 +442,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             };
         }
 
-        public async Task<Response<SignUpStepDTO<TeamDTO>>> SignUpTeam(Guid userId, CreateTeamDTO dto)
+        public async Task<Response<SignUpStepDTO<TeamDTO>>> SignUpTeam(Guid userId, TeamCreateDTO dto)
         {
             var step = await _repository.GetRegistrationStepByUserId(userId);
 

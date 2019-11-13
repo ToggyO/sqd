@@ -40,9 +40,15 @@ namespace Squadio.API.Handlers.Teams.Implementation
             return result;
         }
 
-        public async Task<Response<TeamDTO>> Create(Guid companyId, CreateTeamDTO dto, ClaimsPrincipal claims)
+        public async Task<Response<TeamDTO>> Create(Guid companyId, TeamCreateDTO dto, ClaimsPrincipal claims)
         {
             var result = await _service.Create(claims.GetUserId(), companyId, dto);
+            return result;
+        }
+
+        public async Task<Response<TeamDTO>> Update(Guid teamId, TeamUpdateDTO dto, ClaimsPrincipal claims)
+        {
+            var result = await _service.Update(teamId, claims.GetUserId(), dto);
             return result;
         }
     }

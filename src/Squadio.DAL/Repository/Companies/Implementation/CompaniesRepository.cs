@@ -41,12 +41,9 @@ namespace Squadio.DAL.Repository.Companies.Implementation
 
         public async Task<CompanyModel> Update(CompanyModel entity)
         {
-            var company = await _context.Companies.FindAsync(entity.Id);
-            company.Name = entity.Name;
-            company.Address = entity.Address;
-            _context.Update(company);
+            _context.Update(entity);
             await _context.SaveChangesAsync();
-            return company;
+            return entity;
         }
 
         public async Task<PageModel<CompanyModel>> GetCompanies(PageModel pageModel, CompaniesFilter filter = null, string search = null)

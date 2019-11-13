@@ -35,11 +35,9 @@ namespace Squadio.DAL.Repository.Projects.Implementation
 
         public async Task<ProjectModel> Update(ProjectModel entity)
         {
-            var item = await _context.Projects.FindAsync(entity.Id);
-            item.Name = entity.Name;
-            _context.Update(item);
+            _context.Update(entity);
             await _context.SaveChangesAsync();
-            return item;
+            return entity;
         }
 
         public async Task<PageModel<ProjectModel>> GetProjects(PageModel model, Guid? companyId = null)

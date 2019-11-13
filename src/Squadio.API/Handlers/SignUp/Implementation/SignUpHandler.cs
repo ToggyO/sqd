@@ -163,7 +163,7 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             return result;
         }
 
-        public async Task<Response<SignUpStepDTO<TeamDTO>>> SignUpTeam(CreateTeamDTO dto, ClaimsPrincipal claims)
+        public async Task<Response<SignUpStepDTO<TeamDTO>>> SignUpTeam(TeamCreateDTO dto, ClaimsPrincipal claims)
         {
             var result = await _service.SignUpTeam(claims.GetUserId(), dto);
             return result;

@@ -40,6 +40,12 @@ namespace Squadio.API.Controllers
             return await _handler.GetById(id);
         }
         
+        [HttpPut("{id}")]
+        public async Task<Response<TeamDTO>> UpdateTeam([Required, FromRoute] Guid id, [Required, FromBody] TeamUpdateDTO dto)
+        {
+            return await _handler.Update(id, dto, User);
+        }
+        
         [HttpGet("{id}/users")]
         public Task<Response<PageModel<TeamUserDTO>>> GetTeamUsers([Required, FromRoute] Guid id
             , [FromQuery] PageModel model)
@@ -48,7 +54,7 @@ namespace Squadio.API.Controllers
         }
         
         [HttpPost]
-        public async Task<Response<TeamDTO>> Create([FromQuery, Required] Guid companyId, [FromBody] CreateTeamDTO dto)
+        public async Task<Response<TeamDTO>> Create([FromQuery, Required] Guid companyId, [FromBody] TeamCreateDTO dto)
         {
             return await _handler.Create(companyId, dto, User);
         }

@@ -36,11 +36,9 @@ namespace Squadio.DAL.Repository.Teams.Implementation
 
         public async Task<TeamModel> Update(TeamModel entity)
         {
-            var item = await _context.Teams.FindAsync(entity.Id);
-            item.Name = entity.Name;
-            _context.Update(item);
+            _context.Update(entity);
             await _context.SaveChangesAsync();
-            return item;
+            return entity;
         }
 
         public async Task<PageModel<TeamModel>> GetTeams(PageModel model, Guid? companyId = null)

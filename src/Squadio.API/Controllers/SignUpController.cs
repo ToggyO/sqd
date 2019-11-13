@@ -107,7 +107,7 @@ namespace Squadio.API.Controllers
         }
         
         [HttpPost("admin/team")]
-        public async Task<Response<SignUpStepDTO<TeamDTO>>> CreateTeam([Required, FromBody] CreateTeamDTO dto)
+        public async Task<Response<SignUpStepDTO<TeamDTO>>> CreateTeam([Required, FromBody] TeamCreateDTO dto)
         {
             return await _handler.SignUpTeam(dto, User);
         }
