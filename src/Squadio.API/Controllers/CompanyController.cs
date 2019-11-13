@@ -49,5 +49,11 @@ namespace Squadio.API.Controllers
         {
             return _handler.CreateCompany(dto, User);
         }
+        
+        [HttpPut("{id}")]
+        public Task<Response<CompanyDTO>> UpdateCompany([Required, FromRoute] Guid id, [Required, FromBody] CompanyUpdateDTO dto)
+        {
+            return _handler.UpdateCompany(id, dto, User);
+        }
     }
 }

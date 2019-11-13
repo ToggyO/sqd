@@ -46,5 +46,11 @@ namespace Squadio.API.Handlers.Companies.Implementation
             var result = await _service.Create(claims.GetUserId(), dto);
             return result;
         }
+
+        public async Task<Response<CompanyDTO>> UpdateCompany(Guid companyId, CompanyUpdateDTO dto, ClaimsPrincipal claims)
+        {
+            var result = await _service.Update(companyId, claims.GetUserId(), dto);
+            return result;
+        }
     }
 }
