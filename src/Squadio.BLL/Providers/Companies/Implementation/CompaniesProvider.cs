@@ -46,13 +46,16 @@ namespace Squadio.BLL.Providers.Companies.Implementation
         public async Task<Response<PageModel<CompanyUserDTO>>> GetUserCompanies(Guid userId, PageModel model)
         {
             var page = await _companiesUsersRepository.GetUserCompanies(userId, model);
+            
+            var items = page.Items.Select(x => _mapper.Map<CompanyUserModel, CompanyUserDTO>(x)).ToList();
+            items.ForEach(x => x.User = null);
 
             var result = new PageModel<CompanyUserDTO>
             {
                 Page = page.Page,
                 PageSize = page.PageSize,
                 Total = page.Total,
-                Items = page.Items.Select(x => _mapper.Map<CompanyUserModel, CompanyUserDTO>(x))
+                Items = items
             };
             
             return new Response<PageModel<CompanyUserDTO>>
@@ -65,12 +68,15 @@ namespace Squadio.BLL.Providers.Companies.Implementation
         {
             var page = await _companiesUsersRepository.GetCompanyUsers(companyId, model);
 
+            var items = page.Items.Select(x => _mapper.Map<CompanyUserModel, CompanyUserDTO>(x)).ToList();
+            items.ForEach(x => x.Company = null);
+
             var result = new PageModel<CompanyUserDTO>
             {
                 Page = page.Page,
                 PageSize = page.PageSize,
                 Total = page.Total,
-                Items = page.Items.Select(x => _mapper.Map<CompanyUserModel, CompanyUserDTO>(x))
+                Items = items
             };
             
             return new Response<PageModel<CompanyUserDTO>>

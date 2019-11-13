@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Mapper;
 using Squadio.Common.Models.Pages;
@@ -49,13 +50,16 @@ namespace Squadio.BLL.Providers.Projects.Implementation
         public async Task<Response<PageModel<ProjectUserDTO>>> GetUserProjects(Guid userId, PageModel model, Guid? companyId = null)
         {
             var page = await _projectsUsersRepository.GetUserProjects(userId, model);
+            
+            var items = page.Items.Select(x => _mapper.Map<ProjectUserModel, ProjectUserDTO>(x)).ToList();
+            items.ForEach(x => x.User = null);
 
             var result = new PageModel<ProjectUserDTO>
             {
                 Page = page.Page,
                 PageSize = page.PageSize,
                 Total = page.Total,
-                Items = _mapper.Map<IEnumerable<ProjectUserModel>,IEnumerable<ProjectUserDTO>>(page.Items)
+                Items = items
             };
             
             return new Response<PageModel<ProjectUserDTO>>
@@ -67,13 +71,16 @@ namespace Squadio.BLL.Providers.Projects.Implementation
         public async Task<Response<PageModel<ProjectUserDTO>>> GetProjectUsers(Guid projectId, PageModel model)
         {
             var page = await _projectsUsersRepository.GetProjectUsers(projectId, model);
+            
+            var items = page.Items.Select(x => _mapper.Map<ProjectUserModel, ProjectUserDTO>(x)).ToList();
+            items.ForEach(x => x.Project = null);
 
             var result = new PageModel<ProjectUserDTO>
             {
                 Page = page.Page,
                 PageSize = page.PageSize,
                 Total = page.Total,
-                Items = _mapper.Map<IEnumerable<ProjectUserModel>,IEnumerable<ProjectUserDTO>>(page.Items)
+                Items = items
             };
             
             return new Response<PageModel<ProjectUserDTO>>
