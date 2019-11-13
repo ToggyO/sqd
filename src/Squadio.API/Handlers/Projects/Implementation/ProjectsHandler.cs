@@ -46,5 +46,11 @@ namespace Squadio.API.Handlers.Projects.Implementation
             var result = await _service.Create(claims.GetUserId(), companyId, dto);
             return result;
         }
+
+        public async Task<Response<ProjectDTO>> Update(Guid projectId, ProjectUpdateDTO dto, ClaimsPrincipal claims)
+        {
+            var result = await _service.Update(projectId, claims.GetUserId(), dto);
+            return result;
+        }
     }
 }

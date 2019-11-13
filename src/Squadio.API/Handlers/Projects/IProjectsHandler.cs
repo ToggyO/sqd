@@ -14,5 +14,6 @@ namespace Squadio.API.Handlers.Projects
         Task<Response<PageModel<ProjectUserDTO>>> GetProjectUsers(Guid projectId, PageModel model);
         Task<Response<ProjectDTO>> GetById(Guid id);
         Task<Response<ProjectDTO>> Create(Guid companyId, CreateProjectDTO dto, ClaimsPrincipal claims);
+        Task<Response<ProjectDTO>> Update(Guid projectId, ProjectUpdateDTO dto, ClaimsPrincipal claims);
     }
 }

@@ -40,6 +40,12 @@ namespace Squadio.API.Controllers
             return await _handler.GetById(id);
         }
         
+        [HttpPut("{id}")]
+        public async Task<Response<ProjectDTO>> UpdateTeam([Required, FromRoute] Guid id, [Required, FromBody] ProjectUpdateDTO dto)
+        {
+            return await _handler.Update(id, dto, User);
+        }
+        
         [HttpGet("{id}/users")]
         public Task<Response<PageModel<ProjectUserDTO>>> GetProjectUsers([Required, FromRoute] Guid id
             , [FromQuery] PageModel model)

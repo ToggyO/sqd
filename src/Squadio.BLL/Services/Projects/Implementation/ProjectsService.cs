@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Mapper;
 using Squadio.BLL.Services.Invites;
+using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Projects;
 using Squadio.DAL.Repository.ProjectsUsers;
@@ -55,6 +56,64 @@ namespace Squadio.BLL.Services.Projects.Implementation
                 });
             
             var result = _mapper.Map<ProjectModel, ProjectDTO>(entity);
+            return new Response<ProjectDTO>
+            {
+                Data = result
+            };
+        }
+
+        public async Task<Response<ProjectDTO>> Update(Guid projectId, Guid userId, ProjectUpdateDTO dto)
+        {
+            
+            var projectEntity = await _repository.GetById(projectId);
+            
+            if (projectEntity == null)
+            {
+                return new BusinessConflictErrorResponse<ProjectDTO>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound,
+                        Field = "projectId"
+                    }
+                });
+            }
+            
+            var projectUser = await _projectsUsersRepository.GetProjectUser(projectId, userId);
+            
+            if (projectUser == null)
+            {
+                return new BusinessConflictErrorResponse<ProjectDTO>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound,
+                        Field = "userId"
+                    }
+                });
+            }
+
+            if (projectUser.Status != UserStatus.SuperAdmin)
+            {
+                return new ForbiddenErrorResponse<ProjectDTO>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.Forbidden,
+                        Message = ErrorMessages.Security.Forbidden
+                    }
+                }); 
+            }
+            
+            projectEntity.Name = dto.Name;
+            projectEntity.ColorHex = dto.ColorHex;
+            
+            projectEntity = await _repository.Update(projectEntity);
+            
+            var result = _mapper.Map<ProjectModel, ProjectDTO>(projectEntity);
+            
             return new Response<ProjectDTO>
             {
                 Data = result

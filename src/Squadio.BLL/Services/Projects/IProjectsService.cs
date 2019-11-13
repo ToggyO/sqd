@@ -8,5 +8,6 @@ namespace Squadio.BLL.Services.Projects
     public interface IProjectsService
     {
         Task<Response<ProjectDTO>> Create(Guid userId, Guid companyId, CreateProjectDTO dto);
+        Task<Response<ProjectDTO>> Update(Guid projectId, Guid userId, ProjectUpdateDTO dto);
     }
 }
