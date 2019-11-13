@@ -34,7 +34,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
     {
         private readonly ISignUpRepository _repository;
         private readonly IUsersRepository _usersRepository;
-        private readonly IEmailService<UserSignUpEmailModel> _signUpMailService;
+        private readonly IEmailService<UserConfirmEmailModel> _userConfirmEmailService;
         //private readonly IOptions<GoogleSettings> _googleSettings;
         private readonly IInvitesProvider _invitesProvider;
         private readonly IUsersService _usersService;
@@ -46,7 +46,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
         public SignUpService(ISignUpRepository repository
             , IUsersRepository usersRepository
-            , IEmailService<UserSignUpEmailModel> passwordSetMailService
+            , IEmailService<UserConfirmEmailModel> userConfirmEmailService
             //, IOptions<GoogleSettings> googleSettings
             , IInvitesProvider invitesProvider
             , IUsersService usersService
@@ -59,7 +59,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
         {
             _repository = repository;
             _usersRepository = usersRepository;
-            _signUpMailService = passwordSetMailService;
+            _userConfirmEmailService = userConfirmEmailService;
             //_googleSettings = googleSettings;
             _invitesProvider = invitesProvider;
             _usersService = usersService;
@@ -175,7 +175,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             var code = GenerateCode();
             
-            await _signUpMailService.Send(new UserSignUpEmailModel()
+            await _userConfirmEmailService.Send(new UserConfirmEmailModel()
             {
                 Code = code,
                 To = email
@@ -193,7 +193,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             var userResponse = await _usersService.SetPassword(email, password);
             var userDTO = userResponse.Data;
             
-            await _repository.AddRequest(user.Id, code);
+            await _usersRepository.AddConfirmEmailRequest(user.Id, code);
 
             await _repository.SetRegistrationStep(user.Id, RegistrationStep.New);
 
@@ -315,7 +315,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             var code = GenerateCode();
             
-            await _signUpMailService.Send(new UserSignUpEmailModel()
+            await _userConfirmEmailService.Send(new UserConfirmEmailModel()
             {
                 Code = code,
                 To = email
@@ -379,7 +379,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             var code = GenerateCode();
             
-            await _signUpMailService.Send(new UserSignUpEmailModel()
+            await _userConfirmEmailService.Send(new UserConfirmEmailModel()
             {
                 Code = code,
                 To = user.Email

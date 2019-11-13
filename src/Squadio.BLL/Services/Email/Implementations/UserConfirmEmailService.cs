@@ -6,30 +6,29 @@ using Squadio.Common.Settings;
 
 namespace Squadio.BLL.Services.Email.Implementations
 {
-    public class UserSignUpEmailService: BaseEmailService<UserSignUpEmailModel>
+    public class UserConfirmEmailService: BaseEmailService<UserConfirmEmailModel>
     {
         private readonly IOptions<StaticUrlsSettingsModel> _options;
         
-        public UserSignUpEmailService(IOptions<EmailSettingsModel> emailSettings
+        public UserConfirmEmailService(IOptions<EmailSettingsModel> emailSettings
             , IEmailSender emailSender
             , IOptions<StaticUrlsSettingsModel> options) : base(emailSettings, emailSender)
         {
             _options = options;
         }
 
-        protected override string GetHtmlTemplate(UserSignUpEmailModel model)
+        protected override string GetHtmlTemplate(UserConfirmEmailModel model)
         {
             
             var resource = EmbeddedResources
                 .GetResource(
-                    "Squadio.BLL.Services.Email.Templates.SignUpRequestTemplate.html")
-                .Replace("{{SetPasswordUrl}}", _options.Value.SetPasswordUrl)
+                    "Squadio.BLL.Services.Email.Templates.ConfirmEmailRequestTemplate.html")
                 .Replace("{{Code}}", model.Code);
 
             return resource;
         }
 
-        protected override string GetSubject(UserSignUpEmailModel emailModel)
+        protected override string GetSubject(UserConfirmEmailModel emailModel)
         {
             return "SignUp request";
         }

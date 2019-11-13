@@ -2,7 +2,7 @@
 
 namespace Squadio.Domain.Models.Users
 {
-    public class UserSignUpRequestModel
+    public class UserConfirmEmailRequestModel
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }

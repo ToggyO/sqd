@@ -4,10 +4,14 @@ using Squadio.DAL.Repository.Users.Implementation;
 using Squadio.Common.Extensions;
 using Squadio.DAL.Repository.Admins;
 using Squadio.DAL.Repository.Admins.Implementation;
+using Squadio.DAL.Repository.ChangePassword;
+using Squadio.DAL.Repository.ChangePassword.Implementation;
 using Squadio.DAL.Repository.Companies;
 using Squadio.DAL.Repository.Companies.Implementation;
 using Squadio.DAL.Repository.CompaniesUsers;
 using Squadio.DAL.Repository.CompaniesUsers.Implementation;
+using Squadio.DAL.Repository.ConfirmEmail;
+using Squadio.DAL.Repository.ConfirmEmail.Implementation;
 using Squadio.DAL.Repository.Invites;
 using Squadio.DAL.Repository.Invites.Implementation;
 using Squadio.DAL.Repository.Projects;
@@ -28,6 +32,8 @@ namespace Squadio.DAL
         public static void Load(IServiceCollection services, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         {
             services.Add<IUsersRepository, UsersRepository>(serviceLifetime);
+            services.Add<IChangePasswordRequestRepository, ChangePasswordRequestRepository>(serviceLifetime);
+            services.Add<IConfirmEmailRequestRepository, ConfirmEmailRequestRepository>(serviceLifetime);
             
             services.Add<ICompaniesRepository, CompaniesRepository>(serviceLifetime);;
             services.Add<ICompaniesUsersRepository, CompaniesUsersRepository>(serviceLifetime);

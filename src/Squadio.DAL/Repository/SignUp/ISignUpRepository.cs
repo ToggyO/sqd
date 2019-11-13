@@ -13,10 +13,5 @@ namespace Squadio.DAL.Repository.SignUp
         /// If entity doesn't exist it will be created, else - updated
         /// </summary>
         Task<UserRegistrationStepModel> SetRegistrationStep(Guid userId, RegistrationStep step);
-        Task<UserSignUpRequestModel> AddRequest(Guid userId, string code);
-        Task<UserSignUpRequestModel> GetRequest(Guid userId, string code);
-        Task<UserSignUpRequestModel> GetRequest(string email, string code);
-        Task<UserSignUpRequestModel> ActivateRequest(Guid requestId);
-        Task ActivateAllRequestsForUser(Guid userId);
     }
 }

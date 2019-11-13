@@ -81,6 +81,7 @@ namespace Squadio.DAL.Repository.Users.Implementation
             }
         }
 
+        
         public async Task<UserPasswordRequestModel> GetChangePasswordRequests(string code)
         {
             var item = await _context.UserPasswordRequests
@@ -97,36 +98,6 @@ namespace Squadio.DAL.Repository.Users.Implementation
             item.Hash = hash;
             item.Salt = salt;
             _context.Update(item);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task<UserPasswordRequestModel> AddChangePasswordRequest(Guid userId, string code)
-        {
-            var user = await GetById(userId);
-            var newRequest = new UserPasswordRequestModel
-            {
-                UserId = user.Id,
-                Code = code,
-                CreatedDate = DateTime.UtcNow,
-                IsActivated = false
-            };
-            await _context.UserPasswordRequests.AddAsync(newRequest);
-            await _context.SaveChangesAsync();
-            return newRequest;
-        }
-
-        public async Task ActivateChangePasswordRequestsCode(Guid userId)
-        {
-            var items = _context.UserPasswordRequests
-                .Where(x => x.UserId == userId && x.IsActivated == false);
-            
-            await items.ForEachAsync(x =>
-            {
-                x.ActivatedDate = DateTime.UtcNow;
-                x.IsActivated = true;
-            });
-            
-            _context.UserPasswordRequests.UpdateRange(items);
             await _context.SaveChangesAsync();
         }
     }
