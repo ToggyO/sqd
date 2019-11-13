@@ -22,6 +22,7 @@ using Squadio.DAL.Repository.ConfirmEmail;
 using Squadio.DAL.Repository.SignUp;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Enums;
+using Squadio.Domain.Models.Projects;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Companies;
 using Squadio.DTO.Projects;
@@ -584,7 +585,8 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                     {
                         Step = (int) step.Step,
                         StepName = step.Step.ToString()
-                    }
+                    },
+                    Data = project.Data
                 }
             };
         }

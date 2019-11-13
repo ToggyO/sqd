@@ -23,15 +23,13 @@
 
   <ItemGroup>
     <None Remove="Services\Email\Templates\ResetPasswordTemplate.html" />
-    <None Remove="Services\Email\Templates\SignUpRequestTemplate.html" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="Services\Email\Templates\ResetPasswordTemplate.html" />
     <None Remove="Services\Email\Templates\InviteToProjectTemplate.html" />
     <EmbeddedResource Include="Services\Email\Templates\InviteToProjectTemplate.html" />
     <None Remove="Services\Email\Templates\InviteToTeamTemplate.html" />
     <EmbeddedResource Include="Services\Email\Templates\InviteToTeamTemplate.html" />
+    <None Remove="Services\Email\Templates\ConfirmEmailRequestTemplate.html" />
+    <EmbeddedResource Include="Services\Email\Templates\ConfirmEmailRequestTemplate.html" />
   </ItemGroup>
 
 </Project>
