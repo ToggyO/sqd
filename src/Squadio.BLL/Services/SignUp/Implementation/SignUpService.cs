@@ -18,6 +18,7 @@ using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.Common.Settings;
+using Squadio.DAL.Repository.ConfirmEmail;
 using Squadio.DAL.Repository.SignUp;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Enums;
@@ -34,6 +35,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
     {
         private readonly ISignUpRepository _repository;
         private readonly IUsersRepository _usersRepository;
+        private readonly IConfirmEmailRequestRepository _confirmEmailRepository;
         private readonly IEmailService<UserConfirmEmailModel> _userConfirmEmailService;
         //private readonly IOptions<GoogleSettings> _googleSettings;
         private readonly IInvitesProvider _invitesProvider;
@@ -47,6 +49,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
         public SignUpService(ISignUpRepository repository
             , IUsersRepository usersRepository
             , IEmailService<UserConfirmEmailModel> userConfirmEmailService
+            , IConfirmEmailRequestRepository confirmEmailRepository
             //, IOptions<GoogleSettings> googleSettings
             , IInvitesProvider invitesProvider
             , IUsersService usersService
@@ -60,6 +63,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             _repository = repository;
             _usersRepository = usersRepository;
             _userConfirmEmailService = userConfirmEmailService;
+            _confirmEmailRepository = confirmEmailRepository;
             //_googleSettings = googleSettings;
             _invitesProvider = invitesProvider;
             _usersService = usersService;
@@ -193,7 +197,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             var userResponse = await _usersService.SetPassword(email, password);
             var userDTO = userResponse.Data;
             
-            await _usersRepository.AddConfirmEmailRequest(user.Id, code);
+            await _confirmEmailRepository.AddRequest(user.Id, code);
 
             await _repository.SetRegistrationStep(user.Id, RegistrationStep.New);
 
@@ -272,133 +276,17 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 Data = result
             };
         }
-
+        
         public async Task<Response<SignUpStepDTO>> SendNewCode(string email)
         {
             var user = await _usersRepository.GetByEmail(email);
-            if (user == null)
-            {
-                return new BusinessConflictErrorResponse<SignUpStepDTO>(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Business.UserDoesNotExists,
-                        Message = ErrorMessages.Business.UserDoesNotExists,
-                        Field = ErrorFields.User.Email
-                    }
-                });
-            }
-            
-            var step = await _repository.GetRegistrationStepByUserId(user.Id);
-
-            if (step.Step >= RegistrationStep.EmailConfirmed)
-            {
-                return new BusinessConflictErrorResponse<SignUpStepDTO>(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Business.InvalidRegistrationStep,
-                        Message = ErrorMessages.Business.InvalidRegistrationStep
-                    }
-                })
-                {
-                    Data = new SignUpStepDTO
-                    {
-                        RegistrationStep = new UserRegistrationStepDTO()
-                        {
-                            Step = (int) step.Step,
-                            StepName = step.Step.ToString()
-                        }
-                    }
-                };
-            }
-
-            var code = GenerateCode();
-            
-            await _userConfirmEmailService.Send(new UserConfirmEmailModel()
-            {
-                Code = code,
-                To = email
-            });
-
-            await _repository.ActivateAllRequestsForUser(user.Id);
-            await _repository.AddRequest(user.Id, code);
-            
-            return new Response<SignUpStepDTO>
-            {
-                Data = new SignUpStepDTO
-                {
-                    RegistrationStep = new UserRegistrationStepDTO()
-                    {
-                        Step = (int) step.Step,
-                        StepName = step.Step.ToString()
-                    }
-                }
-            };
+            return await SendNewCode(user);
         }
 
         public async Task<Response<SignUpStepDTO>> SendNewCode(Guid userId)
         {
             var user = await _usersRepository.GetById(userId);
-            if (user == null)
-            {
-                return new BusinessConflictErrorResponse<SignUpStepDTO>(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Business.UserDoesNotExists,
-                        Message = ErrorMessages.Business.UserDoesNotExists,
-                        Field = ErrorFields.User.Email
-                    }
-                });
-            }
-            
-            var step = await _repository.GetRegistrationStepByUserId(user.Id);
-
-            if (step.Step >= RegistrationStep.EmailConfirmed)
-            {
-                return new BusinessConflictErrorResponse<SignUpStepDTO>(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Business.InvalidRegistrationStep,
-                        Message = ErrorMessages.Business.InvalidRegistrationStep
-                    }
-                })
-                {
-                    Data = new SignUpStepDTO
-                    {
-                        RegistrationStep = new UserRegistrationStepDTO()
-                        {
-                            Step = (int) step.Step,
-                            StepName = step.Step.ToString()
-                        }
-                    }
-                };
-            }
-
-            var code = GenerateCode();
-            
-            await _userConfirmEmailService.Send(new UserConfirmEmailModel()
-            {
-                Code = code,
-                To = user.Email
-            });
-
-            await _repository.ActivateAllRequestsForUser(user.Id);
-            await _repository.AddRequest(user.Id, code);
-            
-            return new Response<SignUpStepDTO>
-            {
-                Data = new SignUpStepDTO
-                {
-                    RegistrationStep = new UserRegistrationStepDTO()
-                    {
-                        Step = (int) step.Step,
-                        StepName = step.Step.ToString()
-                    }
-                }
-            };
+            return await SendNewCode(user);
         }
 
         public async Task<Response<SignUpStepDTO>> SignUpConfirm(Guid userId, string code)
@@ -427,7 +315,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 };
             }
 
-            var request = await _repository.GetRequest(userId, code);
+            var request = await _confirmEmailRepository.GetRequest(userId, code);
 
             if (request == null || request?.IsActivated == true)
             {
@@ -443,7 +331,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             
             // TODO: Check lifetime of request if needed
 
-            await _repository.ActivateRequest(request.Id);
+            await _confirmEmailRepository.ActivateAllRequestsForUser(userId);
 
             step = await _repository.SetRegistrationStep(userId, RegistrationStep.EmailConfirmed);
             
@@ -742,7 +630,70 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             };
         }
 
-        public string GenerateCode(int length = 6)
+        private async Task<Response<SignUpStepDTO>> SendNewCode(UserModel user)
+        {
+            if (user == null)
+            {
+                return new BusinessConflictErrorResponse<SignUpStepDTO>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Business.UserDoesNotExists,
+                        Message = ErrorMessages.Business.UserDoesNotExists,
+                        Field = ErrorFields.User.Email
+                    }
+                });
+            }
+            
+            var step = await _repository.GetRegistrationStepByUserId(user.Id);
+
+            if (step.Step >= RegistrationStep.EmailConfirmed)
+            {
+                return new BusinessConflictErrorResponse<SignUpStepDTO>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Business.InvalidRegistrationStep,
+                        Message = ErrorMessages.Business.InvalidRegistrationStep
+                    }
+                })
+                {
+                    Data = new SignUpStepDTO
+                    {
+                        RegistrationStep = new UserRegistrationStepDTO()
+                        {
+                            Step = (int) step.Step,
+                            StepName = step.Step.ToString()
+                        }
+                    }
+                };
+            }
+
+            var code = GenerateCode();
+            
+            await _userConfirmEmailService.Send(new UserConfirmEmailModel()
+            {
+                Code = code,
+                To = user.Email
+            });
+
+            await _confirmEmailRepository.ActivateAllRequestsForUser(user.Id);
+            await _confirmEmailRepository.AddRequest(user.Id, code);
+            
+            return new Response<SignUpStepDTO>
+            {
+                Data = new SignUpStepDTO
+                {
+                    RegistrationStep = new UserRegistrationStepDTO()
+                    {
+                        Step = (int) step.Step,
+                        StepName = step.Step.ToString()
+                    }
+                }
+            };
+        }
+
+        private string GenerateCode(int length = 6)
         {
             var generator = new Random();
             

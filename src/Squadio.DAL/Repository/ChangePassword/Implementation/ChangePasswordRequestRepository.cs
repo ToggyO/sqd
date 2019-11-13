@@ -27,7 +27,9 @@ namespace Squadio.DAL.Repository.ChangePassword.Implementation
 
         public async Task<UserPasswordRequestModel> GetRequest(Guid id)
         {
-            var item = await _context.UserPasswordRequests.FindAsync(id);
+            var item = await _context.UserPasswordRequests
+                .Include(x => x.User)
+                .FirstOrDefaultAsync(x => x.Id == id);
             return item;
         }
         

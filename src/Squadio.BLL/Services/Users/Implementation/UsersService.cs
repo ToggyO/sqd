@@ -8,6 +8,7 @@ using Squadio.BLL.Services.Email;
 using Squadio.Common.Models.Email;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
+using Squadio.DAL.Repository.ChangePassword;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Users;
@@ -17,16 +18,19 @@ namespace Squadio.BLL.Services.Users.Implementation
     public class UsersService : IUsersService
     {
         private readonly IUsersRepository _repository;
+        private readonly IChangePasswordRequestRepository _changePasswordRepository;
         private readonly IEmailService<PasswordResetEmailModel> _passwordResetMailService;
         private readonly IPasswordService _passwordService;
         private readonly IMapper _mapper;
         public UsersService(IUsersRepository repository
+            , IChangePasswordRequestRepository changePasswordRepository
             , IEmailService<PasswordResetEmailModel> passwordResetMailService
             , IPasswordService passwordService
             , IMapper mapper
             )
         {
             _repository = repository;
+            _changePasswordRepository = changePasswordRepository;
             _passwordResetMailService = passwordResetMailService;
             _passwordService = passwordService;
             _mapper = mapper;
@@ -48,7 +52,7 @@ namespace Squadio.BLL.Services.Users.Implementation
 
         public async Task<Response<UserDTO>> SetPasswordUsingCode(string code, string password)
         {
-            var userPasswordRequest = await _repository.GetChangePasswordRequests(code);
+            var userPasswordRequest = await _changePasswordRepository.GetRequestByCode(code);
             if (userPasswordRequest == null || userPasswordRequest?.IsActivated == true)
             {
                 return new BusinessConflictErrorResponse<UserDTO>(new []
@@ -64,7 +68,7 @@ namespace Squadio.BLL.Services.Users.Implementation
             var passwordModel = await _passwordService.CreatePassword(password);
             await _repository.SavePassword(userPasswordRequest.UserId, passwordModel.Hash, passwordModel.Salt);
             
-            await _repository.ActivateChangePasswordRequestsCode(userPasswordRequest.UserId);
+            await _changePasswordRepository.ActivateAllRequestsForUser(userPasswordRequest.UserId);
 
             var user = await _repository.GetById(userPasswordRequest.UserId);
 
@@ -93,9 +97,10 @@ namespace Squadio.BLL.Services.Users.Implementation
 
             var code = Guid.NewGuid().ToString("N");
 
-            await _repository.ActivateChangePasswordRequestsCode(user.Id);
             
-            await _repository.AddChangePasswordRequest(user.Id, code);
+            await _changePasswordRepository.ActivateAllRequestsForUser(user.Id);
+            
+            await _changePasswordRepository.AddRequest(user.Id, code);
 
             await _passwordResetMailService.Send(new PasswordResetEmailModel
             {
