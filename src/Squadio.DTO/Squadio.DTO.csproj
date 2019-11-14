@@ -44,7 +44,10 @@
         <DependentUpon>TeamUserDTO.cs</DependentUpon>
       </Compile>
       <Compile Update="Users\ChangeEmailDTO.Validator.cs">
-        <DependentUpon>ChangeEmailDTO.cs</DependentUpon>
+        <DependentUpon>ChangeEmailRequestDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Users\UserSetPasswordDTO.Validator.cs">
+        <DependentUpon>UserResetPasswordDTO.cs</DependentUpon>
       </Compile>
     </ItemGroup>
 

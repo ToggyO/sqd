@@ -110,9 +110,21 @@ namespace Squadio.API.Handlers.Users.Implementation
             return result;
         }
 
-        public async Task<Response<UserDTO>> SetPassword(UserSetPasswordDTO dto)
+        public async Task<Response<UserDTO>> ResetPassword(UserResetPasswordDTO dto)
         {
-            var result = await _service.SetPasswordUsingCode(dto.Code, dto.Password);
+            var result = await _service.ResetPassword(dto.Code, dto.Password);
+            return result;
+        }
+
+        public async Task<Response> ChangeEmailRequest(ChangeEmailRequestDTO dto, ClaimsPrincipal claims)
+        {
+            var result = await _service.ChangeEmailRequest(claims.GetUserId(), dto);
+            return result;
+        }
+
+        public async Task<Response<UserDTO>> SetEmail(UserSetEmailDTO dto, ClaimsPrincipal claims)
+        {
+            var result = await _service.SetEmail(claims.GetUserId(), dto.Code);
             return result;
         }
     }

@@ -50,7 +50,7 @@ namespace Squadio.BLL.Services.Users.Implementation
             };
         }
 
-        public async Task<Response<UserDTO>> SetPasswordUsingCode(string code, string password)
+        public async Task<Response<UserDTO>> ResetPassword(string code, string password)
         {
             var userPasswordRequest = await _changePasswordRepository.GetRequestByCode(code);
             if (userPasswordRequest == null || userPasswordRequest?.IsActivated == true)
@@ -149,7 +149,12 @@ namespace Squadio.BLL.Services.Users.Implementation
             };
         }
 
-        public Task<Response> ChangeEmailRequest(Guid id, ChangeEmailDTO dto)
+        public Task<Response> ChangeEmailRequest(Guid id, ChangeEmailRequestDTO requestDTO)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Response<UserDTO>> SetEmail(Guid id, string code)
         {
             throw new NotImplementedException();
         }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Squadio.DTO.Users
 {
-    public class UserSetPasswordDTO
+    public class UserResetPasswordDTO
     {
         [Required]
         public string Code { get; set; }

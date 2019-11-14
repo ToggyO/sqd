@@ -98,9 +98,9 @@ namespace Squadio.API.Controllers
         
         [HttpPut("passwords/set")]
         [AllowAnonymous]
-        public async Task<Response<UserDTO>> SetPassword([FromBody] UserSetPasswordDTO dto)
+        public async Task<Response<UserDTO>> SetPassword([FromBody] UserResetPasswordDTO dto)
         {
-            return await _handler.SetPassword(dto);
+            return await _handler.ResetPassword(dto);
         }
         
         [HttpPost("passwords/request")]
@@ -108,6 +108,18 @@ namespace Squadio.API.Controllers
         public async Task<Response> ResetPasswordRequest([FromBody, Required] UserEmailDTO dto)
         {
             return await _handler.ResetPasswordRequest(dto.Email);
+        }
+        
+        [HttpPut("email/set")]
+        public async Task<Response<UserDTO>> SetEmail([FromBody] UserSetEmailDTO dto)
+        {
+            return await _handler.SetEmail(dto, User);
+        }
+        
+        [HttpPost("email/request")]
+        public async Task<Response> ChangeEmailRequest([FromBody, Required] ChangeEmailRequestDTO dto)
+        {
+            return await _handler.ChangeEmailRequest(dto, User);
         }
     }
 }

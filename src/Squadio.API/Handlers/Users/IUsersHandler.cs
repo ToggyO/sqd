@@ -26,8 +26,10 @@ namespace Squadio.API.Handlers.Users
         Task<Response<PageModel<ProjectUserDTO>>> GetUserProjects(ClaimsPrincipal claims, PageModel model);
         
         Task<Response<UserDTO>> UpdateCurrentUser(UserUpdateDTO dto, ClaimsPrincipal claims);
-        Task<Response<UserDTO>> SetPassword(UserSetPasswordDTO dto);
+        Task<Response<UserDTO>> ResetPassword(UserResetPasswordDTO dto);
         Task<Response> ResetPasswordRequest(string email);
         Task<Response<UserDTO>> DeleteUser(Guid id);
+        Task<Response> ChangeEmailRequest(ChangeEmailRequestDTO dto, ClaimsPrincipal claims);
+        Task<Response<UserDTO>> SetEmail(UserSetEmailDTO dto, ClaimsPrincipal claims);
     }
 }
