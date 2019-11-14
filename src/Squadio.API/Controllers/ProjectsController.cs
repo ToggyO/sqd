@@ -60,9 +60,9 @@ namespace Squadio.API.Controllers
         }
         
         [HttpPost]
-        public async Task<Response<ProjectDTO>> Create([FromQuery, Required] Guid companyId, [FromBody] CreateProjectDTO dto)
+        public async Task<Response<ProjectDTO>> Create([FromQuery, Required] Guid teamId, [FromBody] CreateProjectDTO dto)
         {
-            return await _handler.Create(companyId, dto, User);
+            return await _handler.Create(teamId, dto, User);
         }
         
         [HttpPost("{id}/invite")]

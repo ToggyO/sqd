@@ -114,7 +114,7 @@ namespace Squadio.DAL
                     .IsRequired();
                 item.Property(x => x.CreatedDate)
                     .IsRequired();
-                item.HasOne(p => p.Company)
+                item.HasOne(p => p.Team)
                     .WithMany()
                     .IsRequired();
             });

@@ -40,13 +40,18 @@ namespace Squadio.DAL.Repository.Projects.Implementation
             return entity;
         }
 
-        public async Task<PageModel<ProjectModel>> GetProjects(PageModel model, Guid? companyId = null)
+        public async Task<PageModel<ProjectModel>> GetProjects(PageModel model, Guid? companyId = null, Guid? teamId = null)
         {
             IQueryable<ProjectModel> query = _context.Projects;
 
             if (companyId.HasValue)
             {
-                query = query.Where(x => x.CompanyId == companyId);
+                query = query.Where(x => x.Team.CompanyId == companyId);
+            }
+
+            if (teamId.HasValue)
+            {
+                query = query.Where(x => x.TeamId == teamId);
             }
             
             var items = await query

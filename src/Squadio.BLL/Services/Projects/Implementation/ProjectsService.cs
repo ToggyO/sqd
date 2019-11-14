@@ -33,12 +33,12 @@ namespace Squadio.BLL.Services.Projects.Implementation
             _mapper = mapper;
         }
 
-        public async Task<Response<ProjectDTO>> Create(Guid userId, Guid companyId, CreateProjectDTO dto)
+        public async Task<Response<ProjectDTO>> Create(Guid userId, Guid teamId, CreateProjectDTO dto)
         {
             var entity = new ProjectModel
             {
                 Name = dto.Name,
-                CompanyId = companyId,
+                TeamId = teamId,
                 CreatedDate = DateTime.UtcNow,
                 ColorHex = dto.ColorHex
             };

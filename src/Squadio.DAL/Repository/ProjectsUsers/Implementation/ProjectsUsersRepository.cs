@@ -18,7 +18,7 @@ namespace Squadio.DAL.Repository.ProjectsUsers.Implementation
             _context = context;
         }
 
-        public async Task<PageModel<ProjectUserModel>> GetUserProjects(Guid userId, PageModel model, Guid? companyId = null)
+        public async Task<PageModel<ProjectUserModel>> GetUserProjects(Guid userId, PageModel model, Guid? companyId = null, Guid? teamId = null)
         {
             var query = _context.ProjectsUsers
                 .Include(x => x.User)
@@ -27,7 +27,12 @@ namespace Squadio.DAL.Repository.ProjectsUsers.Implementation
 
             if (companyId.HasValue)
             {
-                query = query.Where(x => x.Project.CompanyId == companyId);
+                query = query.Where(x => x.Project.Team.CompanyId == companyId);
+            }
+
+            if (teamId.HasValue)
+            {
+                query = query.Where(x => x.Project.TeamId == teamId);
             }
             
             var total = await query.CountAsync();

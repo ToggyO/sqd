@@ -8,6 +8,7 @@ using Mapper;
 using Microsoft.Extensions.Options;
 using Squadio.BLL.Providers.Companies;
 using Squadio.BLL.Providers.Invites;
+using Squadio.BLL.Providers.Teams;
 using Squadio.BLL.Services.Companies;
 using Squadio.BLL.Services.ConfirmEmail;
 using Squadio.BLL.Services.Email;
@@ -43,6 +44,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
         private readonly ICompaniesService _companiesService;
         private readonly ICompaniesProvider _companiesProvider;
         private readonly ITeamsService _teamsService;
+        private readonly ITeamsProvider _teamsProvider;
         private readonly IProjectsService _projectsService;
         private readonly IConfirmEmailService _confirmEmailService;
         private readonly IMapper _mapper;
@@ -55,6 +57,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             , ICompaniesService companiesService
             , ICompaniesProvider companiesProvider
             , ITeamsService teamsService
+            , ITeamsProvider teamsProvider
             , IProjectsService projectsService
             , IConfirmEmailService confirmEmailService
             , IMapper mapper
@@ -68,6 +71,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             _companiesService = companiesService;
             _companiesProvider = companiesProvider;
             _teamsService = teamsService;
+            _teamsProvider = teamsProvider;
             _projectsService = projectsService;
             _confirmEmailService = confirmEmailService;
             _mapper = mapper;
@@ -546,10 +550,10 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 };
             }
 
-            var companyPage = await _companiesProvider.GetUserCompanies(userId, new PageModel());
-            var company = companyPage.Data.Items.FirstOrDefault();
+            var teamPage = await _teamsProvider.GetUserTeams(userId, new PageModel());
+            var team = teamPage.Data.Items.FirstOrDefault();
 
-            if (company == null)
+            if (team == null)
             {
                 step = await _repository.SetRegistrationStep(userId, RegistrationStep.UsernameEntered);
                 
@@ -573,7 +577,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 };
             }
 
-            var project = await _projectsService.Create(userId, company.CompanyId, dto);
+            var project = await _projectsService.Create(userId, team.TeamId, dto);
 
             if (project.IsSuccess)
             {
