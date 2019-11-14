@@ -19,19 +19,19 @@ namespace Squadio.BLL.Services.Users.Implementation
     {
         private readonly IUsersRepository _repository;
         private readonly IChangePasswordRequestRepository _changePasswordRepository;
-        private readonly IEmailService<PasswordResetEmailModel> _passwordResetMailService;
+        private readonly IEmailService<PasswordRestoreEmailModel> _passwordRestoreMailService;
         private readonly IPasswordService _passwordService;
         private readonly IMapper _mapper;
         public UsersService(IUsersRepository repository
             , IChangePasswordRequestRepository changePasswordRepository
-            , IEmailService<PasswordResetEmailModel> passwordResetMailService
+            , IEmailService<PasswordRestoreEmailModel> passwordRestoreMailService
             , IPasswordService passwordService
             , IMapper mapper
             )
         {
             _repository = repository;
             _changePasswordRepository = changePasswordRepository;
-            _passwordResetMailService = passwordResetMailService;
+            _passwordRestoreMailService = passwordRestoreMailService;
             _passwordService = passwordService;
             _mapper = mapper;
         }
@@ -102,7 +102,7 @@ namespace Squadio.BLL.Services.Users.Implementation
             
             await _changePasswordRepository.AddRequest(user.Id, code);
 
-            await _passwordResetMailService.Send(new PasswordResetEmailModel
+            await _passwordRestoreMailService.Send(new PasswordRestoreEmailModel
             {
                 Code = code,
                 To = email

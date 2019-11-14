@@ -6,7 +6,7 @@ using Squadio.Common.Settings;
 
 namespace Squadio.BLL.Services.Email.Implementations
 {
-    public class ResetPasswordEmailService: BaseEmailService<PasswordResetEmailModel>
+    public class ResetPasswordEmailService: BaseEmailService<PasswordRestoreEmailModel>
     {
         private readonly IOptions<StaticUrlsSettingsModel> _options;
         
@@ -17,7 +17,7 @@ namespace Squadio.BLL.Services.Email.Implementations
             _options = options;
         }
 
-        protected override string GetHtmlTemplate(PasswordResetEmailModel model)
+        protected override string GetHtmlTemplate(PasswordRestoreEmailModel model)
         {
             
             var resource = EmbeddedResources
@@ -29,7 +29,7 @@ namespace Squadio.BLL.Services.Email.Implementations
             return resource;
         }
 
-        protected override string GetSubject(PasswordResetEmailModel emailModel)
+        protected override string GetSubject(PasswordRestoreEmailModel emailModel)
         {
             return "Reset password";
         }

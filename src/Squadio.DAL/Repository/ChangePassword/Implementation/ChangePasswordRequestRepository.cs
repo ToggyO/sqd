@@ -14,9 +14,9 @@ namespace Squadio.DAL.Repository.ChangePassword.Implementation
             _context = context;
         }
 
-        public async Task<UserPasswordRequestModel> GetRequestByCode(string code)
+        public async Task<UserRestorePasswordRequestModel> GetRequestByCode(string code)
         {
-            var item = await _context.UserPasswordRequests
+            var item = await _context.UserRestorePasswordRequests
                 .Include(x => x.User)
                 .OrderByDescending(x => x.CreatedDate)
                 .Where(x => x.Code.ToUpper() == code.ToUpper() &&
@@ -25,31 +25,31 @@ namespace Squadio.DAL.Repository.ChangePassword.Implementation
             return item;
         }
 
-        public async Task<UserPasswordRequestModel> GetRequest(Guid id)
+        public async Task<UserRestorePasswordRequestModel> GetRequest(Guid id)
         {
-            var item = await _context.UserPasswordRequests
+            var item = await _context.UserRestorePasswordRequests
                 .Include(x => x.User)
                 .FirstOrDefaultAsync(x => x.Id == id);
             return item;
         }
         
-        public async Task<UserPasswordRequestModel> AddRequest(Guid userId, string code)
+        public async Task<UserRestorePasswordRequestModel> AddRequest(Guid userId, string code)
         {
-            var newRequest = new UserPasswordRequestModel
+            var newRequest = new UserRestorePasswordRequestModel
             {
                 UserId = userId,
                 Code = code,
                 CreatedDate = DateTime.UtcNow,
                 IsActivated = false
             };
-            await _context.UserPasswordRequests.AddAsync(newRequest);
+            await _context.UserRestorePasswordRequests.AddAsync(newRequest);
             await _context.SaveChangesAsync();
             return newRequest;
         }
 
         public async Task ActivateAllRequestsForUser(Guid userId)
         {
-            var items = _context.UserPasswordRequests
+            var items = _context.UserRestorePasswordRequests
                 .Where(x => x.UserId == userId 
                             && x.IsActivated == false);
             
@@ -59,7 +59,7 @@ namespace Squadio.DAL.Repository.ChangePassword.Implementation
                 x.IsActivated = true;
             });
             
-            _context.UserPasswordRequests.UpdateRange(items);
+            _context.UserRestorePasswordRequests.UpdateRange(items);
             await _context.SaveChangesAsync();
         }
     }

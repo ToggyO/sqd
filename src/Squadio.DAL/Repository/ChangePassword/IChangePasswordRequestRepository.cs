@@ -6,9 +6,9 @@ namespace Squadio.DAL.Repository.ChangePassword
 {
     public interface IChangePasswordRequestRepository
     {
-        Task<UserPasswordRequestModel> AddRequest(Guid userId, string code);
-        Task<UserPasswordRequestModel> GetRequestByCode(string code);
-        Task<UserPasswordRequestModel> GetRequest(Guid id);
+        Task<UserRestorePasswordRequestModel> AddRequest(Guid userId, string code);
+        Task<UserRestorePasswordRequestModel> GetRequestByCode(string code);
+        Task<UserRestorePasswordRequestModel> GetRequest(Guid id);
         Task ActivateAllRequestsForUser(Guid userId);
     }
 }
