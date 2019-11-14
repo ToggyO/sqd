@@ -92,6 +92,15 @@ namespace Squadio.DAL.Repository.TeamsUsers.Implementation
             await _context.SaveChangesAsync();
         }
 
+        public async Task DeleteTeamUser(Guid teamId, Guid userId)
+        {
+            var item = await _context.TeamsUsers
+                .Where(x => x.TeamId == teamId && x.UserId == userId)
+                .FirstOrDefaultAsync();
+            _context.TeamsUsers.Remove(item);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task AddRangeTeamUser(Guid teamId, IEnumerable<Guid> userIds, UserStatus userStatus)
         {
             var items = userIds.Select(userId => new TeamUserModel

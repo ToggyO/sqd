@@ -119,5 +119,26 @@ namespace Squadio.BLL.Services.Projects.Implementation
                 Data = result
             };
         }
+
+        public async Task<Response> DeleteUserFromProject(Guid projectId, Guid removeUserId, Guid currentUserId)
+        {
+            var currentProjectUser = await _projectsUsersRepository.GetProjectUser(projectId, currentUserId);
+
+            if (currentProjectUser == null || currentProjectUser?.Status != UserStatus.SuperAdmin)
+            {
+                return new ForbiddenErrorResponse(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.Forbidden,
+                        Message = ErrorMessages.Security.Forbidden
+                    }
+                }); 
+            }
+
+            await _projectsUsersRepository.DeleteProjectUser(projectId, removeUserId);
+            
+            return new Response();
+        }
     }
 }

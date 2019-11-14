@@ -46,6 +46,12 @@ namespace Squadio.API.Controllers
             return await _handler.Update(id, dto, User);
         }
         
+        [HttpDelete("{teamId}/user/{userId}")]
+        public Task<Response> DeleteTeamUser([Required, FromRoute] Guid teamId, [Required, FromRoute] Guid userId)
+        {
+            return _handler.DeleteTeamUser(teamId, userId, User);
+        }
+        
         [HttpGet("{id}/users")]
         public Task<Response<PageModel<TeamUserDTO>>> GetTeamUsers([Required, FromRoute] Guid id
             , [FromQuery] PageModel model)

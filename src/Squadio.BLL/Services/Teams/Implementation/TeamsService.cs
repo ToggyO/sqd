@@ -119,5 +119,26 @@ namespace Squadio.BLL.Services.Teams.Implementation
                 Data = result
             };
         }
+
+        public async Task<Response> DeleteUserFromTeam(Guid teamId, Guid removeUserId, Guid currentUserId)
+        {
+            var currentTeamUser = await _teamsUsersRepository.GetTeamUser(teamId, currentUserId);
+
+            if (currentTeamUser == null || currentTeamUser?.Status != UserStatus.SuperAdmin)
+            {
+                return new ForbiddenErrorResponse(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.Forbidden,
+                        Message = ErrorMessages.Security.Forbidden
+                    }
+                }); 
+            }
+
+            await _teamsUsersRepository.DeleteTeamUser(teamId, removeUserId);
+            
+            return new Response();
+        }
     }
 }

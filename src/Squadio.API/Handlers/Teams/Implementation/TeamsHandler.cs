@@ -51,5 +51,11 @@ namespace Squadio.API.Handlers.Teams.Implementation
             var result = await _service.Update(teamId, claims.GetUserId(), dto);
             return result;
         }
+
+        public async Task<Response> DeleteTeamUser(Guid teamId, Guid userId, ClaimsPrincipal claims)
+        {
+            var result = await _service.DeleteUserFromTeam(teamId, userId, claims.GetUserId());
+            return result;
+        }
     }
 }

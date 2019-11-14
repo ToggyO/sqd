@@ -55,5 +55,11 @@ namespace Squadio.API.Controllers
         {
             return _handler.UpdateCompany(id, dto, User);
         }
+        
+        [HttpDelete("{companyId}/user/{userId}")]
+        public Task<Response> DeleteCompanyUser([Required, FromRoute] Guid companyId, [Required, FromRoute] Guid userId)
+        {
+            return _handler.DeleteCompanyUser(companyId, userId, User);
+        }
     }
 }

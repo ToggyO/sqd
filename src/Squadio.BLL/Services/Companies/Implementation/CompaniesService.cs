@@ -82,6 +82,27 @@ namespace Squadio.BLL.Services.Companies.Implementation
             };
         }
 
+        public async Task<Response> DeleteUserFromCompany(Guid companyId, Guid removeUserId, Guid currentUserId)
+        {
+            var currentCompanyUser = await _companiesUsersRepository.GetCompanyUser(companyId, currentUserId);
+
+            if (currentCompanyUser == null || currentCompanyUser?.Status != UserStatus.SuperAdmin)
+            {
+                return new ForbiddenErrorResponse(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.Forbidden,
+                        Message = ErrorMessages.Security.Forbidden
+                    }
+                }); 
+            }
+
+            await _companiesUsersRepository.DeleteCompanyUser(companyId, removeUserId);
+            
+            return new Response();
+        }
+
         public async Task<Response<CompanyDTO>> Create(Guid userId, CreateCompanyDTO dto)
         {
             var entityCompany = new CompanyModel

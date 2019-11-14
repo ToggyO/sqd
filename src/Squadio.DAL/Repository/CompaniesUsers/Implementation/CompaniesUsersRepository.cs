@@ -118,6 +118,15 @@ namespace Squadio.DAL.Repository.CompaniesUsers.Implementation
             await _context.SaveChangesAsync();
         }
 
+        public async Task DeleteCompanyUser(Guid companyId, Guid userId)
+        {
+            var item = await _context.CompaniesUsers
+                .Where(x => x.CompanyId == companyId && x.UserId == userId)
+                .FirstOrDefaultAsync();
+            _context.CompaniesUsers.Remove(item);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task AddRangeCompanyUser(Guid companyId, IEnumerable<Guid> userIds, UserStatus userStatus)
         {
             var items = userIds.Select(userId => new CompanyUserModel

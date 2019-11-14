@@ -9,5 +9,6 @@ namespace Squadio.BLL.Services.Companies
     {
         Task<Response<CompanyDTO>> Create(Guid userId, CreateCompanyDTO dto);
         Task<Response<CompanyDTO>> Update(Guid companyId, Guid userId, CompanyUpdateDTO dto);
+        Task<Response> DeleteUserFromCompany(Guid companyId, Guid removeUserId, Guid currentUserId);
     }
 }

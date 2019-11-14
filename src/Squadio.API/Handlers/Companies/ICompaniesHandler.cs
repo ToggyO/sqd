@@ -15,5 +15,6 @@ namespace Squadio.API.Handlers.Companies
         Task<Response<CompanyDTO>> GetCompany(Guid id);
         Task<Response<CompanyDTO>> CreateCompany(CreateCompanyDTO dto, ClaimsPrincipal claims);
         Task<Response<CompanyDTO>> UpdateCompany(Guid companyId, CompanyUpdateDTO dto, ClaimsPrincipal claims);
+        Task<Response> DeleteCompanyUser(Guid companyId, Guid userId, ClaimsPrincipal claims);
     }
 }

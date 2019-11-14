@@ -15,6 +15,7 @@ namespace Squadio.DAL.Repository.ProjectsUsers
         Task<PageModel<ProjectUserModel>> GetProjectUsers(Guid projectId, PageModel model);
         Task<ProjectUserModel> GetProjectUser(Guid projectId, Guid userId);
         Task AddProjectUser(Guid projectId, Guid userId, UserStatus userStatus);
+        Task DeleteProjectUser(Guid projectId, Guid userId);
         Task AddRangeProjectUser(Guid projectId, IEnumerable<Guid> userIds, UserStatus userStatus);
         Task ChangeStatusProjectUser(Guid projectId, Guid userId, UserStatus newUserStatus);
     }

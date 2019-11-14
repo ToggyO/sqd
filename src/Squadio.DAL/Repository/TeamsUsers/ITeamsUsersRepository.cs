@@ -14,6 +14,7 @@ namespace Squadio.DAL.Repository.TeamsUsers
         Task<PageModel<TeamUserModel>> GetTeamUsers(Guid teamId, PageModel model);
         Task<TeamUserModel> GetTeamUser(Guid teamId, Guid userId);
         Task AddTeamUser(Guid teamId, Guid userId, UserStatus userStatus);
+        Task DeleteTeamUser(Guid teamId, Guid userId);
         Task AddRangeTeamUser(Guid teamId, IEnumerable<Guid> userIds, UserStatus userStatus);
         Task ChangeStatusTeamUser(Guid teamId, Guid userId, UserStatus newUserStatus);
     }

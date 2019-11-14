@@ -15,5 +15,6 @@ namespace Squadio.API.Handlers.Teams
         Task<Response<TeamDTO>> GetById(Guid id);
         Task<Response<TeamDTO>> Create(Guid companyId, TeamCreateDTO dto, ClaimsPrincipal claims);
         Task<Response<TeamDTO>> Update(Guid teamId, TeamUpdateDTO dto, ClaimsPrincipal claims);
+        Task<Response> DeleteTeamUser(Guid teamId, Guid userId, ClaimsPrincipal claims);
     }
 }

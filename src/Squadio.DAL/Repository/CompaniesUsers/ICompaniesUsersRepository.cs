@@ -17,6 +17,7 @@ namespace Squadio.DAL.Repository.CompaniesUsers
         Task<IEnumerable<CompanyUserModel>> GetCompanyUser(Guid? userId = null, Guid? companyId = null, IEnumerable<UserStatus> statuses = null);
         Task<int> GetCompanyUsersCount(Guid companyId);
         Task AddCompanyUser(Guid companyId, Guid userId, UserStatus userStatus);
+        Task DeleteCompanyUser(Guid companyId, Guid userId);
         Task AddRangeCompanyUser(Guid companyId, IEnumerable<Guid> userIds, UserStatus userStatus);
         Task ChangeStatusCompanyUser(Guid companyId, Guid userId, UserStatus newUserStatus);
     }

@@ -92,6 +92,15 @@ namespace Squadio.DAL.Repository.ProjectsUsers.Implementation
             await _context.SaveChangesAsync();
         }
 
+        public async Task DeleteProjectUser(Guid projectId, Guid userId)
+        {
+            var item = await _context.ProjectsUsers
+                .Where(x => x.ProjectId == projectId && x.UserId == userId)
+                .FirstOrDefaultAsync();
+            _context.ProjectsUsers.Remove(item);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task AddRangeProjectUser(Guid projectId, IEnumerable<Guid> userIds, UserStatus userStatus)
         {
             var items = userIds.Select(userId => new ProjectUserModel

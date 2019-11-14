@@ -52,5 +52,11 @@ namespace Squadio.API.Handlers.Companies.Implementation
             var result = await _service.Update(companyId, claims.GetUserId(), dto);
             return result;
         }
+
+        public async Task<Response> DeleteCompanyUser(Guid companyId, Guid userId, ClaimsPrincipal claims)
+        {
+            var result = await _service.DeleteUserFromCompany(companyId, userId, claims.GetUserId());
+            return result;
+        }
     }
 }

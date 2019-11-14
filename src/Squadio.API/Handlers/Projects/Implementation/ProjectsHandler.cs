@@ -52,5 +52,11 @@ namespace Squadio.API.Handlers.Projects.Implementation
             var result = await _service.Update(projectId, claims.GetUserId(), dto);
             return result;
         }
+
+        public async Task<Response> DeleteProjectUser(Guid projectId, Guid userId, ClaimsPrincipal claims)
+        {
+            var result = await _service.DeleteUserFromProject(projectId, userId, claims.GetUserId());
+            return result;
+        }
     }
 }
