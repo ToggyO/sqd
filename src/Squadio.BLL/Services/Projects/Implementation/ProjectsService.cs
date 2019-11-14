@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Mapper;
 using Squadio.BLL.Services.Invites;
 using Squadio.Common.Models.Errors;
+using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Projects;
 using Squadio.DAL.Repository.ProjectsUsers;
@@ -136,8 +137,28 @@ namespace Squadio.BLL.Services.Projects.Implementation
                 }); 
             }
 
-            await _projectsUsersRepository.DeleteProjectUser(projectId, removeUserId);
+            return await DeleteUserFromProject(projectId, removeUserId);
+        }
+
+        public async Task<Response> DeleteUserFromProjectsByTeamId(Guid teamId, Guid removeUserId)
+        {
+            var projects = await _repository.GetProjects(new PageModel()
+            {
+                Page = 1,
+                PageSize = 1000
+            }, teamId: teamId);
             
+            foreach (var project in projects.Items)
+            {
+                await DeleteUserFromProject(project.Id, removeUserId);
+            }
+            
+            return new Response();
+        }
+
+        private async Task<Response> DeleteUserFromProject(Guid projectId, Guid removeUserId)
+        {
+            await _projectsUsersRepository.DeleteProjectUser(projectId, removeUserId);
             return new Response();
         }
     }

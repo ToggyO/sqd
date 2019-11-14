@@ -27,23 +27,14 @@ namespace Squadio.API.Controllers
         {
             _handler = handler;
         }
-        
+
         [HttpGet("step")]
         [AllowAnonymous]
-        public async Task<Response<SignUpStepDTO>> GetStatus([FromQuery] UserEmailDTO dto)
+        public async Task<Response<SignUpStepDTO>> GetStatus()
         {
-            //TODO: Temporary shit for frontenders
-            if (dto == null || dto?.Email == null)
-            {
-                return await _handler.GetRegistrationStep(User);
-            }
-            else
-            {
-                //TODO: remove email from this endpoint. Get only from 'User'
-                return await _handler.GetRegistrationStep(dto.Email);
-            }
+            return await _handler.GetRegistrationStep(User);
         }
-        
+
         [HttpPost("member/email")]
         [AllowAnonymous]
         public async Task<Response<AuthInfoDTO>> SignUpMemberEmail([Required, FromBody] SignUpMemberDTO dto)
@@ -74,18 +65,9 @@ namespace Squadio.API.Controllers
         
         [HttpPost("admin/send-new-code")]
         [AllowAnonymous]
-        public async Task<Response<SignUpStepDTO>> SendNewCode([FromBody] UserEmailDTO dto)
+        public async Task<Response<SignUpStepDTO>> SendNewCode()
         {
-            //TODO: Temporary shit for frontenders
-            if (dto == null || dto?.Email == null)
-            {
-                return await _handler.SendNewCode(User);
-            }
-            else
-            {
-                //TODO: remove email from this endpoint. Send only using 'User'
-                return await _handler.SendNewCode(dto.Email);
-            }
+            return await _handler.SendNewCode(User);
         }
         
         [HttpPut("admin/confirm")]

@@ -2,7 +2,9 @@
 using System.Threading.Tasks;
 using Mapper;
 using Squadio.BLL.Services.Invites;
+using Squadio.BLL.Services.Projects;
 using Squadio.Common.Models.Errors;
+using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Teams;
 using Squadio.DAL.Repository.TeamsUsers;
@@ -19,16 +21,19 @@ namespace Squadio.BLL.Services.Teams.Implementation
     {
         private readonly ITeamsRepository _repository;
         private readonly ITeamsUsersRepository _teamsUsersRepository;
+        private readonly IProjectsService _projectsService;
         private readonly IInvitesService _invitesService;
         private readonly IMapper _mapper;
 
         public TeamsService(ITeamsRepository repository
             , ITeamsUsersRepository teamsUsersRepository
+            , IProjectsService projectsService
             , IInvitesService invitesService
             , IMapper mapper)
         {
             _repository = repository;
             _teamsUsersRepository = teamsUsersRepository;
+            _projectsService = projectsService;
             _invitesService = invitesService;
             _mapper = mapper;
         }
@@ -136,7 +141,29 @@ namespace Squadio.BLL.Services.Teams.Implementation
                 }); 
             }
 
+            return await DeleteUserFromTeam(teamId, removeUserId);
+        }
+
+        public async Task<Response> DeleteUserFromTeamsByCompanyId(Guid companyId, Guid removeUserId)
+        {
+            var teams = await _repository.GetTeams(new PageModel()
+            {
+                Page = 1,
+                PageSize = 1000
+            }, companyId);
+            
+            foreach (var team in teams.Items)
+            {
+                await DeleteUserFromTeam(team.Id, removeUserId);
+            }
+            
+            return new Response();
+        }
+        
+        private async Task<Response> DeleteUserFromTeam(Guid teamId, Guid removeUserId)
+        {
             await _teamsUsersRepository.DeleteTeamUser(teamId, removeUserId);
+            await _projectsService.DeleteUserFromProjectsByTeamId(teamId, removeUserId);
             
             return new Response();
         }

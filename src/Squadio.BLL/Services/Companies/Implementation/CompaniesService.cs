@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Mapper;
+using Squadio.BLL.Services.Teams;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Companies;
@@ -15,13 +16,16 @@ namespace Squadio.BLL.Services.Companies.Implementation
     {
         private readonly ICompaniesRepository _repository;
         private readonly ICompaniesUsersRepository _companiesUsersRepository;
+        private readonly ITeamsService _teamsService;
         private readonly IMapper _mapper;
         public CompaniesService(ICompaniesRepository repository
             , ICompaniesUsersRepository companiesUsersRepository
+            , ITeamsService teamsService
             , IMapper mapper)
         {
             _repository = repository;
             _companiesUsersRepository = companiesUsersRepository;
+            _teamsService = teamsService;
             _mapper = mapper;
         }
 
@@ -99,6 +103,7 @@ namespace Squadio.BLL.Services.Companies.Implementation
             }
 
             await _companiesUsersRepository.DeleteCompanyUser(companyId, removeUserId);
+            await _teamsService.DeleteUserFromTeamsByCompanyId(companyId, removeUserId);
             
             return new Response();
         }
