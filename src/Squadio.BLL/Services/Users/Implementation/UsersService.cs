@@ -111,7 +111,7 @@ namespace Squadio.BLL.Services.Users.Implementation
             return new Response();
         }
 
-        public async Task<Response<UserDTO>> UpdateUser(Guid id, UserUpdateDTO updateDTO)
+        public async Task<Response<UserDTO>> UpdateUser(Guid id, UserUpdateDTO dto)
         {
             var userEntity = await _repository.GetById(id);
             if (userEntity == null)
@@ -127,7 +127,7 @@ namespace Squadio.BLL.Services.Users.Implementation
                 });
             }
 
-            userEntity.Name = updateDTO.Name;
+            userEntity.Name = dto.Name;
             userEntity = await _repository.Update(userEntity);
             
             var result = _mapper.Map<UserModel, UserDTO>(userEntity);
@@ -147,6 +147,11 @@ namespace Squadio.BLL.Services.Users.Implementation
             {
                 Data = result
             };
+        }
+
+        public Task<Response> ChangeEmailRequest(Guid id, ChangeEmailDTO dto)
+        {
+            throw new NotImplementedException();
         }
     }
 }
