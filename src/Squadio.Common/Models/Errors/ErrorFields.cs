@@ -9,6 +9,7 @@
             public const string Email = "email";
             public const string Token = "token";
             public const string GoogleToken = "googleToken";
+            public const string Password = "password";
         }
 
         public static class Company

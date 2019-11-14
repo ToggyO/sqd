@@ -49,6 +49,9 @@
       <Compile Update="Users\UserSetPasswordDTO.Validator.cs">
         <DependentUpon>UserResetPasswordDTO.cs</DependentUpon>
       </Compile>
+      <Compile Update="Users\UserConfirmEmailRequestModelMapper.cs">
+        <DependentUpon>UserConfirmEmailRequestDTO.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

@@ -4,11 +4,15 @@ using System.Net;
 using System.Threading.Tasks;
 using Magora.Passwords;
 using Mapper;
+using Squadio.BLL.Providers.Codes;
+using Squadio.BLL.Services.ConfirmEmail;
 using Squadio.BLL.Services.Email;
 using Squadio.Common.Models.Email;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
+using Squadio.DAL.Repository.ChangeEmail;
 using Squadio.DAL.Repository.ChangePassword;
+using Squadio.DAL.Repository.ConfirmEmail;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Users;
@@ -18,19 +22,28 @@ namespace Squadio.BLL.Services.Users.Implementation
     public class UsersService : IUsersService
     {
         private readonly IUsersRepository _repository;
+        private readonly ICodeProvider _codeProvider;
         private readonly IChangePasswordRequestRepository _changePasswordRepository;
+        private readonly IChangeEmailRequestRepository _changeEmailRepository;
+        private readonly IEmailService<UserConfirmEmailModel> _confirmEmailService;
         private readonly IEmailService<PasswordRestoreEmailModel> _passwordRestoreMailService;
         private readonly IPasswordService _passwordService;
         private readonly IMapper _mapper;
         public UsersService(IUsersRepository repository
+            , ICodeProvider codeProvider
             , IChangePasswordRequestRepository changePasswordRepository
+            , IChangeEmailRequestRepository changeEmailRepository
+            , IEmailService<UserConfirmEmailModel> confirmEmailService
             , IEmailService<PasswordRestoreEmailModel> passwordRestoreMailService
             , IPasswordService passwordService
             , IMapper mapper
             )
         {
             _repository = repository;
+            _codeProvider = codeProvider;
             _changePasswordRepository = changePasswordRepository;
+            _changeEmailRepository = changeEmailRepository;
+            _confirmEmailService = confirmEmailService;
             _passwordRestoreMailService = passwordRestoreMailService;
             _passwordService = passwordService;
             _mapper = mapper;
@@ -149,14 +162,72 @@ namespace Squadio.BLL.Services.Users.Implementation
             };
         }
 
-        public Task<Response> ChangeEmailRequest(Guid id, ChangeEmailRequestDTO requestDTO)
+        public async Task<Response> ChangeEmailRequest(Guid id, ChangeEmailRequestDTO dto)
         {
-            throw new NotImplementedException();
+            var user = await _repository.GetById(id);
+            var passwordIsCorrect =
+                await _passwordService.VerifyPassword(
+                    new PasswordModel {Hash = user.Hash, Salt = user.Salt},
+                    dto.Password);
+
+            if (!passwordIsCorrect)
+            {
+                return new SecurityErrorResponse(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.AuthDataInvalid,
+                        Message = ErrorMessages.Security.AuthDataInvalid,
+                        Field = ErrorFields.User.Password
+                    }
+                })
+                {
+                    HttpStatusCode = ErrorCodes.UnprocessableEntity
+                };
+            }
+
+            var code = _codeProvider.GenerateNumberCode();
+
+            await _confirmEmailService.Send(new UserConfirmEmailModel
+            {
+               Code = code,
+               To = dto.NewEmail
+            });
+
+            await _changeEmailRepository.AddRequest(user.Id, code, dto.NewEmail);
+
+            return new Response();
         }
 
-        public Task<Response<UserDTO>> SetEmail(Guid id, string code)
+        public async Task<Response<UserDTO>> SetEmail(Guid id, string code)
         {
-            throw new NotImplementedException();
+            var user = await _repository.GetById(id);
+            var request = await _changeEmailRepository.GetRequest(user.Id, code);
+
+            if (request == null || request?.IsActivated == true)
+            {
+                return new ForbiddenErrorResponse<UserDTO>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.ConfirmationCodeInvalid,
+                        Message = ErrorMessages.Security.ConfirmationCodeInvalid
+                    }
+                });
+            }
+            
+            // TODO: Check lifetime of request if needed
+
+            await _changeEmailRepository.ActivateAllRequestsForUser(user.Id);
+
+            user.Email = request.NewEmail;
+
+            user = await _repository.Update(user);
+
+            return new Response<UserDTO>
+            {
+                Data = _mapper.Map<UserModel, UserDTO>(user)
+            };
         }
     }
 }

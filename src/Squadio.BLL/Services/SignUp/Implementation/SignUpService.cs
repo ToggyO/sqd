@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Squadio.BLL.Providers.Companies;
 using Squadio.BLL.Providers.Invites;
 using Squadio.BLL.Services.Companies;
+using Squadio.BLL.Services.ConfirmEmail;
 using Squadio.BLL.Services.Email;
 using Squadio.BLL.Services.Projects;
 using Squadio.BLL.Services.Teams;
@@ -36,8 +37,6 @@ namespace Squadio.BLL.Services.SignUp.Implementation
     {
         private readonly ISignUpRepository _repository;
         private readonly IUsersRepository _usersRepository;
-        private readonly IConfirmEmailRequestRepository _confirmEmailRepository;
-        private readonly IEmailService<UserConfirmEmailModel> _userConfirmEmailService;
         //private readonly IOptions<GoogleSettings> _googleSettings;
         private readonly IInvitesProvider _invitesProvider;
         private readonly IUsersService _usersService;
@@ -45,12 +44,11 @@ namespace Squadio.BLL.Services.SignUp.Implementation
         private readonly ICompaniesProvider _companiesProvider;
         private readonly ITeamsService _teamsService;
         private readonly IProjectsService _projectsService;
+        private readonly IConfirmEmailService _confirmEmailService;
         private readonly IMapper _mapper;
 
         public SignUpService(ISignUpRepository repository
             , IUsersRepository usersRepository
-            , IEmailService<UserConfirmEmailModel> userConfirmEmailService
-            , IConfirmEmailRequestRepository confirmEmailRepository
             //, IOptions<GoogleSettings> googleSettings
             , IInvitesProvider invitesProvider
             , IUsersService usersService
@@ -58,13 +56,12 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             , ICompaniesProvider companiesProvider
             , ITeamsService teamsService
             , IProjectsService projectsService
+            , IConfirmEmailService confirmEmailService
             , IMapper mapper
         )
         {
             _repository = repository;
             _usersRepository = usersRepository;
-            _userConfirmEmailService = userConfirmEmailService;
-            _confirmEmailRepository = confirmEmailRepository;
             //_googleSettings = googleSettings;
             _invitesProvider = invitesProvider;
             _usersService = usersService;
@@ -72,6 +69,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             _companiesProvider = companiesProvider;
             _teamsService = teamsService;
             _projectsService = projectsService;
+            _confirmEmailService = confirmEmailService;
             _mapper = mapper;
         }
 
@@ -177,15 +175,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                     }
                 });
             }
-
-            var code = GenerateCode();
             
-            await _userConfirmEmailService.Send(new UserConfirmEmailModel()
-            {
-                Code = code,
-                To = email
-            });
-
             user = new UserModel
             {
                 Email = email,
@@ -197,8 +187,8 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             
             var userResponse = await _usersService.SetPassword(email, password);
             var userDTO = userResponse.Data;
-            
-            await _confirmEmailRepository.AddRequest(user.Id, code);
+
+            await _confirmEmailService.AddRequest(user.Id, user.Email);
 
             await _repository.SetRegistrationStep(user.Id, RegistrationStep.New);
 
@@ -316,9 +306,22 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 };
             }
 
-            var request = await _confirmEmailRepository.GetRequest(userId, code);
+            var request = await _confirmEmailService.GetRequest(userId, code);
 
-            if (request == null || request?.IsActivated == true)
+            if (!request.IsSuccess)
+            {
+                var errorResponse = (ErrorResponse<UserConfirmEmailRequestDTO>) request;
+                
+                return new ErrorResponse<SignUpStepDTO>
+                {
+                    Message = errorResponse.Message,
+                    Code = errorResponse.Code,
+                    Errors = errorResponse.Errors,
+                    HttpStatusCode = errorResponse.HttpStatusCode
+                };
+            }
+
+            if (request.Data == null || request.Data?.IsActivated == true)
             {
                 return new ForbiddenErrorResponse<SignUpStepDTO>(new []
                 {
@@ -332,7 +335,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             
             // TODO: Check lifetime of request if needed
 
-            await _confirmEmailRepository.ActivateAllRequestsForUser(userId);
+            await _confirmEmailService.ActivateAllRequests(userId);
 
             step = await _repository.SetRegistrationStep(userId, RegistrationStep.EmailConfirmed);
             
@@ -670,17 +673,8 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                     }
                 };
             }
-
-            var code = GenerateCode();
             
-            await _userConfirmEmailService.Send(new UserConfirmEmailModel()
-            {
-                Code = code,
-                To = user.Email
-            });
-
-            await _confirmEmailRepository.ActivateAllRequestsForUser(user.Id);
-            await _confirmEmailRepository.AddRequest(user.Id, code);
+            await _confirmEmailService.AddRequest(user.Id, user.Email);
             
             return new Response<SignUpStepDTO>
             {
@@ -693,20 +687,6 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                     }
                 }
             };
-        }
-
-        private string GenerateCode(int length = 6)
-        {
-            var generator = new Random();
-            
-            var result = "";
-            
-            while (result.Length < length)
-            {
-                result += generator.Next(0, 9);
-            }
-            
-            return result;
         }
     }
 }
