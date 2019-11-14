@@ -10,6 +10,7 @@ using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Companies;
 using Squadio.DAL.Repository.CompaniesUsers;
 using Squadio.DAL.Repository.Invites;
+using Squadio.DAL.Repository.Projects;
 using Squadio.DAL.Repository.ProjectsUsers;
 using Squadio.DAL.Repository.Teams;
 using Squadio.DAL.Repository.TeamsUsers;
@@ -27,32 +28,32 @@ namespace Squadio.BLL.Services.Invites.Implementation
         private readonly IInvitesRepository _repository;
         private readonly IEmailService<InviteToTeamEmailModel> _inviteToTeamMailService;
         private readonly IEmailService<InviteToProjectEmailModel> _inviteToProjectMailService;
-        private readonly IUsersRepository _usersRepository;
         private readonly ICompaniesRepository _companiesRepository;
         private readonly ICompaniesUsersRepository _companiesUsersRepository;
         private readonly ITeamsRepository _teamsRepository;
         private readonly ITeamsUsersRepository _teamsUsersRepository;
+        private readonly IProjectsRepository _projectsRepository;
         private readonly IProjectsUsersRepository _projectsUsersRepository;
         private readonly IMapper _mapper;
         public InvitesService(IInvitesRepository repository
             , IEmailService<InviteToTeamEmailModel> inviteToTeamMailService
             , IEmailService<InviteToProjectEmailModel> inviteToProjectMailService
-            , IUsersRepository usersRepository
             , ICompaniesRepository companiesRepository
             , ICompaniesUsersRepository companiesUsersRepository
             , ITeamsRepository teamsRepository
             , ITeamsUsersRepository teamsUsersRepository
+            , IProjectsRepository projectsRepository
             , IProjectsUsersRepository projectsUsersRepository
             , IMapper mapper)
         {
             _repository = repository;
             _inviteToTeamMailService = inviteToTeamMailService;
             _inviteToProjectMailService = inviteToProjectMailService;
-            _usersRepository = usersRepository;
             _companiesRepository = companiesRepository;
             _companiesUsersRepository = companiesUsersRepository;
             _teamsRepository = teamsRepository;
             _teamsUsersRepository = teamsUsersRepository;
+            _projectsRepository = projectsRepository;
             _projectsUsersRepository = projectsUsersRepository;
             _mapper = mapper;
         }
@@ -256,6 +257,60 @@ namespace Squadio.BLL.Services.Invites.Implementation
             {
                 await _repository.ActivateInvite(invite.Id);
                 return new Response();
+            }
+            
+            var project = await _projectsRepository.GetById(projectId);
+            if (project == null)
+            {
+                return new BusinessConflictErrorResponse(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound,
+                        Field = ErrorFields.Project.Id
+                    }
+                });
+            }
+
+            var teamUser = await _teamsUsersRepository.GetTeamUser(project.TeamId, userId);
+            if (teamUser == null)
+            {
+                var team = await _teamsRepository.GetById(project.TeamId);
+                if (team == null)
+                {
+                    return new BusinessConflictErrorResponse(new[]
+                    {
+                        new Error
+                        {
+                            Code = ErrorCodes.Common.NotFound,
+                            Message = ErrorMessages.Common.NotFound,
+                            Field = ErrorFields.Team.Id
+                        }
+                    });
+                }
+
+                var companyUser = await _companiesUsersRepository.GetCompanyUser(team.CompanyId, userId);
+                if (companyUser == null)
+                {
+                    var company = await _companiesRepository.GetById(team.CompanyId);
+                    if (company == null)
+                    {
+                        return new BusinessConflictErrorResponse(new[]
+                        {
+                            new Error
+                            {
+                                Code = ErrorCodes.Common.NotFound,
+                                Message = ErrorMessages.Common.NotFound,
+                                Field = ErrorFields.Company.Id
+                            }
+                        });
+                    }
+
+                    await _companiesUsersRepository.AddCompanyUser(company.Id, userId, UserStatus.Member);
+                }
+                
+                await _teamsUsersRepository.AddTeamUser(project.TeamId, userId, UserStatus.Member);
             }
 
             await _projectsUsersRepository.AddProjectUser(projectId, userId, UserStatus.Member);
