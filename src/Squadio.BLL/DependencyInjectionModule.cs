@@ -6,6 +6,8 @@ using Squadio.BLL.Factories;
 using Squadio.BLL.Factories.Implementation;
 using Squadio.BLL.Providers.Admins;
 using Squadio.BLL.Providers.Admins.Implementation;
+using Squadio.BLL.Providers.Codes;
+using Squadio.BLL.Providers.Codes.Implementation;
 using Squadio.BLL.Providers.Companies;
 using Squadio.BLL.Providers.Companies.Implementation;
 using Squadio.BLL.Providers.Invites;
@@ -22,6 +24,8 @@ using Squadio.BLL.Services.Admins;
 using Squadio.BLL.Services.Admins.Implementation;
 using Squadio.BLL.Services.Companies;
 using Squadio.BLL.Services.Companies.Implementation;
+using Squadio.BLL.Services.ConfirmEmail;
+using Squadio.BLL.Services.ConfirmEmail.Implementation;
 using Squadio.BLL.Services.Email;
 using Squadio.BLL.Services.Email.Implementations;
 using Squadio.BLL.Services.Email.Sender;
@@ -52,6 +56,9 @@ namespace Squadio.BLL
             LoadEmailServices(services);
             
             services.AddTransient<IPasswordService, PasswordService>();
+            
+            services.Add<ICodeProvider, CodeProvider>(serviceLifetime);
+            services.Add<IConfirmEmailService, ConfirmEmailService>(serviceLifetime);
             
             services.Add<IUsersProvider, UsersProvider>(serviceLifetime);
             services.Add<IUsersService, UsersService>(serviceLifetime);

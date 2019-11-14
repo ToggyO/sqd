@@ -167,7 +167,7 @@ namespace Squadio.BLL.Services.Users.Implementation
             var user = await _repository.GetById(id);
             var passwordIsCorrect =
                 await _passwordService.VerifyPassword(
-                    new PasswordModel {Hash = user.Hash, Salt = user.Salt},
+                    new PasswordModel { Hash = user.Hash, Salt = user.Salt },
                     dto.Password);
 
             if (!passwordIsCorrect)
@@ -184,6 +184,19 @@ namespace Squadio.BLL.Services.Users.Implementation
                 {
                     HttpStatusCode = ErrorCodes.UnprocessableEntity
                 };
+            }
+
+            var checkEmail = await _repository.GetByEmail(dto.NewEmail);
+            if (checkEmail != null)
+            {
+                return new BusinessConflictErrorResponse<UserDTO>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Business.EmailExists,
+                        Message = ErrorCodes.Business.EmailExists
+                    }
+                });
             }
 
             var code = _codeProvider.GenerateNumberCode();
@@ -212,6 +225,19 @@ namespace Squadio.BLL.Services.Users.Implementation
                     {
                         Code = ErrorCodes.Security.ConfirmationCodeInvalid,
                         Message = ErrorMessages.Security.ConfirmationCodeInvalid
+                    }
+                });
+            }
+
+            var checkEmail = await _repository.GetByEmail(request.NewEmail);
+            if (checkEmail != null)
+            {
+                return new BusinessConflictErrorResponse<UserDTO>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Business.EmailExists,
+                        Message = ErrorCodes.Business.EmailExists
                     }
                 });
             }
