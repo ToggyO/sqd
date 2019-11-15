@@ -25,7 +25,6 @@ namespace Squadio.BLL.Services.Email.Implementations
                 .Replace("{{InviteToTeamPageUrl}}", _options.Value.InviteToTeamPageUrl)
                 .Replace("{{AuthorName}}", model.AuthorName)
                 .Replace("{{TeamName}}", model.TeamName)
-                .Replace("{{TeamId}}", model.TeamId)
                 .Replace("{{Code}}", model.Code);
 
             return resource;

@@ -6,33 +6,33 @@ using Squadio.Common.Settings;
 
 namespace Squadio.BLL.Services.Email.Implementations
 {
-    public class InviteToProjectEmailService: BaseEmailService<InviteToProjectEmailModel>
+    public class InviteToCompanyEmailService: BaseEmailService<InviteToCompanyEmailModel>
     {
         private readonly IOptions<StaticUrlsSettingsModel> _options;
         
-        public InviteToProjectEmailService(IOptions<EmailSettingsModel> emailSettings
+        public InviteToCompanyEmailService(IOptions<EmailSettingsModel> emailSettings
             , IEmailSender emailSender
             , IOptions<StaticUrlsSettingsModel> options) : base(emailSettings, emailSender)
         {
             _options = options;
         }
 
-        protected override string GetHtmlTemplate(InviteToProjectEmailModel model)
+        protected override string GetHtmlTemplate(InviteToCompanyEmailModel model)
         {
             var resource = EmbeddedResources
                 .GetResource(
-                    "Squadio.BLL.Services.Email.Templates.InviteToProjectTemplate.html")
-                .Replace("{{InviteToProjectPageUrl}}", _options.Value.InviteToProjectPageUrl)
+                    "Squadio.BLL.Services.Email.Templates.InviteToCompanyTemplate.html")
+                .Replace("{{InviteToProjectPageUrl}}", _options.Value.InviteToCompanyPageUrl)
                 .Replace("{{AuthorName}}", model.AuthorName)
-                .Replace("{{ProjectName}}", model.ProjectName)
+                .Replace("{{CompanyName}}", model.CompanyName)
                 .Replace("{{Code}}", model.Code);
 
             return resource;
         }
 
-        protected override string GetSubject(InviteToProjectEmailModel emailModel)
+        protected override string GetSubject(InviteToCompanyEmailModel emailModel)
         {
-            return "Invite to Squad.io project";
+            return "Invite to Squad.io company";
         }
     }
 }

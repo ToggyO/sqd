@@ -130,7 +130,7 @@ namespace Squadio.BLL.Providers.SignUp.Implementation
                 });
             }
             
-            var inviteResponse = await _invitesProvider.GetTeamInvites(team.Id);
+            var inviteResponse = await _invitesProvider.GetInvitesByEntityId(team.Id);
             return new Response<IEnumerable<string>>
             {
                 Data = inviteResponse.Data.Select(x => x.Email).Distinct()

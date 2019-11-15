@@ -9,7 +9,6 @@ namespace Squadio.BLL.Providers.Invites
     public interface IInvitesProvider
     {
         Task<Response<InviteModel>> GetInviteByCode(string code);
-        Task<Response<IEnumerable<InviteModel>>> GetProjectInvites(Guid projectId);
-        Task<Response<IEnumerable<InviteModel>>> GetTeamInvites(Guid teamId);
+        Task<Response<IEnumerable<InviteModel>>> GetInvitesByEntityId(Guid entityId);
     }
 }

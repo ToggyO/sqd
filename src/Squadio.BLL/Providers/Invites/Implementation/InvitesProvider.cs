@@ -26,8 +26,8 @@ namespace Squadio.BLL.Providers.Invites.Implementation
                 {
                     new Error
                     {
-                        Code = ErrorCodes.Security.InviteInvalid,
-                        Message = ErrorMessages.Security.InviteInvalid
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound
                     }
                 });
             }
@@ -37,19 +37,10 @@ namespace Squadio.BLL.Providers.Invites.Implementation
                 Data = item
             };
         }
-
-        public async Task<Response<IEnumerable<InviteModel>>> GetProjectInvites(Guid projectId)
+        
+        public async Task<Response<IEnumerable<InviteModel>>> GetInvitesByEntityId(Guid entityId)
         {
-            var invites = await _repository.GetProjectInvites(projectId);
-            return new Response<IEnumerable<InviteModel>>
-            {
-                Data = invites
-            };
-        }
-
-        public async Task<Response<IEnumerable<InviteModel>>> GetTeamInvites(Guid teamId)
-        {
-            var invites = await _repository.GetTeamInvites(teamId);
+            var invites = await _repository.GetInvites(entityId);
             return new Response<IEnumerable<InviteModel>>
             {
                 Data = invites

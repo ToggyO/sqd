@@ -106,7 +106,6 @@ namespace Squadio.DAL
             });
             
             
-            
             modelBuilder.Entity<ProjectModel>(item =>
             {
                 item.HasKey(c => c.Id);
@@ -126,6 +125,13 @@ namespace Squadio.DAL
                 item.HasOne(p => p.Project)
                     .WithMany();
                 item.HasIndex(p => new { p.ProjectId, p.UserId })
+                    .IsUnique();
+            });
+            
+            modelBuilder.Entity<InviteModel>(item =>
+            {
+                item.HasKey(c => c.Id);
+                item.HasIndex(p => p.Code)
                     .IsUnique();
             });
         }

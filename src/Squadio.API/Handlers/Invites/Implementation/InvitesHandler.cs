@@ -21,7 +21,13 @@ namespace Squadio.API.Handlers.Invites.Implementation
             _service = service;
             _provider = provider;
         }
-        
+
+        public async Task<Response<IEnumerable<InviteDTO>>> InviteToCompany(Guid companyId, CreateInvitesDTO dto, ClaimsPrincipal claims)
+        {
+            var result = await _service.InviteToCompany(companyId, claims.GetUserId(), dto);
+            return result;
+        }
+
         public async Task<Response<IEnumerable<InviteDTO>>> InviteToTeam(Guid teamId, CreateInvitesDTO dto, ClaimsPrincipal claims)
         {
             var result = await _service.InviteToTeam(teamId, claims.GetUserId(), dto);
@@ -34,15 +40,9 @@ namespace Squadio.API.Handlers.Invites.Implementation
             return result;
         }
 
-        public async Task<Response> AcceptInviteToTeam(Guid teamId, ClaimsPrincipal claims, string code)
+        public async Task<Response> AcceptInvite(ClaimsPrincipal claims, string code)
         {
-            var result = await _service.AcceptInviteToTeam(claims.GetUserId(), teamId, code);
-            return result;
-        }
-
-        public async Task<Response> AcceptInviteToProject(Guid projectId, ClaimsPrincipal claims, string code)
-        {
-            var result = await _service.AcceptInviteToProject(claims.GetUserId(), projectId, code);
+            var result = await _service.AcceptInvite(claims.GetUserId(), code);
             return result;
         }
     }

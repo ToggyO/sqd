@@ -9,9 +9,9 @@ namespace Squadio.API.Handlers.Invites
 {
     public interface IInvitesHandler
     {
+        Task<Response<IEnumerable<InviteDTO>>> InviteToCompany(Guid companyId, CreateInvitesDTO dto, ClaimsPrincipal claims);
         Task<Response<IEnumerable<InviteDTO>>> InviteToTeam(Guid teamId, CreateInvitesDTO dto, ClaimsPrincipal claims);
         Task<Response<IEnumerable<InviteDTO>>> InviteToProject(Guid projectId, CreateInvitesDTO dto, ClaimsPrincipal claims);
-        Task<Response> AcceptInviteToTeam(Guid teamId, ClaimsPrincipal claims, string code);
-        Task<Response> AcceptInviteToProject(Guid projectId, ClaimsPrincipal claims, string code);
+        Task<Response> AcceptInvite(ClaimsPrincipal claims, string code);
     }
 }

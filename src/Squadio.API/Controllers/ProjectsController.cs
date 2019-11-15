@@ -72,11 +72,10 @@ namespace Squadio.API.Controllers
             return await _invitesHandler.InviteToProject(id, dto, User);
         }
         
-        [HttpPost("{id}/invite/accept")]
-        public async Task<Response> AcceptInvite([Required, FromRoute] Guid id
-            , [Required, FromQuery] string code)
+        [HttpPost("invite/accept")]
+        public async Task<Response> AcceptInvite([Required, FromQuery] string code)
         {
-            return await _invitesHandler.AcceptInviteToProject(id, User, code);
+            return await _invitesHandler.AcceptInvite(User, code);
         }
     }
 }

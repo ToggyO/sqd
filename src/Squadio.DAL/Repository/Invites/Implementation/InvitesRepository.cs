@@ -15,9 +15,10 @@ namespace Squadio.DAL.Repository.Invites.Implementation
         {
             _context = context;
         }
-
-        public async Task<InviteModel> CreateTeamInvite(string email, Guid teamId)
+        
+        public async Task<InviteModel> CreateInvite(InviteModel entity)
         {
+            /*
             var code = Guid.NewGuid().ToString("N");
             var item = new InviteModel
             {
@@ -25,37 +26,19 @@ namespace Squadio.DAL.Repository.Invites.Implementation
                 Activated = false,
                 CreatedDate = DateTime.UtcNow,
                 Code = code,
-                EntityId = teamId,
-                EntityType = EntityType.Team
+                EntityId = entityId,
+                EntityType = entityType
             };
-            _context.Invites.Add(item);
+            */
+            _context.Invites.Add(entity);
             await _context.SaveChangesAsync();
-            return item;
-        }
-
-        public async Task<InviteModel> CreateProjectInvite(string email, Guid projectId)
-        {
-            var code = Guid.NewGuid().ToString("N");
-            var item = new InviteModel
-            {
-                Email = email,
-                Activated = false,
-                CreatedDate = DateTime.UtcNow,
-                Code = code,
-                EntityId = projectId,
-                EntityType = EntityType.Project
-            };
-            _context.Invites.Add(item);
-            await _context.SaveChangesAsync();
-            return item;
+            return entity;
         }
 
         public async Task<InviteModel> GetInviteByCode(string code)
         {
             var item = await _context.Invites
-                .Where(x => x.Code.ToUpper() == code.ToUpper())
-                .OrderByDescending(x => x.CreatedDate)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(x => x.Code.ToUpper() == code.ToUpper());
             return item;
         }
 
@@ -68,20 +51,16 @@ namespace Squadio.DAL.Repository.Invites.Implementation
             return item;
         }
 
-        public async Task<IEnumerable<InviteModel>> GetTeamInvites(Guid teamId)
+        public async Task<InviteModel> ActivateInvite(string code)
         {
-            var items = await _context.Invites
-                .Where(x => x.EntityId == teamId 
-                            && x.EntityType == EntityType.Team)
-                .ToListAsync();
-            return items;
+            var item = await GetInviteByCode(code);
+            return await ActivateInvite(item.Id);
         }
 
-        public async Task<IEnumerable<InviteModel>> GetProjectInvites(Guid projectId)
+        public async Task<IEnumerable<InviteModel>> GetInvites(Guid entityId)
         {
             var items = await _context.Invites
-                .Where(x => x.EntityId == projectId 
-                            && x.EntityType == EntityType.Project)
+                .Where(x => x.EntityId == entityId)
                 .ToListAsync();
             return items;
         }
