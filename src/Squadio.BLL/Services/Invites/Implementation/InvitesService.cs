@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Mapper;
@@ -166,6 +167,66 @@ namespace Squadio.BLL.Services.Invites.Implementation
             {
                 Data = result
             };
+        }
+
+        public async Task<Response> CancelInvite(Guid entityId, Guid authorId, CancelInvitesDTO dto)
+        {
+            var invites = (await _repository.GetInvites(entityId))
+                .ToList();
+            if (invites.Count == 0)
+                return new Response();
+
+            var type = invites.First().EntityType;
+
+            switch (type)
+            {
+                case EntityType.Company:
+                    var companyUser = await _companiesUsersRepository.GetCompanyUser(entityId, authorId);
+                    if (companyUser == null || companyUser?.Status == UserStatus.Member)
+                    {
+                        return new ForbiddenErrorResponse<IEnumerable<InviteDTO>>(new []
+                        {
+                            new Error
+                            {
+                                Code = ErrorCodes.Security.Forbidden,
+                                Message = ErrorMessages.Security.Forbidden,
+                            }
+                        });
+                    }
+                    break;
+                case EntityType.Team:
+                    var teamUser = await _teamsUsersRepository.GetTeamUser(entityId, authorId);
+                    if (teamUser == null || teamUser?.Status == UserStatus.Member)
+                    {
+                        return new ForbiddenErrorResponse<IEnumerable<InviteDTO>>(new []
+                        {
+                            new Error
+                            {
+                                Code = ErrorCodes.Security.Forbidden,
+                                Message = ErrorMessages.Security.Forbidden,
+                            }
+                        });
+                    }
+                    break;
+                case EntityType.Project:
+                    var projectUser = await _projectsUsersRepository.GetProjectUser(entityId, authorId);
+                    if (projectUser == null || projectUser?.Status == UserStatus.Member)
+                    {
+                        return new ForbiddenErrorResponse<IEnumerable<InviteDTO>>(new []
+                        {
+                            new Error
+                            {
+                                Code = ErrorCodes.Security.Forbidden,
+                                Message = ErrorMessages.Security.Forbidden,
+                            }
+                        });
+                    }
+                    break;
+            }
+
+            await _repository.ActivateInvites(entityId, dto.Emails);
+            
+            return new Response();
         }
 
         public async Task<Response> AcceptInvite(Guid userId, string code)

@@ -72,6 +72,13 @@ namespace Squadio.API.Controllers
             return await _invitesHandler.InviteToTeam(id, dto, User);
         }
         
+        [HttpPut("{id}/invite/cancel")]
+        public async Task<Response> CancelInvite([Required, FromRoute] Guid id
+            , [Required, FromBody] CancelInvitesDTO dto)
+        {
+            return await _invitesHandler.CancelInvite(id, dto, User);
+        }
+        
         [HttpPost("invite/accept")]
         public async Task<Response> AcceptInvite([Required, FromQuery] string code)
         {

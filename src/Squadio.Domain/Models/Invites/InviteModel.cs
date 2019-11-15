@@ -10,6 +10,7 @@ namespace Squadio.Domain.Models.Invites
         public string Code { get; set; }
         public DateTime CreatedDate { get; set; }
         public bool Activated { get; set; }
+        public DateTime? ActivatedDate { get; set; }
         public Guid EntityId { get; set; }
         public EntityType EntityType { get; set; }
     }

@@ -40,6 +40,12 @@ namespace Squadio.API.Handlers.Invites.Implementation
             return result;
         }
 
+        public async Task<Response> CancelInvite(Guid entityId, CancelInvitesDTO dto, ClaimsPrincipal claims)
+        {
+            var result = await _service.CancelInvite(entityId, claims.GetUserId(), dto);
+            return result;
+        }
+
         public async Task<Response> AcceptInvite(ClaimsPrincipal claims, string code)
         {
             var result = await _service.AcceptInvite(claims.GetUserId(), code);

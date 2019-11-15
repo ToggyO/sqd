@@ -69,6 +69,13 @@ namespace Squadio.API.Controllers
             return await _invitesHandler.InviteToCompany(id, dto, User);
         }
         
+        [HttpPut("{id}/invite/cancel")]
+        public async Task<Response> CancelInvite([Required, FromRoute] Guid id
+            , [Required, FromBody] CancelInvitesDTO dto)
+        {
+            return await _invitesHandler.CancelInvite(id, dto, User);
+        }
+        
         [HttpDelete("{companyId}/user/{userId}")]
         public Task<Response> DeleteCompanyUser([Required, FromRoute] Guid companyId, [Required, FromRoute] Guid userId)
         {

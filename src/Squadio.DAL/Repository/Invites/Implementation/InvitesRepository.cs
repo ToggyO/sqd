@@ -51,6 +51,20 @@ namespace Squadio.DAL.Repository.Invites.Implementation
             return item;
         }
 
+        public async Task ActivateInvites(Guid entityId, IEnumerable<string> emails)
+        {
+            var query = _context.Invites
+                .Where(x => x.EntityId == entityId && x.Activated == false)
+                .Where(x => emails.Any(y => y.ToUpper() == x.Email.ToUpper()));
+            await query.ForEachAsync(x =>
+            {
+                x.Activated = true;
+                x.ActivatedDate = DateTime.UtcNow;
+            });
+            _context.Update(query);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<InviteModel> ActivateInvite(string code)
         {
             var item = await GetInviteByCode(code);

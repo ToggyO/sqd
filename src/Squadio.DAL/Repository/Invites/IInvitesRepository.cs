@@ -11,6 +11,7 @@ namespace Squadio.DAL.Repository.Invites
         Task<InviteModel> GetInviteByCode(string code);
         Task<InviteModel> ActivateInvite(Guid inviteId);
         Task<IEnumerable<InviteModel>> GetInvites(Guid entityId);
+        Task ActivateInvites(Guid entityId, IEnumerable<string> emails);
         Task<InviteModel> ActivateInvite(string code);
     }
 }
