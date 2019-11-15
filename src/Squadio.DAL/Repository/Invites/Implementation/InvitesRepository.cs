@@ -46,6 +46,7 @@ namespace Squadio.DAL.Repository.Invites.Implementation
         {
             var item = await _context.Invites.FindAsync(inviteId);
             item.Activated = true;
+            item.ActivatedDate = DateTime.UtcNow;
             _context.Update(item);
             await _context.SaveChangesAsync();
             return item;
@@ -53,15 +54,17 @@ namespace Squadio.DAL.Repository.Invites.Implementation
 
         public async Task ActivateInvites(Guid entityId, IEnumerable<string> emails)
         {
-            var query = _context.Invites
-                .Where(x => x.EntityId == entityId && x.Activated == false)
-                .Where(x => emails.Any(y => y.ToUpper() == x.Email.ToUpper()));
+            var emailsUpper = emails.Select(s => s.ToUpper());
+
+            var query = _context.Invites.Where(x => x.EntityId == entityId && x.Activated == false);
+            query = query.Where(model => emailsUpper.Contains(model.Email.ToUpper()));
+            
             await query.ForEachAsync(x =>
             {
                 x.Activated = true;
                 x.ActivatedDate = DateTime.UtcNow;
             });
-            _context.Update(query);
+            _context.UpdateRange(query);
             await _context.SaveChangesAsync();
         }
 
@@ -71,10 +74,18 @@ namespace Squadio.DAL.Repository.Invites.Implementation
             return await ActivateInvite(item.Id);
         }
 
-        public async Task<IEnumerable<InviteModel>> GetInvites(Guid entityId)
+        public async Task<IEnumerable<InviteModel>> GetInvites(Guid entityId, bool? activated = null)
         {
-            var items = await _context.Invites
-                .Where(x => x.EntityId == entityId)
+            var query = _context.Invites
+                .Where(x => x.EntityId == entityId);
+            
+            if (activated.HasValue)
+            {
+                query = query.Where(x => x.Activated == activated);
+            }
+            
+            var items = await query
+                .OrderByDescending(x => x.CreatedDate)
                 .ToListAsync();
             return items;
         }

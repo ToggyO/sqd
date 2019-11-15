@@ -6,6 +6,7 @@ using Squadio.BLL.Providers.Invites;
 using Squadio.BLL.Services.Invites;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Responses;
+using Squadio.Domain.Enums;
 using Squadio.DTO.Invites;
 
 namespace Squadio.API.Handlers.Invites.Implementation
@@ -40,9 +41,15 @@ namespace Squadio.API.Handlers.Invites.Implementation
             return result;
         }
 
-        public async Task<Response> CancelInvite(Guid entityId, CancelInvitesDTO dto, ClaimsPrincipal claims)
+        public async Task<Response<IEnumerable<InviteDTO>>> GetInvites(Guid entityId, ClaimsPrincipal claims, EntityType entityType)
         {
-            var result = await _service.CancelInvite(entityId, claims.GetUserId(), dto);
+            var result = await _provider.GetInvitesByEntityId(entityId, claims.GetUserId(), entityType, false);
+            return result;
+        }
+
+        public async Task<Response> CancelInvite(Guid entityId, CancelInvitesDTO dto, ClaimsPrincipal claims, EntityType entityType)
+        {
+            var result = await _service.CancelInvite(entityId, claims.GetUserId(), dto, entityType);
             return result;
         }
 

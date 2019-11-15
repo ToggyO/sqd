@@ -18,8 +18,8 @@ namespace Squadio.DTO.Invites
         {
             return new InviteDTO
             {
-                Id = item.Id,
-                Email = item.Email
+                Email = item.Email,
+                CreatedDate = item.CreatedDate
             };
         }
     }

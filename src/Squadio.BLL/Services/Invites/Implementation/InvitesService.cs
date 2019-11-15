@@ -169,16 +169,9 @@ namespace Squadio.BLL.Services.Invites.Implementation
             };
         }
 
-        public async Task<Response> CancelInvite(Guid entityId, Guid authorId, CancelInvitesDTO dto)
+        public async Task<Response> CancelInvite(Guid entityId, Guid authorId, CancelInvitesDTO dto, EntityType entityType)
         {
-            var invites = (await _repository.GetInvites(entityId))
-                .ToList();
-            if (invites.Count == 0)
-                return new Response();
-
-            var type = invites.First().EntityType;
-
-            switch (type)
+            switch (entityType)
             {
                 case EntityType.Company:
                     var companyUser = await _companiesUsersRepository.GetCompanyUser(entityId, authorId);

@@ -8,6 +8,7 @@ using Squadio.API.Handlers.Invites;
 using Squadio.API.Handlers.Teams;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
+using Squadio.Domain.Enums;
 using Squadio.DTO.Invites;
 using Squadio.DTO.Teams;
 using Squadio.DTO.Users;
@@ -65,6 +66,12 @@ namespace Squadio.API.Controllers
             return await _handler.Create(companyId, dto, User);
         }
         
+        [HttpGet("{id}/invite")]
+        public async Task<Response<IEnumerable<InviteDTO>>> GetInvites([Required, FromRoute] Guid id)
+        {
+            return await _invitesHandler.GetInvites(id, User, EntityType.Team);
+        }
+        
         [HttpPost("{id}/invite")]
         public async Task<Response<IEnumerable<InviteDTO>>> CreateInvites([Required, FromRoute] Guid id
             , [Required, FromBody] CreateInvitesDTO dto)
@@ -76,7 +83,7 @@ namespace Squadio.API.Controllers
         public async Task<Response> CancelInvite([Required, FromRoute] Guid id
             , [Required, FromBody] CancelInvitesDTO dto)
         {
-            return await _invitesHandler.CancelInvite(id, dto, User);
+            return await _invitesHandler.CancelInvite(id, dto, User, EntityType.Team);
         }
         
         [HttpPost("invite/accept")]
