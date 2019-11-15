@@ -86,8 +86,7 @@ namespace Squadio.DAL.Repository.Users.Implementation
             var item = await _context.UserPasswordRequests
                 .Include(x => x.User)
                 .OrderByDescending(x => x.CreatedDate)
-                .Where(x => x.Code.ToUpper() == code.ToUpper() &&
-                            x.IsActivated == false)
+                .Where(x => x.Code.ToUpper() == code.ToUpper())
                 .FirstOrDefaultAsync();
             return item;
         }
