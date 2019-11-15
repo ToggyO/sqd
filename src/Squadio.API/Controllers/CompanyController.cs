@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -6,9 +7,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Squadio.API.Filters;
 using Squadio.API.Handlers.Companies;
+using Squadio.API.Handlers.Invites;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Companies;
+using Squadio.DTO.Invites;
 using Squadio.DTO.Users;
 
 namespace Squadio.API.Controllers
@@ -19,10 +22,13 @@ namespace Squadio.API.Controllers
     public class CompanyController : ControllerBase
     {
         private readonly ICompaniesHandler _handler;
+        private readonly IInvitesHandler _invitesHandler;
 
-        public CompanyController(ICompaniesHandler handler)
+        public CompanyController(ICompaniesHandler handler
+            , IInvitesHandler invitesHandler)
         {
             _handler = handler;
+            _invitesHandler = invitesHandler;
         }
 
         [HttpGet]
@@ -54,6 +60,13 @@ namespace Squadio.API.Controllers
         public Task<Response<CompanyDTO>> UpdateCompany([Required, FromRoute] Guid id, [Required, FromBody] CompanyUpdateDTO dto)
         {
             return _handler.UpdateCompany(id, dto, User);
+        }
+        
+        [HttpPost("{id}/invite")]
+        public async Task<Response<IEnumerable<InviteDTO>>> CreateInvites([Required, FromRoute] Guid id
+            , [Required, FromBody] CreateInvitesDTO dto)
+        {
+            return await _invitesHandler.InviteToCompany(id, dto, User);
         }
         
         [HttpDelete("{companyId}/user/{userId}")]
