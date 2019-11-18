@@ -79,17 +79,6 @@ namespace Squadio.DAL.Repository.Users.Implementation
             }
         }
 
-        
-        public async Task<UserPasswordRequestModel> GetChangePasswordRequests(string code)
-        {
-            var item = await _context.UserPasswordRequests
-                .Include(x => x.User)
-                .OrderByDescending(x => x.CreatedDate)
-                .Where(x => x.Code.ToUpper() == code.ToUpper())
-                .FirstOrDefaultAsync();
-            return item;
-        }
-
         public async Task SavePassword(Guid userId, string hash, string salt)
         {
             var item = await _context.Users.FindAsync(userId);
