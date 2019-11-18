@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Squadio.Domain.Models.Companies;
 using Squadio.Domain.Models.Invites;
-using Squadio.Domain.Models.Logs;
 using Squadio.Domain.Models.Projects;
 using Squadio.Domain.Models.Teams;
 using Squadio.Domain.Models.Users;
@@ -22,7 +21,6 @@ namespace Squadio.DAL
         public DbSet<ProjectModel> Projects { get; set; }
         public DbSet<ProjectUserModel> ProjectsUsers { get; set; }
         public DbSet<InviteModel> Invites { get; set; }
-        public DbSet<LogModel> Logs { get; set; }
         
 
         public SquadioDbContext(DbContextOptions<SquadioDbContext> options)
@@ -135,11 +133,6 @@ namespace Squadio.DAL
                 item.HasKey(c => c.Id);
                 item.HasIndex(p => p.Code)
                     .IsUnique();
-            });
-            
-            modelBuilder.Entity<LogModel>(item =>
-            {
-                item.HasKey(c => c.Id);
             });
         }
     }

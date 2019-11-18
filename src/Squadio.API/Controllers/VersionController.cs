@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 
 namespace Squadio.API.Controllers
 {
@@ -9,6 +10,11 @@ namespace Squadio.API.Controllers
     public class VersionController : ControllerBase
     {
         private const string Version = "0.1.0 b";
+        private readonly ILogger<VersionController> _logger;
+
+        public VersionController(ILogger<VersionController> logger)
+        {
+        }
 
         [HttpGet]
         [AllowAnonymous]

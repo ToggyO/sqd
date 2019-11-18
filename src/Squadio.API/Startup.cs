@@ -15,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NpgsqlTypes;
 using Serilog;
+using Serilog.Events;
 using Serilog.Sinks.PostgreSQL;
 using Serilog.Sinks.SystemConsole.Themes;
 using Squadio.DAL;
@@ -96,9 +97,16 @@ namespace Squadio.API
             };
 
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.Async(x => x.Console(theme: SystemConsoleTheme.Literate,
-                    outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] <{SourceContext}>{NewLine}{Message}{NewLine}{Exception}"))
-                //.WriteTo.Async(x => x.PostgreSQL(dbSettings.PostgresConnectionString, "Logs", columnWriters))
+                .WriteTo.Async(x => x.PostgreSQL(
+                    dbSettings.PostgresConnectionString, 
+                    "Logs", 
+                    columnWriters, 
+                    LogEventLevel.Warning, 
+                    schemaName: "public", 
+                    needAutoCreateTable: true))
+                .WriteTo.Async(x => x.Console(
+                    theme: SystemConsoleTheme.Literate,
+                    outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message}{NewLine}{Exception}"))
                 .CreateLogger();
 
             AppDomain.CurrentDomain.ProcessExit += (s, e) => Log.CloseAndFlush();
