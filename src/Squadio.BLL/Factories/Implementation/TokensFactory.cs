@@ -28,10 +28,10 @@ namespace Squadio.BLL.Factories.Implementation
 
             var result = new TokenDTO()
             {
-                AccessToken = EncodeToken(GetJwtAccessToken(user.Id, accessTokenExpire)),
+                AccessToken = EncodeToken(GetJwtAccessToken(user, accessTokenExpire)),
                 AccessTokenExpire = accessTokenExpire,
 
-                RefreshToken = EncodeToken(GetJwtRefreshToken(user.Id, refreshTokenExpire)),
+                RefreshToken = EncodeToken(GetJwtRefreshToken(user, refreshTokenExpire)),
                 RefreshTokenExpire = refreshTokenExpire
             };
 
@@ -54,7 +54,7 @@ namespace Squadio.BLL.Factories.Implementation
             }
         }
 
-        private JwtSecurityToken GetJwtAccessToken(Guid userId, DateTime exp)
+        private JwtSecurityToken GetJwtAccessToken(UserModel user, DateTime exp)
         {
             return new JwtSecurityToken(
                 signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.Value.PublicKey)),
@@ -65,11 +65,12 @@ namespace Squadio.BLL.Factories.Implementation
                 claims: new[]
                 {
                     new Claim(Common.Extensions.ClaimTypes.TokenId, Guid.NewGuid().ToString("N")),
-                    new Claim(Common.Extensions.ClaimTypes.UserId, userId.ToString("N")),
+                    new Claim(Common.Extensions.ClaimTypes.UserId, user.Id.ToString("N")),
+                    new Claim(Common.Extensions.ClaimTypes.RoleId, user.RoleId.ToString("N")),
                 });
         }
 
-        private JwtSecurityToken GetJwtRefreshToken(Guid userId, DateTime exp)
+        private JwtSecurityToken GetJwtRefreshToken(UserModel user, DateTime exp)
         {
             return new JwtSecurityToken(
                 signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.Value.PublicKey)),
@@ -79,8 +80,7 @@ namespace Squadio.BLL.Factories.Implementation
                 expires: exp,
                 claims: new[]
                 {
-                    new Claim(Common.Extensions.ClaimTypes.TokenId, Guid.NewGuid().ToString("N")),
-                    new Claim(Common.Extensions.ClaimTypes.UserId, userId.ToString("N")),
+                    new Claim(Common.Extensions.ClaimTypes.UserId, user.Id.ToString("N")),
                 });
         }
 
