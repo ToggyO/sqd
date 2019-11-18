@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Squadio.Domain.Models.Roles;
 
 namespace Squadio.Domain.Models.Users
 {
@@ -12,5 +13,7 @@ namespace Squadio.Domain.Models.Users
         public DateTime CreatedDate { get; set; }
         public string Hash { get; set; }
         public string Salt { get; set; }
+        public Guid RoleId { get; set; }
+        public RoleModel Role { get; set; }
     }
 }

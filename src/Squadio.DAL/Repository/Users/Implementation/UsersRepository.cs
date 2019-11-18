@@ -35,7 +35,9 @@ namespace Squadio.DAL.Repository.Users.Implementation
 
         public async Task<UserModel> GetById(Guid id)
         {
-            var entity = await _context.Users.FindAsync(id);
+            var entity = await _context.Users
+                .Include(x => x.Role)
+                .FirstOrDefaultAsync(x => x.Id == id);
             return entity;
         }
 
@@ -50,6 +52,7 @@ namespace Squadio.DAL.Repository.Users.Implementation
         {
             var total = await _context.Users.CountAsync();
             var items = await _context.Users
+                .Include(x => x.Role)
                 .Skip((model.Page - 1) * model.PageSize)
                 .Take(model.PageSize)
                 .ToListAsync();
@@ -66,8 +69,8 @@ namespace Squadio.DAL.Repository.Users.Implementation
         public async Task<UserModel> GetByEmail(string email)
         {
             var entity = await _context.Users
-                .Where(x => x.Email.ToUpper() == email.ToUpper())
-                .FirstOrDefaultAsync();
+                .Include(x => x.Role)
+                .FirstOrDefaultAsync(x => x.Email.ToUpper() == email.ToUpper());
             return entity;
         }
 

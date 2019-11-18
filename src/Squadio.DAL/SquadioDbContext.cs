@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Companies;
 using Squadio.Domain.Models.Invites;
 using Squadio.Domain.Models.Projects;
+using Squadio.Domain.Models.Roles;
 using Squadio.Domain.Models.Teams;
 using Squadio.Domain.Models.Users;
 
@@ -21,6 +23,7 @@ namespace Squadio.DAL
         public DbSet<ProjectModel> Projects { get; set; }
         public DbSet<ProjectUserModel> ProjectsUsers { get; set; }
         public DbSet<InviteModel> Invites { get; set; }
+        public DbSet<RoleModel> Roles { get; set; }
         
 
         public SquadioDbContext(DbContextOptions<SquadioDbContext> options)
@@ -29,11 +32,24 @@ namespace Squadio.DAL
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<RoleModel>(builder =>
+            {
+                builder.HasKey(model => model.Id);
+                builder.Property(model => model.Name).HasColumnType("varchar(20)").IsRequired();
+
+                builder.HasData(
+                    new RoleModel() { Id = RoleGuid.User, Name = Role.User.ToString().ToLower() },
+                    new RoleModel() { Id = RoleGuid.Admin, Name = Role.Admin.ToString().ToLower() });
+            });
             modelBuilder.Entity<UserModel>(item =>
             {
                 item.HasKey(c => c.Id);
                 item.HasIndex(p => p.Email)
                     .IsUnique();
+                item.Property(x => x.RoleId).HasDefaultValue(RoleGuid.User);
+                item.HasOne(p => p.Role)
+                    .WithMany()
+                    .OnDelete(DeleteBehavior.Restrict);
             });
             modelBuilder.Entity<UserRegistrationStepModel>(item =>
             {
