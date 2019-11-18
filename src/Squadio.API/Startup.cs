@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using FluentValidation.AspNetCore;
@@ -10,9 +11,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using NpgsqlTypes;
+using Serilog;
+using Serilog.Sinks.PostgreSQL;
+using Serilog.Sinks.SystemConsole.Themes;
 using Squadio.DAL;
 using Squadio.API.Extensions;
 using Squadio.API.Filters;
@@ -82,13 +86,22 @@ namespace Squadio.API
             services.Configure<EmailSettingsModel>(Configuration.GetSection("EmailSettings"));
             services.Configure<StaticUrlsSettingsModel>(Configuration.GetSection("StaticUrls"));
             
-            services.AddLogging(builder =>
+            var columnWriters = new Dictionary<string, ColumnWriterBase>
             {
-                builder.AddConfiguration(Configuration.GetSection("Logging"));
-                builder.AddConsole();
-                builder.AddDebug();
-                builder.AddEventSourceLogger();
-            });
+                {"Message", new RenderedMessageColumnWriter() },
+                {"MessageTemplate", new MessageTemplateColumnWriter() },
+                {"Level", new LevelColumnWriter(true, NpgsqlDbType.Varchar) },
+                {"Date", new TimestampColumnWriter() },
+                {"Exception", new ExceptionColumnWriter() }
+            };
+
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Async(x => x.Console(theme: SystemConsoleTheme.Literate,
+                    outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] <{SourceContext}>{NewLine}{Message}{NewLine}{Exception}"))
+                //.WriteTo.Async(x => x.PostgreSQL(dbSettings.PostgresConnectionString, "Logs", columnWriters))
+                .CreateLogger();
+
+            AppDomain.CurrentDomain.ProcessExit += (s, e) => Log.CloseAndFlush();
 
             services.AddDbContext<SquadioDbContext>(builder =>
                     builder
