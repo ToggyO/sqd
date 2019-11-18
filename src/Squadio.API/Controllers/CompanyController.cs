@@ -88,5 +88,11 @@ namespace Squadio.API.Controllers
         {
             return _handler.DeleteCompanyUser(companyId, userId, User);
         }
+        
+        [HttpPost("invite/accept")]
+        public async Task<Response> AcceptInvite([Required, FromQuery] string code)
+        {
+            return await _invitesHandler.AcceptInvite(User, code);
+        }
     }
 }
