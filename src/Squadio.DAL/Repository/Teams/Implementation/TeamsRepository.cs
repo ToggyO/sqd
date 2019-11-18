@@ -18,7 +18,9 @@ namespace Squadio.DAL.Repository.Teams.Implementation
 
         public async Task<TeamModel> GetById(Guid id)
         {
-            var item = await _context.Teams.FindAsync(id);
+            var item = await _context.Teams
+                .Include(x => x.Company)
+                .FirstOrDefaultAsync(x => x.Id == id);
             return item;
         }
 
