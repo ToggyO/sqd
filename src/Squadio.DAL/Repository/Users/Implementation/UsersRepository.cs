@@ -65,18 +65,10 @@ namespace Squadio.DAL.Repository.Users.Implementation
 
         public async Task<UserModel> GetByEmail(string email)
         {
-            try
-            {
-                var entity = await _context.Users
-                    .Where(x => x.Email.ToUpper() == email.ToUpper())
-                    .FirstOrDefaultAsync();
-                return entity;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+            var entity = await _context.Users
+                .Where(x => x.Email.ToUpper() == email.ToUpper())
+                .FirstOrDefaultAsync();
+            return entity;
         }
 
         public async Task SavePassword(Guid userId, string hash, string salt)
