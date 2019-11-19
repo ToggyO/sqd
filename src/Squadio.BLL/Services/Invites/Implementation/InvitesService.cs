@@ -5,10 +5,13 @@ using System.Net;
 using System.Threading.Tasks;
 using Mapper;
 using Squadio.BLL.Providers.Codes;
+using Squadio.BLL.Providers.Users;
 using Squadio.BLL.Services.Email;
+using Squadio.BLL.Services.Users;
 using Squadio.Common.Models.Email;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
+using Squadio.DAL.Repository.ChangePassword;
 using Squadio.DAL.Repository.Companies;
 using Squadio.DAL.Repository.CompaniesUsers;
 using Squadio.DAL.Repository.Invites;
@@ -21,6 +24,7 @@ using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Invites;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Invites;
+using Squadio.DTO.Users;
 
 namespace Squadio.BLL.Services.Invites.Implementation
 {
@@ -39,7 +43,10 @@ namespace Squadio.BLL.Services.Invites.Implementation
         private readonly IProjectsRepository _projectsRepository;
         private readonly IProjectsUsersRepository _projectsUsersRepository;
         private readonly ICodeProvider _codeProvider;
-        private readonly IUsersRepository _usersRepository;
+        private readonly IUsersService _usersService;
+        private readonly IUsersProvider _usersProvider;
+        //private readonly IUsersRepository _usersRepository;
+        private readonly IChangePasswordRequestRepository _changePasswordRepository;
         private readonly IMapper _mapper;
         public InvitesService(IInvitesRepository repository
             , IEmailService<InviteToTeamEmailModel> inviteToTeamMailService
@@ -52,7 +59,10 @@ namespace Squadio.BLL.Services.Invites.Implementation
             , IProjectsRepository projectsRepository
             , IProjectsUsersRepository projectsUsersRepository
             , ICodeProvider codeProvider
+            , IUsersService usersService
+            , IUsersProvider usersProvider
             , IUsersRepository usersRepository
+            , IChangePasswordRequestRepository changePasswordRepository
             , IMapper mapper)
         {
             _repository = repository;
@@ -66,11 +76,15 @@ namespace Squadio.BLL.Services.Invites.Implementation
             _projectsRepository = projectsRepository;
             _projectsUsersRepository = projectsUsersRepository;
             _codeProvider = codeProvider;
-            _usersRepository = usersRepository;
+            _usersService = usersService;
+            _usersProvider = usersProvider;
+            //_usersRepository = usersRepository;
+            _changePasswordRepository = changePasswordRepository;
             _mapper = mapper;
         }
         
         #endregion
+
 
         public async Task<Response<IEnumerable<InviteDTO>>> InviteToCompany(Guid companyId, Guid authorId, CreateInvitesDTO dto)
         {
@@ -91,9 +105,9 @@ namespace Squadio.BLL.Services.Invites.Implementation
             foreach (var email in dto.Emails)
             {
                 var itemResult = await InviteToCompany(
-                    companyUser.User.Name, 
-                    companyUser.Company.Name, 
-                    companyUser.CompanyId, 
+                    companyUser.User.Name,
+                    companyUser.Company.Name,
+                    companyUser.CompanyId,
                     email);
                 result.Add(itemResult.Data);
             }
@@ -123,9 +137,9 @@ namespace Squadio.BLL.Services.Invites.Implementation
             foreach (var email in dto.Emails)
             {
                 var itemResult = await InviteToTeam(
-                    teamUser.User.Name, 
-                    teamUser.Team.Name, 
-                    teamUser.TeamId, 
+                    teamUser.User.Name,
+                    teamUser.Team.Name,
+                    teamUser.TeamId,
                     email);
                 result.Add(itemResult.Data);
             }
@@ -156,9 +170,9 @@ namespace Squadio.BLL.Services.Invites.Implementation
             foreach (var email in dto.Emails)
             {
                 var itemResult = await InviteToProject(
-                    projectUser.User.Name, 
-                    projectUser.Project.Name, 
-                    projectUser.ProjectId, 
+                    projectUser.User.Name,
+                    projectUser.Project.Name,
+                    projectUser.ProjectId,
                     email);
                 result.Add(itemResult.Data);
             }
@@ -238,7 +252,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
                 });
             }
             
-            var user = await _usersRepository.GetById(userId);
+            var user = (await _usersProvider.GetById(userId)).Data;
             if (user == null)
             {
                 return new BusinessConflictErrorResponse(new []
@@ -263,30 +277,61 @@ namespace Squadio.BLL.Services.Invites.Implementation
                 });
             }
 
+            var result = new Response();
+
             switch (invite.EntityType)
             {
                 case EntityType.Company:
-                    return await AcceptInviteToCompany(invite, user);
+                    result = await AcceptInviteToCompany(invite.EntityId, user.Id);
+                    await _repository.ActivateInvite(invite.Id);
+                    break;
                 case EntityType.Team:
-                    return await AcceptInviteToTeam(invite, user);
+                    result = await AcceptInviteToTeam(invite.EntityId, user.Id);
+                    await _repository.ActivateInvite(invite.Id);
+                    break;
                 case EntityType.Project:
-                    return await AcceptInviteToProject(invite, user);
+                    result = await AcceptInviteToProject(invite.EntityId, user.Id);
+                    await _repository.ActivateInvite(invite.Id);
+                    break;
+                default:
+                    return new BusinessConflictErrorResponse(new []
+                    {
+                        new Error
+                        {
+                            Code = ErrorCodes.Common.NotFound,
+                            Message = ErrorMessages.Common.NotFound,
+                            Field = "EntityType"
+                        }
+                    });
             }
-            
-            return new BusinessConflictErrorResponse(new []
-            {
-                new Error
-                {
-                    Code = ErrorCodes.Common.NotFound,
-                    Message = ErrorMessages.Common.NotFound,
-                    Field = "EntityType"
-                }
-            });
+
+            return result;
         }
 
         private async Task<Response<InviteDTO>> InviteToCompany(string authorName, string companyName, Guid companyId, string email)
         {
             var code = _codeProvider.GenerateCodeAsGuid();
+            
+            var user = (await _usersProvider.GetByEmail(email)).Data;
+            if (user == null)
+            {
+                var createUserDTO = new UserCreateDTO()
+                {
+                    Email = email,
+                    Step = RegistrationStep.Done
+                };
+                user = (await _usersService.CreateUser(createUserDTO)).Data;
+                await _changePasswordRepository.AddRequest(user.Id, code);
+            }
+            
+            var companyUser = await _companiesUsersRepository.GetCompanyUser(companyId, user.Id);
+            if (companyUser != null)
+            {
+                return new Response<InviteDTO>();
+            }
+            
+            await _companiesUsersRepository.AddCompanyUser(companyId, user.Id, UserStatus.Pending);
+            
             var invite = new InviteModel
             {
                 Email = email,
@@ -296,6 +341,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
                 EntityId = companyId,
                 EntityType = EntityType.Company
             };
+            
             invite = await _repository.CreateInvite(invite);
             var result = _mapper.Map<InviteModel, InviteDTO>(invite);
 
@@ -309,7 +355,10 @@ namespace Squadio.BLL.Services.Invites.Implementation
                     CompanyName = companyName
                 });
             }
-            catch {}
+            catch
+            {
+                // ignored
+            }
 
             return new Response<InviteDTO>
             {
@@ -320,6 +369,27 @@ namespace Squadio.BLL.Services.Invites.Implementation
         private async Task<Response<InviteDTO>> InviteToTeam(string authorName, string teamName, Guid teamId, string email)
         {
             var code = _codeProvider.GenerateCodeAsGuid();
+            
+            var user = (await _usersProvider.GetByEmail(email)).Data;
+            if (user == null)
+            {
+                var createUserDTO = new UserCreateDTO()
+                {
+                    Email = email,
+                    Step = RegistrationStep.Done
+                };
+                user = (await _usersService.CreateUser(createUserDTO)).Data;
+                await _changePasswordRepository.AddRequest(user.Id, code);
+            }
+            
+            var teamUser = await _teamsUsersRepository.GetTeamUser(teamId, user.Id);
+            if (teamUser != null)
+            {
+                return new Response<InviteDTO>();
+            }
+            
+            await _teamsUsersRepository.AddTeamUser(teamId, user.Id, UserStatus.Pending);
+            
             var invite = new InviteModel
             {
                 Email = email,
@@ -329,6 +399,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
                 EntityId = teamId,
                 EntityType = EntityType.Team
             };
+            
             invite = await _repository.CreateInvite(invite);
             var result = _mapper.Map<InviteModel, InviteDTO>(invite);
 
@@ -342,7 +413,10 @@ namespace Squadio.BLL.Services.Invites.Implementation
                     TeamName = teamName
                 });
             }
-            catch {}
+            catch
+            {
+                // ignored
+            }
 
             return new Response<InviteDTO>
             {
@@ -353,6 +427,25 @@ namespace Squadio.BLL.Services.Invites.Implementation
         private async Task<Response<InviteDTO>> InviteToProject(string authorName, string projectName, Guid projectId, string email)
         {
             var code = _codeProvider.GenerateCodeAsGuid();
+            
+            var user = (await _usersProvider.GetByEmail(email)).Data;
+            if (user == null)
+            {
+                var createUserDTO = new UserCreateDTO()
+                {
+                    Email = email,
+                    Step = RegistrationStep.Done
+                };
+                user = (await _usersService.CreateUser(createUserDTO)).Data;
+                await _changePasswordRepository.AddRequest(user.Id, code);
+            }
+            
+            var projectUser = await _projectsUsersRepository.GetProjectUser(projectId, user.Id);
+            if (projectUser != null)
+            {
+                return new Response<InviteDTO>();
+            }
+            
             var invite = new InviteModel
             {
                 Email = email,
@@ -362,6 +455,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
                 EntityId = projectId,
                 EntityType = EntityType.Project
             };
+            
             invite = await _repository.CreateInvite(invite);
             var result = _mapper.Map<InviteModel, InviteDTO>(invite);
 
@@ -375,7 +469,10 @@ namespace Squadio.BLL.Services.Invites.Implementation
                     ProjectName = projectName
                 });
             }
-            catch {}
+            catch
+            {
+                // ignored
+            }
 
             return new Response<InviteDTO>
             {
@@ -383,21 +480,9 @@ namespace Squadio.BLL.Services.Invites.Implementation
             };
         }
         
-        private async Task<Response> AcceptInviteToCompany(InviteModel invite, UserModel user)
+        private async Task<Response> AcceptInviteToCompany(Guid companyId, Guid userId)
         {
-            if (invite?.EntityType != EntityType.Company)
-            {
-                return new SecurityErrorResponse(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Security.InviteInvalid,
-                        Message = ErrorMessages.Security.InviteInvalid
-                    }
-                });
-            }
-            
-            var company = await _companiesRepository.GetById(invite.EntityId);
+            var company = await _companiesRepository.GetById(companyId);
             if (company == null)
             {
                 return new BusinessConflictErrorResponse(new []
@@ -405,39 +490,23 @@ namespace Squadio.BLL.Services.Invites.Implementation
                     new Error
                     {
                         Code = ErrorCodes.Common.NotFound,
-                        Message = ErrorMessages.Common.NotFound,
-                        Field = ErrorFields.Company.Id
+                        Message = ErrorMessages.Common.NotFound
                     }
                 });
             }
 
-            var companyUser = await _companiesUsersRepository.GetCompanyUser(company.Id, user.Id);
-            if (companyUser != null)
-            {
-                await _repository.ActivateInvite(invite.Id);
-                return new Response();
-            }
-            
-            await _companiesUsersRepository.AddCompanyUser(company.Id, user.Id, UserStatus.Member);
-            await _repository.ActivateInvite(invite.Id);
+            var companyUser = await _companiesUsersRepository.GetCompanyUser(company.Id, userId);
+            if (companyUser == null)
+                await _companiesUsersRepository.AddCompanyUser(company.Id, userId, UserStatus.Member);
+            else if (companyUser.Status == UserStatus.Pending)
+                await _companiesUsersRepository.ChangeStatusCompanyUser(company.Id, userId, UserStatus.Member);
+
             return new Response();
         }
 
-        private async Task<Response> AcceptInviteToTeam(InviteModel invite, UserModel user)
+        private async Task<Response> AcceptInviteToTeam(Guid teamId, Guid userId)
         {
-            if (invite?.EntityType != EntityType.Team)
-            {
-                return new SecurityErrorResponse(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Security.InviteInvalid,
-                        Message = ErrorMessages.Security.InviteInvalid
-                    }
-                });
-            }
-            
-            var team = await _teamsRepository.GetById(invite.EntityId);
+            var team = await _teamsRepository.GetById(teamId);
             if (team == null)
             {
                 return new BusinessConflictErrorResponse(new []
@@ -451,54 +520,22 @@ namespace Squadio.BLL.Services.Invites.Implementation
                 });
             }
 
-            var teamUser = await _teamsUsersRepository.GetTeamUser(team.Id, user.Id);
-            if(teamUser != null)
-            {
-                await _repository.ActivateInvite(invite.Id);
-                return new Response();
-            }
+            var companyAccept = await AcceptInviteToCompany(team.CompanyId, userId);
+            if (!companyAccept.IsSuccess) return companyAccept;
 
-            var companyUser = await _companiesUsersRepository.GetCompanyUser(team.CompanyId, user.Id);
-            if (companyUser == null)
-            {
-                var company = await _companiesRepository.GetById(team.CompanyId);
-                if (company == null)
-                {
-                    return new BusinessConflictErrorResponse(new []
-                    {
-                        new Error
-                        {
-                            Code = ErrorCodes.Common.NotFound,
-                            Message = ErrorMessages.Common.NotFound,
-                            Field = ErrorFields.Company.Id
-                        }
-                    });
-                }
+            var teamUser = await _teamsUsersRepository.GetTeamUser(team.Id, userId);
+            if (teamUser == null)
+                await _teamsUsersRepository.AddTeamUser(team.Id, userId, UserStatus.Member);
+            else if (teamUser.Status == UserStatus.Pending)
+                await _teamsUsersRepository.ChangeStatusTeamUser(team.Id, userId, UserStatus.Member);
 
-                await _companiesUsersRepository.AddCompanyUser(company.Id, user.Id, UserStatus.Member);
-            }
-            
-            await _teamsUsersRepository.AddTeamUser(team.Id, user.Id, UserStatus.Member);
-            await _repository.ActivateInvite(invite.Id);
 
             return new Response();
         }
 
-        private async Task<Response> AcceptInviteToProject(InviteModel invite, UserModel user)
+        private async Task<Response> AcceptInviteToProject(Guid projectId, Guid userId)
         {
-            if (invite?.EntityType != EntityType.Project)
-            {
-                return new SecurityErrorResponse(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Security.InviteInvalid,
-                        Message = ErrorMessages.Security.InviteInvalid
-                    }
-                });
-            }
-            
-            var project = await _projectsRepository.GetById(invite.EntityId);
+            var project = await _projectsRepository.GetById(projectId);
             if (project == null)
             {
                 return new BusinessConflictErrorResponse(new []
@@ -512,55 +549,14 @@ namespace Squadio.BLL.Services.Invites.Implementation
                 });
             }
 
-            var projectUser = await _projectsUsersRepository.GetProjectUser(project.Id, user.Id);
-            if (projectUser != null)
-            {
-                await _repository.ActivateInvite(invite.Id);
-                return new Response();
-            }
+            var teamAccept = await AcceptInviteToTeam(project.TeamId, userId);
+            if (!teamAccept.IsSuccess) return teamAccept;
 
-            var teamUser = await _teamsUsersRepository.GetTeamUser(project.TeamId, user.Id);
-            if (teamUser == null)
-            {
-                var team = await _teamsRepository.GetById(project.TeamId);
-                if (team == null)
-                {
-                    return new BusinessConflictErrorResponse(new[]
-                    {
-                        new Error
-                        {
-                            Code = ErrorCodes.Common.NotFound,
-                            Message = ErrorMessages.Common.NotFound,
-                            Field = ErrorFields.Team.Id
-                        }
-                    });
-                }
-
-                var companyUser = await _companiesUsersRepository.GetCompanyUser(team.CompanyId, user.Id);
-                if (companyUser == null)
-                {
-                    var company = await _companiesRepository.GetById(team.CompanyId);
-                    if (company == null)
-                    {
-                        return new BusinessConflictErrorResponse(new[]
-                        {
-                            new Error
-                            {
-                                Code = ErrorCodes.Common.NotFound,
-                                Message = ErrorMessages.Common.NotFound,
-                                Field = ErrorFields.Company.Id
-                            }
-                        });
-                    }
-
-                    await _companiesUsersRepository.AddCompanyUser(company.Id, user.Id, UserStatus.Member);
-                }
-                
-                await _teamsUsersRepository.AddTeamUser(project.TeamId, user.Id, UserStatus.Member);
-            }
-
-            await _projectsUsersRepository.AddProjectUser(project.Id, user.Id, UserStatus.Member);
-            await _repository.ActivateInvite(invite.Id);
+            var projectUser = await _projectsUsersRepository.GetProjectUser(project.Id, userId);
+            if (projectUser == null)
+                await _projectsUsersRepository.AddProjectUser(project.Id, userId, UserStatus.Member);
+            else if (projectUser.Status == UserStatus.Pending)
+                await _projectsUsersRepository.ChangeStatusProjectUser(project.Id, userId, UserStatus.Member);
             
             return new Response();
         }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Google.Apis.Auth;
 using Magora.Passwords;
 using Mapper;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Squadio.BLL.Factories;
 using Squadio.Common.Extensions;
@@ -27,6 +28,8 @@ namespace Squadio.BLL.Services.Tokens.Implementation
         private readonly ISignUpRepository _signUpRepository;
         private readonly IMapper _mapper;
         private readonly ITokensFactory _tokenFactory;
+
+        private readonly ILogger<TokensService> _logger;
         //private readonly IOptions<GoogleSettings> _googleSettings;
 
         public TokensService(IUsersRepository usersRepository
@@ -34,6 +37,7 @@ namespace Squadio.BLL.Services.Tokens.Implementation
             , ISignUpRepository signUpRepository
             , IMapper mapper
             , ITokensFactory tokenFactory
+            , ILogger<TokensService> logger
             //, IOptions<GoogleSettings> googleSettings
             )
         {
@@ -42,6 +46,7 @@ namespace Squadio.BLL.Services.Tokens.Implementation
             _signUpRepository = signUpRepository;
             _mapper = mapper;
             _tokenFactory = tokenFactory;
+            _logger = logger;
             //_googleSettings = googleSettings;
         }
         
@@ -57,6 +62,7 @@ namespace Squadio.BLL.Services.Tokens.Implementation
             }
             catch (Exception e)
             {
+                _logger.LogError(e, e.Message);
                 return new SecurityErrorResponse<AuthInfoDTO>(new []
                 {
                     new Error

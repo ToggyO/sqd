@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Mapper;
+using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Users;
@@ -43,6 +44,17 @@ namespace Squadio.BLL.Providers.Users.Implementation
         public async Task<Response<UserDTO>> GetById(Guid id)
         {
             var userEntity = await _repository.GetById(id);
+            
+            if (userEntity == null)
+            {
+                return new BusinessConflictErrorResponse<UserDTO>(new Error
+                {
+                    Code = ErrorCodes.Common.NotFound,
+                    Message = ErrorCodes.Common.NotFound,
+                    Field = ErrorFields.User.Id
+                });
+            }
+            
             var result = _mapper.Map<UserModel, UserDTO>(userEntity);
             return new Response<UserDTO>
             {
@@ -53,6 +65,17 @@ namespace Squadio.BLL.Providers.Users.Implementation
         public async Task<Response<UserDTO>> GetByEmail(string email)
         {
             var userEntity = await _repository.GetByEmail(email);
+            
+            if (userEntity == null)
+            {
+                return new BusinessConflictErrorResponse<UserDTO>(new Error
+                {
+                    Code = ErrorCodes.Common.NotFound,
+                    Message = ErrorCodes.Common.NotFound,
+                    Field = ErrorFields.User.Id
+                });
+            }
+            
             var result = _mapper.Map<UserModel, UserDTO>(userEntity);
             return new Response<UserDTO>
             {

@@ -89,7 +89,7 @@ namespace Squadio.API.Filters
         /// <returns></returns>
         private async Task<bool> ValidateToken(string token)
         {
-            return _service.ValidateToken(token, out _);
+            return await Task.Run(() => _service.ValidateToken(token, out _));
         }
     }
 }

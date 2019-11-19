@@ -13,7 +13,9 @@ using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.ChangeEmail;
 using Squadio.DAL.Repository.ChangePassword;
 using Squadio.DAL.Repository.ConfirmEmail;
+using Squadio.DAL.Repository.SignUp;
 using Squadio.DAL.Repository.Users;
+using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Users;
 
@@ -22,6 +24,7 @@ namespace Squadio.BLL.Services.Users.Implementation
     public class UsersService : IUsersService
     {
         private readonly IUsersRepository _repository;
+        private readonly ISignUpRepository _signUpRepository;
         private readonly ICodeProvider _codeProvider;
         private readonly IChangePasswordRequestRepository _changePasswordRepository;
         private readonly IChangeEmailRequestRepository _changeEmailRepository;
@@ -30,6 +33,7 @@ namespace Squadio.BLL.Services.Users.Implementation
         private readonly IPasswordService _passwordService;
         private readonly IMapper _mapper;
         public UsersService(IUsersRepository repository
+            , ISignUpRepository signUpRepository
             , ICodeProvider codeProvider
             , IChangePasswordRequestRepository changePasswordRepository
             , IChangeEmailRequestRepository changeEmailRepository
@@ -40,6 +44,7 @@ namespace Squadio.BLL.Services.Users.Implementation
             )
         {
             _repository = repository;
+            _signUpRepository = signUpRepository;
             _codeProvider = codeProvider;
             _changePasswordRepository = changePasswordRepository;
             _changeEmailRepository = changeEmailRepository;
@@ -122,6 +127,28 @@ namespace Squadio.BLL.Services.Users.Implementation
             });
             
             return new Response();
+        }
+
+        public async Task<Response<UserDTO>> CreateUser(UserCreateDTO dto)
+        {
+            var entity = new UserModel
+            {
+                Name = dto.Name,
+                RoleId = RoleGuid.User,
+                Email = dto.Email,
+                CreatedDate = DateTime.UtcNow
+            };
+            
+            entity = await _repository.Create(entity);
+
+            await _signUpRepository.SetRegistrationStep(entity.Id, dto.Step);
+            
+            var result = _mapper.Map<UserModel, UserDTO>(entity);
+            
+            return new Response<UserDTO>
+            {
+                Data = result
+            };
         }
 
         public async Task<Response<UserDTO>> UpdateUser(Guid id, UserUpdateDTO dto)

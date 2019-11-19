@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -77,6 +78,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             _mapper = mapper;
         }
 
+        /*
         public async Task<Response> SignUpMemberEmail(SignUpMemberDTO dto)
         {
             var user = await _usersRepository.GetByEmail(dto.Email);
@@ -163,6 +165,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 InviteCode = dto.InviteCode
             });
         }
+        */
 
         public async Task<Response> SignUp(string email, string password)
         {
@@ -180,25 +183,26 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 });
             }
             
-            user = new UserModel
+            var createUserDTO = new UserCreateDTO()
             {
                 Email = email,
-                CreatedDate = DateTime.UtcNow
+                Step = RegistrationStep.New
             };
 
-            user = await _usersRepository.Create(user);
-            
-            
-            var userResponse = await _usersService.SetPassword(email, password);
-            var userDTO = userResponse.Data;
+            var createResponse = await _usersService.CreateUser(createUserDTO);
 
-            await _confirmEmailService.AddRequest(user.Id, user.Email);
+            if (!createResponse.IsSuccess)
+                return createResponse;
 
-            await _repository.SetRegistrationStep(user.Id, RegistrationStep.New);
+            var createdUser = createResponse.Data;
+            
+            await _usersService.SetPassword(email, password);
+
+            await _confirmEmailService.AddRequest(createdUser.Id, createdUser.Email);
 
             return new Response<UserDTO>
             {
-                Data = userDTO
+                Data = createdUser
             };
         }
 

@@ -10,9 +10,8 @@ namespace Squadio.API.Controllers
     public class VersionController : ControllerBase
     {
         private const string Version = "0.1.1 b";
-        private readonly ILogger<VersionController> _logger;
 
-        public VersionController(ILogger<VersionController> logger)
+        public VersionController()
         {
         }
 

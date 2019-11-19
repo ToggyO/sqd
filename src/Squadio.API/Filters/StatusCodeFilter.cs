@@ -1,12 +1,20 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Logging;
 using Squadio.Common.Models.Responses;
 
 namespace Squadio.API.Filters
 {
     public class StatusCodeFilter: IResultFilter
     {
+        private readonly ILogger<StatusCodeFilter> _logger;
+
+        public StatusCodeFilter(ILogger<StatusCodeFilter> logger)
+        {
+            _logger = logger;
+        }
+        
         public void OnResultExecuting(ResultExecutingContext context)
         {
             try
@@ -21,7 +29,7 @@ namespace Squadio.API.Filters
             }
             catch (Exception ex)
             {
-                //throw ex;
+                _logger.LogError(ex, ex.Message);
             }
         }
 

@@ -41,6 +41,7 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             return result;
         }
 
+        /*
         public async Task<Response<AuthInfoDTO>> SignUpMemberEmail(SignUpMemberDTO dto)
         {
             var signUpResult = await _service.SignUpMemberEmail(dto);
@@ -86,6 +87,7 @@ namespace Squadio.API.Handlers.SignUp.Implementation
 
             return resultToken;
         }
+        */
 
         public async Task<Response<AuthInfoDTO>> SignUp(string email, string password)
         {

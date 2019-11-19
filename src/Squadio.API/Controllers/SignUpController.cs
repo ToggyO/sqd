@@ -38,6 +38,7 @@ namespace Squadio.API.Controllers
             return await _handler.GetRegistrationStep(User);
         }
 
+        /*
         [HttpPost("member/email")]
         [AllowAnonymous]
         public async Task<Response<AuthInfoDTO>> SignUpMemberEmail([Required, FromBody] SignUpMemberDTO dto)
@@ -51,6 +52,7 @@ namespace Squadio.API.Controllers
         {
             return await _handler.SignUpMemberGoogle(dto);
         }
+        */
         
         /// <summary>
         /// Create new account and send confirmation email
