@@ -116,7 +116,7 @@ namespace Squadio.API.Controllers
         [HttpPost("invite/accept")]
         public async Task<Response> AcceptInvite([Required, FromQuery] string code)
         {
-            return await _invitesHandler.AcceptInvite(User, code);
+            return await _invitesHandler.AcceptInvite(User, code, EntityType.Team);
         }
     }
 }

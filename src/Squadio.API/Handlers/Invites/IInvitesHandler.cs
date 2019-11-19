@@ -15,6 +15,6 @@ namespace Squadio.API.Handlers.Invites
         Task<Response<IEnumerable<InviteDTO>>> InviteToProject(Guid projectId, CreateInvitesDTO dto, ClaimsPrincipal claims);
         Task<Response<IEnumerable<InviteDTO>>> GetInvites(Guid entityId, ClaimsPrincipal claims, EntityType entityType);
         Task<Response> CancelInvite(Guid entityId, CancelInvitesDTO dto, ClaimsPrincipal claims, EntityType entityType);
-        Task<Response> AcceptInvite(ClaimsPrincipal claims, string code);
+        Task<Response> AcceptInvite(ClaimsPrincipal claims, string code, EntityType entityType);
     }
 }

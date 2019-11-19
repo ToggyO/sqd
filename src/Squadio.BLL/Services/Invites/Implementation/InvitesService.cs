@@ -236,11 +236,11 @@ namespace Squadio.BLL.Services.Invites.Implementation
             return new Response();
         }
 
-        public async Task<Response> AcceptInvite(Guid userId, string code)
+        public async Task<Response> AcceptInvite(Guid userId, string code, EntityType entityType)
         {
             var invite = await _repository.GetInviteByCode(code);
             
-            if (invite == null || invite?.Activated == true)
+            if (invite == null || invite?.Activated == true || invite?.EntityType != entityType)
             {
                 return new SecurityErrorResponse(new []
                 {
@@ -321,7 +321,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
                     Step = RegistrationStep.Done
                 };
                 user = (await _usersService.CreateUser(createUserDTO)).Data;
-                await _changePasswordRepository.AddRequest(user.Id, code);
+                //await _changePasswordRepository.AddRequest(user.Id, code);
             }
             
             var companyUser = await _companiesUsersRepository.GetCompanyUser(companyId, user.Id);
@@ -379,7 +379,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
                     Step = RegistrationStep.Done
                 };
                 user = (await _usersService.CreateUser(createUserDTO)).Data;
-                await _changePasswordRepository.AddRequest(user.Id, code);
+                //await _changePasswordRepository.AddRequest(user.Id, code);
             }
             
             var teamUser = await _teamsUsersRepository.GetTeamUser(teamId, user.Id);
@@ -437,7 +437,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
                     Step = RegistrationStep.Done
                 };
                 user = (await _usersService.CreateUser(createUserDTO)).Data;
-                await _changePasswordRepository.AddRequest(user.Id, code);
+                //await _changePasswordRepository.AddRequest(user.Id, code);
             }
             
             var projectUser = await _projectsUsersRepository.GetProjectUser(projectId, user.Id);
@@ -445,6 +445,8 @@ namespace Squadio.BLL.Services.Invites.Implementation
             {
                 return new Response<InviteDTO>();
             }
+            
+            await _projectsUsersRepository.AddProjectUser(projectId, user.Id, UserStatus.Pending);
             
             var invite = new InviteModel
             {

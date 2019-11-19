@@ -53,9 +53,9 @@ namespace Squadio.API.Handlers.Invites.Implementation
             return result;
         }
 
-        public async Task<Response> AcceptInvite(ClaimsPrincipal claims, string code)
+        public async Task<Response> AcceptInvite(ClaimsPrincipal claims, string code, EntityType entityType)
         {
-            var result = await _service.AcceptInvite(claims.GetUserId(), code);
+            var result = await _service.AcceptInvite(claims.GetUserId(), code, entityType);
             return result;
         }
     }

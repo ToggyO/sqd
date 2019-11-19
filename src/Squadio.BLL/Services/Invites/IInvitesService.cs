@@ -13,6 +13,6 @@ namespace Squadio.BLL.Services.Invites
         Task<Response<IEnumerable<InviteDTO>>> InviteToTeam(Guid teamId, Guid authorId, CreateInvitesDTO dto);
         Task<Response<IEnumerable<InviteDTO>>> InviteToProject(Guid projectId, Guid authorId, CreateInvitesDTO dto);
         Task<Response> CancelInvite(Guid entityId, Guid authorId, CancelInvitesDTO dto, EntityType entityType);
-        Task<Response> AcceptInvite(Guid userId, string code);
+        Task<Response> AcceptInvite(Guid userId, string code, EntityType entityType);
     }
 }
