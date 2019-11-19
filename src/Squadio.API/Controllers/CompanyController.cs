@@ -32,18 +32,27 @@ namespace Squadio.API.Controllers
             _invitesHandler = invitesHandler;
         }
 
+        /// <summary>
+        /// Get companies with pagination
+        /// </summary>
         [HttpGet]
         public async Task<Response<PageModel<CompanyDTO>>> GetCompanies([FromQuery] PageModel model)
         {
             return await _handler.GetCompanies(model);
         }
         
+        /// <summary>
+        /// Get company by id
+        /// </summary>
         [HttpGet("{id}")]
         public Task<Response<CompanyDTO>> GetCompany([Required, FromRoute] Guid id)
         {
             return _handler.GetCompany(id);
         }
         
+        /// <summary>
+        /// Get users of company
+        /// </summary>
         [HttpGet("{id}/users")]
         public Task<Response<PageModel<CompanyUserDTO>>> GetCompanyUsers([Required, FromRoute] Guid id
             , [FromQuery] PageModel model)
@@ -51,12 +60,18 @@ namespace Squadio.API.Controllers
             return _handler.GetCompanyUsers(id, model);
         }
         
+        /// <summary>
+        /// Create new company
+        /// </summary>
         [HttpPost]
         public Task<Response<CompanyDTO>> CreateCompany([Required, FromBody] CreateCompanyDTO dto)
         {
             return _handler.CreateCompany(dto, User);
         }
         
+        /// <summary>
+        /// Update company by id
+        /// </summary>
         [HttpPut("{id}")]
         public Task<Response<CompanyDTO>> UpdateCompany([Required, FromRoute] Guid id, [Required, FromBody] CompanyUpdateDTO dto)
         {
@@ -69,13 +84,18 @@ namespace Squadio.API.Controllers
             return await _invitesHandler.GetInvites(id, User, EntityType.Company);
         }
         
+        /// <summary>
+        /// Send invites to company
+        /// </summary>
         [HttpPost("{id}/invite")]
         public async Task<Response<IEnumerable<InviteDTO>>> CreateInvites([Required, FromRoute] Guid id
             , [Required, FromBody] CreateInvitesDTO dto)
         {
             return await _invitesHandler.InviteToCompany(id, dto, User);
         }
-        
+        /// <summary>
+        /// Cancel of invites to company
+        /// </summary>
         [HttpPut("{id}/invite/cancel")]
         public async Task<Response> CancelInvite([Required, FromRoute] Guid id
             , [Required, FromBody] CancelInvitesDTO dto)
@@ -83,12 +103,18 @@ namespace Squadio.API.Controllers
             return await _invitesHandler.CancelInvite(id, dto, User, EntityType.Company);
         }
         
+        /// <summary>
+        /// Remove user from company
+        /// </summary>
         [HttpDelete("{companyId}/user/{userId}")]
         public Task<Response> DeleteCompanyUser([Required, FromRoute] Guid companyId, [Required, FromRoute] Guid userId)
         {
             return _handler.DeleteCompanyUser(companyId, userId, User);
         }
         
+        /// <summary>
+        /// Accept invite to company
+        /// </summary>
         [HttpPost("invite/accept")]
         public async Task<Response> AcceptInvite([Required, FromQuery] string code)
         {

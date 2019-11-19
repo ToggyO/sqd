@@ -28,6 +28,9 @@ namespace Squadio.API.Controllers
             _handler = handler;
         }
         
+        /// <summary>
+        /// Get users with pagination
+        /// </summary>
         [HttpGet]
         [AllowAnonymous]
         public async Task<Response<PageModel<UserDTO>>> GetPage([FromQuery] PageModel model)
@@ -35,6 +38,9 @@ namespace Squadio.API.Controllers
             return await _handler.GetPage(model);
         }
         
+        /// <summary>
+        /// Delete user by id (for development purposes)
+        /// </summary>
         [HttpDelete("{id}")]
         [AllowAnonymous]
         public async Task<Response<UserDTO>> DeleteUser([Required, FromRoute] Guid id)
@@ -42,60 +48,90 @@ namespace Squadio.API.Controllers
             return await _handler.DeleteUser(id);
         }
         
+        /// <summary>
+        /// Get user by id
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<Response<UserDTO>> GetById([Required, FromRoute] Guid id)
         {
             return await _handler.GetById(id);
         }
         
+        /// <summary>
+        /// Get companies of user
+        /// </summary>
         [HttpGet("{id}/companies")]
         public async Task<Response<PageModel<CompanyUserDTO>>> GetUserCompanies([Required, FromRoute] Guid id, [FromQuery] PageModel model)
         {
             return await _handler.GetUserCompanies(id, model);
         }
         
+        /// <summary>
+        /// Get teams of user
+        /// </summary>
         [HttpGet("{id}/teams")]
         public async Task<Response<PageModel<TeamUserDTO>>> GetUserTeams([Required, FromRoute] Guid id, [FromQuery] PageModel model)
         {
             return await _handler.GetUserTeams(id, model);
         }
         
+        /// <summary>
+        /// Get projects of user
+        /// </summary>
         [HttpGet("{id}/projects")]
         public async Task<Response<PageModel<ProjectUserDTO>>> GetUserProjects([Required, FromRoute] Guid id, [FromQuery] PageModel model)
         {
             return await _handler.GetUserProjects(id, model);
         }
         
+        /// <summary>
+        /// Get current user
+        /// </summary>
         [HttpGet("current")]
         public async Task<Response<UserDTO>> GetCurrentUser()
         {
             return await _handler.GetCurrentUser(User);
         }
         
+        /// <summary>
+        /// Get companies current user
+        /// </summary>
         [HttpGet("current/companies")]
         public async Task<Response<PageModel<CompanyUserDTO>>> GetUserCompanies([FromQuery] PageModel model)
         {
             return await _handler.GetUserCompanies(User, model);
         }
         
+        /// <summary>
+        /// Get teams current user
+        /// </summary>
         [HttpGet("current/teams")]
         public async Task<Response<PageModel<TeamUserDTO>>> GetUserTeams([FromQuery] PageModel model)
         {
             return await _handler.GetUserTeams(User, model);
         }
         
+        /// <summary>
+        /// Get projects current user
+        /// </summary>
         [HttpGet("current/projects")]
         public async Task<Response<PageModel<ProjectUserDTO>>> GetUserProjects([FromQuery] PageModel model)
         {
             return await _handler.GetUserProjects(User, model);
         }
         
+        /// <summary>
+        /// Update current user
+        /// </summary>
         [HttpPut("current")]
         public async Task<Response<UserDTO>> UpdateCurrentUser([FromBody] UserUpdateDTO dto)
         {
             return await _handler.UpdateCurrentUser(dto, User);
         }
         
+        /// <summary>
+        /// Set new password, using link from "api/passwords/request"
+        /// </summary>
         [HttpPut("passwords/set")]
         [AllowAnonymous]
         public async Task<Response<UserDTO>> SetPassword([FromBody] UserResetPasswordDTO dto)
@@ -103,6 +139,9 @@ namespace Squadio.API.Controllers
             return await _handler.ResetPassword(dto);
         }
         
+        /// <summary>
+        /// Send link to email for restore password
+        /// </summary>
         [HttpPost("passwords/request")]
         [AllowAnonymous]
         public async Task<Response> ResetPasswordRequest([FromBody, Required] UserEmailDTO dto)
@@ -110,12 +149,18 @@ namespace Squadio.API.Controllers
             return await _handler.ResetPasswordRequest(dto.Email);
         }
         
+        /// <summary>
+        /// Set email from "api/email/request" for current user
+        /// </summary>
         [HttpPut("email/set")]
         public async Task<Response<UserDTO>> SetEmail([FromBody] UserSetEmailDTO dto)
         {
             return await _handler.SetEmail(dto, User);
         }
         
+        /// <summary>
+        /// Send email for confirm new mailbox
+        /// </summary>
         [HttpPost("email/request")]
         public async Task<Response> ChangeEmailRequest([FromBody, Required] ChangeEmailRequestDTO dto)
         {

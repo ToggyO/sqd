@@ -16,6 +16,9 @@ namespace Squadio.API.Controllers
         {
         }
 
+        /// <summary>
+        /// Get current version of API
+        /// </summary>
         [HttpGet]
         [AllowAnonymous]
         public string GetVersion()

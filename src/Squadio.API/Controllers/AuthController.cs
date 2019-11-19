@@ -19,18 +19,27 @@ namespace Squadio.API.Controllers
             _handler = handler;
         }
         
+        /// <summary>
+        /// Create token using email and password
+        /// </summary>
         [HttpPost("token")]
         public async Task<Response<AuthInfoDTO>> Authenticate([Required] CredentialsDTO request)
         {
             return await _handler.Authenticate(request);
         }
         
+        /// <summary>
+        /// Create token using refresh token
+        /// </summary>
         [HttpPut("token")]
         public async Task<ActionResult<Response<TokenDTO>>> RefreshToken([Required] RefreshTokenDTO request)
         {
             return await _handler.RefreshToken(request.RefreshToken);
         }
         
+        /// <summary>
+        /// Create token using google tokenId
+        /// </summary>
         [HttpPost("token/google")]
         public async Task<Response<AuthInfoDTO>> GoogleAuthenticate([Required] GoogleTokenDTO request)
         {

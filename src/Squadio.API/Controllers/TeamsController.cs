@@ -29,30 +29,45 @@ namespace Squadio.API.Controllers
             _invitesHandler = invitesHandler;
         }
         
+        /// <summary>
+        /// Get teams with pagination
+        /// </summary>
         [HttpGet]
         public async Task<Response<PageModel<TeamDTO>>> GetTeams([FromQuery] PageModel model)
         {
             return await _handler.GetTeams(model);
         }
         
+        /// <summary>
+        /// Get team by id
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<Response<TeamDTO>> GetTeam([Required, FromRoute] Guid id)
         {
             return await _handler.GetById(id);
         }
         
+        /// <summary>
+        /// Update team by id
+        /// </summary>
         [HttpPut("{id}")]
         public async Task<Response<TeamDTO>> UpdateTeam([Required, FromRoute] Guid id, [Required, FromBody] TeamUpdateDTO dto)
         {
             return await _handler.Update(id, dto, User);
         }
         
+        /// <summary>
+        /// Delete user from team
+        /// </summary>
         [HttpDelete("{teamId}/user/{userId}")]
         public Task<Response> DeleteTeamUser([Required, FromRoute] Guid teamId, [Required, FromRoute] Guid userId)
         {
             return _handler.DeleteTeamUser(teamId, userId, User);
         }
         
+        /// <summary>
+        /// Get users of team
+        /// </summary>
         [HttpGet("{id}/users")]
         public Task<Response<PageModel<TeamUserDTO>>> GetTeamUsers([Required, FromRoute] Guid id
             , [FromQuery] PageModel model)
@@ -60,6 +75,9 @@ namespace Squadio.API.Controllers
             return _handler.GetTeamUsers(id, model);
         }
         
+        /// <summary>
+        /// Create new team
+        /// </summary>
         [HttpPost]
         public async Task<Response<TeamDTO>> Create([FromQuery, Required] Guid companyId, [FromBody] TeamCreateDTO dto)
         {
@@ -72,6 +90,9 @@ namespace Squadio.API.Controllers
             return await _invitesHandler.GetInvites(id, User, EntityType.Team);
         }
         
+        /// <summary>
+        /// Send invites to team
+        /// </summary>
         [HttpPost("{id}/invite")]
         public async Task<Response<IEnumerable<InviteDTO>>> CreateInvites([Required, FromRoute] Guid id
             , [Required, FromBody] CreateInvitesDTO dto)
@@ -79,6 +100,9 @@ namespace Squadio.API.Controllers
             return await _invitesHandler.InviteToTeam(id, dto, User);
         }
         
+        /// <summary>
+        /// Cancel of invites to team
+        /// </summary>
         [HttpPut("{id}/invite/cancel")]
         public async Task<Response> CancelInvite([Required, FromRoute] Guid id
             , [Required, FromBody] CancelInvitesDTO dto)
@@ -86,6 +110,9 @@ namespace Squadio.API.Controllers
             return await _invitesHandler.CancelInvite(id, dto, User, EntityType.Team);
         }
         
+        /// <summary>
+        /// Accept invite to team
+        /// </summary>
         [HttpPost("invite/accept")]
         public async Task<Response> AcceptInvite([Required, FromQuery] string code)
         {

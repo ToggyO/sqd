@@ -29,30 +29,45 @@ namespace Squadio.API.Controllers
             _invitesHandler = invitesHandler;
         }
         
+        /// <summary>
+        /// Get projects with pagination
+        /// </summary>
         [HttpGet]
         public async Task<Response<PageModel<ProjectDTO>>> GetProjects([FromQuery] PageModel model)
         {
             return await _handler.GetProjects(model);
         }
         
+        /// <summary>
+        /// Get project by id
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<Response<ProjectDTO>> GetProject([Required, FromRoute] Guid id)
         {
             return await _handler.GetById(id);
         }
         
+        /// <summary>
+        /// Update project by id
+        /// </summary>
         [HttpPut("{id}")]
         public async Task<Response<ProjectDTO>> UpdateTeam([Required, FromRoute] Guid id, [Required, FromBody] ProjectUpdateDTO dto)
         {
             return await _handler.Update(id, dto, User);
         }
         
+        /// <summary>
+        /// Delete user from project
+        /// </summary>
         [HttpDelete("{projectId}/user/{userId}")]
         public Task<Response> DeleteProjectUser([Required, FromRoute] Guid projectId, [Required, FromRoute] Guid userId)
         {
             return _handler.DeleteProjectUser(projectId, userId, User);
         }
         
+        /// <summary>
+        /// Get users of project
+        /// </summary>
         [HttpGet("{id}/users")]
         public Task<Response<PageModel<ProjectUserDTO>>> GetProjectUsers([Required, FromRoute] Guid id
             , [FromQuery] PageModel model)
@@ -60,6 +75,9 @@ namespace Squadio.API.Controllers
             return _handler.GetProjectUsers(id, model);
         }
         
+        /// <summary>
+        /// Create new project
+        /// </summary>
         [HttpPost]
         public async Task<Response<ProjectDTO>> Create([FromQuery, Required] Guid teamId, [FromBody] CreateProjectDTO dto)
         {
@@ -72,6 +90,9 @@ namespace Squadio.API.Controllers
             return await _invitesHandler.GetInvites(id, User, EntityType.Project);
         }
         
+        /// <summary>
+        /// Send invites to project
+        /// </summary>
         [HttpPost("{id}/invite")]
         public async Task<Response<IEnumerable<InviteDTO>>> CreateInvites([Required, FromRoute] Guid id
             , [Required, FromBody] CreateInvitesDTO dto)
@@ -79,6 +100,9 @@ namespace Squadio.API.Controllers
             return await _invitesHandler.InviteToProject(id, dto, User);
         }
         
+        /// <summary>
+        /// Cancel of invites to project
+        /// </summary>
         [HttpPut("{id}/invite/cancel")]
         public async Task<Response> CancelInvite([Required, FromRoute] Guid id
             , [Required, FromBody] CancelInvitesDTO dto)
@@ -86,6 +110,9 @@ namespace Squadio.API.Controllers
             return await _invitesHandler.CancelInvite(id, dto, User, EntityType.Project);
         }
         
+        /// <summary>
+        /// Accept invite to project
+        /// </summary>
         [HttpPost("invite/accept")]
         public async Task<Response> AcceptInvite([Required, FromQuery] string code)
         {
