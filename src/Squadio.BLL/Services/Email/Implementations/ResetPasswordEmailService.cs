@@ -31,7 +31,7 @@ namespace Squadio.BLL.Services.Email.Implementations
 
         protected override string GetSubject(PasswordRestoreEmailModel emailModel)
         {
-            return "Reset password";
+            return "Reset your Squad password";
         }
     }
 }

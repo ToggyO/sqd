@@ -32,7 +32,7 @@ namespace Squadio.BLL.Services.Email.Implementations
 
         protected override string GetSubject(InviteToProjectEmailModel emailModel)
         {
-            return "Invite to Squad.io project";
+            return $"{emailModel.AuthorName} invited you to {emailModel.ProjectName} project";
         }
     }
 }
