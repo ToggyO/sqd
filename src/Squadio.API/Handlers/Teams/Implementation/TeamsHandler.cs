@@ -57,5 +57,11 @@ namespace Squadio.API.Handlers.Teams.Implementation
             var result = await _service.DeleteUserFromTeam(teamId, userId, claims.GetUserId());
             return result;
         }
+
+        public async Task<Response> LeaveTeam(Guid teamId, ClaimsPrincipal claims)
+        {
+            var result = await _service.LeaveTeam(teamId, claims.GetUserId());
+            return result;
+        }
     }
 }

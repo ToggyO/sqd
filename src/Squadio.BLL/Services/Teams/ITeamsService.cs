@@ -10,6 +10,7 @@ namespace Squadio.BLL.Services.Teams
         Task<Response<TeamDTO>> Create(Guid userId, Guid companyId, TeamCreateDTO dto);
         Task<Response<TeamDTO>> Update(Guid teamId, Guid userId, TeamUpdateDTO dto);
         Task<Response> DeleteUserFromTeam(Guid teamId, Guid removeUserId, Guid currentUserId);
+        Task<Response> LeaveTeam(Guid teamId, Guid userId);
         Task<Response> DeleteUserFromTeamsByCompanyId(Guid companyId, Guid removeUserId);
     }
 }

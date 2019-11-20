@@ -145,6 +145,11 @@ namespace Squadio.BLL.Services.Teams.Implementation
             return await DeleteUserFromTeam(teamId, removeUserId);
         }
 
+        public async Task<Response> LeaveTeam(Guid teamId, Guid userId)
+        {
+            return await DeleteUserFromTeam(teamId, userId);
+        }
+
         public async Task<Response> DeleteUserFromTeamsByCompanyId(Guid companyId, Guid removeUserId)
         {
             var teams = await _repository.GetTeams(new PageModel()

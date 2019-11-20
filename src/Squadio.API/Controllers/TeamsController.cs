@@ -66,6 +66,15 @@ namespace Squadio.API.Controllers
         }
         
         /// <summary>
+        /// Delete current user from team
+        /// </summary>
+        [HttpDelete("{teamId}/leave")]
+        public Task<Response> LeaveTeam([Required, FromRoute] Guid teamId)
+        {
+            return _handler.LeaveTeam(teamId, User);
+        }
+        
+        /// <summary>
         /// Get users of team
         /// </summary>
         [HttpGet("{id}/users")]
