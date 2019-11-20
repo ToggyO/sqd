@@ -51,9 +51,18 @@ namespace Squadio.API.Controllers
         /// Update project by id
         /// </summary>
         [HttpPut("{id}")]
-        public async Task<Response<ProjectDTO>> UpdateTeam([Required, FromRoute] Guid id, [Required, FromBody] ProjectUpdateDTO dto)
+        public async Task<Response<ProjectDTO>> UpdateProject([Required, FromRoute] Guid id, [Required, FromBody] ProjectUpdateDTO dto)
         {
             return await _handler.Update(id, dto, User);
+        }
+        
+        /// <summary>
+        /// Delete project by id
+        /// </summary>
+        [HttpDelete("{id}")]
+        public async Task<Response> DeleteProject([Required, FromRoute] Guid id)
+        {
+            return await _handler.Delete(id, User);
         }
         
         /// <summary>

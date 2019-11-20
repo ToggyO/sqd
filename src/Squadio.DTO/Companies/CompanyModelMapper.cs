@@ -2,6 +2,8 @@
 using System.Linq;
 using Mapper;
 using Squadio.Domain.Models.Companies;
+using Squadio.Domain.Models.Users;
+using Squadio.DTO.Users;
 
 namespace Squadio.DTO.Companies
 {
@@ -16,13 +18,20 @@ namespace Squadio.DTO.Companies
     
         public CompanyDTO Map(CompanyModel item)
         {
-            return new CompanyDTO
+            var result = new CompanyDTO
             {
                 Id = item.Id,
                 Name = item.Name,
                 Address = item.Address,
                 CreatedDate = item.CreatedDate
             };
+            
+            if (item.Creator != null)
+            {
+                result.Creator = _mapper.Map<UserModel, UserDTO>(item.Creator);
+            }
+
+            return result;
         }
     }
     

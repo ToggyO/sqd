@@ -5,6 +5,7 @@ using Squadio.BLL.Services.Invites;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
+using Squadio.DAL.Repository.CompaniesUsers;
 using Squadio.DAL.Repository.Projects;
 using Squadio.DAL.Repository.ProjectsUsers;
 using Squadio.Domain.Enums;
@@ -20,16 +21,19 @@ namespace Squadio.BLL.Services.Projects.Implementation
     {
         private readonly IProjectsRepository _repository;
         private readonly IProjectsUsersRepository _projectsUsersRepository;
+        private readonly ICompaniesUsersRepository _companiesUsersRepository;
         private readonly IInvitesService _invitesService;
         private readonly IMapper _mapper;
 
         public ProjectsService(IProjectsRepository repository
             , IProjectsUsersRepository projectsUsersRepository
+            , ICompaniesUsersRepository companiesUsersRepository
             , IInvitesService invitesService
             , IMapper mapper)
         {
             _repository = repository;
             _projectsUsersRepository = projectsUsersRepository;
+            _companiesUsersRepository = companiesUsersRepository;
             _invitesService = invitesService;
             _mapper = mapper;
         }
@@ -41,7 +45,8 @@ namespace Squadio.BLL.Services.Projects.Implementation
                 Name = dto.Name,
                 TeamId = teamId,
                 CreatedDate = DateTime.UtcNow,
-                ColorHex = dto.ColorHex
+                ColorHex = dto.ColorHex,
+                CreatorId = userId
             };
             
             entity = await _repository.Create(entity);
@@ -119,6 +124,38 @@ namespace Squadio.BLL.Services.Projects.Implementation
             {
                 Data = result
             };
+        }
+
+        public async Task<Response> Delete(Guid projectId, Guid userId)
+        {
+            var projectUser = await _projectsUsersRepository.GetFullProjectUser(projectId, userId);
+            if (projectUser == null || projectUser.Status != UserStatus.SuperAdmin)
+            {
+                return new ForbiddenErrorResponse<ProjectDTO>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.Forbidden,
+                        Message = ErrorMessages.Security.Forbidden
+                    }
+                }); 
+            }
+
+            var companyUser = await _companiesUsersRepository.GetCompanyUser(projectUser.Project.Team.CompanyId, userId);
+            if (companyUser == null || companyUser.Status != UserStatus.SuperAdmin)
+            {
+                return new ForbiddenErrorResponse<ProjectDTO>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.Forbidden,
+                        Message = ErrorMessages.Security.Forbidden
+                    }
+                }); 
+            }
+
+            await _repository.Delete(projectId);
+            return new Response();
         }
 
         public async Task<Response> DeleteUserFromProject(Guid projectId, Guid removeUserId, Guid currentUserId)

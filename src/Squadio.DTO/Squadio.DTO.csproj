@@ -52,6 +52,12 @@
       <Compile Update="Users\UserConfirmEmailRequestModelMapper.cs">
         <DependentUpon>UserConfirmEmailRequestDTO.cs</DependentUpon>
       </Compile>
+      <Compile Update="Projects\ProjectModelMapper.cs">
+        <DependentUpon>ProjectDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Projects\ProjectUserModelMapper.cs">
+        <DependentUpon>ProjectUserDTO.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

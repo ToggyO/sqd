@@ -1,6 +1,7 @@
 ﻿using System;
 using Squadio.Domain.Models.Companies;
 using Squadio.Domain.Models.Teams;
+using Squadio.Domain.Models.Users;
 
 namespace Squadio.Domain.Models.Projects
 {
@@ -12,5 +13,7 @@ namespace Squadio.Domain.Models.Projects
         public TeamModel Team { get; set; }
         public DateTime CreatedDate { get; set; }
         public string ColorHex { get; set; }
+        public Guid CreatorId { get; set; }
+        public UserModel Creator { get; set; }
     }
 }

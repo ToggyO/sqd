@@ -2,6 +2,8 @@
 using System.Linq;
 using Mapper;
 using Squadio.Domain.Models.Teams;
+using Squadio.Domain.Models.Users;
+using Squadio.DTO.Users;
 
 namespace Squadio.DTO.Teams
 {
@@ -16,11 +18,18 @@ namespace Squadio.DTO.Teams
     
         public TeamDTO Map(TeamModel item)
         {
-            return new TeamDTO
+            var result = new TeamDTO
             {
                 Id = item.Id,
                 Name = item.Name
             };
+            
+            if (item.Creator != null)
+            {
+                result.Creator = _mapper.Map<UserModel, UserDTO>(item.Creator);
+            }
+
+            return result;
         }
     }
     

@@ -51,7 +51,7 @@ namespace Squadio.BLL.Providers.Admins.Implementation
             
             foreach (var user in users)
             {
-                var items = await _companiesUsersRepository.GetCompanyUser(userId: user.Id);
+                var items = await _companiesUsersRepository.GetCompaniesUsers(userId: user.Id);
                 resultDataItems.Add(new UserWithCompaniesDTO
                 {
                     User = _mapper.Map<UserModel, UserDTO>(user),
@@ -86,7 +86,7 @@ namespace Squadio.BLL.Providers.Admins.Implementation
             
             foreach (var company in companies)
             {
-                var admins = await _companiesUsersRepository.GetCompanyUser(
+                var admins = await _companiesUsersRepository.GetCompaniesUsers(
                         companyId: company.Id,
                         statuses: new[]
                         {

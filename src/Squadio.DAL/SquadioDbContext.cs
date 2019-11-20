@@ -86,6 +86,10 @@ namespace Squadio.DAL
                     .IsRequired();
                 item.Property(x => x.CreatedDate)
                     .IsRequired();
+                item.HasOne(x => x.Creator)
+                    .WithMany()
+                    //TODO: Maybe here should be DeleteBehavior.Restrict
+                    .OnDelete(DeleteBehavior.Cascade);
             });
             modelBuilder.Entity<CompanyUserModel>(item =>
             {
@@ -106,8 +110,13 @@ namespace Squadio.DAL
                     .IsRequired();
                 item.Property(x => x.CreatedDate)
                     .IsRequired();
+                item.HasOne(x => x.Creator)
+                    .WithMany()
+                    //TODO: Maybe here should be DeleteBehavior.Restrict
+                    .OnDelete(DeleteBehavior.Cascade);
                 item.HasOne(p => p.Company)
                     .WithMany()
+                    .OnDelete(DeleteBehavior.Cascade)
                     .IsRequired();
             });
             modelBuilder.Entity<TeamUserModel>(item =>
@@ -129,8 +138,13 @@ namespace Squadio.DAL
                     .IsRequired();
                 item.Property(x => x.CreatedDate)
                     .IsRequired();
+                item.HasOne(x => x.Creator)
+                    .WithMany()
+                    //TODO: Maybe here should be DeleteBehavior.Restrict
+                    .OnDelete(DeleteBehavior.Cascade);
                 item.HasOne(p => p.Team)
                     .WithMany()
+                    .OnDelete(DeleteBehavior.Cascade)
                     .IsRequired();
             });
             modelBuilder.Entity<ProjectUserModel>(item =>
@@ -149,6 +163,9 @@ namespace Squadio.DAL
                 item.HasKey(c => c.Id);
                 item.HasIndex(p => p.Code)
                     .IsUnique();
+                item.HasOne(x => x.Creator)
+                    .WithMany()
+                    .OnDelete(DeleteBehavior.SetNull);
             });
         }
     }

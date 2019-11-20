@@ -45,8 +45,6 @@ namespace Squadio.BLL.Services.Invites.Implementation
         private readonly ICodeProvider _codeProvider;
         private readonly IUsersService _usersService;
         private readonly IUsersProvider _usersProvider;
-        //private readonly IUsersRepository _usersRepository;
-        private readonly IChangePasswordRequestRepository _changePasswordRepository;
         private readonly IMapper _mapper;
         public InvitesService(IInvitesRepository repository
             , IEmailService<InviteToTeamEmailModel> inviteToTeamMailService
@@ -61,7 +59,6 @@ namespace Squadio.BLL.Services.Invites.Implementation
             , ICodeProvider codeProvider
             , IUsersService usersService
             , IUsersProvider usersProvider
-            , IUsersRepository usersRepository
             , IChangePasswordRequestRepository changePasswordRepository
             , IMapper mapper)
         {
@@ -78,8 +75,6 @@ namespace Squadio.BLL.Services.Invites.Implementation
             _codeProvider = codeProvider;
             _usersService = usersService;
             _usersProvider = usersProvider;
-            //_usersRepository = usersRepository;
-            _changePasswordRepository = changePasswordRepository;
             _mapper = mapper;
         }
         
@@ -108,7 +103,8 @@ namespace Squadio.BLL.Services.Invites.Implementation
                     companyUser.User.Name,
                     companyUser.Company.Name,
                     companyUser.CompanyId,
-                    email);
+                    email,
+                    authorId);
                 result.Add(itemResult.Data);
             }
 
@@ -140,7 +136,8 @@ namespace Squadio.BLL.Services.Invites.Implementation
                     teamUser.User.Name,
                     teamUser.Team.Name,
                     teamUser.TeamId,
-                    email);
+                    email,
+                    authorId);
                 result.Add(itemResult.Data);
             }
 
@@ -173,7 +170,8 @@ namespace Squadio.BLL.Services.Invites.Implementation
                     projectUser.User.Name,
                     projectUser.Project.Name,
                     projectUser.ProjectId,
-                    email);
+                    email,
+                    authorId);
                 result.Add(itemResult.Data);
             }
 
@@ -200,6 +198,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
                             }
                         });
                     }
+                    await _companiesUsersRepository.DeleteCompanyUsers(entityId, dto.Emails);
                     break;
                 case EntityType.Team:
                     var teamUser = await _teamsUsersRepository.GetTeamUser(entityId, authorId);
@@ -214,6 +213,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
                             }
                         });
                     }
+                    await _teamsUsersRepository.DeleteTeamUsers(entityId, dto.Emails);
                     break;
                 case EntityType.Project:
                     var projectUser = await _projectsUsersRepository.GetProjectUser(entityId, authorId);
@@ -228,6 +228,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
                             }
                         });
                     }
+                    await _projectsUsersRepository.DeleteProjectUsers(entityId, dto.Emails);
                     break;
             }
 
@@ -308,7 +309,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
             return result;
         }
 
-        private async Task<Response<InviteDTO>> InviteToCompany(string authorName, string companyName, Guid companyId, string email)
+        private async Task<Response<InviteDTO>> InviteToCompany(string authorName, string companyName, Guid companyId, string email, Guid authorId)
         {
             var code = _codeProvider.GenerateCodeAsGuid();
             
@@ -339,7 +340,8 @@ namespace Squadio.BLL.Services.Invites.Implementation
                 CreatedDate = DateTime.UtcNow,
                 Code = code,
                 EntityId = companyId,
-                EntityType = EntityType.Company
+                EntityType = EntityType.Company,
+                CreatorId = authorId
             };
             
             invite = await _repository.CreateInvite(invite);
@@ -366,7 +368,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
             };
         }
 
-        private async Task<Response<InviteDTO>> InviteToTeam(string authorName, string teamName, Guid teamId, string email)
+        private async Task<Response<InviteDTO>> InviteToTeam(string authorName, string teamName, Guid teamId, string email, Guid authorId)
         {
             var code = _codeProvider.GenerateCodeAsGuid();
             
@@ -397,7 +399,8 @@ namespace Squadio.BLL.Services.Invites.Implementation
                 CreatedDate = DateTime.UtcNow,
                 Code = code,
                 EntityId = teamId,
-                EntityType = EntityType.Team
+                EntityType = EntityType.Team,
+                CreatorId = authorId
             };
             
             invite = await _repository.CreateInvite(invite);
@@ -424,7 +427,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
             };
         }
 
-        private async Task<Response<InviteDTO>> InviteToProject(string authorName, string projectName, Guid projectId, string email)
+        private async Task<Response<InviteDTO>> InviteToProject(string authorName, string projectName, Guid projectId, string email, Guid authorId)
         {
             var code = _codeProvider.GenerateCodeAsGuid();
             
@@ -455,7 +458,8 @@ namespace Squadio.BLL.Services.Invites.Implementation
                 CreatedDate = DateTime.UtcNow,
                 Code = code,
                 EntityId = projectId,
-                EntityType = EntityType.Project
+                EntityType = EntityType.Project,
+                CreatorId = authorId
             };
             
             invite = await _repository.CreateInvite(invite);

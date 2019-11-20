@@ -79,6 +79,18 @@ namespace Squadio.DAL.Repository.TeamsUsers.Implementation
             return item;
         }
 
+        public async Task<TeamUserModel> GetFullTeamUser(Guid teamId, Guid userId)
+        {
+            var item = await _context.TeamsUsers
+                .Include(x => x.Team)
+                    .ThenInclude(x=>x.Company)
+                .Include(x => x.User)
+                    .ThenInclude(x=>x.Role)
+                .Where(x => x.TeamId == teamId && x.UserId == userId)
+                .FirstOrDefaultAsync();
+            return item;
+        }
+
         public async Task AddTeamUser(Guid teamId, Guid userId, UserStatus userStatus)
         {
             var item = new TeamUserModel
@@ -98,6 +110,21 @@ namespace Squadio.DAL.Repository.TeamsUsers.Implementation
                 .Where(x => x.TeamId == teamId && x.UserId == userId)
                 .FirstOrDefaultAsync();
             _context.TeamsUsers.Remove(item);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteTeamUsers(Guid teamId, IEnumerable<string> emails)
+        {
+            var emailsUpper = emails.Select(s => s.ToUpper());
+
+            var query = _context.TeamsUsers
+                .Include(x => x.User)
+                .Where(x => x.TeamId == teamId);
+            query = query.Where(x => emailsUpper.Contains(x.User.Email.ToUpper()));
+
+            var items = await query.ToListAsync();
+            
+            _context.TeamsUsers.RemoveRange(items);
             await _context.SaveChangesAsync();
         }
 

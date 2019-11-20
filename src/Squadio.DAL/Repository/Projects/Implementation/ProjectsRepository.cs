@@ -18,6 +18,7 @@ namespace Squadio.DAL.Repository.Projects.Implementation
         public async Task<ProjectModel> GetById(Guid id)
         {
             var item = await _context.Projects
+                .Include(x=>x.Creator)
                 .Include(x => x.Team)
                 .ThenInclude(x => x.Company)
                 .FirstOrDefaultAsync(x => x.Id == id);
@@ -31,9 +32,12 @@ namespace Squadio.DAL.Repository.Projects.Implementation
             return item.Entity;
         }
 
-        public Task<ProjectModel> Delete(Guid id)
+        public async Task<ProjectModel> Delete(Guid id)
         {
-            throw new NotImplementedException();
+            var entity = await _context.Projects.FindAsync(id);
+            _context.Projects.Remove(entity);
+            await _context.SaveChangesAsync();
+            return entity;
         }
 
         public async Task<ProjectModel> Update(ProjectModel entity)

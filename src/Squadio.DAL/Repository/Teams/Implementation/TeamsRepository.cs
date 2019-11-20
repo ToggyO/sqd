@@ -20,6 +20,7 @@ namespace Squadio.DAL.Repository.Teams.Implementation
         {
             var item = await _context.Teams
                 .Include(x => x.Company)
+                .Include(x=>x.Creator)
                 .FirstOrDefaultAsync(x => x.Id == id);
             return item;
         }

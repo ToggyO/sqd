@@ -78,7 +78,18 @@ namespace Squadio.DAL.Repository.CompaniesUsers.Implementation
             return item;
         }
 
-        public async Task<IEnumerable<CompanyUserModel>> GetCompanyUser(Guid? userId = null, Guid? companyId = null, IEnumerable<UserStatus> statuses = null)
+        public async Task<CompanyUserModel> GetFullCompanyUser(Guid companyId, Guid userId)
+        {
+            var item = await _context.CompaniesUsers
+                .Include(x => x.Company)
+                .Include(x => x.User)
+                    .ThenInclude(x=>x.Role)
+                .Where(x => x.CompanyId == companyId && x.UserId == userId)
+                .FirstOrDefaultAsync();
+            return item;
+        }
+
+        public async Task<IEnumerable<CompanyUserModel>> GetCompaniesUsers(Guid? companyId = null, Guid? userId = null, IEnumerable<UserStatus> statuses = null)
         {
             IQueryable<CompanyUserModel> query = _context.CompaniesUsers
                 .Include(x => x.User)
@@ -124,6 +135,21 @@ namespace Squadio.DAL.Repository.CompaniesUsers.Implementation
                 .Where(x => x.CompanyId == companyId && x.UserId == userId)
                 .FirstOrDefaultAsync();
             _context.CompaniesUsers.Remove(item);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteCompanyUsers(Guid companyId, IEnumerable<string> emails)
+        {
+            var emailsUpper = emails.Select(s => s.ToUpper());
+
+            var query = _context.CompaniesUsers
+                .Include(x => x.User)
+                .Where(x => x.CompanyId == companyId);
+            query = query.Where(x => emailsUpper.Contains(x.User.Email.ToUpper()));
+
+            var items = await query.ToListAsync();
+            
+            _context.CompaniesUsers.RemoveRange(items);
             await _context.SaveChangesAsync();
         }
 

@@ -45,7 +45,8 @@ namespace Squadio.BLL.Services.Teams.Implementation
                 Name = dto.Name,
                 CompanyId = companyId,
                 CreatedDate = DateTime.UtcNow,
-                ColorHex = dto.ColorHex
+                ColorHex = dto.ColorHex,
+                CreatorId = userId
             };
 
             entity = await _repository.Create(entity);

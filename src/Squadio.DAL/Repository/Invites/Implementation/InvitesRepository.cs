@@ -18,18 +18,6 @@ namespace Squadio.DAL.Repository.Invites.Implementation
         
         public async Task<InviteModel> CreateInvite(InviteModel entity)
         {
-            /*
-            var code = Guid.NewGuid().ToString("N");
-            var item = new InviteModel
-            {
-                Email = email,
-                Activated = false,
-                CreatedDate = DateTime.UtcNow,
-                Code = code,
-                EntityId = entityId,
-                EntityType = entityType
-            };
-            */
             _context.Invites.Add(entity);
             await _context.SaveChangesAsync();
             return entity;
@@ -38,6 +26,7 @@ namespace Squadio.DAL.Repository.Invites.Implementation
         public async Task<InviteModel> GetInviteByCode(string code)
         {
             var item = await _context.Invites
+                .Include(x => x.Creator)
                 .FirstOrDefaultAsync(x => x.Code.ToUpper() == code.ToUpper());
             return item;
         }

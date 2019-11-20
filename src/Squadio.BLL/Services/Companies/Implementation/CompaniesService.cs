@@ -114,7 +114,8 @@ namespace Squadio.BLL.Services.Companies.Implementation
             {
                 Name = dto.Name,
                 Address = dto.Address,
-                CreatedDate = DateTime.UtcNow
+                CreatedDate = DateTime.UtcNow,
+                CreatorId = userId
             };
             
             entityCompany = await _repository.Create(entityCompany);

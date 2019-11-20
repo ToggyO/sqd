@@ -2,6 +2,8 @@
 using System.Linq;
 using Mapper;
 using Squadio.Domain.Models.Projects;
+using Squadio.Domain.Models.Users;
+using Squadio.DTO.Users;
 
 namespace Squadio.DTO.Projects
 {
@@ -16,11 +18,18 @@ namespace Squadio.DTO.Projects
     
         public ProjectDTO Map(ProjectModel item)
         {
-            return new ProjectDTO
+            var result = new ProjectDTO
             {
                 Id = item.Id,
                 Name = item.Name
             };
+            
+            if (item.Creator != null)
+            {
+                result.Creator = _mapper.Map<UserModel, UserDTO>(item.Creator);
+            }
+
+            return result;
         }
     }
     

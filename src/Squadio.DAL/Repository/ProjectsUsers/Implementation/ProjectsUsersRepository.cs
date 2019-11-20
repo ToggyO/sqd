@@ -77,9 +77,22 @@ namespace Squadio.DAL.Repository.ProjectsUsers.Implementation
         public async Task<ProjectUserModel> GetProjectUser(Guid projectId, Guid userId)
         {
             var item = await _context.ProjectsUsers
+                .Where(x => x.ProjectId == projectId && x.UserId == userId)
                 .Include(x => x.Project)
                 .Include(x => x.User)
+                .FirstOrDefaultAsync();
+            return item;
+        }
+
+        public async Task<ProjectUserModel> GetFullProjectUser(Guid projectId, Guid userId)
+        {
+            var item = await _context.ProjectsUsers
                 .Where(x => x.ProjectId == projectId && x.UserId == userId)
+                .Include(x => x.Project)
+                    .ThenInclude(x=>x.Team)
+                        .ThenInclude(x=>x.Company)
+                .Include(x => x.User)
+                    .ThenInclude(x=>x.Role)
                 .FirstOrDefaultAsync();
             return item;
         }
@@ -103,6 +116,21 @@ namespace Squadio.DAL.Repository.ProjectsUsers.Implementation
                 .Where(x => x.ProjectId == projectId && x.UserId == userId)
                 .FirstOrDefaultAsync();
             _context.ProjectsUsers.Remove(item);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteProjectUsers(Guid projectId, IEnumerable<string> emails)
+        {
+            var emailsUpper = emails.Select(s => s.ToUpper());
+
+            var query = _context.ProjectsUsers
+                .Include(x => x.User)
+                .Where(x => x.ProjectId == projectId);
+            query = query.Where(x => emailsUpper.Contains(x.User.Email.ToUpper()));
+
+            var items = await query.ToListAsync();
+            
+            _context.ProjectsUsers.RemoveRange(items);
             await _context.SaveChangesAsync();
         }
 

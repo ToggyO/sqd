@@ -19,7 +19,9 @@ namespace Squadio.DAL.Repository.Companies.Implementation
         }
         public async Task<CompanyModel> GetById(Guid id)
         {
-            var entity = await _context.Companies.FindAsync(id);
+            var entity = await _context.Companies
+                .Include(x => x.Creator)
+                .FirstOrDefaultAsync(x => x.Id == id);
             return entity;
         }
 
