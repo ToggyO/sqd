@@ -12,7 +12,7 @@
         public static class Business
         {
             public const string InvalidEmail = "Email is invalid";
-            public const string EmailExists = "Email already exists";
+            public const string EmailExists = "This email is already registered. Sign in or use different email to register";
             public const string UserDoesNotExists = "User does not exists";
             public const string UserIsDeleted = "You don't have access to Anova system - your account is deleted";
             public const string UserIsBlocked = "You cannot request profile information from Research site(s) - your account is blocked";
