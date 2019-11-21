@@ -38,7 +38,7 @@ namespace Squadio.API.Controllers
         }
         
         /// <summary>
-        /// Create token using google tokenId
+        /// Create token using google tokenId (if user does not exist - creates it)
         /// </summary>
         [HttpPost("token/google")]
         public async Task<Response<AuthInfoDTO>> GoogleAuthenticate([Required] GoogleTokenDTO request)
