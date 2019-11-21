@@ -1,0 +1,10 @@
+FROM mcr.microsoft.com/dotnet/core/sdk:3.0 AS build
+WORKDIR /app
+COPY . .
+RUN dotnet restore -s https://api.nuget.org/v3/index.json -s http://nuget.magora.team/nuget ./Squadio.sln
+RUN dotnet publish -c Release -o /app/out
+
+FROM mcr.microsoft.com/dotnet/core/sdk:3.0
+WORKDIR /app
+COPY --from=build /app/out .
+ENTRYPOINT ["dotnet", "Squadio.API.dll"]

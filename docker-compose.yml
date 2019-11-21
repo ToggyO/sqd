@@ -23,10 +23,13 @@ services:
   
   api-dev:
     container_name: squadio-dev
-    build: ./Squadio.API/
+    build:
+      context: ./src
+      dockerfile: ./Dockerfile-Api
     restart: always
     links:
       - sql-dev
+      - rabbit-dev
     ports:
       - 5005:5000
     networks:
@@ -51,3 +54,40 @@ services:
       - StaticUrls:ResetPasswordUrl=https://squad.magora.work/auth/set-password
       - StaticUrls:InviteToTeamPageUrl=https://squad.magora.work/team/invite
       - StaticUrls:InviteToProjectPageUrl=https://squad.magora.work/project/invite
+  
+  email-sender-dev:
+    container_name: squadio-email-sender-dev
+    build:
+      context: ./src
+      dockerfile: ./Dockerfile-EmailSender
+    restart: always
+    links:
+      - rabbit-dev
+    ports:
+      - 5006:5000
+    networks:
+      - squadio-network
+
+  rabbit-dev:
+    image: "rabbitmq:3-management"
+    hostname: "rabbit-dev"
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
+      RABBITMQ_DEFAULT_USER: "rabbitmq"
+      RABBITMQ_DEFAULT_PASS: "rabbitmq"
+      RABBITMQ_DEFAULT_VHOST: "/"
+    networks:
+      - squadio-network
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    labels:
+      NAME: "rabbitmq"
+    volumes:
+      - rabbit:/var/lib/rabbitmq
+      - ./conf/:/etc/rabbitmq/
+      - ${RABBIT_CONF_VOLUME}:/etc/rabbitmq/rabbitmq.config
+ 
+volumes:
+  rabbit:
+    driver: local
