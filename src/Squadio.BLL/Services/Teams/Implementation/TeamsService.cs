@@ -4,6 +4,7 @@ using Mapper;
 using Squadio.BLL.Services.Invites;
 using Squadio.BLL.Services.Projects;
 using Squadio.Common.Models.Errors;
+using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Teams;
@@ -156,7 +157,7 @@ namespace Squadio.BLL.Services.Teams.Implementation
             {
                 Page = 1,
                 PageSize = 1000
-            }, companyId);
+            }, new TeamFilter{CompanyId = companyId});
             
             foreach (var team in teams.Items)
             {

@@ -7,6 +7,7 @@ using Squadio.BLL.Providers.Companies;
 using Squadio.BLL.Providers.Invites;
 using Squadio.BLL.Providers.Teams;
 using Squadio.Common.Models.Errors;
+using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.SignUp;
@@ -114,7 +115,7 @@ namespace Squadio.BLL.Providers.SignUp.Implementation
                 });
             }
 
-            var teamPage = await _teamsProvider.GetTeams(new PageModel(), company.CompanyId);
+            var teamPage = await _teamsProvider.GetTeams(new PageModel(), new TeamFilter{CompanyId = company.CompanyId});
             var team = teamPage.Data.Items.FirstOrDefault();
             
             if (team == null)

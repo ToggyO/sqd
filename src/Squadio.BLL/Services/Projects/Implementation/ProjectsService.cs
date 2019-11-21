@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Mapper;
 using Squadio.BLL.Services.Invites;
 using Squadio.Common.Models.Errors;
+using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.CompaniesUsers;
@@ -183,7 +184,7 @@ namespace Squadio.BLL.Services.Projects.Implementation
             {
                 Page = 1,
                 PageSize = 1000
-            }, teamId: teamId);
+            }, new ProjectFilter { TeamId = teamId });
             
             foreach (var project in projects.Items)
             {

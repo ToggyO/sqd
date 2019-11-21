@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.Domain.Models.Teams;
@@ -44,13 +45,16 @@ namespace Squadio.DAL.Repository.Teams.Implementation
             return entity;
         }
 
-        public async Task<PageModel<TeamModel>> GetTeams(PageModel model, Guid? companyId = null)
+        public async Task<PageModel<TeamModel>> GetTeams(PageModel model, TeamFilter filter = null)
         {
             IQueryable<TeamModel> query = _context.Teams;
 
-            if (companyId.HasValue)
+            if (filter != null)
             {
-                query = query.Where(x => x.CompanyId == companyId);
+                if (filter.CompanyId.HasValue)
+                {
+                    query = query.Where(x => x.CompanyId == filter.CompanyId);
+                }
             }
             
             var items = await query

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Mapper;
+using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Projects;
@@ -29,9 +30,9 @@ namespace Squadio.BLL.Providers.Projects.Implementation
             _mapper = mapper;
         }
 
-        public async Task<Response<PageModel<ProjectDTO>>> GetProjects(PageModel model, Guid? companyId = null)
+        public async Task<Response<PageModel<ProjectDTO>>> GetProjects(PageModel model, ProjectFilter filter)
         {
-            var page = await _repository.GetProjects(model, companyId);
+            var page = await _repository.GetProjects(model, filter);
 
             var result = new PageModel<ProjectDTO>
             {

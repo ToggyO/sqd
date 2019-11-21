@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Squadio.API.Filters;
 using Squadio.API.Handlers.Invites;
 using Squadio.API.Handlers.Teams;
+using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.Domain.Enums;
@@ -33,9 +34,10 @@ namespace Squadio.API.Controllers
         /// Get teams with pagination
         /// </summary>
         [HttpGet]
-        public async Task<Response<PageModel<TeamDTO>>> GetTeams([FromQuery] PageModel model)
+        public async Task<Response<PageModel<TeamDTO>>> GetTeams([FromQuery] PageModel model,
+            [FromQuery] TeamFilter filter)
         {
-            return await _handler.GetTeams(model);
+            return await _handler.GetTeams(model, filter);
         }
         
         /// <summary>

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Squadio.BLL.Providers.Projects;
 using Squadio.BLL.Services.Projects;
 using Squadio.Common.Extensions;
+using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Projects;
@@ -23,9 +24,9 @@ namespace Squadio.API.Handlers.Projects.Implementation
             _service = service;
         }
 
-        public async Task<Response<PageModel<ProjectDTO>>> GetProjects(PageModel model)
+        public async Task<Response<PageModel<ProjectDTO>>> GetProjects(PageModel model, ProjectFilter filter)
         {
-            var result = await _provider.GetProjects(model);
+            var result = await _provider.GetProjects(model, filter);
             return result;
         }
 

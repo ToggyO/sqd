@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Mapper;
+using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Teams;
@@ -71,9 +72,9 @@ namespace Squadio.BLL.Providers.Teams.Implementation
             };
         }
 
-        public async Task<Response<PageModel<TeamDTO>>> GetTeams(PageModel model, Guid? companyId = null)
+        public async Task<Response<PageModel<TeamDTO>>> GetTeams(PageModel model, TeamFilter filter)
         {
-            var page = await _repository.GetTeams(model, companyId);
+            var page = await _repository.GetTeams(model, filter);
 
             var result = new PageModel<TeamDTO>
             {

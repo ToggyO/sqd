@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Squadio.API.Filters;
 using Squadio.API.Handlers.Invites;
 using Squadio.API.Handlers.Projects;
+using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.Domain.Enums;
@@ -33,9 +34,10 @@ namespace Squadio.API.Controllers
         /// Get projects with pagination
         /// </summary>
         [HttpGet]
-        public async Task<Response<PageModel<ProjectDTO>>> GetProjects([FromQuery] PageModel model)
+        public async Task<Response<PageModel<ProjectDTO>>> GetProjects([FromQuery] PageModel model
+            , [FromQuery] ProjectFilter filter)
         {
-            return await _handler.GetProjects(model);
+            return await _handler.GetProjects(model, filter);
         }
         
         /// <summary>
