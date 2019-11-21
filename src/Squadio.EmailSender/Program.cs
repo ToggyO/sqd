@@ -8,10 +8,23 @@ namespace Squadio.EmailSender
     {
         static void Main(string[] args)
         {
+            var a = 0;
+            Console.WriteLine("-------------------------");
+            Console.WriteLine("[" + DateTime.Now+ "]");
+            Console.WriteLine("-------------------------");
+            Console.WriteLine("Mail sender ololo");
             using (var bus = RabbitHutch.CreateBus("host=localhost:5672"))
             {
-                bus.Subscribe<UserConfirmEmailModel>("test", HandleTextMessage);
+                try
+                {
+                    bus.Subscribe<UserConfirmEmailModel>("test", HandleTextMessage);
+                }
+                catch
+                {
+                    Console.WriteLine("Error RabbitMQ");
+                }
             }
+            Console.WriteLine("Mail sender DONE");
         }
 
         static void HandleTextMessage(UserConfirmEmailModel textMessage)
