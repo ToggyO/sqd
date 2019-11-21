@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Mapper;
 using Squadio.BLL.Providers.Codes;
@@ -17,12 +15,11 @@ using Squadio.DAL.Repository.CompaniesUsers;
 using Squadio.DAL.Repository.Invites;
 using Squadio.DAL.Repository.Projects;
 using Squadio.DAL.Repository.ProjectsUsers;
+using Squadio.DAL.Repository.SignUp;
 using Squadio.DAL.Repository.Teams;
 using Squadio.DAL.Repository.TeamsUsers;
-using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Invites;
-using Squadio.Domain.Models.Users;
 using Squadio.DTO.Invites;
 using Squadio.DTO.Users;
 
@@ -45,6 +42,8 @@ namespace Squadio.BLL.Services.Invites.Implementation
         private readonly ICodeProvider _codeProvider;
         private readonly IUsersService _usersService;
         private readonly IUsersProvider _usersProvider;
+        private readonly ISignUpRepository _signUpRepository;
+        private readonly IChangePasswordRequestRepository _changePasswordRepository;
         private readonly IMapper _mapper;
         public InvitesService(IInvitesRepository repository
             , IEmailService<InviteToTeamEmailModel> inviteToTeamMailService
@@ -59,6 +58,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
             , ICodeProvider codeProvider
             , IUsersService usersService
             , IUsersProvider usersProvider
+            , ISignUpRepository signUpRepository
             , IChangePasswordRequestRepository changePasswordRepository
             , IMapper mapper)
         {
@@ -75,6 +75,8 @@ namespace Squadio.BLL.Services.Invites.Implementation
             _codeProvider = codeProvider;
             _usersService = usersService;
             _usersProvider = usersProvider;
+            _signUpRepository = signUpRepository;
+            _changePasswordRepository = changePasswordRepository;
             _mapper = mapper;
         }
         
@@ -319,10 +321,15 @@ namespace Squadio.BLL.Services.Invites.Implementation
                 var createUserDTO = new UserCreateDTO()
                 {
                     Email = email,
-                    Step = RegistrationStep.Done
+                    Step = RegistrationStep.New
                 };
                 user = (await _usersService.CreateUser(createUserDTO)).Data;
-                //await _changePasswordRepository.AddRequest(user.Id, code);
+            }
+
+            var signUpStep = await _signUpRepository.GetRegistrationStepByUserId(user.Id);
+            if (signUpStep.Step == RegistrationStep.New)
+            {
+                await _changePasswordRepository.AddRequest(user.Id, code);
             }
             
             var companyUser = await _companiesUsersRepository.GetCompanyUser(companyId, user.Id);
@@ -378,10 +385,15 @@ namespace Squadio.BLL.Services.Invites.Implementation
                 var createUserDTO = new UserCreateDTO()
                 {
                     Email = email,
-                    Step = RegistrationStep.Done
+                    Step = RegistrationStep.New
                 };
                 user = (await _usersService.CreateUser(createUserDTO)).Data;
-                //await _changePasswordRepository.AddRequest(user.Id, code);
+            }
+
+            var signUpStep = await _signUpRepository.GetRegistrationStepByUserId(user.Id);
+            if (signUpStep.Step == RegistrationStep.New)
+            {
+                await _changePasswordRepository.AddRequest(user.Id, code);
             }
             
             var teamUser = await _teamsUsersRepository.GetTeamUser(teamId, user.Id);
@@ -437,10 +449,15 @@ namespace Squadio.BLL.Services.Invites.Implementation
                 var createUserDTO = new UserCreateDTO()
                 {
                     Email = email,
-                    Step = RegistrationStep.Done
+                    Step = RegistrationStep.New
                 };
                 user = (await _usersService.CreateUser(createUserDTO)).Data;
-                //await _changePasswordRepository.AddRequest(user.Id, code);
+            }
+
+            var signUpStep = await _signUpRepository.GetRegistrationStepByUserId(user.Id);
+            if (signUpStep.Step == RegistrationStep.New)
+            {
+                await _changePasswordRepository.AddRequest(user.Id, code);
             }
             
             var projectUser = await _projectsUsersRepository.GetProjectUser(projectId, user.Id);
