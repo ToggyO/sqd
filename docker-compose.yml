@@ -81,12 +81,6 @@ services:
     ports:
       - "15672:15672"
       - "5672:5672"
-    labels:
-      NAME: "rabbitmq"
-    volumes:
-      - rabbit:/var/lib/rabbitmq
-      - ./conf/:/etc/rabbitmq/
-      - ${RABBIT_CONF_VOLUME}:/etc/rabbitmq/rabbitmq.config
  
 volumes:
   rabbit:
