@@ -1,82 +1,85 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using EasyNetQ;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Squadio.Common.Models.Email;
 
 namespace Squadio.EmailSender
 {
-    public class ListenerRabbitMQ
+    public class ListenerRabbitMQ : BackgroundService
     {
         // for docker
-        private const string RabbitConnectionString = "host=rabbit-dev;username=rabbitmq;password=rabbitmq";
+        //private string _rabbitConnectionString = "host=rabbit-dev;username=rabbitmq;password=rabbitmq";
         // for debug
-        //private const string RabbitConnectionString = "host=localhost;username=rabbitmq;password=rabbitmq";
+        private readonly string _rabbitConnectionString;
+        private IBus bus { get; set; }
+        private readonly ILogger<ListenerRabbitMQ> _logger;
         
-        private const int maxCountTry = 10;
+        private const int maxCountTry = 60;
 
-        public ListenerRabbitMQ()
+        public ListenerRabbitMQ(ILogger<ListenerRabbitMQ> logger)
         {
+            // for debug
+            _rabbitConnectionString = "host=localhost;username=rabbitmq;password=rabbitmq";
+            // for docker
+            //_rabbitConnectionString = "host=rabbit-dev;username=rabbitmq;password=rabbitmq";
+            
+            _logger = logger;
         }
 
-        public async Task Execute()
+        public override async Task StartAsync(CancellationToken stoppingToken)
         {
             var isRabbitConnected = false;
+            _logger.LogInformation("Connection to Rabbit");
+            var count = 1;
 
-            using (var bus = RabbitHutch.CreateBus(RabbitConnectionString))
+            while (!isRabbitConnected)
             {
-                Console.ForegroundColor = ConsoleColor.DarkYellow;
-                Console.WriteLine("[{0}] Connection to Rabbit", DateTime.UtcNow);
-                Console.ResetColor();
-                var count = 1;
-                while (!isRabbitConnected)
+                bus = RabbitHutch.CreateBus(_rabbitConnectionString);
+                if (bus.IsConnected)
                 {
-                    if (bus.IsConnected)
-                    {
-                        isRabbitConnected = true;
-                    }
-
-                    Console.WriteLine("[{0}] Connection to Rabbit ({1})", DateTime.UtcNow, count);
-                    count++;
-                    if (count - 1 >= maxCountTry)
-                    {
-                        isRabbitConnected = true;
-                    }
-
-                    await Task.Delay(3000);
+                    isRabbitConnected = true;
                 }
 
-                if (!bus.IsConnected)
+                _logger.LogInformation("Connection to Rabbit ({try})", count);
+                count++;
+                if (count - 1 >= maxCountTry)
                 {
-                    Console.ForegroundColor = ConsoleColor.DarkRed;
-                    Console.WriteLine("[{0}] Can not connect to Rabbit", DateTime.UtcNow);
-                    Console.ResetColor();
-                    return;
+                    isRabbitConnected = true;
                 }
 
-                Console.ForegroundColor = ConsoleColor.DarkGreen;
-                Console.WriteLine("[{0}] Connection success", DateTime.UtcNow);
-                Console.ResetColor();
-
-                try
-                {
-                    bus.Subscribe<UserConfirmEmailModel>(
-                        subscriptionId: "SquadioListenerRabbitMQ_e0ee4bac-5adb-4eee-9b7c-29c9a481894b",
-                        onMessage: HandleEmailMessage);
-                }
-                catch
-                {
-                    Console.WriteLine("Can't subscribe RabbitMQ");
-                }
-
-                while (true){}
+                await Task.Delay(1000);
             }
+
+            if (!bus.IsConnected)
+            {
+                _logger.LogError("Can not connect to Rabbit");
+                return;
+            }
+
+            _logger.LogInformation("Connection success");
+
+            #region subscriptions
+            
+            bus.Subscribe<UserConfirmEmailModel>(
+                subscriptionId: "SquadioListenerRabbitMQ_b235a412-81b7-42af-908e-9557e88a3237",
+                onMessage: MessageHandlers.HandleEmailMessage);
+
+            #endregion
         }
 
-        private static void HandleEmailMessage(UserConfirmEmailModel message)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Got code: {0}, for {1}", message.Code, message.To);
-            Console.ResetColor();
+            while (!stoppingToken.IsCancellationRequested)
+            {}
+        }
+        
+        public override Task StopAsync(CancellationToken stoppingToken)
+        {
+            bus.Dispose();
+            return Task.CompletedTask;
         }
     }
 }
