@@ -141,7 +141,7 @@ namespace Squadio.BLL.Services.Users.Implementation
             
             entity = await _repository.Create(entity);
 
-            await _signUpRepository.SetRegistrationStep(entity.Id, dto.Step);
+            await _signUpRepository.SetRegistrationStep(entity.Id, dto.Step, dto.Status);
             
             var result = _mapper.Map<UserModel, UserDTO>(entity);
             

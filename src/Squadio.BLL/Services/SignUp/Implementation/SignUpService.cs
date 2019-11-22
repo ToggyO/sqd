@@ -78,33 +78,13 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             _mapper = mapper;
         }
 
-        /*
-        public async Task<Response> SignUpMemberEmail(SignUpMemberDTO dto)
+        public async Task<Response<UserDTO>> SignUpMemberEmail(SignUpMemberDTO dto)
         {
-            var user = await _usersRepository.GetByEmail(dto.Email);
-            if (user != null)
-            {
-                return new ErrorResponse<UserDTO>
-                {
-                    Code = ErrorCodes.Business.EmailExists,
-                    Message = ErrorMessages.Business.EmailExists,
-                    HttpStatusCode = HttpStatusCode.BadRequest,
-                    Errors = new List<Error>
-                    {
-                        new Error
-                        {
-                            Code = ErrorCodes.Business.EmailExists,
-                            Message = ErrorMessages.Business.EmailExists,
-                            Field = ErrorFields.User.Email
-                        }
-                    }
-                };
-            }
-
             var inviteResponse = await _invitesProvider.GetInviteByCode(dto.InviteCode);
 
-            if (!inviteResponse.IsSuccess || inviteResponse.Data?.Code != dto.InviteCode ||
-                inviteResponse.Data?.Activated == true)
+            if (!inviteResponse.IsSuccess 
+                || inviteResponse.Data?.Code != dto.InviteCode 
+                || inviteResponse.Data?.Activated == true)
             {
                 return new SecurityErrorResponse<UserDTO>(new []
                 {
@@ -116,24 +96,34 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 });
             }
 
-            user = new UserModel
+            var invite = inviteResponse.Data;
+            
+            var user = await _usersRepository.GetByEmail(invite.Email);
+            var step = await _repository.GetRegistrationStepByUserId(user.Id);
+            var stepValidate = ValidateStep(step, RegistrationStep.EmailConfirmed);
+            if (!stepValidate.IsSuccess)
             {
-                Name = dto.Username,
-                Email = dto.Email,
-                CreatedDate = DateTime.UtcNow
-            };
+                var errorResponse = (ErrorResponse<SignUpStepDTO>) stepValidate;
+                
+                return new ErrorResponse<UserDTO>
+                {
+                    Message = errorResponse.Message,
+                    Code = errorResponse.Code,
+                    Errors = errorResponse.Errors,
+                    HttpStatusCode = errorResponse.HttpStatusCode
+                };
+            }
 
-            user = await _usersRepository.Create(user);
+            var resetPasswordResponse = await _usersService.ResetPassword(dto.InviteCode, dto.Password);
 
-            var setPasswordResponse = await _usersService.SetPassword(dto.Email, dto.Password);
-            var result = setPasswordResponse.Data;
-
-            await _repository.SetRegistrationStep(user.Id, RegistrationStep.Done);
-
-            return new Response<UserDTO>
+            if (!resetPasswordResponse.IsSuccess)
             {
-                Data = result
-            };
+                return resetPasswordResponse;
+            }
+
+            await _repository.SetRegistrationStep(user.Id, RegistrationStep.EmailConfirmed);
+
+            return new Response<UserDTO>();
         }
 
         public async Task<Response> SignUpMemberGoogle(SignUpMemberGoogleDTO dto)
@@ -156,16 +146,64 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                     }
                 });
             }
+            
+            var inviteResponse = await _invitesProvider.GetInviteByCode(dto.InviteCode);
 
-            return await SignUpMemberEmail(new SignUpMemberDTO
+            if (!inviteResponse.IsSuccess 
+                || inviteResponse.Data?.Code != dto.InviteCode 
+                || inviteResponse.Data?.Activated == true)
             {
-                Email = infoFromGoogleToken.Email,
-                Username = infoFromGoogleToken.Name,
-                Password = dto.Password,
-                InviteCode = dto.InviteCode
-            });
+                return new SecurityErrorResponse<UserDTO>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.InviteInvalid,
+                        Message = ErrorMessages.Security.InviteInvalid
+                    }
+                });
+            }
+
+            var invite = inviteResponse.Data;
+            
+            var user = await _usersRepository.GetByEmail(invite?.Email);
+            var step = await _repository.GetRegistrationStepByUserId(user.Id);
+            var stepValidate = ValidateStep(step, RegistrationStep.EmailConfirmed);
+            if (!stepValidate.IsSuccess)
+            {
+                return stepValidate;
+            }
+
+            user.Name = infoFromGoogleToken.Name;
+            
+            step = await _repository.SetRegistrationStep(user.Id, RegistrationStep.ProjectCreated);
+            
+            return new Response();
         }
-        */
+
+        public async Task<Response<SignUpStepDTO<UserDTO>>> SignUpMemberUsername(Guid userId, UserUpdateDTO updateDTO)
+        {
+            var step = await _repository.GetRegistrationStepByUserId(userId);
+            var stepValidate = ValidateStep<UserDTO>(step, RegistrationStep.ProjectCreated);
+            if (!stepValidate.IsSuccess)
+            {
+                return stepValidate;
+            }
+
+            var user = await _usersRepository.GetById(userId);
+            user.Name = updateDTO.Name;
+            user = await _usersRepository.Update(user);
+
+            step = await _repository.SetRegistrationStep(user.Id, RegistrationStep.ProjectCreated);
+            
+            return new Response<SignUpStepDTO<UserDTO>>
+            {
+                Data = new SignUpStepDTO<UserDTO>
+                {
+                    Data = _mapper.Map<UserModel, UserDTO>(user),
+                    RegistrationStep = _mapper.Map<UserRegistrationStepModel, UserRegistrationStepDTO>(step)
+                }
+            };
+        }
 
         public async Task<Response> SignUp(string email, string password)
         {
@@ -186,7 +224,8 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             var createUserDTO = new UserCreateDTO()
             {
                 Email = email,
-                Step = RegistrationStep.New
+                Step = RegistrationStep.New,
+                Status = UserStatus.Admin
             };
 
             var createResponse = await _usersService.CreateUser(createUserDTO);
@@ -256,23 +295,25 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                     }
                 });
             }
-
-            user = new UserModel
-            {
-                Name = $"{infoFromGoogleToken.Name}",
-                Email = infoFromGoogleToken.Email,
-                CreatedDate = DateTime.Now
-            };
             
-            user = await _usersRepository.Create(user);
+            var createUserDTO = new UserCreateDTO()
+            {
+                Email = infoFromGoogleToken.Email,
+                Name = infoFromGoogleToken.Name,
+                Step = RegistrationStep.EmailConfirmed,
+                Status = UserStatus.Admin
+            };
 
-            await _repository.SetRegistrationStep(user.Id, RegistrationStep.EmailConfirmed);
+            var createResponse = await _usersService.CreateUser(createUserDTO);
 
-            var result = _mapper.Map<UserModel, UserDTO>(user);
+            if (!createResponse.IsSuccess)
+                return createResponse;
+
+            var createdUser = createResponse.Data;
 
             return new Response<UserDTO>
             {
-                Data = result
+                Data = createdUser
             };
         }
         
@@ -291,27 +332,10 @@ namespace Squadio.BLL.Services.SignUp.Implementation
         public async Task<Response<SignUpStepDTO>> SignUpConfirm(Guid userId, string code)
         {
             var step = await _repository.GetRegistrationStepByUserId(userId);
-
-            if (step.Step >= RegistrationStep.EmailConfirmed)
+            var stepValidate = ValidateStep(step, RegistrationStep.EmailConfirmed);
+            if (!stepValidate.IsSuccess)
             {
-                return new BusinessConflictErrorResponse<SignUpStepDTO>(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Business.InvalidRegistrationStep,
-                        Message = ErrorMessages.Business.InvalidRegistrationStep
-                    }
-                })
-                {
-                    Data = new SignUpStepDTO
-                    {
-                        RegistrationStep = new UserRegistrationStepDTO()
-                        {
-                            Step = (int) step.Step,
-                            StepName = step.Step.ToString()
-                        }
-                    }
-                };
+                return stepValidate;
             }
 
             var request = await _confirmEmailService.GetRequest(userId, code);
@@ -351,11 +375,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             {
                 Data = new SignUpStepDTO
                 {
-                    RegistrationStep = new UserRegistrationStepDTO()
-                    {
-                        Step = (int) step.Step,
-                        StepName = step.Step.ToString()
-                    }
+                    RegistrationStep = _mapper.Map<UserRegistrationStepModel, UserRegistrationStepDTO>(step)
                 }
             };
         }
@@ -363,27 +383,10 @@ namespace Squadio.BLL.Services.SignUp.Implementation
         public async Task<Response<SignUpStepDTO<UserDTO>>> SignUpUsername(Guid id, UserUpdateDTO updateDTO)
         {
             var step = await _repository.GetRegistrationStepByUserId(id);
-
-            if (step.Step >= RegistrationStep.UsernameEntered)
+            var stepValidate = ValidateStep<UserDTO>(step, RegistrationStep.UsernameEntered);
+            if (!stepValidate.IsSuccess)
             {
-                return new BusinessConflictErrorResponse<SignUpStepDTO<UserDTO>>(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Business.InvalidRegistrationStep,
-                        Message = ErrorMessages.Business.InvalidRegistrationStep
-                    }
-                })
-                {
-                    Data = new SignUpStepDTO<UserDTO>
-                    {
-                        RegistrationStep = new UserRegistrationStepDTO()
-                        {
-                            Step = (int) step.Step,
-                            StepName = step.Step.ToString()
-                        }
-                    }
-                };
+                return stepValidate;
             }
 
             var userResponse = await _usersService.UpdateUser(id, updateDTO);
@@ -396,11 +399,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 Data = new SignUpStepDTO<UserDTO>
                 {
                     Data = user,
-                    RegistrationStep = new UserRegistrationStepDTO()
-                    {
-                        Step = (int) step.Step,
-                        StepName = step.Step.ToString()
-                    }
+                    RegistrationStep = _mapper.Map<UserRegistrationStepModel, UserRegistrationStepDTO>(step)
                 }
             };
         }
@@ -408,27 +407,10 @@ namespace Squadio.BLL.Services.SignUp.Implementation
         public async Task<Response<SignUpStepDTO<CompanyDTO>>> SignUpCompany(Guid userId, CreateCompanyDTO dto)
         {
             var step = await _repository.GetRegistrationStepByUserId(userId);
-
-            if (step.Step >= RegistrationStep.CompanyCreated)
+            var stepValidate = ValidateStep<CompanyDTO>(step, RegistrationStep.CompanyCreated);
+            if (!stepValidate.IsSuccess)
             {
-                return new BusinessConflictErrorResponse<SignUpStepDTO<CompanyDTO>>(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Business.InvalidRegistrationStep,
-                        Message = ErrorMessages.Business.InvalidRegistrationStep
-                    }
-                })
-                {
-                    Data = new SignUpStepDTO<CompanyDTO>
-                    {
-                        RegistrationStep = new UserRegistrationStepDTO()
-                        {
-                            Step = (int) step.Step,
-                            StepName = step.Step.ToString()
-                        }
-                    }
-                };
+                return stepValidate;
             }
 
             var company = await _companiesService.Create(userId, dto);
@@ -444,11 +426,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 Data = new SignUpStepDTO<CompanyDTO>
                 {
                     Data = company.Data,
-                    RegistrationStep = new UserRegistrationStepDTO()
-                    {
-                        Step = (int) step.Step,
-                        StepName = step.Step.ToString()
-                    }
+                    RegistrationStep = _mapper.Map<UserRegistrationStepModel, UserRegistrationStepDTO>(step)
                 }
             };
         }
@@ -456,27 +434,10 @@ namespace Squadio.BLL.Services.SignUp.Implementation
         public async Task<Response<SignUpStepDTO<TeamDTO>>> SignUpTeam(Guid userId, TeamCreateDTO dto)
         {
             var step = await _repository.GetRegistrationStepByUserId(userId);
-
-            if (step.Step >= RegistrationStep.TeamCreated)
+            var stepValidate = ValidateStep<TeamDTO>(step, RegistrationStep.TeamCreated);
+            if (!stepValidate.IsSuccess)
             {
-                return new BusinessConflictErrorResponse<SignUpStepDTO<TeamDTO>>(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Business.InvalidRegistrationStep,
-                        Message = ErrorMessages.Business.InvalidRegistrationStep
-                    }
-                })
-                {
-                    Data = new SignUpStepDTO<TeamDTO>
-                    {
-                        RegistrationStep = new UserRegistrationStepDTO()
-                        {
-                            Step = (int) step.Step,
-                            StepName = step.Step.ToString()
-                        }
-                    }
-                };
+                return stepValidate;
             }
 
             var companyPage = await _companiesProvider.GetUserCompanies(userId, new PageModel());
@@ -497,11 +458,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 {
                     Data = new SignUpStepDTO<TeamDTO>
                     {
-                        RegistrationStep = new UserRegistrationStepDTO()
-                        {
-                            Step = (int) step.Step,
-                            StepName = step.Step.ToString()
-                        }
+                        RegistrationStep = _mapper.Map<UserRegistrationStepModel, UserRegistrationStepDTO>(step)
                     }
                 };
             }
@@ -519,11 +476,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 Data = new SignUpStepDTO<TeamDTO>
                 {
                     Data = team.Data,
-                    RegistrationStep = new UserRegistrationStepDTO()
-                    {
-                        Step = (int) step.Step,
-                        StepName = step.Step.ToString()
-                    }
+                    RegistrationStep = _mapper.Map<UserRegistrationStepModel, UserRegistrationStepDTO>(step)
                 }
             };
         }
@@ -531,27 +484,10 @@ namespace Squadio.BLL.Services.SignUp.Implementation
         public async Task<Response<SignUpStepDTO<ProjectDTO>>> SignUpProject(Guid userId, CreateProjectDTO dto)
         {
             var step = await _repository.GetRegistrationStepByUserId(userId);
-
-            if (step.Step >= RegistrationStep.ProjectCreated)
+            var stepValidate = ValidateStep<ProjectDTO>(step, RegistrationStep.ProjectCreated);
+            if (!stepValidate.IsSuccess)
             {
-                return new BusinessConflictErrorResponse<SignUpStepDTO<ProjectDTO>>(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Business.InvalidRegistrationStep,
-                        Message = ErrorMessages.Business.InvalidRegistrationStep
-                    }
-                })
-                {
-                    Data = new SignUpStepDTO<ProjectDTO>
-                    {
-                        RegistrationStep = new UserRegistrationStepDTO()
-                        {
-                            Step = (int) step.Step,
-                            StepName = step.Step.ToString()
-                        }
-                    }
-                };
+                return stepValidate;
             }
 
             var teamPage = await _teamsProvider.GetUserTeams(userId, new PageModel());
@@ -572,11 +508,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 {
                     Data = new SignUpStepDTO<ProjectDTO>
                     {
-                        RegistrationStep = new UserRegistrationStepDTO()
-                        {
-                            Step = (int) step.Step,
-                            StepName = step.Step.ToString()
-                        }
+                        RegistrationStep = _mapper.Map<UserRegistrationStepModel, UserRegistrationStepDTO>(step)
                     }
                 };
             }
@@ -592,11 +524,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             {
                 Data = new SignUpStepDTO<ProjectDTO>
                 {
-                    RegistrationStep = new UserRegistrationStepDTO()
-                    {
-                        Step = (int) step.Step,
-                        StepName = step.Step.ToString()
-                    },
+                    RegistrationStep = _mapper.Map<UserRegistrationStepModel, UserRegistrationStepDTO>(step),
                     Data = project.Data
                 }
             };
@@ -605,27 +533,10 @@ namespace Squadio.BLL.Services.SignUp.Implementation
         public async Task<Response<SignUpStepDTO>> SignUpDone(Guid userId)
         {
             var step = await _repository.GetRegistrationStepByUserId(userId);
-
-            if (step.Step >= RegistrationStep.Done)
+            var stepValidate = ValidateStep(step, RegistrationStep.Done);
+            if (!stepValidate.IsSuccess)
             {
-                return new BusinessConflictErrorResponse<SignUpStepDTO>(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Business.InvalidRegistrationStep,
-                        Message = ErrorMessages.Business.InvalidRegistrationStep
-                    }
-                })
-                {
-                    Data = new SignUpStepDTO
-                    {
-                        RegistrationStep = new UserRegistrationStepDTO()
-                        {
-                            Step = (int) step.Step,
-                            StepName = step.Step.ToString()
-                        }
-                    }
-                };
+                return stepValidate;
             }
 
             step = await _repository.SetRegistrationStep(userId, RegistrationStep.Done);
@@ -634,11 +545,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             {
                 Data = new SignUpStepDTO
                 {
-                    RegistrationStep = new UserRegistrationStepDTO()
-                    {
-                        Step = (int) step.Step,
-                        StepName = step.Step.ToString()
-                    }
+                    RegistrationStep = _mapper.Map<UserRegistrationStepModel, UserRegistrationStepDTO>(step)
                 }
             };
         }
@@ -673,11 +580,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 {
                     Data = new SignUpStepDTO
                     {
-                        RegistrationStep = new UserRegistrationStepDTO()
-                        {
-                            Step = (int) step.Step,
-                            StepName = step.Step.ToString()
-                        }
+                        RegistrationStep = _mapper.Map<UserRegistrationStepModel, UserRegistrationStepDTO>(step)
                     }
                 };
             }
@@ -688,13 +591,55 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             {
                 Data = new SignUpStepDTO
                 {
-                    RegistrationStep = new UserRegistrationStepDTO()
-                    {
-                        Step = (int) step.Step,
-                        StepName = step.Step.ToString()
-                    }
+                    RegistrationStep = _mapper.Map<UserRegistrationStepModel, UserRegistrationStepDTO>(step)
                 }
             };
+        }
+
+        private Response<SignUpStepDTO<T>> ValidateStep<T>(UserRegistrationStepModel model, RegistrationStep step)
+        {
+            if (model.Step >= step)
+            {
+                return new BusinessConflictErrorResponse<SignUpStepDTO<T>>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Business.InvalidRegistrationStep,
+                        Message = ErrorMessages.Business.InvalidRegistrationStep
+                    }
+                })
+                {
+                    Data = new SignUpStepDTO<T>
+                    {
+                        RegistrationStep = _mapper.Map<UserRegistrationStepModel, UserRegistrationStepDTO>(model)
+                    }
+                };
+            }
+            
+            return new Response<SignUpStepDTO<T>>();
+        }
+
+        private Response<SignUpStepDTO> ValidateStep(UserRegistrationStepModel model, RegistrationStep step)
+        {
+            if (model.Step >= step)
+            {
+                return new BusinessConflictErrorResponse<SignUpStepDTO>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Business.InvalidRegistrationStep,
+                        Message = ErrorMessages.Business.InvalidRegistrationStep
+                    }
+                })
+                {
+                    Data = new SignUpStepDTO
+                    {
+                        RegistrationStep = _mapper.Map<UserRegistrationStepModel, UserRegistrationStepDTO>(model)
+                    }
+                };
+            }
+            
+            return new Response<SignUpStepDTO>();
         }
     }
 }

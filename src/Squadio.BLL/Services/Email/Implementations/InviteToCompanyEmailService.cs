@@ -25,7 +25,8 @@ namespace Squadio.BLL.Services.Email.Implementations
                 .Replace("{{InviteToProjectPageUrl}}", _options.Value.InviteToCompanyPageUrl)
                 .Replace("{{AuthorName}}", model.AuthorName)
                 .Replace("{{CompanyName}}", model.CompanyName)
-                .Replace("{{Code}}", model.Code);
+                .Replace("{{Code}}", model.Code)
+                .Replace("{{IsAlreadyRegistered}}", model.IsAlreadyRegistered.ToString().ToLower());
 
             return resource;
         }

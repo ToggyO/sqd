@@ -37,8 +37,10 @@ namespace Squadio.API.Controllers
         {
             return await _handler.GetRegistrationStep(User);
         }
-
-        /*
+        
+        /// <summary>
+        /// Confirm email, using invite
+        /// </summary>
         [HttpPost("member/email")]
         [AllowAnonymous]
         public async Task<Response<AuthInfoDTO>> SignUpMemberEmail([Required, FromBody] SignUpMemberDTO dto)
@@ -46,13 +48,24 @@ namespace Squadio.API.Controllers
             return await _handler.SignUpMemberEmail(dto);
         }
         
+        /// <summary>
+        /// Confirm email, set username, using google token and invite
+        /// </summary>
         [HttpPost("member/google")]
         [AllowAnonymous]
         public async Task<Response<AuthInfoDTO>> SignUpMemberGoogle([Required, FromBody] SignUpMemberGoogleDTO dto)
         {
             return await _handler.SignUpMemberGoogle(dto);
         }
-        */
+        
+        /// <summary>
+        /// Set username of current user
+        /// </summary>
+        [HttpPut("member/username")]
+        public async Task<Response<SignUpStepDTO<UserDTO>>> SignUpMemberUsername([FromBody] UserUpdateDTO dto)
+        {
+            return await _handler.SignUpMemberUsername(dto, User);
+        }
         
         /// <summary>
         /// Create new account and send confirmation email
@@ -65,7 +78,7 @@ namespace Squadio.API.Controllers
         }
         
         /// <summary>
-        /// Create new account and send confirmation email
+        /// Create new account
         /// </summary>
         [HttpPost("admin/google")]
         [AllowAnonymous]
@@ -139,9 +152,18 @@ namespace Squadio.API.Controllers
         }
         
         /// <summary>
-        /// User watched video tutorial and ready to use application
+        /// Obsolete: This endpoint will be removed soon. Use "api/signup/done"
         /// </summary>
         [HttpPut("admin/done")]
+        public async Task<Response<SignUpStepDTO>> SignUpDoneObsolete()
+        {
+            return await _handler.SignUpDone(User);
+        }
+        
+        /// <summary>
+        /// User (member and admin) watched video tutorial and ready to use application
+        /// </summary>
+        [HttpPut("done")]
         public async Task<Response<SignUpStepDTO>> SignUpDone()
         {
             return await _handler.SignUpDone(User);

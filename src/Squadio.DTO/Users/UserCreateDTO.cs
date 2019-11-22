@@ -7,5 +7,6 @@ namespace Squadio.DTO.Users
         public string Email { get; set; }
         public string Name { get; set; }
         public RegistrationStep Step { get; set; }
+        public UserStatus Status { get; set; }
     }
 }

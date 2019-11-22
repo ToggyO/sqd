@@ -41,7 +41,6 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             return result;
         }
 
-        /*
         public async Task<Response<AuthInfoDTO>> SignUpMemberEmail(SignUpMemberDTO dto)
         {
             var signUpResult = await _service.SignUpMemberEmail(dto);
@@ -61,7 +60,7 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             var resultToken = await _tokensService.Authenticate(new CredentialsDTO
             {
                 Password = dto.Password,
-                Email = dto.Email
+                Email = signUpResult.Data.Email
             });
 
             return resultToken;
@@ -72,7 +71,7 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             var signUpResult = await _service.SignUpMemberGoogle(dto);
             if (!signUpResult.IsSuccess)
             {
-                var errorResponse = (ErrorResponse<UserDTO>) signUpResult;
+                var errorResponse = (ErrorResponse) signUpResult;
                 
                 return new ErrorResponse<AuthInfoDTO>
                 {
@@ -87,7 +86,12 @@ namespace Squadio.API.Handlers.SignUp.Implementation
 
             return resultToken;
         }
-        */
+
+        public async Task<Response<SignUpStepDTO<UserDTO>>> SignUpMemberUsername(UserUpdateDTO dto, ClaimsPrincipal claims)
+        {
+            var result = await _service.SignUpMemberUsername(claims.GetUserId(), dto);
+            return result;
+        }
 
         public async Task<Response<AuthInfoDTO>> SignUp(string email, string password)
         {

@@ -321,7 +321,8 @@ namespace Squadio.BLL.Services.Invites.Implementation
                 var createUserDTO = new UserCreateDTO()
                 {
                     Email = email,
-                    Step = RegistrationStep.New
+                    Step = RegistrationStep.New,
+                    Status = UserStatus.Member
                 };
                 user = (await _usersService.CreateUser(createUserDTO)).Data;
             }
@@ -361,7 +362,8 @@ namespace Squadio.BLL.Services.Invites.Implementation
                     To = email,
                     AuthorName = authorName,
                     Code = invite.Code,
-                    CompanyName = companyName
+                    CompanyName = companyName,
+                    IsAlreadyRegistered = signUpStep.Step != RegistrationStep.New
                 });
             }
             catch
@@ -385,7 +387,8 @@ namespace Squadio.BLL.Services.Invites.Implementation
                 var createUserDTO = new UserCreateDTO()
                 {
                     Email = email,
-                    Step = RegistrationStep.New
+                    Step = RegistrationStep.New,
+                    Status = UserStatus.Member
                 };
                 user = (await _usersService.CreateUser(createUserDTO)).Data;
             }
@@ -425,7 +428,8 @@ namespace Squadio.BLL.Services.Invites.Implementation
                     To = email,
                     AuthorName = authorName,
                     Code = invite.Code,
-                    TeamName = teamName
+                    TeamName = teamName,
+                    IsAlreadyRegistered = signUpStep.Step != RegistrationStep.New
                 });
             }
             catch
@@ -449,7 +453,8 @@ namespace Squadio.BLL.Services.Invites.Implementation
                 var createUserDTO = new UserCreateDTO()
                 {
                     Email = email,
-                    Step = RegistrationStep.New
+                    Step = RegistrationStep.New,
+                    Status = UserStatus.Member
                 };
                 user = (await _usersService.CreateUser(createUserDTO)).Data;
             }
@@ -489,7 +494,8 @@ namespace Squadio.BLL.Services.Invites.Implementation
                     To = email,
                     AuthorName = authorName,
                     Code = invite.Code,
-                    ProjectName = projectName
+                    ProjectName = projectName,
+                    IsAlreadyRegistered = signUpStep.Step != RegistrationStep.New
                 });
             }
             catch

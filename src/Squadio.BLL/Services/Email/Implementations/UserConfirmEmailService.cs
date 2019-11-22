@@ -30,7 +30,7 @@ namespace Squadio.BLL.Services.Email.Implementations
 
         protected override string GetSubject(UserConfirmEmailModel emailModel)
         {
-            return "Email confirmation";
+            return "Squad verification";
         }
     }
 }

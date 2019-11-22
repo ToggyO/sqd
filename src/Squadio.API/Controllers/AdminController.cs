@@ -30,7 +30,7 @@ namespace Squadio.API.Controllers
         /// <summary>
         /// Get users with pagination
         /// </summary>
-        [HttpGet("/users")]
+        [HttpGet("users")]
         [PermissionFilter(Area.Admin)]
         public async Task<Response<PageModel<UserWithCompaniesDTO>>> GetUsersPage([FromQuery] PageModel model
             , [FromQuery] UserWithCompaniesFilter filter
@@ -42,7 +42,7 @@ namespace Squadio.API.Controllers
         /// <summary>
         /// Get companies with pagination
         /// </summary>
-        [HttpGet("/companies")]
+        [HttpGet("companies")]
         [PermissionFilter(Area.Admin)]
         public async Task<Response<PageModel<CompanyListDTO>>> GetCompaniesPage([FromQuery] PageModel model
             , [FromQuery] CompaniesFilter filter

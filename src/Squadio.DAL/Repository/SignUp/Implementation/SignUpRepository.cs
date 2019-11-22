@@ -33,7 +33,7 @@ namespace Squadio.DAL.Repository.SignUp.Implementation
             return item;
         }
 
-        public async Task<UserRegistrationStepModel> SetRegistrationStep(Guid userId, RegistrationStep step)
+        public async Task<UserRegistrationStepModel> SetRegistrationStep(Guid userId, RegistrationStep step, UserStatus? status = null)
         {
             var item = await _context.UsersRegistrationStep
                 .Where(x => x.UserId == userId)
@@ -49,6 +49,11 @@ namespace Squadio.DAL.Repository.SignUp.Implementation
 
             item.Step = step;
             item.UpdatedDate = DateTime.UtcNow;
+
+            if (status.HasValue)
+            {
+                item.Status = status.Value;
+            }
             
             if(stepExisted)
                 _context.Update(item);

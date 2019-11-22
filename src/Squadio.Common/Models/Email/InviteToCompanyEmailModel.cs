@@ -5,5 +5,6 @@
         public string Code { get; set; }
         public string CompanyName { get; set; }
         public string AuthorName { get; set; }
+        public bool IsAlreadyRegistered { get; set; }
     }
 }

@@ -12,9 +12,6 @@ namespace Squadio.DTO.SignUp
             
             RuleFor(model => model.InviteCode)
                 .NotEmpty().WithErrorCode(ErrorCodes.Common.FieldInvalid);
-
-            RuleFor(model => model.Email)
-                .EmailAddress().WithErrorCode(ErrorCodes.Common.FieldInvalid);
         }
     }
 }

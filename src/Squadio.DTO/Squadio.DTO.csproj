@@ -55,6 +55,9 @@
       <Compile Update="SignUp\SignUpStepMapper.cs">
         <DependentUpon>SignUpStepDTO.cs</DependentUpon>
       </Compile>
+      <Compile Update="SignUp\UserRegistrationStepMapper.cs">
+        <DependentUpon>UserRegistrationStepDTO.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>
