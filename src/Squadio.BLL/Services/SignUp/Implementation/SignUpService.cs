@@ -123,7 +123,10 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             await _repository.SetRegistrationStep(user.Id, RegistrationStep.EmailConfirmed);
 
-            return new Response<UserDTO>();
+            return new Response<UserDTO>
+            {
+                Data = _mapper.Map<UserModel, UserDTO>(user)
+            };
         }
 
         public async Task<Response> SignUpMemberGoogle(SignUpMemberGoogleDTO dto)
