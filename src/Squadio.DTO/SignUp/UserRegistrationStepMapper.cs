@@ -3,7 +3,7 @@ using System.Linq;
 using Mapper;
 using Squadio.Domain.Models.Users;
 
-namespace Squadio.DTO.Users
+namespace Squadio.DTO.SignUp
 {
     public class UserRegistrationStepDTOStepMapper : IMapper<UserRegistrationStepModel, UserRegistrationStepDTO>
     {
@@ -19,7 +19,9 @@ namespace Squadio.DTO.Users
             return new UserRegistrationStepDTO
             {
                 Step = (int) item.Step,
-                StepName = item.Step.ToString()
+                StepName = item.Step.ToString(),
+                Status = (int) item.Status,
+                StatusName = item.Status.ToString()
             };
         }
     }

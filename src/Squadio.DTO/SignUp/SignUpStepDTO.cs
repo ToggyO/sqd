@@ -1,4 +1,4 @@
-﻿namespace Squadio.DTO.Users
+﻿namespace Squadio.DTO.SignUp
 {
     public class SignUpStepDTO
     {

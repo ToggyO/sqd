@@ -17,6 +17,7 @@ using Squadio.DAL.Repository.SignUp;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Auth;
+using Squadio.DTO.SignUp;
 using Squadio.DTO.Users;  
 
 namespace Squadio.BLL.Services.Tokens.Implementation

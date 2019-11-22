@@ -2,8 +2,9 @@
 using System.Linq;
 using Mapper;
 using Squadio.Domain.Models.Users;
+using Squadio.DTO.Users;
 
-namespace Squadio.DTO.Users
+namespace Squadio.DTO.SignUp
 {
     public class SignUpStepStepMapper : IMapper<UserRegistrationStepModel, SignUpStepDTO>
     {
@@ -21,7 +22,9 @@ namespace Squadio.DTO.Users
                 RegistrationStep = new UserRegistrationStepDTO()
                 {
                     Step = (int) item.Step,
-                    StepName = item.Step.ToString()
+                    StepName = item.Step.ToString(),
+                    Status = (int) item.Status,
+                    StatusName = item.Status.ToString()
                 }
             };
         }

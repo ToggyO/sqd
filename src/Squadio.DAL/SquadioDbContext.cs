@@ -46,7 +46,8 @@ namespace Squadio.DAL
                 item.HasKey(c => c.Id);
                 item.HasIndex(p => p.Email)
                     .IsUnique();
-                item.Property(x => x.RoleId).HasDefaultValue(RoleGuid.User);
+                item.Property(x => x.RoleId)
+                    .HasDefaultValue(RoleGuid.User);
                 item.HasOne(p => p.Role)
                     .WithMany()
                     .OnDelete(DeleteBehavior.Restrict);
@@ -56,6 +57,9 @@ namespace Squadio.DAL
                 item.HasKey(c => c.Id);
                 item.HasIndex(p => p.UserId)
                     .IsUnique();
+                item.Property(p => p.Status)
+                    .IsRequired()
+                    .HasDefaultValue(UserStatus.Admin);
                 item.HasOne(p => p.User)
                     .WithOne();
             });

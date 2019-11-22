@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Squadio.Common.Models.Responses;
+using Squadio.DTO.SignUp;
 using Squadio.DTO.Users;
 
 namespace Squadio.BLL.Providers.SignUp

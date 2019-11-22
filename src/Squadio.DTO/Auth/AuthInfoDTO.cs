@@ -1,4 +1,5 @@
 ﻿using System;
+using Squadio.DTO.SignUp;
 using Squadio.DTO.Users;
 
 namespace Squadio.DTO.Auth

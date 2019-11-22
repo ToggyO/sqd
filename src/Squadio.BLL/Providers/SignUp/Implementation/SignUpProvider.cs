@@ -13,6 +13,7 @@ using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.SignUp;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Users;
+using Squadio.DTO.SignUp;
 using Squadio.DTO.Users;
 
 namespace Squadio.BLL.Providers.SignUp.Implementation

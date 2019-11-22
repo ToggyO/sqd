@@ -16,17 +16,11 @@
       <Compile Update="Companies\CompanyModelMapper.cs">
         <DependentUpon>CompanyDTO.cs</DependentUpon>
       </Compile>
-      <Compile Update="Users\SignUpStepMapper.cs">
-        <DependentUpon>UserRegistrationStepDTO.cs</DependentUpon>
-      </Compile>
       <Compile Update="Teams\TeamModelMapper.cs">
         <DependentUpon>TeamDTO.cs</DependentUpon>
       </Compile>
       <Compile Update="Invites\InviteModelMapper.cs">
         <DependentUpon>InviteDTO.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Users\UserRegistrationStepMapper.cs">
-        <DependentUpon>UserRegistrationStepDTO.cs</DependentUpon>
       </Compile>
       <Compile Update="SignUp\SignUpMemberDTO.Validator.cs">
         <DependentUpon>SignUpMemberDTO.cs</DependentUpon>
@@ -57,6 +51,9 @@
       </Compile>
       <Compile Update="Projects\ProjectUserModelMapper.cs">
         <DependentUpon>ProjectUserDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="SignUp\SignUpStepMapper.cs">
+        <DependentUpon>SignUpStepDTO.cs</DependentUpon>
       </Compile>
     </ItemGroup>
 
