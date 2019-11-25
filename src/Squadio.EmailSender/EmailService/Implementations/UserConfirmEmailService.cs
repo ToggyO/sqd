@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.Options;
-using Squadio.BLL.Services.Email.Sender;
 using Squadio.Common.Models.Email;
 using Squadio.Common.Settings;
+using Squadio.EmailSender.EmailService.Sender;
+using Squadio.EmailSender.Extensions;
 
-namespace Squadio.BLL.Services.Email.Implementations
+namespace Squadio.EmailSender.EmailService.Implementations
 {
     public class UserConfirmEmailService: BaseEmailService<UserConfirmEmailModel>
     {
@@ -18,7 +19,11 @@ namespace Squadio.BLL.Services.Email.Implementations
 
         protected override string GetHtmlTemplate(UserConfirmEmailModel model)
         {
-            var resource = "";
+            
+            var resource = EmbeddedResources
+                .GetResource(
+                    "Squadio.EmailSender.EmailService.Templates.ConfirmEmailRequestTemplate.html")
+                .Replace("{{Code}}", model.Code);
 
             return resource;
         }

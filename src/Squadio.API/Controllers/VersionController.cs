@@ -32,44 +32,106 @@ namespace Squadio.API.Controllers
         }
 
         /// <summary>
-        /// Push test message to RabbitMQ
+        /// Push UserConfirm message to RabbitMQ
         /// </summary>
-        [HttpPost]
+        [HttpPost("UC")]
         [AllowAnonymous]
-        public Response PushTestRabbit()
+        public Response PushTestRabbitUC()
         {
             using (var bus = RabbitHutch.CreateBus("host=rabbit-dev;username=rabbitmq;password=rabbitmq"))
             {
-                if (bus.IsConnected)
+                bus.Publish(new UserConfirmEmailModel
                 {
-                    try
-                    {
-                        bus.Publish(new UserConfirmEmailModel
-                        {
-                            Code = "WOW! It's alive!",
-                            To = "azaza@lol.wow"
-                        });
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e);
-                        _logger.LogError(e.Message);
-                        return new ErrorResponse
-                        {
-                            Message = e.Message,
-                            Code = e.StackTrace
-                        };
-                    }
-                }
-                else
-                {
-                    _logger.LogError("Can't connect to RabbitMQ");
-                    return new ErrorResponse
-                    {
-                        Message = "Can't connect to RabbitMQ",
-                    };
-                }
+                    Code = "WOW!_It's_alive!",
+                    To = "karpov@magora-systems.com"
+                });
             }
+
+            return new Response();
+        }
+
+        /// <summary>
+        /// Push PasswordRestore message to RabbitMQ
+        /// </summary>
+        [HttpPost("PR")]
+        [AllowAnonymous]
+        public Response PushTestRabbitPR()
+        {
+            using (var bus = RabbitHutch.CreateBus("host=rabbit-dev;username=rabbitmq;password=rabbitmq"))
+            {
+                bus.Publish(new PasswordRestoreEmailModel()
+                {
+                    Code = "WOW!_It's_alive!",
+                    To = "karpov@magora-systems.com"
+                });
+            }
+
+            return new Response();
+        }
+
+        /// <summary>
+        /// Push InviteToCompany message to RabbitMQ
+        /// </summary>
+        [HttpPost("IC")]
+        [AllowAnonymous]
+        public Response PushTestRabbitIC()
+        {
+            using (var bus = RabbitHutch.CreateBus("host=rabbit-dev;username=rabbitmq;password=rabbitmq"))
+            {
+                bus.Publish(new InviteToCompanyEmailModel()
+                {
+                    Code = "WOW!_It's_alive!",
+                    To = "karpov@magora-systems.com",
+                    AuthorName = "ALICA",
+                    CompanyName = "MAGORA",
+                    IsAlreadyRegistered = true
+                });
+            }
+
+            return new Response();
+        }
+
+        /// <summary>
+        /// Push InviteToTeam message to RabbitMQ
+        /// </summary>
+        [HttpPost("IT")]
+        [AllowAnonymous]
+        public Response PushTestRabbitIT()
+        {
+            using (var bus = RabbitHutch.CreateBus("host=rabbit-dev;username=rabbitmq;password=rabbitmq"))
+            {
+                bus.Publish(new InviteToTeamEmailModel()
+                {
+                    Code = "WOW!_It's_alive!",
+                    To = "karpov@magora-systems.com",
+                    AuthorName = "ALICA",
+                    TeamName = ".NET",
+                    IsAlreadyRegistered = true
+                });
+            }
+
+            return new Response();
+        }
+
+        /// <summary>
+        /// Push InviteToProject message to RabbitMQ
+        /// </summary>
+        [HttpPost("IP")]
+        [AllowAnonymous]
+        public Response PushTestRabbitIP()
+        {
+            using (var bus = RabbitHutch.CreateBus("host=rabbit-dev;username=rabbitmq;password=rabbitmq"))
+            {
+                bus.Publish(new InviteToProjectEmailModel()
+                {
+                    Code = "WOW!_It's_alive!",
+                    To = "karpov@magora-systems.com",
+                    AuthorName = "ALICA",
+                    ProjectName = "Squad.IO",
+                    IsAlreadyRegistered = true
+                });
+            }
+
             return new Response();
         }
     }

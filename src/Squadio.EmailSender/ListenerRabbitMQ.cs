@@ -18,7 +18,7 @@ namespace Squadio.EmailSender
         private readonly IOptions<RabbitConnectionModel> _rabbitConnection;
         private readonly IRabbitMessageHandler _rabbitMessageHandler;
         
-        private const int maxCountTry = 10;
+        private const int tryingSeconds = 60;
 
         public ListenerRabbitMQ(ILogger<ListenerRabbitMQ> logger
             , IOptions<RabbitConnectionModel> rabbitConnection
@@ -31,6 +31,26 @@ namespace Squadio.EmailSender
 
         public override async Task StartAsync(CancellationToken stoppingToken)
         {
+            await RabbitConnection();
+
+            await _rabbitMessageHandler.Subscribe(bus);
+        }
+
+        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            while (!stoppingToken.IsCancellationRequested)
+            {}
+            return Task.CompletedTask;
+        }
+        
+        public override Task StopAsync(CancellationToken stoppingToken)
+        {
+            bus.Dispose();
+            return Task.CompletedTask;
+        }
+
+        private async Task RabbitConnection()
+        {
             var isRabbitConnected = false;
             _logger.LogInformation("Connection to Rabbit: {rabbitConnectionString}", _rabbitConnection.Value.ConnectionString);
             
@@ -41,7 +61,7 @@ namespace Squadio.EmailSender
             while (!isRabbitConnected)
             {
                 
-                if (bus.IsConnected || count - 1 >= maxCountTry)
+                if (bus.IsConnected || count - 1 >= tryingSeconds)
                 {
                     isRabbitConnected = true;
                 }
@@ -58,26 +78,6 @@ namespace Squadio.EmailSender
             }
 
             _logger.LogInformation("Connection success");
-
-            #region subscriptions
-            
-            bus.Subscribe<UserConfirmEmailModel>(
-                subscriptionId: "SquadioListenerRabbitMQ_UserConfirmEmailModel",
-                onMessage: _rabbitMessageHandler.HandleEmailMessage);
-
-            #endregion
-        }
-
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            while (!stoppingToken.IsCancellationRequested)
-            {}
-        }
-        
-        public override Task StopAsync(CancellationToken stoppingToken)
-        {
-            bus.Dispose();
-            return Task.CompletedTask;
         }
     }
 }

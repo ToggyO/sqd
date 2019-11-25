@@ -1,9 +1,11 @@
-﻿using Squadio.Common.Models.Email;
+﻿using System.Threading.Tasks;
+using EasyNetQ;
+using Squadio.Common.Models.Email;
 
 namespace Squadio.EmailSender.RabbitMessageHandler
 {
     public interface IRabbitMessageHandler
     {
-        void HandleEmailMessage(UserConfirmEmailModel message);
+        Task Subscribe(IBus bus);
     }
 }

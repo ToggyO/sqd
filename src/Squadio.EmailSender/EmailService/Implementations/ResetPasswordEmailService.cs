@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.Options;
-using Squadio.BLL.Services.Email.Sender;
 using Squadio.Common.Models.Email;
 using Squadio.Common.Settings;
+using Squadio.EmailSender.EmailService.Sender;
+using Squadio.EmailSender.Extensions;
 
-namespace Squadio.BLL.Services.Email.Implementations
+namespace Squadio.EmailSender.EmailService.Implementations
 {
     public class ResetPasswordEmailService: BaseEmailService<PasswordRestoreEmailModel>
     {
@@ -18,7 +19,12 @@ namespace Squadio.BLL.Services.Email.Implementations
 
         protected override string GetHtmlTemplate(PasswordRestoreEmailModel model)
         {
-            var resource = "";
+            
+            var resource = EmbeddedResources
+                .GetResource(
+                    "Squadio.EmailSender.EmailService.Templates.ResetPasswordTemplate.html")
+                .Replace("{{ResetPasswordUrl}}", _options.Value.ResetPasswordUrl)
+                .Replace("{{Code}}", model.Code);
 
             return resource;
         }

@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Squadio.BLL.Extensions
+namespace Squadio.EmailSender.Extensions
 {
     public class EmbeddedResources
     {

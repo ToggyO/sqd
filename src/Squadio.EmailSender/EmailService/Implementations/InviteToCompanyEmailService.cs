@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.Options;
-using Squadio.BLL.Services.Email.Sender;
 using Squadio.Common.Models.Email;
 using Squadio.Common.Settings;
+using Squadio.EmailSender.EmailService.Sender;
+using Squadio.EmailSender.Extensions;
 
-namespace Squadio.BLL.Services.Email.Implementations
+namespace Squadio.EmailSender.EmailService.Implementations
 {
     public class InviteToCompanyEmailService: BaseEmailService<InviteToCompanyEmailModel>
     {
@@ -18,7 +19,14 @@ namespace Squadio.BLL.Services.Email.Implementations
 
         protected override string GetHtmlTemplate(InviteToCompanyEmailModel model)
         {
-            var resource = "";
+            var resource = EmbeddedResources
+                .GetResource(
+                    "Squadio.EmailSender.EmailService.Templates.InviteToCompanyTemplate.html")
+                .Replace("{{InviteToProjectPageUrl}}", _options.Value.InviteToCompanyPageUrl)
+                .Replace("{{AuthorName}}", model.AuthorName)
+                .Replace("{{CompanyName}}", model.CompanyName)
+                .Replace("{{Code}}", model.Code)
+                .Replace("{{IsAlreadyRegistered}}", model.IsAlreadyRegistered.ToString().ToLower());
 
             return resource;
         }

@@ -33,4 +33,12 @@
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       </Content>
     </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="EmailService\Templates\ConfirmEmailRequestTemplate.html" />
+      <EmbeddedResource Include="EmailService\Templates\InviteToCompanyTemplate.html" />
+      <EmbeddedResource Include="EmailService\Templates\InviteToProjectTemplate.html" />
+      <EmbeddedResource Include="EmailService\Templates\InviteToTeamTemplate.html" />
+      <EmbeddedResource Include="EmailService\Templates\ResetPasswordTemplate.html" />
+    </ItemGroup>
 </Project>
