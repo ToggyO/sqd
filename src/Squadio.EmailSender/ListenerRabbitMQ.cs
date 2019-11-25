@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Squadio.Common.Models.Email;
 using Squadio.Common.Models.Rabbit;
+using Squadio.EmailSender.RabbitMessageHandler;
 
 namespace Squadio.EmailSender
 {
@@ -15,48 +16,45 @@ namespace Squadio.EmailSender
         private IBus bus { get; set; }
         private readonly ILogger<ListenerRabbitMQ> _logger;
         private readonly IOptions<RabbitConnectionModel> _rabbitConnection;
+        private readonly IRabbitMessageHandler _rabbitMessageHandler;
         
-        private const int maxCountTry = 60;
+        private const int maxCountTry = 10;
 
         public ListenerRabbitMQ(ILogger<ListenerRabbitMQ> logger
-            , IOptions<RabbitConnectionModel> rabbitConnection)
+            , IOptions<RabbitConnectionModel> rabbitConnection
+            , IRabbitMessageHandler rabbitMessageHandler)
         {
-            _rabbitConnection = rabbitConnection;
             _logger = logger;
+            _rabbitConnection = rabbitConnection;
+            _rabbitMessageHandler = rabbitMessageHandler;
         }
 
         public override async Task StartAsync(CancellationToken stoppingToken)
         {
             var isRabbitConnected = false;
-            _logger.LogInformation("Connection to Rabbit");
-            _logger.LogInformation("Connection string: {rabbitConnectionString}", _rabbitConnection.Value.ConnectionString);
+            _logger.LogInformation("Connection to Rabbit: {rabbitConnectionString}", _rabbitConnection.Value.ConnectionString);
             
             var count = 1;
+            
+            bus = RabbitHutch.CreateBus(_rabbitConnection.Value.ConnectionString);
 
             while (!isRabbitConnected)
             {
-                bus = RabbitHutch.CreateBus(_rabbitConnection.Value.ConnectionString);
                 
-                if (bus.IsConnected)
+                if (bus.IsConnected || count - 1 >= maxCountTry)
                 {
                     isRabbitConnected = true;
                 }
-
-                _logger.LogInformation("Connection to Rabbit ({try})", count);
+                
                 count++;
-                if (count - 1 >= maxCountTry)
-                {
-                    isRabbitConnected = true;
-                }
 
                 await Task.Delay(1000);
             }
 
             if (!bus.IsConnected)
             {
-                _logger.LogError("Can not connect to Rabbit");
-                _logger.LogInformation("Connection string: {rabbitConnectionString}", _rabbitConnection.Value.ConnectionString);
-                return;
+                _logger.LogError("Can not connect to Rabbit: {rabbitConnectionString}", _rabbitConnection.Value.ConnectionString);
+                throw new Exception($"Can not connect to Rabbit");
             }
 
             _logger.LogInformation("Connection success");
@@ -64,8 +62,8 @@ namespace Squadio.EmailSender
             #region subscriptions
             
             bus.Subscribe<UserConfirmEmailModel>(
-                subscriptionId: "SquadioListenerRabbitMQ_b235a412-81b7-42af-908e-9557e88a3237",
-                onMessage: MessageHandlers.HandleEmailMessage);
+                subscriptionId: "SquadioListenerRabbitMQ_UserConfirmEmailModel",
+                onMessage: _rabbitMessageHandler.HandleEmailMessage);
 
             #endregion
         }

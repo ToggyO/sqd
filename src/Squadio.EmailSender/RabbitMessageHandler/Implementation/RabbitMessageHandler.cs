@@ -4,21 +4,21 @@ using Microsoft.Extensions.Options;
 using Squadio.Common.Models.Email;
 using Squadio.Common.Settings;
 
-namespace Squadio.EmailSender
+namespace Squadio.EmailSender.RabbitMessageHandler.Implementation
 {
-    public class MessageHandlers
+    public class RabbitMessageHandler: IRabbitMessageHandler
     {
-        private static ILogger<MessageHandlers> _logger;
+        private static ILogger<RabbitMessageHandler> _logger;
         private static IOptions<EmailSettingsModel> _emailSettings;
 
-        public MessageHandlers(ILogger<MessageHandlers> logger
+        public RabbitMessageHandler(ILogger<RabbitMessageHandler> logger
             , IOptions<EmailSettingsModel> emailSettings)
         {
             _logger = logger;
             _emailSettings = emailSettings;
         }
         
-        public static void HandleEmailMessage(UserConfirmEmailModel message)
+        public void HandleEmailMessage(UserConfirmEmailModel message)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Got code: {0}, for {1}", message.Code, message.To);

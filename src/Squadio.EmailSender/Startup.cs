@@ -34,7 +34,7 @@ namespace Squadio.EmailSender
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<ILoggerFactory>(services => new SerilogLoggerFactory());
+            services.AddSingleton<ILoggerFactory>(x => new SerilogLoggerFactory());
             
             var dbSettings = new DbSettings
             {
@@ -75,6 +75,8 @@ namespace Squadio.EmailSender
                 .CreateLogger();
 
             AppDomain.CurrentDomain.ProcessExit += (s, e) => Log.CloseAndFlush();
+            
+            DependencyInjectionModule.Load(services);
             
             services.AddHostedService<ListenerRabbitMQ>();
         }
