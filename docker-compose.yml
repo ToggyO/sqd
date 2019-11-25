@@ -50,9 +50,14 @@ services:
       - AppSettings:APISettings:RefreshTokenExpiresInMinutes=10080
       - AppSettings:APISettings:AccessTokenExpiresInMinutes=1440
       #
-      - GoogleOAuth:ClientId=${GoogleOAuth:ClientId}
-      - GoogleOAuth:ClientSecret=${GoogleOAuth:ClientSecret}
+      - GoogleOAuth:ClientId=${GoogleOAuth_ClientId}
+      - GoogleOAuth:ClientSecret=${GoogleOAuth_ClientSecret}
       - MicrosoftOAuth:ClientId=e0b221ed-d1ab-42b9-a33d-16410a9572ee
+      #
+      - RabbitConnection:Host=${RabbitConnection_Host}
+      - RabbitConnection:Port=${RabbitConnection_Port}
+      - RabbitConnection:Username=${RabbitConnection_Username}
+      - RabbitConnection:Password=${RabbitConnection_Password}
   
   email-sender-dev:
     container_name: squadio-email-sender-dev
@@ -81,24 +86,24 @@ services:
       - StaticUrls:InviteToTeamPageUrl=https://squad.magora.work/team/invite
       - StaticUrls:InviteToProjectPageUrl=https://squad.magora.work/project/invite
       #
-      - EmailSettings:SmtpServer=${EmailSettings:SmtpServer}
-      - EmailSettings:SmtpPort=${EmailSettings:SmtpPort}
-      - EmailSettings:Name=${EmailSettings:Name}
-      - EmailSettings:Email=${EmailSettings:Email}
-      - EmailSettings:Password=${EmailSettings:Password}
+      - EmailSettings:SmtpServer=${EmailSettings_SmtpServer}
+      - EmailSettings:SmtpPort=${EmailSettings_SmtpPort}
+      - EmailSettings:Name=${EmailSettings_Name}
+      - EmailSettings:Email=${EmailSettings_Email}
+      - EmailSettings:Password=${EmailSettings_Password}
       #
-      - RabbitConnection:Host=${RabbitConnection:Host}
-      - RabbitConnection:Port=${RabbitConnection:Port}
-      - RabbitConnection:Username=${RabbitConnection:Username}
-      - RabbitConnection:Password=${RabbitConnection:Password}
+      - RabbitConnection:Host=${RabbitConnection_Host}
+      - RabbitConnection:Port=${RabbitConnection_Port}
+      - RabbitConnection:Username=${RabbitConnection_Username}
+      - RabbitConnection:Password=${RabbitConnection_Password}
 
   rabbit-dev:
     image: "rabbitmq:3-management"
     hostname: "rabbit-dev"
     environment:
       RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
-      RABBITMQ_DEFAULT_USER: "rabbitmq"
-      RABBITMQ_DEFAULT_PASS: "rabbitmq"
+      RABBITMQ_DEFAULT_USER: ${RabbitConnection_Username}
+      RABBITMQ_DEFAULT_PASS: ${RabbitConnection_Password}
       RABBITMQ_DEFAULT_VHOST: "/"
     networks:
       - squadio-network

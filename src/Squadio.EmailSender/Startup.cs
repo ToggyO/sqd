@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using EasyNetQ;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -56,6 +57,9 @@ namespace Squadio.EmailSender
                 {"Exception", new ExceptionColumnWriter() }
             };
 
+            // Disable logs of EasyNetQ
+            // EasyNetQ.Logging.LogProvider.IsDisabled = true;
+            
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Async(x => x.PostgreSQL(
                     dbSettings.PostgresConnectionString, 

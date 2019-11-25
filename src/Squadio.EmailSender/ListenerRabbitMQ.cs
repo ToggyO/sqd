@@ -29,11 +29,14 @@ namespace Squadio.EmailSender
         {
             var isRabbitConnected = false;
             _logger.LogInformation("Connection to Rabbit");
+            _logger.LogInformation("Connection string: {rabbitConnectionString}", _rabbitConnection.Value.ConnectionString);
+            
             var count = 1;
 
             while (!isRabbitConnected)
             {
                 bus = RabbitHutch.CreateBus(_rabbitConnection.Value.ConnectionString);
+                
                 if (bus.IsConnected)
                 {
                     isRabbitConnected = true;
@@ -52,6 +55,7 @@ namespace Squadio.EmailSender
             if (!bus.IsConnected)
             {
                 _logger.LogError("Can not connect to Rabbit");
+                _logger.LogInformation("Connection string: {rabbitConnectionString}", _rabbitConnection.Value.ConnectionString);
                 return;
             }
 
