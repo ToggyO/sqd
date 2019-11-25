@@ -11,6 +11,7 @@ using Serilog.Events;
 using Serilog.Extensions.Logging;
 using Serilog.Sinks.PostgreSQL;
 using Serilog.Sinks.SystemConsole.Themes;
+using Squadio.Common.Models.Rabbit;
 
 namespace Squadio.EmailSender
 {
@@ -25,6 +26,7 @@ namespace Squadio.EmailSender
                 .AddJsonFile("appsettings.json", true, true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true)
                 .AddEnvironmentVariables();
+            
 
             Configuration = builder.Build();
         }
@@ -41,6 +43,9 @@ namespace Squadio.EmailSender
                 DB_NAME = Configuration.GetSection("DB_NAME").Value,
                 DB_PASSWORD = Configuration.GetSection("DB_PASSWORD").Value
             };
+            services.Configure<RabbitConnectionModel>(Configuration.GetSection("RabbitConnection"));
+            services.Configure<EmailSettingsModel>(Configuration.GetSection("EmailSettings"));
+            services.Configure<StaticUrlsSettingsModel>(Configuration.GetSection("StaticUrls"));
             
             var columnWriters = new Dictionary<string, ColumnWriterBase>
             {

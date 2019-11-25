@@ -1,16 +1,21 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Squadio.Common.Models.Email;
+using Squadio.Common.Settings;
 
 namespace Squadio.EmailSender
 {
     public class MessageHandlers
     {
         private static ILogger<MessageHandlers> _logger;
+        private static IOptions<EmailSettingsModel> _emailSettings;
 
-        public MessageHandlers(ILogger<MessageHandlers> logger)
+        public MessageHandlers(ILogger<MessageHandlers> logger
+            , IOptions<EmailSettingsModel> emailSettings)
         {
             _logger = logger;
+            _emailSettings = emailSettings;
         }
         
         public static void HandleEmailMessage(UserConfirmEmailModel message)

@@ -37,23 +37,22 @@ services:
     environment:
       - ASPNETCORE_URLS=http://0.0.0.0:5000/
       - ASPNETCORE_ENVIRONMENT=Development
-      - DB_HOST=sql-dev
-      - DB_PORT=5432
-      - DB_NAME=squadio_dev
-      - DB_USER=user_dev
-      - DB_PASSWORD=135642QWSX
+      #
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      #
       - AppSettings:APISettings:PublicKey=AAAAB3NzaC1yc2EAAAADAQABAAABAQCkkTqYqjfy11DUtK6rhiQutHiBnQgNVq
       - AppSettings:APISettings:ISSUER=Squad
       - AppSettings:APISettings:AUDIENCE=IO
       - AppSettings:APISettings:RefreshTokenExpiresInMinutes=10080
       - AppSettings:APISettings:AccessTokenExpiresInMinutes=1440
-      - GoogleOAuth:ClientId=63806648351-k2ebqg66tab5760qa4i3mmomfslbmuvd.apps.googleusercontent.com
-      - GoogleOAuth:ClientSecret=yY2sMMKF-a3JRheGcMMOSFpx
+      #
+      - GoogleOAuth:ClientId=${GoogleOAuth:ClientId}
+      - GoogleOAuth:ClientSecret=${GoogleOAuth:ClientSecret}
       - MicrosoftOAuth:ClientId=e0b221ed-d1ab-42b9-a33d-16410a9572ee
-      - StaticUrls:SetPasswordUrl=https://squad.magora.work/sign-up/set-password
-      - StaticUrls:ResetPasswordUrl=https://squad.magora.work/auth/set-password
-      - StaticUrls:InviteToTeamPageUrl=https://squad.magora.work/team/invite
-      - StaticUrls:InviteToProjectPageUrl=https://squad.magora.work/project/invite
   
   email-sender-dev:
     container_name: squadio-email-sender-dev
@@ -67,6 +66,31 @@ services:
       - 5006:5000
     networks:
       - squadio-network
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5000/
+      - ASPNETCORE_ENVIRONMENT=Development
+      #
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      #
+      - StaticUrls:SetPasswordUrl=https://squad.magora.work/sign-up/set-password
+      - StaticUrls:ResetPasswordUrl=https://squad.magora.work/auth/set-password
+      - StaticUrls:InviteToTeamPageUrl=https://squad.magora.work/team/invite
+      - StaticUrls:InviteToProjectPageUrl=https://squad.magora.work/project/invite
+      #
+      - EmailSettings:SmtpServer=${EmailSettings:SmtpServer}
+      - EmailSettings:SmtpPort=${EmailSettings:SmtpPort}
+      - EmailSettings:Name=${EmailSettings:Name}
+      - EmailSettings:Email=${EmailSettings:Email}
+      - EmailSettings:Password=${EmailSettings:Password}
+      #
+      - RabbitConnection:Host=${RabbitConnection:Host}
+      - RabbitConnection:Port=${RabbitConnection:Port}
+      - RabbitConnection:Username=${RabbitConnection:Username}
+      - RabbitConnection:Password=${RabbitConnection:Password}
 
   rabbit-dev:
     image: "rabbitmq:3-management"

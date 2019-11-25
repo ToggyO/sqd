@@ -1,8 +1,7 @@
-﻿
-using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Serilog;
 
 namespace Squadio.EmailSender
 {
@@ -20,6 +19,7 @@ namespace Squadio.EmailSender
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
+                    hostContext.HostingEnvironment.EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
                     var startup = new Startup(hostContext.HostingEnvironment);
                     startup.ConfigureServices(services);
                 });

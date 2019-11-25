@@ -86,8 +86,6 @@ namespace Squadio.API
             services.Configure<GoogleSettings>(Configuration.GetSection("GoogleOAuth"));
             
             services.Configure<ApiSettings>(Configuration.GetSection("APISettings"));
-            services.Configure<EmailSettingsModel>(Configuration.GetSection("EmailSettings"));
-            services.Configure<StaticUrlsSettingsModel>(Configuration.GetSection("StaticUrls"));
             
             var columnWriters = new Dictionary<string, ColumnWriterBase>
             {

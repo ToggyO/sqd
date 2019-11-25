@@ -4,28 +4,24 @@ using System.Threading.Tasks;
 using EasyNetQ;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Squadio.Common.Models.Email;
+using Squadio.Common.Models.Rabbit;
 
 namespace Squadio.EmailSender
 {
     public class ListenerRabbitMQ : BackgroundService
     {
-        // for docker
-        //private string _rabbitConnectionString = "host=rabbit-dev;username=rabbitmq;password=rabbitmq";
-        // for debug
-        private readonly string _rabbitConnectionString;
         private IBus bus { get; set; }
         private readonly ILogger<ListenerRabbitMQ> _logger;
+        private readonly IOptions<RabbitConnectionModel> _rabbitConnection;
         
         private const int maxCountTry = 60;
 
-        public ListenerRabbitMQ(ILogger<ListenerRabbitMQ> logger)
+        public ListenerRabbitMQ(ILogger<ListenerRabbitMQ> logger
+            , IOptions<RabbitConnectionModel> rabbitConnection)
         {
-            // for debug
-            _rabbitConnectionString = "host=localhost;username=rabbitmq;password=rabbitmq";
-            // for docker
-            //_rabbitConnectionString = "host=rabbit-dev;username=rabbitmq;password=rabbitmq";
-            
+            _rabbitConnection = rabbitConnection;
             _logger = logger;
         }
 
@@ -37,7 +33,7 @@ namespace Squadio.EmailSender
 
             while (!isRabbitConnected)
             {
-                bus = RabbitHutch.CreateBus(_rabbitConnectionString);
+                bus = RabbitHutch.CreateBus(_rabbitConnection.Value.ConnectionString);
                 if (bus.IsConnected)
                 {
                     isRabbitConnected = true;
