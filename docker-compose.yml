@@ -26,11 +26,11 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       #
-      - AppSettings:APISettings:PublicKey=AAAAB3NzaC1yc2EAAAADAQABAAABAQCkkTqYqjfy11DUtK6rhiQutHiBnQgNVq
-      - AppSettings:APISettings:ISSUER=Squad
-      - AppSettings:APISettings:AUDIENCE=IO
-      - AppSettings:APISettings:RefreshTokenExpiresInMinutes=10080
-      - AppSettings:APISettings:AccessTokenExpiresInMinutes=1440
+      - AppSettings:APISettings:PublicKey=${AppSettings_APISettings_PublicKey}
+      - AppSettings:APISettings:ISSUER=${AppSettings_APISettings_ISSUER}
+      - AppSettings:APISettings:AUDIENCE=${AppSettings_APISettings_AUDIENCE}
+      - AppSettings:APISettings:RefreshTokenExpiresInMinutes=${AppSettings_APISettings_RefreshTokenExpiresInMinutes}
+      - AppSettings:APISettings:AccessTokenExpiresInMinutes=${AppSettings_APISettings_AccessTokenExpiresInMinutes}
       #
       - GoogleOAuth:ClientId=${GoogleOAuth_ClientId}
       - GoogleOAuth:ClientSecret=${GoogleOAuth_ClientSecret}
@@ -49,8 +49,6 @@ services:
     restart: always
     links:
       - rabbit-dev
-    ports:
-      - 5006:5000
     networks:
       - squadio-network
     environment:
