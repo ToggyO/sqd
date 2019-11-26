@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 using Magora.Passwords;
 using Mapper;
 using Squadio.BLL.Providers.Codes;
-using Squadio.BLL.Services.ConfirmEmail;
-using Squadio.BLL.Services.Email;
+using Squadio.BLL.Services.Rabbit;
 using Squadio.Common.Models.Email;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.ChangeEmail;
 using Squadio.DAL.Repository.ChangePassword;
-using Squadio.DAL.Repository.ConfirmEmail;
 using Squadio.DAL.Repository.SignUp;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Enums;
@@ -28,8 +24,7 @@ namespace Squadio.BLL.Services.Users.Implementation
         private readonly ICodeProvider _codeProvider;
         private readonly IChangePasswordRequestRepository _changePasswordRepository;
         private readonly IChangeEmailRequestRepository _changeEmailRepository;
-        private readonly IEmailService<UserConfirmEmailModel> _confirmEmailService;
-        private readonly IEmailService<PasswordRestoreEmailModel> _passwordRestoreMailService;
+        private readonly IRabbitService _rabbitService;
         private readonly IPasswordService _passwordService;
         private readonly IMapper _mapper;
         public UsersService(IUsersRepository repository
@@ -37,8 +32,7 @@ namespace Squadio.BLL.Services.Users.Implementation
             , ICodeProvider codeProvider
             , IChangePasswordRequestRepository changePasswordRepository
             , IChangeEmailRequestRepository changeEmailRepository
-            , IEmailService<UserConfirmEmailModel> confirmEmailService
-            , IEmailService<PasswordRestoreEmailModel> passwordRestoreMailService
+            , IRabbitService rabbitService
             , IPasswordService passwordService
             , IMapper mapper
             )
@@ -48,8 +42,7 @@ namespace Squadio.BLL.Services.Users.Implementation
             _codeProvider = codeProvider;
             _changePasswordRepository = changePasswordRepository;
             _changeEmailRepository = changeEmailRepository;
-            _confirmEmailService = confirmEmailService;
-            _passwordRestoreMailService = passwordRestoreMailService;
+            _rabbitService = rabbitService;
             _passwordService = passwordService;
             _mapper = mapper;
         }
@@ -120,7 +113,7 @@ namespace Squadio.BLL.Services.Users.Implementation
             
             await _changePasswordRepository.AddRequest(user.Id, code);
 
-            await _passwordRestoreMailService.Send(new PasswordRestoreEmailModel
+            await _rabbitService.Send(new PasswordRestoreEmailModel
             {
                 Code = code,
                 To = email
@@ -228,7 +221,7 @@ namespace Squadio.BLL.Services.Users.Implementation
 
             var code = _codeProvider.GenerateNumberCode();
 
-            await _confirmEmailService.Send(new UserConfirmEmailModel
+            await _rabbitService.Send(new UserConfirmEmailModel
             {
                Code = code,
                To = dto.NewEmail

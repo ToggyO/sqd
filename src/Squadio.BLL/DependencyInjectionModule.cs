@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Magora.Passwords;
+﻿using Magora.Passwords;
 using Mapper;
 using Microsoft.Extensions.DependencyInjection;
 using Squadio.BLL.Factories;
@@ -26,14 +25,14 @@ using Squadio.BLL.Services.Companies;
 using Squadio.BLL.Services.Companies.Implementation;
 using Squadio.BLL.Services.ConfirmEmail;
 using Squadio.BLL.Services.ConfirmEmail.Implementation;
-using Squadio.BLL.Services.Email;
-using Squadio.BLL.Services.Email.Implementations;
-using Squadio.BLL.Services.Email.Sender;
-using Squadio.BLL.Services.Email.Sender.Implementation;
 using Squadio.BLL.Services.Invites;
 using Squadio.BLL.Services.Invites.Implementation;
 using Squadio.BLL.Services.Projects;
 using Squadio.BLL.Services.Projects.Implementation;
+using Squadio.BLL.Services.Rabbit;
+using Squadio.BLL.Services.Rabbit.Implementations;
+using Squadio.BLL.Services.Rabbit.Publisher;
+using Squadio.BLL.Services.Rabbit.Publisher.Implementation;
 using Squadio.BLL.Services.SignUp;
 using Squadio.BLL.Services.SignUp.Implementation;
 using Squadio.BLL.Services.Teams;
@@ -89,25 +88,8 @@ namespace Squadio.BLL
         
         private static void LoadEmailServices(IServiceCollection services)
         {
-            services.AddScoped<IEmailSender, EmailSender>();
-            services.AddScoped<IEmailService, EmailService>();
-            
-            foreach (var implementationType in typeof(DependencyInjectionModule).Assembly.GetTypes().Where(t =>
-            {
-                if (t.IsClass)
-                    return !t.IsAbstract;
-                return false;
-            }))
-            {
-                foreach (var type in implementationType.GetInterfaces())
-                {
-                    if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEmailService<>))
-                    {
-                        var serviceType = typeof(IEmailService<>).MakeGenericType(type.GetGenericArguments());
-                        services.AddScoped(serviceType, implementationType);
-                    }
-                }
-            }
+            services.AddScoped<IRabbitPublisher, RabbitPublisher>();
+            services.AddScoped<IRabbitService, RabbitService>();
         }
     }
 }

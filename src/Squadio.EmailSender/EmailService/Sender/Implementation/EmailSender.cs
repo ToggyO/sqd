@@ -147,13 +147,34 @@ namespace Squadio.EmailSender.EmailService.Sender.Implementation
                         }
                     }
 
-                    using (var smtp = new SmtpClient(_smtpServer, _smtpPort))
+                    var isSent = false;
+                    int max = 5, count = 0;
+                    while (!isSent)
                     {
-                        smtp.UseDefaultCredentials = false;
-                        smtp.Credentials = new NetworkCredential(_user, _password);
-                        smtp.EnableSsl = true;
-                        ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
-                        await smtp.SendMailAsync(email);
+                        try
+                        {
+                            using (var smtp = new SmtpClient(_smtpServer, _smtpPort))
+                            {
+                                smtp.UseDefaultCredentials = false;
+                                smtp.Credentials = new NetworkCredential(_user, _password);
+                                smtp.EnableSsl = true;
+                                ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
+                                await smtp.SendMailAsync(email);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            if (count >= max)
+                            {
+                                _logger.LogError(e, e.Message);
+                                throw;
+                            }
+
+                            _logger.LogWarning(e.Message);
+                        }
+
+                        await Task.Delay(1000);
+                        count++;
                     }
                 }
             }

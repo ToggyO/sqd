@@ -23,6 +23,7 @@ using Serilog.Sinks.SystemConsole.Themes;
 using Squadio.DAL;
 using Squadio.API.Extensions;
 using Squadio.API.Filters;
+using Squadio.Common.Models.Rabbit;
 using Squadio.Common.Settings;
 
 namespace Squadio.API
@@ -84,7 +85,7 @@ namespace Squadio.API
             };
 
             services.Configure<GoogleSettings>(Configuration.GetSection("GoogleOAuth"));
-            
+            services.Configure<RabbitConnectionModel>(Configuration.GetSection("RabbitConnection"));
             services.Configure<ApiSettings>(Configuration.GetSection("APISettings"));
             
             var columnWriters = new Dictionary<string, ColumnWriterBase>

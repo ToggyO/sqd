@@ -12,7 +12,6 @@ using Squadio.BLL.Providers.Invites;
 using Squadio.BLL.Providers.Teams;
 using Squadio.BLL.Services.Companies;
 using Squadio.BLL.Services.ConfirmEmail;
-using Squadio.BLL.Services.Email;
 using Squadio.BLL.Services.Projects;
 using Squadio.BLL.Services.Teams;
 using Squadio.BLL.Services.Users;

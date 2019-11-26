@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Mapper;
 using Squadio.BLL.Providers.Codes;
-using Squadio.BLL.Services.Email;
+using Squadio.BLL.Services.Rabbit;
 using Squadio.Common.Models.Email;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
@@ -16,16 +16,16 @@ namespace Squadio.BLL.Services.ConfirmEmail.Implementation
     {
         private readonly IConfirmEmailRequestRepository _repository;
         private readonly ICodeProvider _codeProvider;
-        private readonly IEmailService<UserConfirmEmailModel> _mailService;
+        private readonly IRabbitService _rabbitService;
         private readonly IMapper _mapper;
 
         public ConfirmEmailService(IConfirmEmailRequestRepository repository
-            , IEmailService<UserConfirmEmailModel> mailService
+            , IRabbitService rabbitService
             , ICodeProvider codeProvider
             , IMapper mapper)
         {
             _repository = repository;
-            _mailService = mailService;
+            _rabbitService = rabbitService;
             _codeProvider = codeProvider;
             _mapper = mapper;
         }
@@ -37,7 +37,7 @@ namespace Squadio.BLL.Services.ConfirmEmail.Implementation
             
             var code = _codeProvider.GenerateNumberCode();
             
-            await _mailService.Send(new UserConfirmEmailModel()
+            await _rabbitService.Send(new UserConfirmEmailModel()
             {
                 Code = code,
                 To = email

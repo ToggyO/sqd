@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Mapper;
 using Squadio.BLL.Providers.Codes;
 using Squadio.BLL.Providers.Users;
-using Squadio.BLL.Services.Email;
+using Squadio.BLL.Services.Rabbit;
 using Squadio.BLL.Services.Users;
 using Squadio.Common.Models.Email;
 using Squadio.Common.Models.Errors;
@@ -30,9 +30,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
         #region Repository variables and constructor
         
         private readonly IInvitesRepository _repository;
-        private readonly IEmailService<InviteToTeamEmailModel> _inviteToTeamMailService;
-        private readonly IEmailService<InviteToProjectEmailModel> _inviteToProjectMailService;
-        private readonly IEmailService<InviteToCompanyEmailModel> _inviteToCompanyMailService;
+        private readonly IRabbitService _rabbitService;
         private readonly ICompaniesRepository _companiesRepository;
         private readonly ICompaniesUsersRepository _companiesUsersRepository;
         private readonly ITeamsRepository _teamsRepository;
@@ -46,9 +44,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
         private readonly IChangePasswordRequestRepository _changePasswordRepository;
         private readonly IMapper _mapper;
         public InvitesService(IInvitesRepository repository
-            , IEmailService<InviteToTeamEmailModel> inviteToTeamMailService
-            , IEmailService<InviteToProjectEmailModel> inviteToProjectMailService
-            , IEmailService<InviteToCompanyEmailModel> inviteToCompanyMailService
+            , IRabbitService rabbitService
             , ICompaniesRepository companiesRepository
             , ICompaniesUsersRepository companiesUsersRepository
             , ITeamsRepository teamsRepository
@@ -63,9 +59,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
             , IMapper mapper)
         {
             _repository = repository;
-            _inviteToTeamMailService = inviteToTeamMailService;
-            _inviteToProjectMailService = inviteToProjectMailService;
-            _inviteToCompanyMailService = inviteToCompanyMailService;
+            _rabbitService = rabbitService;
             _companiesRepository = companiesRepository;
             _companiesUsersRepository = companiesUsersRepository;
             _teamsRepository = teamsRepository;
@@ -357,7 +351,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
 
             try
             {
-                _inviteToCompanyMailService.Send(new InviteToCompanyEmailModel()
+                await _rabbitService.Send(new InviteToCompanyEmailModel()
                 {
                     To = email,
                     AuthorName = authorName,
@@ -423,7 +417,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
 
             try
             {
-                _inviteToTeamMailService.Send(new InviteToTeamEmailModel
+                await _rabbitService.Send(new InviteToTeamEmailModel
                 {
                     To = email,
                     AuthorName = authorName,
@@ -489,7 +483,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
 
             try
             {
-                _inviteToProjectMailService.Send(new InviteToProjectEmailModel
+                await _rabbitService.Send(new InviteToProjectEmailModel
                 {
                     To = email,
                     AuthorName = authorName,
