@@ -20,3 +20,4 @@ services:
       - POSTGRES_HOST=${DB_HOST}
     volumes:
       - /var/db/data-dev/postgresql:/var/lib/postgresql
+      - /var/kv/db/data-dev/postgresql:/var/lib/postgresql
