@@ -116,5 +116,7 @@ services:
       - "5672:5672"
  
 volumes:
+  kv_postgres_data:
+    external: true
   rabbit:
     driver: local
