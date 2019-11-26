@@ -23,4 +23,25 @@
 ### Front-end urls
 * **"StaticUrls:SetPasswordUrl"** - Url to page for set password (for registration)
 * **"StaticUrls:ResetPasswordUrl"** - Url to page for set new password
- 
+* **"StaticUrls:InviteToCompanyPageUrl"** - Url for invite user to company
+* **"StaticUrls:InviteToTeamPageUrl"** - Url for invite user to team
+* **"StaticUrls:InviteToProjectPageUrl"** - Url for invite user to project
+
+### Email (smtp)
+* **"EmailSettings:SmtpServer"**
+* **"EmailSettings:SmtpPort"**
+* **"EmailSettings:Name"**
+* **"EmailSettings:Email"**
+* **"EmailSettings:Password"**
+
+### Rabbit (for publish and subscribe)
+* **"RabbitConnection:Host"**
+* **"RabbitConnection:Port"**
+* **"RabbitConnection:Username"**
+* **"RabbitConnection:Password"**
+
+### Rabbit (for RabbitMQ himself)
+* **"RABBITMQ_ERLANG_COOKIE"**
+* **"RABBITMQ_DEFAULT_USER"**
+* **"RABBITMQ_DEFAULT_PASS"**
+* **"RABBITMQ_DEFAULT_VHOST"**
