@@ -3,24 +3,7 @@ version: '3.3'
 networks:
   squadio-network:
 
-services:
-  sql-dev:
-    image: postgres:10.4
-    container_name: squadio-sql-dev
-    hostname: sql-dev
-    restart: always
-    ports:
-      - 15432:5432
-    networks:
-      - squadio-network
-    environment:
-      - POSTGRES_USER=user_dev
-      - POSTGRES_PASSWORD=135642QWSX
-      - POSTGRES_DB=squadio_dev
-      - POSTGRES_HOST=sql-dev
-    volumes:
-      - /var/db/data-dev/postgresql:/var/lib/postgresql
-  
+services:  
   api-dev:
     container_name: squadio-dev
     build:
@@ -28,7 +11,6 @@ services:
       dockerfile: ./Dockerfile-Api
     restart: always
     links:
-      - sql-dev
       - rabbit-dev
     ports:
       - 5005:5000
@@ -114,9 +96,3 @@ services:
     ports:
       - "15672:15672"
       - "5672:5672"
- 
-volumes:
-  kv_postgres_data:
-    external: true
-  rabbit:
-    driver: local
