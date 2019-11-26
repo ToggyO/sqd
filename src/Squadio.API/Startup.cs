@@ -102,7 +102,7 @@ namespace Squadio.API
                     dbSettings.PostgresConnectionString, 
                     "Logs", 
                     columnWriters, 
-                    LogEventLevel.Warning, 
+                    restrictedToMinimumLevel: LogEventLevel.Error, 
                     schemaName: "public", 
                     needAutoCreateTable: true))
                 .WriteTo.Async(x => x.Console(

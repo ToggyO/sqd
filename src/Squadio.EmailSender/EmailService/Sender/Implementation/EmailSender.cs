@@ -30,76 +30,7 @@ namespace Squadio.EmailSender.EmailService.Sender.Implementation
             _password = settings.Value.Password;
             _logger = logger;
         }
-
-
-        public void Send([EmailAddress]string to, string subject, string content, EmailAttachment[] attachmentItems = null, string styles = "")
-        {
-            try
-            {
-                var email = new MailMessage(_from, to)
-                {
-                    Subject = subject,
-                    IsBodyHtml = true,
-                    Body = content
-                };
-
-                // information
-                if (!string.IsNullOrEmpty(styles))
-                {
-                    email.Body = email.Body.Replace("@@STYLES@@", File.ReadAllText(styles));
-                }
-
-                if (attachmentItems != null)
-                {
-                    var idx = 1;
-                    foreach (var attach in attachmentItems)
-                    {
-                        var filestream = File.OpenRead(attach.FilePath);
-                        var inline = new Attachment(filestream, attach.FileName);
-
-                        if (attach.IsInline)
-                        {
-                            attach.FileName = Path.GetFileNameWithoutExtension(attach.FileName);
-                            inline.ContentDisposition.DispositionType = DispositionTypeNames.Inline;
-                        }
-                        else
-                        {
-                            inline.ContentDisposition.DispositionType = DispositionTypeNames.Attachment;
-                        }
-
-                        inline.ContentDisposition.Inline = attach.IsInline;
-
-                        inline.ContentId = "attach" + "@" + attach.FileName;
-                        inline.ContentType.MediaType = attach.ContentMediaType;
-                        inline.ContentType.Name = "attach";
-                        email.Attachments.Add(inline);
-
-                        email.Body = email.Body.Replace("@@ATTACH" + idx + "@@", "cid:" + inline.ContentId);
-
-                        idx++;
-                    }
-                }
-
-                var smtp = new SmtpClient(_smtpServer, _smtpPort)
-                {
-                    UseDefaultCredentials = false,
-                    Credentials = new NetworkCredential(_user, _password),
-                    EnableSsl = true
-                };
-
-                _logger.LogInformation(email.Body);
-                
-                ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
-                smtp.Send(email);
-
-                email.Dispose();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, ex.Message);
-            }
-        }
-
+        
         public async Task SendAsync([EmailAddress]string to, string subject, string content, EmailAttachment[] attachmentItems = null, string styles = "")
         {
             try
@@ -161,16 +92,18 @@ namespace Squadio.EmailSender.EmailService.Sender.Implementation
                                 ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
                                 await smtp.SendMailAsync(email);
                             }
+                            isSent = true;
+                            return;
                         }
                         catch (Exception e)
                         {
                             if (count >= max)
                             {
-                                _logger.LogError(e, e.Message);
+                                _logger.LogError($"[{to}] [{subject}] : {e.Message}");
                                 throw;
                             }
 
-                            _logger.LogWarning(e.Message);
+                            _logger.LogWarning($"[{to}] [{subject}] : {e.Message}");
                         }
 
                         await Task.Delay(1000);

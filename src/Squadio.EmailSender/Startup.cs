@@ -64,7 +64,7 @@ namespace Squadio.EmailSender
                     dbSettings.PostgresConnectionString, 
                     "Logs", 
                     columnWriters, 
-                    restrictedToMinimumLevel: LogEventLevel.Warning, 
+                    restrictedToMinimumLevel: LogEventLevel.Error, 
                     schemaName: "public", 
                     needAutoCreateTable: true))
                 .WriteTo.Async(x => x.Console(
