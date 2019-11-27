@@ -1,30 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Google.Apis.Auth;
 using Mapper;
-using Microsoft.Extensions.Options;
 using Squadio.BLL.Providers.Companies;
 using Squadio.BLL.Providers.Invites;
 using Squadio.BLL.Providers.Teams;
 using Squadio.BLL.Services.Companies;
 using Squadio.BLL.Services.ConfirmEmail;
+using Squadio.BLL.Services.Invites;
 using Squadio.BLL.Services.Projects;
 using Squadio.BLL.Services.Teams;
 using Squadio.BLL.Services.Users;
-using Squadio.Common.Models.Email;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
-using Squadio.Common.Settings;
-using Squadio.DAL.Repository.ConfirmEmail;
 using Squadio.DAL.Repository.SignUp;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Enums;
-using Squadio.Domain.Models.Projects;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Companies;
 using Squadio.DTO.Projects;
@@ -40,6 +33,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
         private readonly IUsersRepository _usersRepository;
         //private readonly IOptions<GoogleSettings> _googleSettings;
         private readonly IInvitesProvider _invitesProvider;
+        private readonly IInvitesService _invitesService;
         private readonly IUsersService _usersService;
         private readonly ICompaniesService _companiesService;
         private readonly ICompaniesProvider _companiesProvider;
@@ -53,6 +47,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             , IUsersRepository usersRepository
             //, IOptions<GoogleSettings> googleSettings
             , IInvitesProvider invitesProvider
+            , IInvitesService invitesService
             , IUsersService usersService
             , ICompaniesService companiesService
             , ICompaniesProvider companiesProvider
@@ -67,6 +62,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             _usersRepository = usersRepository;
             //_googleSettings = googleSettings;
             _invitesProvider = invitesProvider;
+            _invitesService = invitesService;
             _usersService = usersService;
             _companiesService = companiesService;
             _companiesProvider = companiesProvider;
@@ -465,7 +461,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 };
             }
 
-            var team = await _teamsService.Create(userId, company.CompanyId, dto);
+            var team = await _teamsService.Create(userId, company.CompanyId, dto, false);
 
             if (team.IsSuccess)
             {
@@ -515,7 +511,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 };
             }
 
-            var project = await _projectsService.Create(userId, team.TeamId, dto);
+            var project = await _projectsService.Create(userId, team.TeamId, dto, false);
 
             if (project.IsSuccess)
             {
@@ -539,6 +535,13 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             if (!stepValidate.IsSuccess)
             {
                 return stepValidate;
+            }
+
+            if (step.Status == UserStatus.Admin)
+            {
+                var sendResult = await _invitesService.SendSignUpInvites(userId);
+                if (!sendResult.IsSuccess)
+                    return sendResult as Response<SignUpStepDTO>;
             }
 
             step = await _repository.SetRegistrationStep(userId, RegistrationStep.Done);

@@ -7,7 +7,7 @@ namespace Squadio.Domain.Models.Invites
     public class InviteModel
     {
         public Guid Id { get; set; }
-        public Guid? CreatorId { get; set; }
+        public Guid CreatorId { get; set; }
         public UserModel Creator { get; set; }
         public string Email { get; set; }
         public string Code { get; set; }

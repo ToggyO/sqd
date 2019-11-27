@@ -169,7 +169,7 @@ namespace Squadio.DAL
                     .IsUnique();
                 item.HasOne(x => x.Creator)
                     .WithMany()
-                    .OnDelete(DeleteBehavior.SetNull);
+                    .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

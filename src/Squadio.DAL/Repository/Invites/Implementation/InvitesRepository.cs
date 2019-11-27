@@ -41,6 +41,48 @@ namespace Squadio.DAL.Repository.Invites.Implementation
             return item;
         }
 
+        public async Task DeleteInvites(IEnumerable<Guid> ids)
+        {
+            var query = _context.Invites.Where(x => ids.Contains(x.Id));
+            var items = query.ToList();
+            _context.Invites.RemoveRange(query);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<InviteModel>> GetInvites(
+            Guid? entityId = null, 
+            Guid? authorId = null, 
+            EntityType? entityType = null, 
+            bool? activated = null)
+        {
+            var query = _context.Invites as IQueryable<InviteModel>;
+            
+            if (entityId.HasValue)
+            {
+                query = query.Where(x => x.EntityId == entityId);
+            }
+            
+            if (authorId.HasValue)
+            {
+                query = query.Where(x => x.CreatorId == authorId);
+            }
+            
+            if (entityType.HasValue)
+            {
+                query = query.Where(x => x.EntityType == entityType);
+            }
+            
+            if (activated.HasValue)
+            {
+                query = query.Where(x => x.Activated == activated);
+            }
+            
+            var items = await query
+                .OrderByDescending(x => x.CreatedDate)
+                .ToListAsync();
+            return items;
+        }
+
         public async Task ActivateInvites(Guid entityId, IEnumerable<string> emails)
         {
             var emailsUpper = emails.Select(s => s.ToUpper());
@@ -61,22 +103,6 @@ namespace Squadio.DAL.Repository.Invites.Implementation
         {
             var item = await GetInviteByCode(code);
             return await ActivateInvite(item.Id);
-        }
-
-        public async Task<IEnumerable<InviteModel>> GetInvites(Guid entityId, bool? activated = null)
-        {
-            var query = _context.Invites
-                .Where(x => x.EntityId == entityId);
-            
-            if (activated.HasValue)
-            {
-                query = query.Where(x => x.Activated == activated);
-            }
-            
-            var items = await query
-                .OrderByDescending(x => x.CreatedDate)
-                .ToListAsync();
-            return items;
         }
     }
 }

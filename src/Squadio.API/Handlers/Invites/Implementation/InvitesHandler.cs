@@ -23,19 +23,19 @@ namespace Squadio.API.Handlers.Invites.Implementation
             _provider = provider;
         }
 
-        public async Task<Response<IEnumerable<InviteDTO>>> InviteToCompany(Guid companyId, CreateInvitesDTO dto, ClaimsPrincipal claims)
+        public async Task<Response> InviteToCompany(Guid companyId, CreateInvitesDTO dto, ClaimsPrincipal claims)
         {
             var result = await _service.InviteToCompany(companyId, claims.GetUserId(), dto);
             return result;
         }
 
-        public async Task<Response<IEnumerable<InviteDTO>>> InviteToTeam(Guid teamId, CreateInvitesDTO dto, ClaimsPrincipal claims)
+        public async Task<Response> InviteToTeam(Guid teamId, CreateInvitesDTO dto, ClaimsPrincipal claims)
         {
             var result = await _service.InviteToTeam(teamId, claims.GetUserId(), dto);
             return result;
         }
 
-        public async Task<Response<IEnumerable<InviteDTO>>> InviteToProject(Guid projectId, CreateInvitesDTO dto, ClaimsPrincipal claims)
+        public async Task<Response> InviteToProject(Guid projectId, CreateInvitesDTO dto, ClaimsPrincipal claims)
         {
             var result = await _service.InviteToProject(projectId, claims.GetUserId(), dto);
             return result;

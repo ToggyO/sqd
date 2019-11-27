@@ -7,7 +7,7 @@ namespace Squadio.BLL.Services.Teams
 {
     public interface ITeamsService
     {
-        Task<Response<TeamDTO>> Create(Guid userId, Guid companyId, TeamCreateDTO dto);
+        Task<Response<TeamDTO>> Create(Guid userId, Guid companyId, TeamCreateDTO dto, bool sendInvites = true);
         Task<Response<TeamDTO>> Update(Guid teamId, Guid userId, TeamUpdateDTO dto);
         Task<Response> DeleteUserFromTeam(Guid teamId, Guid removeUserId, Guid currentUserId);
         Task<Response> LeaveTeam(Guid teamId, Guid userId);

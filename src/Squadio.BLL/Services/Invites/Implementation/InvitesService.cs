@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Mapper;
+using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.Extensions.Logging;
 using Squadio.BLL.Providers.Codes;
 using Squadio.BLL.Providers.Users;
 using Squadio.BLL.Services.Rabbit;
 using Squadio.BLL.Services.Users;
 using Squadio.Common.Models.Email;
 using Squadio.Common.Models.Errors;
+using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.ChangePassword;
 using Squadio.DAL.Repository.Companies;
@@ -43,6 +47,8 @@ namespace Squadio.BLL.Services.Invites.Implementation
         private readonly ISignUpRepository _signUpRepository;
         private readonly IChangePasswordRequestRepository _changePasswordRepository;
         private readonly IMapper _mapper;
+        private readonly ILogger<InvitesService> _logger;
+        
         public InvitesService(IInvitesRepository repository
             , IRabbitService rabbitService
             , ICompaniesRepository companiesRepository
@@ -56,7 +62,8 @@ namespace Squadio.BLL.Services.Invites.Implementation
             , IUsersProvider usersProvider
             , ISignUpRepository signUpRepository
             , IChangePasswordRequestRepository changePasswordRepository
-            , IMapper mapper)
+            , IMapper mapper
+            , ILogger<InvitesService> logger)
         {
             _repository = repository;
             _rabbitService = rabbitService;
@@ -72,12 +79,13 @@ namespace Squadio.BLL.Services.Invites.Implementation
             _signUpRepository = signUpRepository;
             _changePasswordRepository = changePasswordRepository;
             _mapper = mapper;
+            _logger = logger;
         }
         
         #endregion
 
 
-        public async Task<Response<IEnumerable<InviteDTO>>> InviteToCompany(Guid companyId, Guid authorId, CreateInvitesDTO dto)
+        public async Task<Response> InviteToCompany(Guid companyId, Guid authorId, CreateInvitesDTO dto, bool sendInvites = true)
         {
             var companyUser = await _companiesUsersRepository.GetCompanyUser(companyId, authorId);
             if (companyUser == null || companyUser?.Status == UserStatus.Member)
@@ -91,26 +99,27 @@ namespace Squadio.BLL.Services.Invites.Implementation
                     }
                 });
             }
-
-            var result = new List<InviteDTO>();
+            
             foreach (var email in dto.Emails)
             {
-                var itemResult = await InviteToCompany(
-                    companyUser.User.Name,
-                    companyUser.Company.Name,
+                var createInviteResult = await CreateInviteToCompany(
                     companyUser.CompanyId,
                     email,
                     authorId);
-                result.Add(itemResult.Data);
+                if (createInviteResult != null && sendInvites)
+                {
+                    await SendCompanyInvite(
+                        createInviteResult.Item1,
+                        companyUser.User.Name,
+                        companyUser.Company.Name,
+                        createInviteResult.Item2);
+                }
             }
 
-            return new Response<IEnumerable<InviteDTO>>
-            {
-                Data = result
-            };
+            return new Response();
         }
 
-        public async Task<Response<IEnumerable<InviteDTO>>> InviteToTeam(Guid teamId, Guid authorId, CreateInvitesDTO dto)
+        public async Task<Response> InviteToTeam(Guid teamId, Guid authorId, CreateInvitesDTO dto, bool sendInvites = true)
         {
             var teamUser = await _teamsUsersRepository.GetTeamUser(teamId, authorId);
             if (teamUser == null || teamUser?.Status == UserStatus.Member)
@@ -124,26 +133,27 @@ namespace Squadio.BLL.Services.Invites.Implementation
                     }
                 });
             }
-
-            var result = new List<InviteDTO>();
+            
             foreach (var email in dto.Emails)
             {
-                var itemResult = await InviteToTeam(
-                    teamUser.User.Name,
-                    teamUser.Team.Name,
+                var createInviteResult = await CreateInviteToTeam(
                     teamUser.TeamId,
                     email,
                     authorId);
-                result.Add(itemResult.Data);
+                if (createInviteResult != null && sendInvites)
+                {
+                    await SendTeamInvite(
+                        createInviteResult.Item1,
+                        teamUser.User.Name,
+                        teamUser.Team.Name,
+                        createInviteResult.Item2);
+                }
             }
 
-            return new Response<IEnumerable<InviteDTO>>
-            {
-                Data = result
-            };
+            return new Response();
         }
 
-        public async Task<Response<IEnumerable<InviteDTO>>> InviteToProject(Guid projectId, Guid authorId, CreateInvitesDTO dto)
+        public async Task<Response> InviteToProject(Guid projectId, Guid authorId, CreateInvitesDTO dto, bool sendInvites = true)
         {
             
             var projectUser = await _projectsUsersRepository.GetProjectUser(projectId, authorId);
@@ -158,23 +168,24 @@ namespace Squadio.BLL.Services.Invites.Implementation
                     }
                 });
             }
-
-            var result = new List<InviteDTO>();
+            
             foreach (var email in dto.Emails)
             {
-                var itemResult = await InviteToProject(
-                    projectUser.User.Name,
-                    projectUser.Project.Name,
+                var createInviteResult = await CreateInviteToProject(
                     projectUser.ProjectId,
                     email,
                     authorId);
-                result.Add(itemResult.Data);
+                if (createInviteResult != null && sendInvites)
+                {
+                    await SendProjectInvite(
+                        createInviteResult.Item1,
+                        projectUser.User.Name,
+                        projectUser.Project.Name,
+                        createInviteResult.Item2);
+                }
             }
-
-            return new Response<IEnumerable<InviteDTO>>
-            {
-                Data = result
-            };
+            
+            return new Response();
         }
 
         public async Task<Response> CancelInvite(Guid entityId, Guid authorId, CancelInvitesDTO dto, EntityType entityType)
@@ -305,7 +316,150 @@ namespace Squadio.BLL.Services.Invites.Implementation
             return result;
         }
 
-        private async Task<Response<InviteDTO>> InviteToCompany(string authorName, string companyName, Guid companyId, string email, Guid authorId)
+        public async Task<Response> SendSignUpInvites(Guid userId)
+        {
+            var pageModel = new PageModel {Page = 1, PageSize = 1};
+
+            var userCompany = (await _companiesUsersRepository.GetUserCompanies(userId, pageModel))
+                .Items
+                .FirstOrDefault();
+
+            if (userCompany == null)
+            {
+                return new BusinessConflictErrorResponse(new[]
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound,
+                        Field = ErrorFields.Company.Id
+                    },
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound,
+                        Field = ErrorFields.User.Id
+                    }
+                });
+            }
+
+            var userTeam = (await _teamsUsersRepository.GetUserTeams(userId, pageModel, userCompany.CompanyId))
+                .Items
+                .FirstOrDefault();
+
+            if (userTeam == null)
+            {
+                return new BusinessConflictErrorResponse(new[]
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound,
+                        Field = ErrorFields.Team.Id
+                    },
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound,
+                        Field = ErrorFields.User.Id
+                    }
+                });
+            }
+
+            var userProject =
+                (await _projectsUsersRepository.GetUserProjects(userId, pageModel, teamId: userTeam.TeamId))
+                .Items
+                .FirstOrDefault();
+
+            if (userProject == null)
+            {
+                return new BusinessConflictErrorResponse(new[]
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound,
+                        Field = ErrorFields.Project.Id
+                    },
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound,
+                        Field = ErrorFields.User.Id
+                    }
+                });
+            }
+
+            var allInvites = (await _repository.GetInvites(
+                authorId: userId, 
+                activated: false)).ToList();
+
+            if (allInvites.Count == 0)
+                return new Response();
+
+            List<string> usedEmails;
+            List<Guid> redundantInvitesIds = new List<Guid>();
+
+            var projectInvites = allInvites.Where(x => x.EntityType == EntityType.Project).ToList();
+            allInvites.RemoveAll(x => x.EntityType == EntityType.Project);
+            usedEmails = projectInvites.Select(x=>x.Email).Distinct().ToList();
+            redundantInvitesIds.AddRange(allInvites.Where(x => usedEmails.Any(y => y.ToUpper() == x.Email.ToUpper())).Select(x=>x.Id));
+            allInvites.RemoveAll(x => redundantInvitesIds.Any(y => y == x.Id));
+
+            foreach (var invite in projectInvites)
+            {
+                await SendProjectInvite(
+                    invite,
+                    userProject.User.Name,
+                    userProject.Project.Name,
+                    false);
+            }
+
+            var teamInvites = allInvites.Where(x => x.EntityType == EntityType.Team).ToList();
+            allInvites.RemoveAll(x => x.EntityType == EntityType.Team);
+            usedEmails = teamInvites.Select(x=>x.Email).Distinct().ToList();
+            redundantInvitesIds.AddRange(allInvites.Where(x => usedEmails.Any(y => y.ToUpper() == x.Email.ToUpper())).Select(x=>x.Id));
+            allInvites.RemoveAll(x => redundantInvitesIds.Any(y => y == x.Id));
+
+            foreach (var invite in teamInvites)
+            {
+                await SendTeamInvite(
+                    invite,
+                    userTeam.User.Name,
+                    userTeam.Team.Name,
+                    false);
+            }
+
+            var companyInvites = allInvites.Where(x => x.EntityType == EntityType.Company).ToList();
+            allInvites.RemoveAll(x => x.EntityType == EntityType.Company);
+            usedEmails = companyInvites.Select(x=>x.Email).Distinct().ToList();
+            redundantInvitesIds.AddRange(allInvites.Where(x => usedEmails.Any(y => y.ToUpper() == x.Email.ToUpper())).Select(x=>x.Id));
+            allInvites.RemoveAll(x => redundantInvitesIds.Any(y => y == x.Id));
+
+            foreach (var invite in companyInvites)
+            {
+                await SendCompanyInvite(
+                    invite,
+                    userCompany.User.Name,
+                    userCompany.Company.Name,
+                    false);
+            }
+
+            if (redundantInvitesIds.Count > 0)
+            {
+                await _repository.DeleteInvites(redundantInvitesIds);
+                _logger.LogInformation($"Removed {redundantInvitesIds.Count} redundant invites while user registered (userid: {userId})");
+            }
+
+            if (allInvites.Count > 0)
+            {
+                _logger.LogWarning($"Some invites not sent while user registered (userid: {userId})");
+            }
+
+            return new Response();
+        }
+
+        private async Task<Tuple<InviteModel, bool>> CreateInviteToCompany(Guid companyId, string email, Guid authorId)
         {
             var code = _codeProvider.GenerateCodeAsGuid();
             
@@ -330,7 +484,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
             var companyUser = await _companiesUsersRepository.GetCompanyUser(companyId, user.Id);
             if (companyUser != null)
             {
-                return new Response<InviteDTO>();
+                return null;
             }
             
             await _companiesUsersRepository.AddCompanyUser(companyId, user.Id, UserStatus.Pending);
@@ -347,31 +501,11 @@ namespace Squadio.BLL.Services.Invites.Implementation
             };
             
             invite = await _repository.CreateInvite(invite);
-            var result = _mapper.Map<InviteModel, InviteDTO>(invite);
 
-            try
-            {
-                await _rabbitService.Send(new InviteToCompanyEmailModel()
-                {
-                    To = email,
-                    AuthorName = authorName,
-                    Code = invite.Code,
-                    CompanyName = companyName,
-                    IsAlreadyRegistered = signUpStep.Step != RegistrationStep.New
-                });
-            }
-            catch
-            {
-                // ignored
-            }
-
-            return new Response<InviteDTO>
-            {
-                Data = result
-            };
+            return new Tuple<InviteModel, bool>(invite, signUpStep.Step != RegistrationStep.New);
         }
-
-        private async Task<Response<InviteDTO>> InviteToTeam(string authorName, string teamName, Guid teamId, string email, Guid authorId)
+        
+        private async Task<Tuple<InviteModel, bool>> CreateInviteToTeam(Guid teamId, string email, Guid authorId)
         {
             var code = _codeProvider.GenerateCodeAsGuid();
             
@@ -396,7 +530,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
             var teamUser = await _teamsUsersRepository.GetTeamUser(teamId, user.Id);
             if (teamUser != null)
             {
-                return new Response<InviteDTO>();
+                return null;
             }
             
             await _teamsUsersRepository.AddTeamUser(teamId, user.Id, UserStatus.Pending);
@@ -413,31 +547,11 @@ namespace Squadio.BLL.Services.Invites.Implementation
             };
             
             invite = await _repository.CreateInvite(invite);
-            var result = _mapper.Map<InviteModel, InviteDTO>(invite);
-
-            try
-            {
-                await _rabbitService.Send(new InviteToTeamEmailModel
-                {
-                    To = email,
-                    AuthorName = authorName,
-                    Code = invite.Code,
-                    TeamName = teamName,
-                    IsAlreadyRegistered = signUpStep.Step != RegistrationStep.New
-                });
-            }
-            catch
-            {
-                // ignored
-            }
-
-            return new Response<InviteDTO>
-            {
-                Data = result
-            };
+            
+            return new Tuple<InviteModel, bool>(invite, signUpStep.Step != RegistrationStep.New);
         }
 
-        private async Task<Response<InviteDTO>> InviteToProject(string authorName, string projectName, Guid projectId, string email, Guid authorId)
+        private async Task<Tuple<InviteModel, bool>> CreateInviteToProject(Guid projectId, string email, Guid authorId)
         {
             var code = _codeProvider.GenerateCodeAsGuid();
             
@@ -462,7 +576,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
             var projectUser = await _projectsUsersRepository.GetProjectUser(projectId, user.Id);
             if (projectUser != null)
             {
-                return new Response<InviteDTO>();
+                return null;
             }
             
             await _projectsUsersRepository.AddProjectUser(projectId, user.Id, UserStatus.Pending);
@@ -479,28 +593,65 @@ namespace Squadio.BLL.Services.Invites.Implementation
             };
             
             invite = await _repository.CreateInvite(invite);
-            var result = _mapper.Map<InviteModel, InviteDTO>(invite);
-
+            
+            return new Tuple<InviteModel, bool>(invite, signUpStep.Step != RegistrationStep.New);
+        }
+        
+        private async Task SendCompanyInvite(InviteModel model, string authorName, string companyName, bool isAlreadyRegistered)
+        {
             try
             {
-                await _rabbitService.Send(new InviteToProjectEmailModel
+                await _rabbitService.Send(new InviteToCompanyEmailModel()
                 {
-                    To = email,
+                    To = model.Email,
                     AuthorName = authorName,
-                    Code = invite.Code,
-                    ProjectName = projectName,
-                    IsAlreadyRegistered = signUpStep.Step != RegistrationStep.New
+                    Code = model.Code,
+                    CompanyName = companyName,
+                    IsAlreadyRegistered = isAlreadyRegistered
                 });
             }
-            catch
+            catch (Exception ex)
             {
-                // ignored
+                _logger.LogError(ex, $"[{model.Email}][{model.Code}] : {ex.Message}");
             }
-
-            return new Response<InviteDTO>
+        }
+        
+        private async Task SendTeamInvite(InviteModel model, string authorName, string teamName, bool isAlreadyRegistered)
+        {
+            try
             {
-                Data = result
-            };
+                await _rabbitService.Send(new InviteToTeamEmailModel()
+                {
+                    To = model.Email,
+                    AuthorName = authorName,
+                    Code = model.Code,
+                    TeamName = teamName,
+                    IsAlreadyRegistered = isAlreadyRegistered
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"[{model.Email}][{model.Code}] : {ex.Message}");
+            }
+        }
+        
+        private async Task SendProjectInvite(InviteModel model, string authorName, string projectName, bool isAlreadyRegistered)
+        {
+            try
+            {
+                await _rabbitService.Send(new InviteToProjectEmailModel()
+                {
+                    To = model.Email,
+                    AuthorName = authorName,
+                    Code = model.Code,
+                    ProjectName = projectName,
+                    IsAlreadyRegistered = isAlreadyRegistered
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"[{model.Email}][{model.Code}] : {ex.Message}");
+            }
         }
         
         private async Task<Response> AcceptInviteToCompany(Guid companyId, Guid userId)

@@ -88,7 +88,7 @@ namespace Squadio.API.Controllers
         /// Send invites to company
         /// </summary>
         [HttpPost("{id}/invite")]
-        public async Task<Response<IEnumerable<InviteDTO>>> CreateInvites([Required, FromRoute] Guid id
+        public async Task<Response> CreateInvites([Required, FromRoute] Guid id
             , [Required, FromBody] CreateInvitesDTO dto)
         {
             return await _invitesHandler.InviteToCompany(id, dto, User);

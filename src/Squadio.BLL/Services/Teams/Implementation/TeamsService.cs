@@ -39,7 +39,7 @@ namespace Squadio.BLL.Services.Teams.Implementation
             _mapper = mapper;
         }
 
-        public async Task<Response<TeamDTO>> Create(Guid userId, Guid companyId, TeamCreateDTO dto)
+        public async Task<Response<TeamDTO>> Create(Guid userId, Guid companyId, TeamCreateDTO dto, bool sendInvites = true)
         {
             var entity = new TeamModel
             {
@@ -60,7 +60,8 @@ namespace Squadio.BLL.Services.Teams.Implementation
                 new CreateInvitesDTO
                 {
                     Emails = dto.Emails
-                });
+                }, 
+                sendInvites);
 
             var result = _mapper.Map<TeamModel, TeamDTO>(entity);
             return new Response<TeamDTO>

@@ -100,12 +100,8 @@ namespace Squadio.Common.Models.Responses
         }
     }
 
-    public class InternalErrorResponse
+    public class InternalErrorResponse : ErrorResponse
     {
-        public string Message { get; set; }
-        public IEnumerable<Error> Errors { get; set; }
-        public string Code { get; set; }
-        
         public InternalErrorResponse(IEnumerable<Error> errors)
         {
             Code = ErrorCodes.System.InternalError;

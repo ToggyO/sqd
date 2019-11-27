@@ -110,7 +110,9 @@ namespace Squadio.BLL.Providers.Invites.Implementation
         
         public async Task<Response<IEnumerable<InviteDTO>>> GetInvitesByEntityId(Guid entityId, bool? activated = null)
         {
-            var invites = await _repository.GetInvites(entityId, activated);
+            var invites = await _repository.GetInvites(
+                entityId: entityId, 
+                activated: activated);
             return new Response<IEnumerable<InviteDTO>>
             {
                 Data = invites.Select(x => _mapper.Map<InviteModel, InviteDTO>(x))
