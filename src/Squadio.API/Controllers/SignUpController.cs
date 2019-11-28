@@ -32,7 +32,6 @@ namespace Squadio.API.Controllers
         /// Get registration step of current user
         /// </summary>
         [HttpGet("step")]
-        [AllowAnonymous]
         public async Task<Response<SignUpStepDTO>> GetStatus()
         {
             return await _handler.GetRegistrationStep(User);
