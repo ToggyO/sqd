@@ -130,6 +130,16 @@ namespace Squadio.API.Controllers
         }
         
         /// <summary>
+        /// Check the password restore code for validity
+        /// </summary>
+        [HttpGet("passwords/validate")]
+        [AllowAnonymous]
+        public async Task<Response> ValidateCode([FromQuery, Required] string code)
+        {
+            return await _handler.ValidateCode(code);
+        }
+        
+        /// <summary>
         /// Set new password, using link from "api/passwords/request"
         /// </summary>
         [HttpPut("passwords/set")]

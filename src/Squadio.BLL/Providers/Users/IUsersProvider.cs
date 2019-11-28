@@ -13,5 +13,6 @@ namespace Squadio.BLL.Providers.Users
         Task<Response<PageModel<UserDTO>>> GetPage(PageModel model);
         Task<Response<UserDTO>> GetById(Guid id);
         Task<Response<UserDTO>> GetByEmail(string email);
+        Task<Response> ValidateCode(string code);
     }
 }

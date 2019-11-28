@@ -97,6 +97,12 @@ namespace Squadio.API.Handlers.Users.Implementation
             return result;
         }
 
+        public async Task<Response> ValidateCode(string code)
+        {
+            var result = await _provider.ValidateCode(code);
+            return result;
+        }
+
         public async Task<Response> ResetPasswordRequest(string email)
         {
             await _service.ResetPasswordRequest(email);

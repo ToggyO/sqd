@@ -5,6 +5,7 @@ using Mapper;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
+using Squadio.DAL.Repository.ChangePassword;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Users;
@@ -13,11 +14,14 @@ namespace Squadio.BLL.Providers.Users.Implementation
 {
     public class UsersProvider : IUsersProvider
     {
+        private readonly IChangePasswordRequestRepository _changePasswordRepository;
         private readonly IUsersRepository _repository;
         private readonly IMapper _mapper;
-        public UsersProvider(IUsersRepository repository
+        public UsersProvider(IChangePasswordRequestRepository changePasswordRepository
+            , IUsersRepository repository
             , IMapper mapper)
         {
+            _changePasswordRepository = changePasswordRepository;
             _repository = repository;
             _mapper = mapper;
         }
@@ -81,6 +85,27 @@ namespace Squadio.BLL.Providers.Users.Implementation
             {
                 Data = result
             };
+        }
+
+        public async Task<Response> ValidateCode(string code)
+        {
+            var userPasswordRequest = await _changePasswordRepository.GetRequestByCode(code);
+            
+            // TODO: Check lifetime of request if needed
+            
+            if (userPasswordRequest == null 
+                || userPasswordRequest?.IsActivated == true)
+            {
+                return new BusinessConflictErrorResponse(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Business.PasswordChangeRequestInvalid,
+                        Message = ErrorMessages.Business.PasswordChangeRequestInvalid
+                    }
+                });
+            }
+            return new Response();
         }
     }
 }
