@@ -52,6 +52,7 @@ namespace Squadio.API
                     builder =>
                     {
                         builder.WithOrigins(
+                                "http://localhost:3010",
                                 "http://localhost:5005",
                                 "https://squad.api.magora.work",
                                 "https://squad.magora.work")
