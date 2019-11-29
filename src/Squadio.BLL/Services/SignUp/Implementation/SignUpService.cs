@@ -178,31 +178,6 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             return new Response();
         }
 
-        public async Task<Response<SignUpStepDTO<UserDTO>>> SignUpMemberUsername(Guid userId, UserUpdateDTO updateDTO)
-        {
-            var step = await _repository.GetRegistrationStepByUserId(userId);
-            var stepValidate = ValidateStep<UserDTO>(step, RegistrationStep.ProjectCreated);
-            if (!stepValidate.IsSuccess)
-            {
-                return stepValidate;
-            }
-
-            var user = await _usersRepository.GetById(userId);
-            user.Name = updateDTO.Name;
-            user = await _usersRepository.Update(user);
-
-            step = await _repository.SetRegistrationStep(user.Id, RegistrationStep.ProjectCreated);
-            
-            return new Response<SignUpStepDTO<UserDTO>>
-            {
-                Data = new SignUpStepDTO<UserDTO>
-                {
-                    Data = _mapper.Map<UserModel, UserDTO>(user),
-                    RegistrationStep = _mapper.Map<UserRegistrationStepModel, UserRegistrationStepDTO>(step)
-                }
-            };
-        }
-
         public async Task<Response> SignUp(string email, string password)
         {
             var user = await _usersRepository.GetByEmail(email);
@@ -314,12 +289,6 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 Data = createdUser
             };
         }
-        
-        public async Task<Response<SignUpStepDTO>> SendNewCode(string email)
-        {
-            var user = await _usersRepository.GetByEmail(email);
-            return await SendNewCode(user);
-        }
 
         public async Task<Response<SignUpStepDTO>> SendNewCode(Guid userId)
         {
@@ -387,19 +356,19 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 return stepValidate;
             }
 
-            var userResponse = await _usersService.UpdateUser(id, updateDTO);
-            var user = userResponse.Data;
-
-            step = await _repository.SetRegistrationStep(user.Id, RegistrationStep.UsernameEntered);
-
-            return new Response<SignUpStepDTO<UserDTO>>
+            switch (step.Status)
             {
-                Data = new SignUpStepDTO<UserDTO>
-                {
-                    Data = user,
-                    RegistrationStep = _mapper.Map<UserRegistrationStepModel, UserRegistrationStepDTO>(step)
-                }
-            };
+                case UserStatus.Admin:
+                    return await SignUpUsernameAdmin(id, updateDTO);
+                case UserStatus.Member:
+                    return await SignUpUsernameMember(id, updateDTO);
+                default:
+                    return new BusinessConflictErrorResponse<SignUpStepDTO<UserDTO>>(new Error
+                    {
+                        Code = ErrorCodes.Global.BusinessConflict,
+                        Message = ErrorMessages.Global.BusinessConflict
+                    });
+            }
         }
 
         public async Task<Response<SignUpStepDTO<CompanyDTO>>> SignUpCompany(Guid userId, CreateCompanyDTO dto)
@@ -409,6 +378,15 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             if (!stepValidate.IsSuccess)
             {
                 return stepValidate;
+            }
+
+            if (step.Status != UserStatus.Admin)
+            {
+                return new ForbiddenErrorResponse<SignUpStepDTO<CompanyDTO>>(new Error
+                {
+                    Code = ErrorCodes.Security.Forbidden,
+                    Message = ErrorMessages.Security.Forbidden
+                });
             }
 
             var company = await _companiesService.Create(userId, dto);
@@ -436,6 +414,15 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             if (!stepValidate.IsSuccess)
             {
                 return stepValidate;
+            }
+
+            if (step.Status != UserStatus.Admin)
+            {
+                return new ForbiddenErrorResponse<SignUpStepDTO<TeamDTO>>(new Error
+                {
+                    Code = ErrorCodes.Security.Forbidden,
+                    Message = ErrorMessages.Security.Forbidden
+                });
             }
 
             var companyPage = await _companiesProvider.GetUserCompanies(userId, new PageModel());
@@ -486,6 +473,15 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             if (!stepValidate.IsSuccess)
             {
                 return stepValidate;
+            }
+
+            if (step.Status != UserStatus.Admin)
+            {
+                return new ForbiddenErrorResponse<SignUpStepDTO<ProjectDTO>>(new Error
+                {
+                    Code = ErrorCodes.Security.Forbidden,
+                    Message = ErrorMessages.Security.Forbidden
+                });
             }
 
             var teamPage = await _teamsProvider.GetUserTeams(userId, new PageModel());
@@ -645,6 +641,41 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             }
             
             return new Response<SignUpStepDTO>();
+        }
+
+        private async Task<Response<SignUpStepDTO<UserDTO>>> SignUpUsernameAdmin(Guid id, UserUpdateDTO updateDTO)
+        {
+            var userResponse = await _usersService.UpdateUser(id, updateDTO);
+            var user = userResponse.Data;
+
+            var result = await _repository.SetRegistrationStep(user.Id, RegistrationStep.UsernameEntered);
+
+            return new Response<SignUpStepDTO<UserDTO>>
+            {
+                Data = new SignUpStepDTO<UserDTO>
+                {
+                    Data = user,
+                    RegistrationStep = _mapper.Map<UserRegistrationStepModel, UserRegistrationStepDTO>(result)
+                }
+            };
+        }
+
+        private async Task<Response<SignUpStepDTO<UserDTO>>> SignUpUsernameMember(Guid id, UserUpdateDTO updateDTO)
+        {
+            var user = await _usersRepository.GetById(id);
+            user.Name = updateDTO.Name;
+            user = await _usersRepository.Update(user);
+
+            var result = await _repository.SetRegistrationStep(user.Id, RegistrationStep.ProjectCreated);
+            
+            return new Response<SignUpStepDTO<UserDTO>>
+            {
+                Data = new SignUpStepDTO<UserDTO>
+                {
+                    Data = _mapper.Map<UserModel, UserDTO>(user),
+                    RegistrationStep = _mapper.Map<UserRegistrationStepModel, UserRegistrationStepDTO>(result)
+                }
+            };
         }
     }
 }

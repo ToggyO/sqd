@@ -57,6 +57,7 @@ namespace Squadio.API.Controllers
             return await _handler.SignUpMemberGoogle(dto);
         }
         
+        /*
         /// <summary>
         /// Set username of current user
         /// </summary>
@@ -65,6 +66,7 @@ namespace Squadio.API.Controllers
         {
             return await _handler.SignUpMemberUsername(dto, User);
         }
+        */
         
         /// <summary>
         /// Create new account and send confirmation email
@@ -89,7 +91,7 @@ namespace Squadio.API.Controllers
         /// <summary>
         /// Send new confirmation email and disable previous
         /// </summary>
-        [HttpPost("admin/send-new-code")]
+        [HttpPost("send-new-code")]
         [AllowAnonymous]
         public async Task<Response<SignUpStepDTO>> SendNewCode()
         {
@@ -99,7 +101,7 @@ namespace Squadio.API.Controllers
         /// <summary>
         /// Confirm email of current user
         /// </summary>
-        [HttpPut("admin/confirm")]
+        [HttpPut("confirm")]
         public async Task<Response<SignUpStepDTO>> SignUpConfirm([Required, FromBody] SignUpCodeDTO dto)
         {
             return await _handler.SignUpConfirm(dto.Code, User);
@@ -108,7 +110,7 @@ namespace Squadio.API.Controllers
         /// <summary>
         /// Set username of current user (also mean that privacy policy and terms was read)
         /// </summary>
-        [HttpPut("admin/username")]
+        [HttpPut("username")]
         public async Task<Response<SignUpStepDTO<UserDTO>>> UpdateCurrentUser([FromBody] UserUpdateDTO dto)
         {
             return await _handler.SignUpUsername(dto, User);
@@ -117,7 +119,7 @@ namespace Squadio.API.Controllers
         /// <summary>
         /// Create new company (and set current user as admin for this company )
         /// </summary>
-        [HttpPost("admin/company")]
+        [HttpPost("company")]
         public async Task<Response<SignUpStepDTO<CompanyDTO>>> CreateCompany([Required, FromBody] CreateCompanyDTO dto)
         {
             return await _handler.SignUpCompany(dto, User);
@@ -126,7 +128,7 @@ namespace Squadio.API.Controllers
         /// <summary>
         /// Create new team, send invites (and set current user as admin for this team)
         /// </summary>
-        [HttpPost("admin/team")]
+        [HttpPost("team")]
         public async Task<Response<SignUpStepDTO<TeamDTO>>> CreateTeam([Required, FromBody] TeamCreateDTO dto)
         {
             return await _handler.SignUpTeam(dto, User);
@@ -135,7 +137,7 @@ namespace Squadio.API.Controllers
         /// <summary>
         /// Get emails of invited users (working correctly only in registration)
         /// </summary>
-        [HttpGet("admin/team/invites")]
+        [HttpGet("team/invites")]
         public async Task<Response<IEnumerable<string>>> GetTeamInvites()
         {
             return await _handler.GetTeamInvites(User);
@@ -144,23 +146,14 @@ namespace Squadio.API.Controllers
         /// <summary>
         /// Create new project, send invites (and set current user as admin for this project)
         /// </summary>
-        [HttpPost("admin/project")]
+        [HttpPost("project")]
         public async Task<Response<SignUpStepDTO<ProjectDTO>>> CreateProject([Required, FromBody] CreateProjectDTO dto)
         {
             return await _handler.SignUpProject(dto, User);
         }
         
         /// <summary>
-        /// Obsolete: This endpoint will be removed soon. Use "api/signup/done"
-        /// </summary>
-        [HttpPut("admin/done")]
-        public async Task<Response<SignUpStepDTO>> SignUpDoneObsolete()
-        {
-            return await _handler.SignUpDone(User);
-        }
-        
-        /// <summary>
-        /// User (member and admin) watched video tutorial and ready to use application
+        /// User watched video tutorial and ready to use application
         /// </summary>
         [HttpPut("done")]
         public async Task<Response<SignUpStepDTO>> SignUpDone()

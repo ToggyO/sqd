@@ -38,29 +38,6 @@ namespace Squadio.BLL.Providers.SignUp.Implementation
             _mapper = mapper;
         }
 
-        public async Task<Response<SignUpStepDTO>> GetRegistrationStep(string email)
-        {
-            var entity = await _repository.GetRegistrationStepByEmail(email);
-            if (entity == null)
-            {
-                return new BusinessConflictErrorResponse<SignUpStepDTO>(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Business.UserDoesNotExists,
-                        Message = ErrorMessages.Business.UserDoesNotExists,
-                        Field = ErrorFields.User.Email
-                    }
-                });
-            }
-            
-            var result = _mapper.Map<UserRegistrationStepModel, SignUpStepDTO>(entity);
-            return new Response<SignUpStepDTO>
-            {
-                Data = result
-            };
-        }
-
         public async Task<Response<SignUpStepDTO>> GetRegistrationStep(Guid userId)
         {
             var entity = await _repository.GetRegistrationStepByUserId(userId);

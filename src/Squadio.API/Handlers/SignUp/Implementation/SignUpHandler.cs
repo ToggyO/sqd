@@ -29,12 +29,6 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             _tokensService = tokensService;
         }
 
-        public async Task<Response<SignUpStepDTO>> GetRegistrationStep(string email)
-        {
-            var result = await _provider.GetRegistrationStep(email);
-            return result;
-        }
-
         public async Task<Response<SignUpStepDTO>> GetRegistrationStep(ClaimsPrincipal claims)
         {
             var result = await _provider.GetRegistrationStep(claims.GetUserId());
@@ -87,12 +81,6 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             return resultToken;
         }
 
-        public async Task<Response<SignUpStepDTO<UserDTO>>> SignUpMemberUsername(UserUpdateDTO dto, ClaimsPrincipal claims)
-        {
-            var result = await _service.SignUpMemberUsername(claims.GetUserId(), dto);
-            return result;
-        }
-
         public async Task<Response<AuthInfoDTO>> SignUp(string email, string password)
         {
             var signUpResult = await _service.SignUp(email, password);
@@ -137,12 +125,6 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             var resultToken = await _tokensService.GoogleAuthenticate(googleToken);
 
             return resultToken;
-        }
-
-        public async Task<Response<SignUpStepDTO>> SendNewCode(string email)
-        {
-            var result = await _service.SendNewCode(email);
-            return result;
         }
 
         public async Task<Response<SignUpStepDTO>> SendNewCode(ClaimsPrincipal claims)
