@@ -76,6 +76,15 @@ namespace Squadio.BLL.Providers.SignUp.Implementation
                     }
                 });
             }
+
+            if (step.Status != UserStatus.Admin)
+            {
+                return new ForbiddenErrorResponse<IEnumerable<string>>(new Error
+                {
+                    Code = ErrorCodes.Security.Forbidden,
+                    Message = ErrorMessages.Security.Forbidden
+                });
+            }
             
             var companyPage = await _companiesProvider.GetUserCompanies(userId, new PageModel());
             var company = companyPage.Data.Items.FirstOrDefault();
