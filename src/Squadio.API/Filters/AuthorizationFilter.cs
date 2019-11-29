@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Squadio.BLL.Factories;
+using Squadio.Common.Enums;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
 
@@ -40,35 +41,39 @@ namespace Squadio.API.Filters
             }
 
             string authHeader = context.HttpContext.Request.Headers["Authorization"];
+            TokenStatus tokenStatus = TokenStatus.Invalid;
 
             if (!string.IsNullOrEmpty(authHeader))
             {
                 var token = GetCleanToken(authHeader);
 
-                if (await ValidateToken(token))
+                tokenStatus = await ValidateToken(token);
+
+                if (tokenStatus == TokenStatus.Valid)
                 {
                     return;
                 }
             }
 
-            var error = new ErrorResponse
-            {
-                Message = ErrorMessages.Security.Unauthorized,
-                Code = ErrorCodes.Security.Unauthorized,
-                Errors = new List<Error>
-                {
-                    new Error
-                    {
-                        Message = ErrorMessages.Security.AccessTokenInvalid,
-                        Code = ErrorCodes.Security.AccessTokenInvalid
-                    }
-                }
-            };
+            var error = GetErrorByTokenStatus(tokenStatus);
 
             context.Result = new ObjectResult(error)
             {
-                StatusCode = (int) HttpStatusCode.Unauthorized
+                StatusCode = (int) error.HttpStatusCode
             };
+        }
+
+        private ErrorResponse GetErrorByTokenStatus(TokenStatus tokenStatus)
+        {
+            switch (tokenStatus)
+            {
+                case TokenStatus.Expired:
+                    return new AccessTokenExpiredErrorResponse();
+                case TokenStatus.Invalid:
+                    return new AccessTokenInvalidErrorResponse();
+            }
+
+            return new AccessTokenInvalidErrorResponse();
         }
 
         /// <summary>
@@ -87,7 +92,7 @@ namespace Squadio.API.Filters
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        private async Task<bool> ValidateToken(string token)
+        private async Task<TokenStatus> ValidateToken(string token)
         {
             return await Task.Run(() => _service.ValidateToken(token, out _));
         }

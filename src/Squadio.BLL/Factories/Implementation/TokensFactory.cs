@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Squadio.Common.Enums;
 using Squadio.Common.Settings;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Auth;
@@ -38,19 +39,24 @@ namespace Squadio.BLL.Factories.Implementation
             return Task.FromResult(result);
         }
 
-        public bool ValidateToken(string token, out ClaimsPrincipal principal)
+        public TokenStatus ValidateToken(string token, out ClaimsPrincipal principal)
         {
             try
             {
                 principal = new JwtSecurityTokenHandler().ValidateToken(token, GetTokenValidationParameters(), out var securityToken);
+                
+                if (DateTime.UtcNow > securityToken.ValidTo)
+                    return TokenStatus.Expired;
 
-                return (securityToken is JwtSecurityToken jwtSecurityToken &&
+                var isValid = (securityToken is JwtSecurityToken jwtSecurityToken &&
                         jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase));
+                
+                return isValid ? TokenStatus.Valid : TokenStatus.Invalid;
             }
             catch
             {
                 principal = null;
-                return false;
+                return TokenStatus.Invalid;
             }
         }
 
@@ -101,7 +107,7 @@ namespace Squadio.BLL.Factories.Implementation
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(_settings.Value.PublicKeyBytes),
                 
-                ValidateLifetime = true
+                ValidateLifetime = false
             };
         }
     }

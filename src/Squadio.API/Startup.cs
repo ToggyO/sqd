@@ -149,10 +149,15 @@ namespace Squadio.API
                 options.IncludeXmlComments(xmlPath);
             });
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
                 .AddJwtBearer(options =>
                 {
                     //options.RequireHttpsMetadata = true;
+                    
 
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -167,20 +172,8 @@ namespace Squadio.API
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(apiSettings.PublicKey)),
                         ValidateIssuerSigningKey = true,
                         
-                        ValidateLifetime = true
-                    };
-
-                    options.Events = new JwtBearerEvents
-                    {
-                        OnAuthenticationFailed = context =>
-                        {
-                            if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-                            {
-                                context.Response.Headers.Add("Token-Expired", "true");
-                            }
-
-                            return Task.CompletedTask;
-                        }
+                        // To allow return custom response for expired token
+                        ValidateLifetime = false
                     };
                 });
             

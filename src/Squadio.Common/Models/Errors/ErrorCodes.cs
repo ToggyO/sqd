@@ -39,8 +39,10 @@ namespace Squadio.Common.Models.Errors
             public const string Unauthorized = "sec.security_error";
             public const string AuthDataInvalid = "sec.auth_data_invalid";
             public const string AccessTokenInvalid = "sec.access_token_invalid";
+            public const string AccessTokenExpired = "sec.access_token_expired";
             public const string GoogleTokenInvalid = "sec.google_token_invalid";
             public const string RefreshTokenInvalid = "sec.refresh_token_invalid";
+            public const string RefreshTokenExpired = "sec.refresh_token_expired";
             public const string InviteInvalid = "sec.invite_invalid";
             public const string ConfirmationCodeInvalid = "sec.confirmation_code_invalid";
         }

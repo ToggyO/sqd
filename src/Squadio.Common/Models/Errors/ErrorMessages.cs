@@ -32,8 +32,10 @@
             public const string Unauthorized = "Unauthorized";
             public const string AuthDataInvalid = "Auth data invalid";
             public const string AccessTokenInvalid = "Access token invalid";
+            public const string AccessTokenExpired = "Access token expired";
             public const string GoogleTokenInvalid = "Google token invalid";
             public const string RefreshTokenInvalid = "Refresh token invalid";
+            public const string RefreshTokenExpired = "Refresh token expired";
             public const string InviteInvalid = "Invite is invalid";
             public const string ConfirmationCodeInvalid = "Confirmation code is invalid";
         }

@@ -9,6 +9,7 @@ using Mapper;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Squadio.BLL.Factories;
+using Squadio.Common.Enums;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
@@ -112,9 +113,9 @@ namespace Squadio.BLL.Services.Tokens.Implementation
 
         public async Task<Response<TokenDTO>> RefreshToken(string refreshToken)
         {
-            var isTokenValid = _tokenFactory.ValidateToken(refreshToken, out var tokenPrincipal);
+            var tokenStatus = _tokenFactory.ValidateToken(refreshToken, out var tokenPrincipal);
             
-            if (!isTokenValid)
+            if (tokenStatus != TokenStatus.Valid)
             {
                 return new ForbiddenErrorResponse<TokenDTO>(new []
                 {

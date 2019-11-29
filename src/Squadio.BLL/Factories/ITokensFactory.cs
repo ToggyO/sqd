@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using System.Threading.Tasks;
+using Squadio.Common.Enums;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Auth;
 
@@ -11,6 +12,6 @@ namespace Squadio.BLL.Factories
         /// <summary>
         /// Return true if refresh token is valid
         /// </summary>
-        bool ValidateToken(string token, out ClaimsPrincipal principal);
+        TokenStatus ValidateToken(string token, out ClaimsPrincipal principal);
     }
 }

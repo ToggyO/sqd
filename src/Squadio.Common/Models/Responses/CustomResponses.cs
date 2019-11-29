@@ -117,4 +117,80 @@ namespace Squadio.Common.Models.Responses
         {
         }
     }
+    
+    public class AccessTokenInvalidErrorResponse : ErrorResponse
+    {
+        public AccessTokenInvalidErrorResponse()
+        {
+            Code = ErrorCodes.Security.Unauthorized;
+            Message = ErrorMessages.Security.Unauthorized;
+            HttpStatusCode = HttpStatusCode.Unauthorized;
+
+            Errors = new []
+            {
+                new Error
+                {
+                    Code = ErrorCodes.Security.AccessTokenInvalid,
+                    Message = ErrorMessages.Security.AccessTokenInvalid
+                }, 
+            };
+        }
+    }
+    
+    public class AccessTokenExpiredErrorResponse : ErrorResponse
+    {
+        public AccessTokenExpiredErrorResponse()
+        {
+            Code = ErrorCodes.Security.Unauthorized;
+            Message = ErrorMessages.Security.Unauthorized;
+            HttpStatusCode = HttpStatusCode.Unauthorized;
+
+            Errors = new []
+            {
+                new Error
+                {
+                    Code = ErrorCodes.Security.AccessTokenExpired,
+                    Message = ErrorMessages.Security.AccessTokenExpired
+                }, 
+            };
+        }
+    }
+    
+    public class RefreshTokenInvalidErrorResponse : ErrorResponse
+    {
+        public RefreshTokenInvalidErrorResponse()
+        {
+            Code = ErrorCodes.Security.Unauthorized;
+            Message = ErrorMessages.Security.Unauthorized;
+            HttpStatusCode = HttpStatusCode.Unauthorized;
+
+            Errors = new []
+            {
+                new Error
+                {
+                    Code = ErrorCodes.Security.RefreshTokenInvalid,
+                    Message = ErrorMessages.Security.RefreshTokenInvalid
+                }, 
+            };
+        }
+    }
+    
+    public class RefreshTokenExpiredErrorResponse : ErrorResponse
+    {
+        public RefreshTokenExpiredErrorResponse()
+        {
+            Code = ErrorCodes.Security.Unauthorized;
+            Message = ErrorMessages.Security.Unauthorized;
+            HttpStatusCode = HttpStatusCode.Unauthorized;
+
+            Errors = new []
+            {
+                new Error
+                {
+                    Code = ErrorCodes.Security.RefreshTokenExpired,
+                    Message = ErrorMessages.Security.RefreshTokenExpired
+                }, 
+            };
+        }
+    }
 }
