@@ -68,6 +68,8 @@ namespace Squadio.DAL.Repository.Users.Implementation
 
         public async Task<UserModel> GetByEmail(string email)
         {
+            if (email == null) return null;
+            
             var entity = await _context.Users
                 .Include(x => x.Role)
                 .FirstOrDefaultAsync(x => x.Email.ToUpper() == email.ToUpper());
