@@ -24,11 +24,15 @@
     var originUrl = "http://localhost:5005";
     let chatHubUrl = originUrl+'/api/ws/chat';
 
+
+    let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl9pZCI6IjcxNWViZGIwZjllOTQ0ZmRhY2M5OTkzYTUzZWJkY2ZhIiwidXNlcl9pZCI6IjkyMzllNmNmYzQ0MjRiN2Q5YTgzNDhhOTk3OTQwY2U0Iiwicm9sZV9pZCI6ImJmMjJhM2ZkZjdlYjQ4NzFiODRhNGQ4ZmY1MWQwZjdkIiwiZXhwIjoxNTc1MzY4MTMzLCJpc3MiOiJTcXVhZCIsImF1ZCI6IklPIn0.yLSPArMMM5AItbZy_DOaDK1XymvVVS0FZ8Zs0Rg_Psg";
+
     console.log("create hub");
     const chatHubConnection = new signalR.HubConnectionBuilder()
         .withUrl(chatHubUrl, {
             skipNegotiation: true,
-            transport: signalR.HttpTransportType.WebSockets
+            transport: signalR.HttpTransportType.WebSockets,
+            accessTokenFactory: () => token
         })
         .configureLogging(signalR.LogLevel.Information)
         .build();
