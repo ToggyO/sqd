@@ -23,6 +23,7 @@ using Serilog.Sinks.SystemConsole.Themes;
 using Squadio.DAL;
 using Squadio.API.Extensions;
 using Squadio.API.Filters;
+using Squadio.API.WebSockerHubs;
 using Squadio.Common.Models.Rabbit;
 using Squadio.Common.Settings;
 
@@ -60,6 +61,8 @@ namespace Squadio.API
                             .AllowAnyMethod();
                     });
             });
+            
+            services.AddSignalR();
 
             services.AddMvcCore(options =>
                 {
@@ -204,6 +207,7 @@ namespace Squadio.API
             app.UseMiddleware(typeof(ExceptionMiddleware));
 
             app.UseCors(MyAllowSquadioOrigins);
+            
             app.UseStaticFiles();
 
             app.UseSwagger();
@@ -217,6 +221,7 @@ namespace Squadio.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("api/ws/chat");
             });
         }
     }
