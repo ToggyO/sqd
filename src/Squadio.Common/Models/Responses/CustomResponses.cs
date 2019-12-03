@@ -36,34 +36,34 @@ namespace Squadio.Common.Models.Responses
         }
     }
 
-    public class ForbiddenErrorResponse<T> : ErrorResponse<T> where T : class
+    public class PermissionDeniedErrorResponse<T> : ErrorResponse<T> where T : class
     {
-        public ForbiddenErrorResponse(IEnumerable<Error> errors)
+        public PermissionDeniedErrorResponse(IEnumerable<Error> errors)
         {
-            Code = ErrorCodes.Security.Forbidden;
-            Message = ErrorMessages.Security.Forbidden;
+            Code = ErrorCodes.Security.PermissionDenied;
+            Message = ErrorMessages.Security.PermissionDenied;
             HttpStatusCode = HttpStatusCode.Forbidden;
 
             Errors = errors;
         }
 
-        public ForbiddenErrorResponse(Error error) : this(new[] {error})
+        public PermissionDeniedErrorResponse(Error error) : this(new[] {error})
         {
         }
     }
 
-    public class ForbiddenErrorResponse : ErrorResponse
+    public class PermissionDeniedErrorResponse : ErrorResponse
     {
-        public ForbiddenErrorResponse(IEnumerable<Error> errors)
+        public PermissionDeniedErrorResponse(IEnumerable<Error> errors)
         {
-            Code = ErrorCodes.Security.Forbidden;
-            Message = ErrorMessages.Security.Forbidden;
+            Code = ErrorCodes.Security.PermissionDenied;
+            Message = ErrorMessages.Security.PermissionDenied;
             HttpStatusCode = HttpStatusCode.Forbidden;
 
             Errors = errors;
         }
 
-        public ForbiddenErrorResponse(Error error) : this(new[] {error})
+        public PermissionDeniedErrorResponse(Error error) : this(new[] {error})
         {
         }
     }

@@ -134,7 +134,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             }
             catch
             {
-                return new ForbiddenErrorResponse<UserDTO>(new[]
+                return new PermissionDeniedErrorResponse<UserDTO>(new[]
                 {
                     new Error
                     {
@@ -228,7 +228,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             }
             catch
             {
-                return new ForbiddenErrorResponse<UserDTO>(new[]
+                return new PermissionDeniedErrorResponse<UserDTO>(new[]
                 {
                     new Error
                     {
@@ -243,7 +243,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             /*
             if ((string) infoFromGoogleToken.Audience != _googleSettings.Value.ClientId)
             {
-                return new ForbiddenErrorResponse<UserDTO>(new[]
+                return new PermissionDeniedErrorResponse<UserDTO>(new[]
                 {
                     new Error
                     {
@@ -322,7 +322,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             if (request.Data == null || request.Data?.IsActivated == true)
             {
-                return new ForbiddenErrorResponse<SignUpStepDTO>(new []
+                return new PermissionDeniedErrorResponse<SignUpStepDTO>(new []
                 {
                     new Error
                     {
@@ -382,10 +382,10 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             if (step.Status != UserStatus.Admin)
             {
-                return new ForbiddenErrorResponse<SignUpStepDTO<CompanyDTO>>(new Error
+                return new PermissionDeniedErrorResponse<SignUpStepDTO<CompanyDTO>>(new Error
                 {
-                    Code = ErrorCodes.Security.Forbidden,
-                    Message = ErrorMessages.Security.Forbidden
+                    Code = ErrorCodes.Security.PermissionDenied,
+                    Message = ErrorMessages.Security.PermissionDenied
                 });
             }
 
@@ -418,10 +418,10 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             if (step.Status != UserStatus.Admin)
             {
-                return new ForbiddenErrorResponse<SignUpStepDTO<TeamDTO>>(new Error
+                return new PermissionDeniedErrorResponse<SignUpStepDTO<TeamDTO>>(new Error
                 {
-                    Code = ErrorCodes.Security.Forbidden,
-                    Message = ErrorMessages.Security.Forbidden
+                    Code = ErrorCodes.Security.PermissionDenied,
+                    Message = ErrorMessages.Security.PermissionDenied
                 });
             }
 
@@ -477,10 +477,10 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             if (step.Status != UserStatus.Admin)
             {
-                return new ForbiddenErrorResponse<SignUpStepDTO<ProjectDTO>>(new Error
+                return new PermissionDeniedErrorResponse<SignUpStepDTO<ProjectDTO>>(new Error
                 {
-                    Code = ErrorCodes.Security.Forbidden,
-                    Message = ErrorMessages.Security.Forbidden
+                    Code = ErrorCodes.Security.PermissionDenied,
+                    Message = ErrorMessages.Security.PermissionDenied
                 });
             }
 

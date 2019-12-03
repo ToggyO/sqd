@@ -54,8 +54,8 @@ namespace Squadio.API.Filters
             {
                 var error = new ErrorResponse
                 {
-                    Message = ErrorMessages.Security.Forbidden,
-                    Code = ErrorCodes.Security.Forbidden
+                    Message = ErrorMessages.Security.PermissionDenied,
+                    Code = ErrorCodes.Security.PermissionDenied
                 };
 
                 context.Result = new ObjectResult(error)

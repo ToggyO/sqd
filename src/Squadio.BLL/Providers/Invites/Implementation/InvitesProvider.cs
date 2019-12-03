@@ -65,12 +65,12 @@ namespace Squadio.BLL.Providers.Invites.Implementation
                     var companyUser = await _companiesUsersRepository.GetCompanyUser(entityId, userId);
                     if (companyUser == null || companyUser?.Status == UserStatus.Member)
                     {
-                        return new ForbiddenErrorResponse<IEnumerable<InviteDTO>>(new []
+                        return new PermissionDeniedErrorResponse<IEnumerable<InviteDTO>>(new []
                         {
                             new Error
                             {
-                                Code = ErrorCodes.Security.Forbidden,
-                                Message = ErrorMessages.Security.Forbidden,
+                                Code = ErrorCodes.Security.PermissionDenied,
+                                Message = ErrorMessages.Security.PermissionDenied,
                             }
                         });
                     }
@@ -79,12 +79,12 @@ namespace Squadio.BLL.Providers.Invites.Implementation
                     var teamUser = await _teamsUsersRepository.GetTeamUser(entityId, userId);
                     if (teamUser == null || teamUser?.Status == UserStatus.Member)
                     {
-                        return new ForbiddenErrorResponse<IEnumerable<InviteDTO>>(new []
+                        return new PermissionDeniedErrorResponse<IEnumerable<InviteDTO>>(new []
                         {
                             new Error
                             {
-                                Code = ErrorCodes.Security.Forbidden,
-                                Message = ErrorMessages.Security.Forbidden,
+                                Code = ErrorCodes.Security.PermissionDenied,
+                                Message = ErrorMessages.Security.PermissionDenied,
                             }
                         });
                     }
@@ -93,12 +93,12 @@ namespace Squadio.BLL.Providers.Invites.Implementation
                     var projectUser = await _projectsUsersRepository.GetProjectUser(entityId, userId);
                     if (projectUser == null || projectUser?.Status == UserStatus.Member)
                     {
-                        return new ForbiddenErrorResponse<IEnumerable<InviteDTO>>(new []
+                        return new PermissionDeniedErrorResponse<IEnumerable<InviteDTO>>(new []
                         {
                             new Error
                             {
-                                Code = ErrorCodes.Security.Forbidden,
-                                Message = ErrorMessages.Security.Forbidden,
+                                Code = ErrorCodes.Security.PermissionDenied,
+                                Message = ErrorMessages.Security.PermissionDenied,
                             }
                         });
                     }

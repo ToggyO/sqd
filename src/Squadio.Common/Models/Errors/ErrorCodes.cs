@@ -4,7 +4,7 @@ namespace Squadio.Common.Models.Errors
 {
     public static class ErrorCodes
     {
-        public static HttpStatusCode UnprocessableEntity = (HttpStatusCode) 422;
+        public const HttpStatusCode UnprocessableEntityCode = (HttpStatusCode) 422;
 
         public static class Business
         {
@@ -24,19 +24,20 @@ namespace Squadio.Common.Models.Errors
 
         public static class Common
         {
+            public const string NotFound = "not_found";
+            public const string UnprocessableEntity = "unprocessable_entity";
             public const string FieldInvalidLength = "common.field_invalid_length";
             public const string FieldInvalid = "common.field_invalid";
             public const string FieldNotValidChars = "common.field_not_valid_chars";
             public const string FieldDuplicate = "common.field_duplicate";
-            public const string UnprocessableEntity = "common.unprocessable_entity";
-            public const string NotFound = "common.not_found";
         }
 
         public static class Security
         {
-            public const string Forbidden = "sec.forbidden";
+            public const string Unauthorized = "security_error";
+            public const string PermissionDenied = "permission_error";
+            public const string Forbidden = "forbidden";
             public const string FieldAccessToken = "accessToken";
-            public const string Unauthorized = "sec.security_error";
             public const string AuthDataInvalid = "sec.auth_data_invalid";
             public const string AccessTokenInvalid = "sec.access_token_invalid";
             public const string AccessTokenExpired = "sec.access_token_expired";
@@ -49,7 +50,7 @@ namespace Squadio.Common.Models.Errors
 
         public static class System
         {
-            public const string InternalError = "sys.internal_error";
+            public const string InternalError = "internal_error";
         }
     }
 }

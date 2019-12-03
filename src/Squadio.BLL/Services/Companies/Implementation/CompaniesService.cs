@@ -48,12 +48,12 @@ namespace Squadio.BLL.Services.Companies.Implementation
 
             if (companyUser.Status != UserStatus.SuperAdmin)
             {
-                return new ForbiddenErrorResponse<CompanyDTO>(new []
+                return new PermissionDeniedErrorResponse<CompanyDTO>(new []
                 {
                     new Error
                     {
-                        Code = ErrorCodes.Security.Forbidden,
-                        Message = ErrorMessages.Security.Forbidden
+                        Code = ErrorCodes.Security.PermissionDenied,
+                        Message = ErrorMessages.Security.PermissionDenied
                     }
                 }); 
             }
@@ -92,12 +92,12 @@ namespace Squadio.BLL.Services.Companies.Implementation
 
             if (currentCompanyUser == null || currentCompanyUser?.Status != UserStatus.SuperAdmin)
             {
-                return new ForbiddenErrorResponse(new []
+                return new PermissionDeniedErrorResponse(new []
                 {
                     new Error
                     {
-                        Code = ErrorCodes.Security.Forbidden,
-                        Message = ErrorMessages.Security.Forbidden
+                        Code = ErrorCodes.Security.PermissionDenied,
+                        Message = ErrorMessages.Security.PermissionDenied
                     }
                 }); 
             }

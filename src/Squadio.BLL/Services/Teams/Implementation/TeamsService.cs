@@ -105,12 +105,12 @@ namespace Squadio.BLL.Services.Teams.Implementation
 
             if (teamUser.Status != UserStatus.SuperAdmin)
             {
-                return new ForbiddenErrorResponse<TeamDTO>(new []
+                return new PermissionDeniedErrorResponse<TeamDTO>(new []
                 {
                     new Error
                     {
-                        Code = ErrorCodes.Security.Forbidden,
-                        Message = ErrorMessages.Security.Forbidden
+                        Code = ErrorCodes.Security.PermissionDenied,
+                        Message = ErrorMessages.Security.PermissionDenied
                     }
                 }); 
             }
@@ -134,12 +134,12 @@ namespace Squadio.BLL.Services.Teams.Implementation
 
             if (currentTeamUser == null || currentTeamUser?.Status != UserStatus.SuperAdmin)
             {
-                return new ForbiddenErrorResponse(new []
+                return new PermissionDeniedErrorResponse(new []
                 {
                     new Error
                     {
-                        Code = ErrorCodes.Security.Forbidden,
-                        Message = ErrorMessages.Security.Forbidden
+                        Code = ErrorCodes.Security.PermissionDenied,
+                        Message = ErrorMessages.Security.PermissionDenied
                     }
                 }); 
             }

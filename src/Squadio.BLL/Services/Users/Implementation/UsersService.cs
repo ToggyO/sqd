@@ -202,7 +202,7 @@ namespace Squadio.BLL.Services.Users.Implementation
                     }
                 })
                 {
-                    HttpStatusCode = ErrorCodes.UnprocessableEntity
+                    HttpStatusCode = ErrorCodes.UnprocessableEntityCode
                 };
             }
 
@@ -239,7 +239,7 @@ namespace Squadio.BLL.Services.Users.Implementation
 
             if (request == null || request?.IsActivated == true)
             {
-                return new ForbiddenErrorResponse<UserDTO>(new []
+                return new PermissionDeniedErrorResponse<UserDTO>(new []
                 {
                     new Error
                     {

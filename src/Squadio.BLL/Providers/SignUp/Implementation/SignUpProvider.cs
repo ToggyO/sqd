@@ -79,10 +79,10 @@ namespace Squadio.BLL.Providers.SignUp.Implementation
 
             if (step.Status != UserStatus.Admin)
             {
-                return new ForbiddenErrorResponse<IEnumerable<string>>(new Error
+                return new PermissionDeniedErrorResponse<IEnumerable<string>>(new Error
                 {
-                    Code = ErrorCodes.Security.Forbidden,
-                    Message = ErrorMessages.Security.Forbidden
+                    Code = ErrorCodes.Security.PermissionDenied,
+                    Message = ErrorMessages.Security.PermissionDenied
                 });
             }
             

@@ -105,12 +105,12 @@ namespace Squadio.BLL.Services.Projects.Implementation
 
             if (projectUser.Status != UserStatus.SuperAdmin)
             {
-                return new ForbiddenErrorResponse<ProjectDTO>(new []
+                return new PermissionDeniedErrorResponse<ProjectDTO>(new []
                 {
                     new Error
                     {
-                        Code = ErrorCodes.Security.Forbidden,
-                        Message = ErrorMessages.Security.Forbidden
+                        Code = ErrorCodes.Security.PermissionDenied,
+                        Message = ErrorMessages.Security.PermissionDenied
                     }
                 }); 
             }
@@ -133,12 +133,12 @@ namespace Squadio.BLL.Services.Projects.Implementation
             var projectUser = await _projectsUsersRepository.GetFullProjectUser(projectId, userId);
             if (projectUser == null || projectUser.Status != UserStatus.SuperAdmin)
             {
-                return new ForbiddenErrorResponse<ProjectDTO>(new []
+                return new PermissionDeniedErrorResponse<ProjectDTO>(new []
                 {
                     new Error
                     {
-                        Code = ErrorCodes.Security.Forbidden,
-                        Message = ErrorMessages.Security.Forbidden
+                        Code = ErrorCodes.Security.PermissionDenied,
+                        Message = ErrorMessages.Security.PermissionDenied
                     }
                 }); 
             }
@@ -146,12 +146,12 @@ namespace Squadio.BLL.Services.Projects.Implementation
             var companyUser = await _companiesUsersRepository.GetCompanyUser(projectUser.Project.Team.CompanyId, userId);
             if (companyUser == null || companyUser.Status != UserStatus.SuperAdmin)
             {
-                return new ForbiddenErrorResponse<ProjectDTO>(new []
+                return new PermissionDeniedErrorResponse<ProjectDTO>(new []
                 {
                     new Error
                     {
-                        Code = ErrorCodes.Security.Forbidden,
-                        Message = ErrorMessages.Security.Forbidden
+                        Code = ErrorCodes.Security.PermissionDenied,
+                        Message = ErrorMessages.Security.PermissionDenied
                     }
                 }); 
             }
@@ -166,12 +166,12 @@ namespace Squadio.BLL.Services.Projects.Implementation
 
             if (currentProjectUser == null || currentProjectUser?.Status != UserStatus.SuperAdmin)
             {
-                return new ForbiddenErrorResponse(new []
+                return new PermissionDeniedErrorResponse(new []
                 {
                     new Error
                     {
-                        Code = ErrorCodes.Security.Forbidden,
-                        Message = ErrorMessages.Security.Forbidden
+                        Code = ErrorCodes.Security.PermissionDenied,
+                        Message = ErrorMessages.Security.PermissionDenied
                     }
                 }); 
             }

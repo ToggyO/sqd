@@ -90,12 +90,12 @@ namespace Squadio.BLL.Services.Invites.Implementation
             var companyUser = await _companiesUsersRepository.GetCompanyUser(companyId, authorId);
             if (companyUser == null || companyUser?.Status == UserStatus.Member)
             {
-                return new ForbiddenErrorResponse<IEnumerable<InviteDTO>>(new []
+                return new PermissionDeniedErrorResponse<IEnumerable<InviteDTO>>(new []
                 {
                     new Error
                     {
-                        Code = ErrorCodes.Security.Forbidden,
-                        Message = ErrorMessages.Security.Forbidden,
+                        Code = ErrorCodes.Security.PermissionDenied,
+                        Message = ErrorMessages.Security.PermissionDenied,
                     }
                 });
             }
@@ -124,12 +124,12 @@ namespace Squadio.BLL.Services.Invites.Implementation
             var teamUser = await _teamsUsersRepository.GetTeamUser(teamId, authorId);
             if (teamUser == null || teamUser?.Status == UserStatus.Member)
             {
-                return new ForbiddenErrorResponse<IEnumerable<InviteDTO>>(new []
+                return new PermissionDeniedErrorResponse<IEnumerable<InviteDTO>>(new []
                 {
                     new Error
                     {
-                        Code = ErrorCodes.Security.Forbidden,
-                        Message = ErrorMessages.Security.Forbidden,
+                        Code = ErrorCodes.Security.PermissionDenied,
+                        Message = ErrorMessages.Security.PermissionDenied,
                     }
                 });
             }
@@ -159,12 +159,12 @@ namespace Squadio.BLL.Services.Invites.Implementation
             var projectUser = await _projectsUsersRepository.GetProjectUser(projectId, authorId);
             if (projectUser == null || projectUser?.Status == UserStatus.Member)
             {
-                return new ForbiddenErrorResponse<IEnumerable<InviteDTO>>(new []
+                return new PermissionDeniedErrorResponse<IEnumerable<InviteDTO>>(new []
                 {
                     new Error
                     {
-                        Code = ErrorCodes.Security.Forbidden,
-                        Message = ErrorMessages.Security.Forbidden,
+                        Code = ErrorCodes.Security.PermissionDenied,
+                        Message = ErrorMessages.Security.PermissionDenied,
                     }
                 });
             }
@@ -196,12 +196,12 @@ namespace Squadio.BLL.Services.Invites.Implementation
                     var companyUser = await _companiesUsersRepository.GetCompanyUser(entityId, authorId);
                     if (companyUser == null || companyUser?.Status == UserStatus.Member)
                     {
-                        return new ForbiddenErrorResponse<IEnumerable<InviteDTO>>(new []
+                        return new PermissionDeniedErrorResponse<IEnumerable<InviteDTO>>(new []
                         {
                             new Error
                             {
-                                Code = ErrorCodes.Security.Forbidden,
-                                Message = ErrorMessages.Security.Forbidden,
+                                Code = ErrorCodes.Security.PermissionDenied,
+                                Message = ErrorMessages.Security.PermissionDenied,
                             }
                         });
                     }
@@ -211,12 +211,12 @@ namespace Squadio.BLL.Services.Invites.Implementation
                     var teamUser = await _teamsUsersRepository.GetTeamUser(entityId, authorId);
                     if (teamUser == null || teamUser?.Status == UserStatus.Member)
                     {
-                        return new ForbiddenErrorResponse<IEnumerable<InviteDTO>>(new []
+                        return new PermissionDeniedErrorResponse<IEnumerable<InviteDTO>>(new []
                         {
                             new Error
                             {
-                                Code = ErrorCodes.Security.Forbidden,
-                                Message = ErrorMessages.Security.Forbidden,
+                                Code = ErrorCodes.Security.PermissionDenied,
+                                Message = ErrorMessages.Security.PermissionDenied,
                             }
                         });
                     }
@@ -226,12 +226,12 @@ namespace Squadio.BLL.Services.Invites.Implementation
                     var projectUser = await _projectsUsersRepository.GetProjectUser(entityId, authorId);
                     if (projectUser == null || projectUser?.Status == UserStatus.Member)
                     {
-                        return new ForbiddenErrorResponse<IEnumerable<InviteDTO>>(new []
+                        return new PermissionDeniedErrorResponse<IEnumerable<InviteDTO>>(new []
                         {
                             new Error
                             {
-                                Code = ErrorCodes.Security.Forbidden,
-                                Message = ErrorMessages.Security.Forbidden,
+                                Code = ErrorCodes.Security.PermissionDenied,
+                                Message = ErrorMessages.Security.PermissionDenied,
                             }
                         });
                     }
@@ -275,12 +275,12 @@ namespace Squadio.BLL.Services.Invites.Implementation
 
             if (user.Email.ToUpper() != invite.Email.ToUpper())
             {
-                return new ForbiddenErrorResponse(new []
+                return new PermissionDeniedErrorResponse(new []
                 {
                     new Error
                     {
-                        Code = ErrorCodes.Security.Forbidden,
-                        Message = ErrorMessages.Security.Forbidden
+                        Code = ErrorCodes.Security.PermissionDenied,
+                        Message = ErrorMessages.Security.PermissionDenied
                     }
                 });
             }

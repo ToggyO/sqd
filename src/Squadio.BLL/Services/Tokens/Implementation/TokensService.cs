@@ -74,7 +74,7 @@ namespace Squadio.BLL.Services.Tokens.Implementation
                     }
                 })
                 {
-                    HttpStatusCode = ErrorCodes.UnprocessableEntity
+                    HttpStatusCode = ErrorCodes.UnprocessableEntityCode
                 };
             }
             
@@ -89,7 +89,7 @@ namespace Squadio.BLL.Services.Tokens.Implementation
                     }
                 })
                 {
-                    HttpStatusCode = ErrorCodes.UnprocessableEntity
+                    HttpStatusCode = ErrorCodes.UnprocessableEntityCode
                 };
             }
 
@@ -117,7 +117,7 @@ namespace Squadio.BLL.Services.Tokens.Implementation
             
             if (tokenStatus != TokenStatus.Valid)
             {
-                return new ForbiddenErrorResponse<TokenDTO>(new []
+                return new PermissionDeniedErrorResponse<TokenDTO>(new []
                 {
                     new Error
                     {
@@ -171,7 +171,7 @@ namespace Squadio.BLL.Services.Tokens.Implementation
             }
             catch
             {
-                return new ForbiddenErrorResponse<AuthInfoDTO>(new[]
+                return new PermissionDeniedErrorResponse<AuthInfoDTO>(new[]
                 {
                     new Error
                     {
@@ -181,7 +181,7 @@ namespace Squadio.BLL.Services.Tokens.Implementation
                     }
                 })
                 {
-                    HttpStatusCode = ErrorCodes.UnprocessableEntity
+                    HttpStatusCode = ErrorCodes.UnprocessableEntityCode
                 };
             }
             
@@ -189,7 +189,7 @@ namespace Squadio.BLL.Services.Tokens.Implementation
             /*
             if ((string) infoFromGoogleToken.Audience != _googleSettings.Value.ClientId)
             {
-                return new ForbiddenErrorResponse<AuthInfoDTO>(new[]
+                return new PermissionDeniedErrorResponse<AuthInfoDTO>(new[]
                 {
                     new Error
                     {
@@ -214,7 +214,7 @@ namespace Squadio.BLL.Services.Tokens.Implementation
                     }
                 })
                 {
-                    HttpStatusCode = ErrorCodes.UnprocessableEntity
+                    HttpStatusCode = ErrorCodes.UnprocessableEntityCode
                 };
             }
             

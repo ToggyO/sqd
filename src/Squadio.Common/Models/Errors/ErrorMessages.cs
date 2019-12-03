@@ -28,8 +28,8 @@
         
         public static class Security
         {
-            public const string Forbidden = "Forbidden";
             public const string Unauthorized = "Unauthorized";
+            public const string PermissionDenied = "Permission denied";
             public const string AuthDataInvalid = "Auth data invalid";
             public const string AccessTokenInvalid = "Access token invalid";
             public const string AccessTokenExpired = "Access token expired";
