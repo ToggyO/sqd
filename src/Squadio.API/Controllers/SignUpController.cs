@@ -84,7 +84,6 @@ namespace Squadio.API.Controllers
         /// Send new confirmation email and disable previous
         /// </summary>
         [HttpPost("send-new-code")]
-        [AllowAnonymous]
         public async Task<Response<SignUpStepDTO>> SendNewCode()
         {
             return await _handler.SendNewCode(User);

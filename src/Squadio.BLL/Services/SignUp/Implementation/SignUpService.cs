@@ -560,8 +560,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                     new Error
                     {
                         Code = ErrorCodes.Business.UserDoesNotExists,
-                        Message = ErrorMessages.Business.UserDoesNotExists,
-                        Field = ErrorFields.User.Email
+                        Message = ErrorMessages.Business.UserDoesNotExists
                     }
                 });
             }
