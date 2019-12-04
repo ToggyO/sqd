@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Squadio.API.Filters;
 using Squadio.API.Handlers.Users;
 
-namespace Squadio.API.WebSockerHubs
+namespace Squadio.API.WebSocketHubs
 {
-    [AuthorizationFilter]
+    //[Authorize]
     public class ChatHub : Hub
     {
         private readonly ILogger<ChatHub> _logger;
@@ -22,13 +23,14 @@ namespace Squadio.API.WebSockerHubs
             _logger.LogInformation("ChatHub constructor work done");
         }
         
-        [AuthorizationFilter]
         [HubMethodName("SendMessage")]
         public async Task SendMessage(SimpleMessage model)
         {
             _logger.LogInformation($"Enter into ChatHub.SendMessage from '{model.Username}' with message: {model.Message}");
             try
             {
+                if(model.Message == "throw")
+                    throw new Exception();
                 var message = model.Message;
                 var userResponse = await _handler.GetCurrentUser(Context.User);
                 if (userResponse.IsSuccess)
@@ -43,11 +45,13 @@ namespace Squadio.API.WebSockerHubs
                     Message = message,
                     Username = model.Username
                 };
+                
                 await Clients.All.SendAsync("ReceiveMessage" , newMessage);
             }
             catch (Exception e)
             {
                 _logger.LogError($"ChatHub.SendMessage throw: {e.Message}");
+                await Clients.Caller.SendAsync("disconnect");
             }
         }
     }

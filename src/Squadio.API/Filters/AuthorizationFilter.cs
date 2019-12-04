@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Squadio.BLL.Factories;
 using Squadio.Common.Enums;
@@ -62,6 +63,7 @@ namespace Squadio.API.Filters
                 StatusCode = (int) error.HttpStatusCode
             };
         }
+        
 
         private ErrorResponse GetErrorByTokenStatus(TokenStatus tokenStatus)
         {

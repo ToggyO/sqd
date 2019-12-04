@@ -25,8 +25,9 @@
     let chatHubUrl = originUrl+'/api/ws/chat';
 
 
-    let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl9pZCI6IjcxNWViZGIwZjllOTQ0ZmRhY2M5OTkzYTUzZWJkY2ZhIiwidXNlcl9pZCI6IjkyMzllNmNmYzQ0MjRiN2Q5YTgzNDhhOTk3OTQwY2U0Iiwicm9sZV9pZCI6ImJmMjJhM2ZkZjdlYjQ4NzFiODRhNGQ4ZmY1MWQwZjdkIiwiZXhwIjoxNTc1MzY4MTMzLCJpc3MiOiJTcXVhZCIsImF1ZCI6IklPIn0.yLSPArMMM5AItbZy_DOaDK1XymvVVS0FZ8Zs0Rg_Psg";
-
+    let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl9pZCI6IjEzY2JhNTBkNjRlZjQyMDY5NzViYTdiMjkwN2Q5Yjg4IiwidXNlcl9pZCI6IjkyMzllNmNmYzQ0MjRiN2Q5YTgzNDhhOTk3OTQwY2U0Iiwicm9sZV9pZCI6ImJmMjJhM2ZkZjdlYjQ4NzFiODRhNGQ4ZmY1MWQwZjdkIiwiZXhwIjoxNTc1NDQ3MzcwLCJpc3MiOiJTcXVhZCIsImF1ZCI6IklPIn0.Qe0U--5_2WGKBF5_GR8cKwglWYDCqrzKshxHOlKK9yw";
+    
+    
     console.log("create hub");
     const chatHubConnection = new signalR.HubConnectionBuilder()
         .withUrl(chatHubUrl, {
@@ -34,6 +35,7 @@
             transport: signalR.HttpTransportType.WebSockets,
             accessTokenFactory: () => token
         })
+        .withAutomaticReconnect([])
         .configureLogging(signalR.LogLevel.Information)
         .build();
 
@@ -67,6 +69,9 @@
     // установка имени пользователя
     document.getElementById("loginBtn").addEventListener("click", function (e) {
         userName = document.getElementById("userName").value;
+        console.log("start connection");
+        chatHubConnection.start();
+        console.log("connection successful");
         document.getElementById("header").innerHTML = '<h3>Welcome ' + userName + '</h3>';
     });
 
@@ -79,9 +84,6 @@
             Username: userName
         });
     });
-
-    console.log("start connection");
-    chatHubConnection.start();
 </script>
 </body>
 </html>

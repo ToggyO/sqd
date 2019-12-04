@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NpgsqlTypes;
@@ -23,7 +24,7 @@ using Serilog.Sinks.SystemConsole.Themes;
 using Squadio.DAL;
 using Squadio.API.Extensions;
 using Squadio.API.Filters;
-using Squadio.API.WebSockerHubs;
+using Squadio.API.WebSocketHubs;
 using Squadio.Common.Models.Rabbit;
 using Squadio.Common.Settings;
 
