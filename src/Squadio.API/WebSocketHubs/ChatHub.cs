@@ -4,12 +4,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using Squadio.API.Filters;
 using Squadio.API.Handlers.Users;
 
 namespace Squadio.API.WebSocketHubs
 {
-    //[Authorize]
+    [Authorize]
     public class ChatHub : Hub
     {
         private readonly ILogger<ChatHub> _logger;
