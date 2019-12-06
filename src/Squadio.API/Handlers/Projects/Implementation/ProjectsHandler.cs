@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Squadio.API.WebSocketHubHandlers.Projects;
 using Squadio.BLL.Providers.Projects;
 using Squadio.BLL.Services.Projects;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
+using Squadio.Common.WebSocket;
 using Squadio.DTO.Projects;
 using Squadio.DTO.Users;
 
@@ -16,12 +18,15 @@ namespace Squadio.API.Handlers.Projects.Implementation
     {
         private readonly IProjectsProvider _provider;
         private readonly IProjectsService _service;
+        private readonly IProjectHubHandler _projectHubHandler;
 
         public ProjectsHandler(IProjectsProvider provider
-            , IProjectsService service)
+            , IProjectsService service
+            , IProjectHubHandler projectHubHandler)
         {
             _provider = provider;
             _service = service;
+            _projectHubHandler = projectHubHandler;
         }
 
         public async Task<Response<PageModel<ProjectDTO>>> GetProjects(PageModel model, ProjectFilter filter)
@@ -45,18 +50,39 @@ namespace Squadio.API.Handlers.Projects.Implementation
         public async Task<Response<ProjectDTO>> Create(Guid teamId, CreateProjectDTO dto, ClaimsPrincipal claims)
         {
             var result = await _service.Create(claims.GetUserId(), teamId, dto);
+            if (result.IsSuccess)
+            {
+                await _projectHubHandler.BroadcastTeamChanges(new BroadcastTeamChangesModel
+                {
+                    TeamId = result.Data.TeamId.ToString()
+                });
+            }
             return result;
         }
 
         public async Task<Response<ProjectDTO>> Update(Guid projectId, ProjectUpdateDTO dto, ClaimsPrincipal claims)
         {
             var result = await _service.Update(projectId, claims.GetUserId(), dto);
+            if (result.IsSuccess)
+            {
+                await _projectHubHandler.BroadcastTeamChanges(new BroadcastTeamChangesModel
+                {
+                    TeamId = result.Data.TeamId.ToString()
+                });
+            }
             return result;
         }
 
         public async Task<Response> Delete(Guid projectId, ClaimsPrincipal claims)
         {
             var result = await _service.Delete(projectId, claims.GetUserId());
+            if (result.IsSuccess)
+            {
+                await _projectHubHandler.BroadcastTeamChanges(new BroadcastTeamChangesModel
+                {
+                    TeamId = result.Data.TeamId.ToString()
+                });
+            }
             return result;
         }
 

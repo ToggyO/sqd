@@ -21,7 +21,8 @@ namespace Squadio.DTO.Projects
             var result = new ProjectDTO
             {
                 Id = item.Id,
-                Name = item.Name
+                Name = item.Name,
+                TeamId = item.TeamId
             };
             
             if (item.Creator != null)

@@ -128,7 +128,7 @@ namespace Squadio.BLL.Services.Projects.Implementation
             };
         }
 
-        public async Task<Response> Delete(Guid projectId, Guid userId)
+        public async Task<Response<ProjectDTO>> Delete(Guid projectId, Guid userId)
         {
             var projectUser = await _projectsUsersRepository.GetFullProjectUser(projectId, userId);
             if (projectUser == null || projectUser.Status != UserStatus.SuperAdmin)
@@ -156,8 +156,11 @@ namespace Squadio.BLL.Services.Projects.Implementation
                 }); 
             }
 
-            await _repository.Delete(projectId);
-            return new Response();
+            var entity = await _repository.Delete(projectId);
+            return new Response<ProjectDTO>
+            {
+                Data = _mapper.Map<ProjectModel, ProjectDTO>(entity)
+            };
         }
 
         public async Task<Response> DeleteUserFromProject(Guid projectId, Guid removeUserId, Guid currentUserId)

@@ -43,6 +43,7 @@ namespace Squadio.API.WebSocketHubHandlers.Projects.Implementation
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
+                throw;
             }
         }
     }

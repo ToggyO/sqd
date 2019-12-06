@@ -147,12 +147,8 @@
             updateState();
         };
         socket.onmessage = function (event) {
-            console.log(event);
             let object = JSON.parse(makeCorrect(event.data));
             try {
-                console.log("target: " + object.target);
-                console.log("arguments: ", object.arguments);
-                console.log("my object: ", object.arguments[0]);
                 if(object.target === "ReceiveMessage") {
                     commsLog.innerHTML += '<tr>' +
                         '<td class="commslog-server">Server</td>' +
