@@ -8,5 +8,6 @@ namespace Squadio.DTO.Projects
         public Guid Id { get; set; }
         public string Name { get; set; }
         public UserDTO Creator { get; set; }
+        public string ColorHex { get; set; }
     }
 }

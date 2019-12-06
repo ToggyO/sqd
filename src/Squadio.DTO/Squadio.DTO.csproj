@@ -58,6 +58,18 @@
       <Compile Update="SignUp\UserRegistrationStepMapper.cs">
         <DependentUpon>UserRegistrationStepDTO.cs</DependentUpon>
       </Compile>
+      <Compile Update="Projects\CreateProjectDTO.Validator.cs">
+        <DependentUpon>CreateProjectDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Projects\ProjectUpdateDTO.Validator.cs">
+        <DependentUpon>ProjectUpdateDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Teams\TeamCreateDTO.Validator.cs">
+        <DependentUpon>TeamCreateDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Teams\TeamUpdateDTO.Validator.cs">
+        <DependentUpon>TeamUpdateDTO.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

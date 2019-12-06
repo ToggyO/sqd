@@ -21,7 +21,8 @@ namespace Squadio.DTO.Teams
             var result = new TeamDTO
             {
                 Id = item.Id,
-                Name = item.Name
+                Name = item.Name,
+                ColorHex = item.ColorHex
             };
             
             if (item.Creator != null)
