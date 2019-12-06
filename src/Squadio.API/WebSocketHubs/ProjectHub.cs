@@ -16,19 +16,19 @@ namespace Squadio.API.WebSocketHubs
             _handler = handler;
         }
 
-        [HubMethodName("AddToGroup")]
+        [HubMethodName("SubscribeToTeam")]
         public async Task SubscribeToTeam(SubscribeToTeamModel model)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, model.TeamId);
         }
         
-        [HubMethodName("RemoveFromGroup")]
+        [HubMethodName("UnsubscribeFromTeam")]
         public async Task UnsubscribeFromTeam(UnsubscribeFromTeamModel model)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, model.TeamId);
         }
         
-        [HubMethodName("SendProjects")]
+        [HubMethodName("BroadcastTeamChanges")]
         public async Task BroadcastTeamChanges(BroadcastTeamChangesModel model)
         {
             await _handler.BroadcastTeamChanges(model);
