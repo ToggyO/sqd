@@ -18,15 +18,15 @@ namespace Squadio.API.Handlers.Projects.Implementation
     {
         private readonly IProjectsProvider _provider;
         private readonly IProjectsService _service;
-        private readonly IProjectHubHandler _projectHubHandler;
+        private readonly ISidebarHubHandler _sidebarHubHandler;
 
         public ProjectsHandler(IProjectsProvider provider
             , IProjectsService service
-            , IProjectHubHandler projectHubHandler)
+            , ISidebarHubHandler sidebarHubHandler)
         {
             _provider = provider;
             _service = service;
-            _projectHubHandler = projectHubHandler;
+            _sidebarHubHandler = sidebarHubHandler;
         }
 
         public async Task<Response<PageModel<ProjectDTO>>> GetProjects(PageModel model, ProjectFilter filter)
@@ -52,7 +52,7 @@ namespace Squadio.API.Handlers.Projects.Implementation
             var result = await _service.Create(claims.GetUserId(), teamId, dto);
             if (result.IsSuccess)
             {
-                await _projectHubHandler.BroadcastTeamChanges(new BroadcastTeamChangesModel
+                await _sidebarHubHandler.BroadcastSidebarChanges(new BroadcastSidebarChangesModel
                 {
                     TeamId = result.Data.TeamId.ToString()
                 });
@@ -65,7 +65,7 @@ namespace Squadio.API.Handlers.Projects.Implementation
             var result = await _service.Update(projectId, claims.GetUserId(), dto);
             if (result.IsSuccess)
             {
-                await _projectHubHandler.BroadcastTeamChanges(new BroadcastTeamChangesModel
+                await _sidebarHubHandler.BroadcastSidebarChanges(new BroadcastSidebarChangesModel
                 {
                     TeamId = result.Data.TeamId.ToString()
                 });
@@ -78,7 +78,7 @@ namespace Squadio.API.Handlers.Projects.Implementation
             var result = await _service.Delete(projectId, claims.GetUserId());
             if (result.IsSuccess)
             {
-                await _projectHubHandler.BroadcastTeamChanges(new BroadcastTeamChangesModel
+                await _sidebarHubHandler.BroadcastSidebarChanges(new BroadcastSidebarChangesModel
                 {
                     TeamId = result.Data.TeamId.ToString()
                 });

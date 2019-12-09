@@ -3,8 +3,8 @@ using Squadio.Common.WebSocket;
 
 namespace Squadio.API.WebSocketHubHandlers.Projects
 {
-    public interface IProjectHubHandler
+    public interface ISidebarHubHandler
     {
-        Task BroadcastTeamChanges(BroadcastTeamChangesModel model);
+        Task BroadcastSidebarChanges(BroadcastSidebarChangesModel model);
     }
 }

@@ -8,25 +8,74 @@
         .commslog-data { font-family: Consolas, Courier New, Courier, monospace; }
         .commslog-server { background-color: red; color: white }
         .commslog-client { background-color: green; color: white }
+        #MaTable td { padding: 5px 10px; }
     </style>
 </head>
 <body>
 <h1>WebSocket Project Sample</h1>
-<p id="stateLabel">Ready to connect...</p>
-<div>
-    <label for="connectionUrl">WebSocket Server URL:</label>
-    <input id="connectionUrl" />
-    <button id="connectButton" type="submit">Connect</button>
-    <button id="closeButton" disabled>Close Socket</button>
-</div>
-<p></p>
-<div>
-    <label for="TeamId">TeamId: </label>
-    <input id="TeamId" disabled />
-    <button id="addButton" type="submit" disabled>Add from group</button>
-    <button id="removeButton">Remove from group</button>
-    <button id="broadcastButton">Broadcast</button>
-</div>
+<h3 id="stateLabel">Ready to connect...</h3>
+<table style="width: 100%;" id="MaTable">
+    <thead>
+    <tr>
+        <th>
+            Connection
+        </th>
+        <th>
+            Token
+        </th>
+        <th>
+            Team
+        </th>
+        <th>
+            User
+        </th>
+        <th>
+            Buttons
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>
+            <div>
+                <label for="connectionUrl">WebSocket Server URL:</label>
+                <br>
+                <input id="connectionUrl"  style="width: 100%;"/>
+                <button id="connectButton" type="submit">Connect</button>
+                <button id="closeButton" disabled>Close Socket</button>
+            </div>
+        </td>
+        <td>
+            <div>
+                <label for="Token">Token: </label>
+                <br>
+                <input id="Token" style="width: 100%;"/>
+            </div>
+        </td>
+        <td>
+            <div>
+                <label for="TeamId">TeamId: </label>
+                <br>
+                <input id="TeamId" style="width: 100%;" disabled />
+            </div>
+        </td>
+        <td>
+            <div>
+                <label for="UserId">UserId: </label>
+                <br>
+                <input id="UserId" style="width: 100%;"/>
+            </div>
+        </td>
+        <td>
+            <div>
+                <button id="addButton" type="submit" disabled>Add from group</button>
+                <button id="removeButton">Remove from group</button>
+                <button id="broadcastButton">Broadcast</button>
+            </div>
+        </td>
+    </tr>
+    </tbody>
+</table>
 
 <h2>Communication Log</h2>
 <table style="width: 800px">
@@ -42,12 +91,12 @@
 </table>
 
 <script>
-    var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl9pZCI6IjkwN2EzZGRiNTNkZDRkMDE5MTNjMDlkZTc3YmEwODIyIiwidXNlcl9pZCI6ImMzYjBlZWU5OTg4YTQwNWQ5MDkwZDcxNTA3MTA0MGE2Iiwicm9sZV9pZCI6ImJmMjJhM2ZkZjdlYjQ4NzFiODRhNGQ4ZmY1MWQwZjdkIiwiZXhwIjoxNTc1NTQyNjgzLCJpc3MiOiJTcXVhZCIsImF1ZCI6IklPIn0.QTWlehBo0lfm6v19si-_l7AdXk7r3sqty6tHQzSzCQg";
-    
     var connectionUrl = document.getElementById("connectionUrl");
     var connectButton = document.getElementById("connectButton");
     var stateLabel = document.getElementById("stateLabel");
     var teamId = document.getElementById("TeamId");
+    var userId = document.getElementById("UserId");
+    var token = document.getElementById("Token");
     var addButton = document.getElementById("addButton");
     var commsLog = document.getElementById("commsLog");
     var closeButton = document.getElementById("closeButton");
@@ -57,13 +106,17 @@
     var scheme = document.location.protocol === "https:" ? "wss" : "ws";
     var port = document.location.port ? (":" + document.location.port) : "";
     connectionUrl.value = scheme + "://" + document.location.hostname + port + "/api/ws/projects" ;
+    token.value = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl9pZCI6IjMzMjIxZTRiMTcxNTQwZmFiYTNlNzZlY2ZiZDk3ZGYzIiwidXNlcl9pZCI6ImMzYjBlZWU5OTg4YTQwNWQ5MDkwZDcxNTA3MTA0MGE2Iiwicm9sZV9pZCI6ImJmMjJhM2ZkZjdlYjQ4NzFiODRhNGQ4ZmY1MWQwZjdkIiwiZXhwIjoxNTc1ODYzMzIzLCJpc3MiOiJTcXVhZCIsImF1ZCI6IklPIn0.PxjQUmMf_2pUaUojSz7LKYg56tMAhTOdBqgry1V6eVQ";
+    
     function updateState() {
         function disable() {
+            userId.disabled = true;
             teamId.disabled = true;
             addButton.disabled = true;
             closeButton.disabled = true;
         }
         function enable() {
+            userId.disabled = false;
             teamId.disabled = false;
             addButton.disabled = false;
             closeButton.disabled = false;
@@ -116,10 +169,11 @@
         let data = {
             "arguments":[
                 {
-                    "Token": token,
-                    "TeamId": teamId.value
+                    "Token": token.value,
+                    "TeamId": teamId.value,
+                    "UserId": userId.value
                 }],
-            "target":"SubscribeToTeam",
+            "target":"SubscribeToSidebar",
             "type":1
         };
         socket.send(JSON.stringify(data)+"\x1e");
@@ -133,10 +187,11 @@
         let data = {
             "arguments":[
                 {
-                    "Token": token,
-                    "TeamId": teamId.value
+                    "Token": token.value,
+                    "TeamId": teamId.value,
+                    "UserId": userId.value
                 }],
-            "target":"UnsubscribeFromTeam",
+            "target":"UnsubscribeFromSidebar",
             "type":1
         };
         socket.send(JSON.stringify(data)+"\x1e");
@@ -150,10 +205,11 @@
         let data = {
             "arguments":[
                 {
-                    "Token": token,
-                    "TeamId": teamId.value
+                    "Token": token.value,
+                    "TeamId": teamId.value,
+                    "UserId": userId.value
                 }],
-            "target":"BroadcastTeamChanges",
+            "target":"BroadcastSidebarChanges",
             "type":1
         };
         socket.send(JSON.stringify(data)+"\x1e");
@@ -162,7 +218,7 @@
     connectButton.onclick = function() {
         console.log("connectButton.onclick");
         stateLabel.innerHTML = "Connecting";
-        socket = new WebSocket(connectionUrl.value+"?access_token="+token);
+        socket = new WebSocket(connectionUrl.value+"?access_token="+token.value);
         socket.onopen = function (event) {
             updateState();
             

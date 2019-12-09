@@ -10,22 +10,22 @@ using Squadio.Common.WebSocket;
 
 namespace Squadio.API.WebSocketHubHandlers.Projects.Implementation
 {
-    public class ProjectHubHandler : IProjectHubHandler
+    public class SidebarHubHandler : ISidebarHubHandler
     {
-        private readonly ILogger<ProjectHubHandler> _logger;
+        private readonly ILogger<SidebarHubHandler> _logger;
         private readonly IProjectsProvider _projectsProvider;
-        private readonly IHubContext<ProjectHub> _hub;
+        private readonly IHubContext<SidebarHub> _hub;
 
-        public ProjectHubHandler(ILogger<ProjectHubHandler> logger
+        public SidebarHubHandler(ILogger<SidebarHubHandler> logger
             , IProjectsProvider projectsProvider
-            , IHubContext<ProjectHub> hub)
+            , IHubContext<SidebarHub> hub)
         {
             _logger = logger;
             _projectsProvider = projectsProvider;
             _hub = hub;
         }
 
-        public async Task BroadcastTeamChanges(BroadcastTeamChangesModel model)
+        public async Task BroadcastSidebarChanges(BroadcastSidebarChangesModel model)
         {
             try
             {

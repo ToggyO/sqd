@@ -238,7 +238,7 @@ namespace Squadio.API
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<ChatHub>("api/ws/chat");
-                endpoints.MapHub<ProjectHub>("api/ws/projects");
+                endpoints.MapHub<SidebarHub>("api/ws/projects");
             });
         }
     }

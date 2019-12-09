@@ -39,7 +39,7 @@ namespace Squadio.API
             
             services.Add<AuthorizationFilter>(serviceLifetime);
             
-            services.Add<IProjectHubHandler, ProjectHubHandler>(serviceLifetime);
+            services.Add<ISidebarHubHandler, SidebarHubHandler>(serviceLifetime);
         }
     }
 }

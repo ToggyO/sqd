@@ -1,6 +1,6 @@
 ﻿namespace Squadio.Common.WebSocket
 {
-    public class BroadcastTeamChangesModel : BaseWebSocketModel
+    public class BroadcastSidebarChangesModel : BaseWebSocketModel
     {
         public string TeamId { get; set; }
     }
