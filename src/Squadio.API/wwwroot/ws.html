@@ -40,6 +40,8 @@
 </table>
 
 <script>
+    var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl9pZCI6IjkwN2EzZGRiNTNkZDRkMDE5MTNjMDlkZTc3YmEwODIyIiwidXNlcl9pZCI6ImMzYjBlZWU5OTg4YTQwNWQ5MDkwZDcxNTA3MTA0MGE2Iiwicm9sZV9pZCI6ImJmMjJhM2ZkZjdlYjQ4NzFiODRhNGQ4ZmY1MWQwZjdkIiwiZXhwIjoxNTc1NTQyNjgzLCJpc3MiOiJTcXVhZCIsImF1ZCI6IklPIn0.QTWlehBo0lfm6v19si-_l7AdXk7r3sqty6tHQzSzCQg";
+
     var connectionUrl = document.getElementById("connectionUrl");
     var connectButton = document.getElementById("connectButton");
     var stateLabel = document.getElementById("stateLabel");
@@ -108,13 +110,12 @@
         }
         let data = {
             "arguments":[{"Message": sendMessage.value,"Username": "from WS"}],
-            //"invocationId":"1",
-            //"streamIds":[],
             "target":"SendMessage",
             "type":1
         };
+        console.log("Sent data: ", data);
         console.log("try send");
-        socket.send(JSON.stringify(data)+"0x1e");
+        socket.send(JSON.stringify(data)+"\x1e");
         commsLog.innerHTML += '<tr>' +
             '<td class="commslog-client">Client</td>' +
             '<td class="commslog-server">Server</td>' +
@@ -123,13 +124,13 @@
     connectButton.onclick = function() {
         console.log("connectButton.onclick");
         stateLabel.innerHTML = "Connecting";
-        socket = new WebSocket(connectionUrl.value+"?access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl9pZCI6IjEzY2JhNTBkNjRlZjQyMDY5NzViYTdiMjkwN2Q5Yjg4IiwidXNlcl9pZCI6IjkyMzllNmNmYzQ0MjRiN2Q5YTgzNDhhOTk3OTQwY2U0Iiwicm9sZV9pZCI6ImJmMjJhM2ZkZjdlYjQ4NzFiODRhNGQ4ZmY1MWQwZjdkIiwiZXhwIjoxNTc1NDQ3MzcwLCJpc3MiOiJTcXVhZCIsImF1ZCI6IklPIn0.Qe0U--5_2WGKBF5_GR8cKwglWYDCqrzKshxHOlKK9yw");
+        socket = new WebSocket(connectionUrl.value+"?access_token="+token);
         socket.onopen = function (event) {
             console.log("socket.onopen: ", event);
             updateState();
             let dataOnOpen = {"protocol":"json","version":1};
             console.log("try onopen send");
-            socket.send(JSON.stringify(dataOnOpen)+"0x1e");
+            socket.send(JSON.stringify(dataOnOpen)+"\x1e");
             commsLog.innerHTML += '<tr>' +
                 '<td colspan="3" class="commslog-data">Connection opened</td>' +
                 '</tr>';
@@ -146,21 +147,16 @@
             updateState();
         };
         socket.onmessage = function (event) {
-            console.log(event);
             let object = JSON.parse(makeCorrect(event.data));
-            try {
-                console.log("target: " + object.target);
-                console.log("arguments: ", object.arguments);
-                console.log("my object: ", object.arguments[0]);
-                if(object.target === "ReceiveMessage") {
-                    commsLog.innerHTML += '<tr>' +
-                        '<td class="commslog-server">Server</td>' +
-                        '<td class="commslog-client">Client</td>' +
-                        '<td class="commslog-data">' + htmlEscape(event.data) + '</td></tr>';
+            if (object.target === "ReceiveMessage") {
+                if (object.arguments != null) {
+                    if (object.arguments[0] != null) {
+                        commsLog.innerHTML += '<tr>' +
+                            '<td class="commslog-server">Server</td>' +
+                            '<td class="commslog-client">Client</td>' +
+                            '<td class="commslog-data"><b>' + htmlEscape(object.arguments[0].username) + ': </b>' + htmlEscape(object.arguments[0].message) + '</td></tr>';
+                    }
                 }
-            }
-            catch (e) {
-                
             }
         };
     };
@@ -174,16 +170,21 @@
     }
 
     function makeCorrect(str) {
-        if(str == null) 
+        try {
+            if (str == null)
+                return null;
+            if (str === "none")
+                return null;
+            if (str === "undefined")
+                return null;
+            let length = str.length;
+            if (length === 0)
+                return null;
+            return str.slice(0, length - 1);
+        }
+        catch {
             return null;
-        if(str === "none")
-            return null;
-        if(str === "undefined")
-            return null;
-        let length = str.length;
-        if(length === 0)
-            return null;
-        return str.slice(0, length - 1);
+        }
     }
 </script>
 </body>
