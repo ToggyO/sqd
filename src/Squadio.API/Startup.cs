@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NpgsqlTypes;
@@ -23,6 +24,7 @@ using Serilog.Sinks.SystemConsole.Themes;
 using Squadio.DAL;
 using Squadio.API.Extensions;
 using Squadio.API.Filters;
+using Squadio.API.WebSocketHubs;
 using Squadio.Common.Models.Rabbit;
 using Squadio.Common.Settings;
 
@@ -60,6 +62,8 @@ namespace Squadio.API
                             .AllowAnyMethod();
                     });
             });
+            
+            services.AddSignalR();
 
             services.AddMvcCore(options =>
                 {
@@ -176,6 +180,21 @@ namespace Squadio.API
                         // To allow return custom response for expired token
                         ValidateLifetime = false
                     };
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+                            var path = context.HttpContext.Request.Path;
+                            
+                            if (!string.IsNullOrEmpty(accessToken) 
+                                && path.StartsWithSegments("/api/ws"))
+                            {
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
             
             services.AddAuthorization();
@@ -204,6 +223,7 @@ namespace Squadio.API
             app.UseMiddleware(typeof(ExceptionMiddleware));
 
             app.UseCors(MyAllowSquadioOrigins);
+            
             app.UseStaticFiles();
 
             app.UseSwagger();
@@ -217,6 +237,7 @@ namespace Squadio.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("api/ws/chat");
             });
         }
     }
