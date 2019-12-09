@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using Squadio.API.WebSocketHubHandlers.Projects;
+using Microsoft.Extensions.Logging;
 using Squadio.Common.WebSocket;
 
 namespace Squadio.API.WebSocketHubs
@@ -10,21 +10,27 @@ namespace Squadio.API.WebSocketHubs
     [Authorize]
     public class SidebarHub : Hub
     {
-        private readonly ISidebarHubHandler _handler;
-
-        public SidebarHub(ISidebarHubHandler handler)
+        private readonly ILogger<SidebarHub> _logger;
+        public SidebarHub(ILogger<SidebarHub> logger)
         {
-            _handler = handler;
+            _logger = logger;
         }
 
         [HubMethodName("SubscribeToSidebar")]
         public async Task SubscribeToSidebar(SubscribeToSidebarModel model)
         {
             if (!Guid.TryParse(model.TeamId, out var teamGuid))
+            {
+                _logger.LogWarning($"Can't parse teamId: {model.TeamId}");
                 return;
+            }
+
             if (!Guid.TryParse(model.UserId, out var userGuid))
+            {
+                _logger.LogWarning($"Can't parse userId: {model.UserId}");
                 return;
-            
+            }
+
             var groupName = GetGroupName(teamGuid, userGuid);
             if(groupName == null) 
                 return;
@@ -36,9 +42,16 @@ namespace Squadio.API.WebSocketHubs
         public async Task UnsubscribeFromSidebar(UnsubscribeFromSidebarModel model)
         {
             if (!Guid.TryParse(model.TeamId, out var teamGuid))
+            {
+                _logger.LogWarning($"Can't parse teamId: {model.TeamId}");
                 return;
+            }
+
             if (!Guid.TryParse(model.UserId, out var userGuid))
+            {
+                _logger.LogWarning($"Can't parse userId: {model.UserId}");
                 return;
+            }
             
             var groupName = GetGroupName(teamGuid, userGuid);
             if(groupName == null) 
@@ -46,17 +59,12 @@ namespace Squadio.API.WebSocketHubs
             
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
         }
-        
-        [HubMethodName("BroadcastSidebarChanges")]
-        public async Task BroadcastTeamChanges(BroadcastSidebarChangesModel model)
-        {
-            await _handler.BroadcastSidebarChanges(model);
-        }
 
         private string GetGroupName(Guid teamId, Guid userId)
         {
             if (teamId == Guid.Empty || userId == Guid.Empty || teamId == userId)
             {
+                _logger.LogWarning($"Can't create group name: \n teamId = {teamId} \n userId = {userId}");
                 return null;
             }
 
