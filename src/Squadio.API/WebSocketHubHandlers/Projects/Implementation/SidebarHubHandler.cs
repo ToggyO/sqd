@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Squadio.API.WebSocketHubs;
 using Squadio.BLL.Providers.Projects;
+using Squadio.Common.Enums;
 using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.WebSocket;
@@ -15,6 +16,7 @@ namespace Squadio.API.WebSocketHubHandlers.Projects.Implementation
         private readonly ILogger<SidebarHubHandler> _logger;
         private readonly IProjectsProvider _projectsProvider;
         private readonly IHubContext<SidebarHub> _hub;
+        private readonly GroupUsersDictionary<Guid> _groupUsers = GroupUsersDictionary<Guid>.GetInstance();
 
         public SidebarHubHandler(ILogger<SidebarHubHandler> logger
             , IProjectsProvider projectsProvider
@@ -35,9 +37,15 @@ namespace Squadio.API.WebSocketHubHandlers.Projects.Implementation
                     {
                         TeamId = teamGuid
                     });
+
+                    var users = _groupUsers.GetUserIds(teamGuid);
                     var projectsPage = projectsResponsePage.Data;
-                    var group = _hub.Clients.Groups(model.TeamId);
-                    await group.SendAsync("BroadcastProjects", projectsPage);
+                    foreach (var user in users)
+                    {
+                        var group = _hub.Clients.Groups(user.ToString());
+                        await group.SendAsync("BroadcastProjects", projectsPage);
+                    }
+                    
                 }
             }
             catch (Exception e)

@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using Squadio.BLL.Providers.Users;
+using Squadio.Common.Enums;
+using Squadio.Common.Extensions;
 using Squadio.Common.WebSocket;
 
 namespace Squadio.API.WebSocketHubs
@@ -11,64 +14,49 @@ namespace Squadio.API.WebSocketHubs
     public class SidebarHub : Hub
     {
         private readonly ILogger<SidebarHub> _logger;
-        public SidebarHub(ILogger<SidebarHub> logger)
+        private readonly GroupUsersDictionary<Guid> _groupUsers = GroupUsersDictionary<Guid>.GetInstance();
+        private readonly IUsersProvider _usersProvider;
+        
+        public SidebarHub(ILogger<SidebarHub> logger
+            , IUsersProvider usersProvider)
         {
             _logger = logger;
+            _usersProvider = usersProvider;
         }
 
         [HubMethodName("SubscribeToSidebar")]
         public async Task SubscribeToSidebar(SubscribeToSidebarModel model)
         {
+            var userResponse = await _usersProvider.GetById(Context.User.GetUserId());
+            if(!userResponse.IsSuccess)
+                return;
+            
+            var user = userResponse.Data;
+            
             if (!Guid.TryParse(model.TeamId, out var teamGuid))
             {
                 _logger.LogWarning($"Can't parse teamId: {model.TeamId}");
                 return;
             }
-
-            if (!Guid.TryParse(model.UserId, out var userGuid))
-            {
-                _logger.LogWarning($"Can't parse userId: {model.UserId}");
-                return;
-            }
-
-            var groupName = GetGroupName(teamGuid, userGuid);
-            if(groupName == null) 
-                return;
             
-            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-        }
-        
-        [HubMethodName("UnsubscribeFromSidebar")]
-        public async Task UnsubscribeFromSidebar(UnsubscribeFromSidebarModel model)
-        {
-            if (!Guid.TryParse(model.TeamId, out var teamGuid))
-            {
-                _logger.LogWarning($"Can't parse teamId: {model.TeamId}");
-                return;
-            }
-
-            if (!Guid.TryParse(model.UserId, out var userGuid))
-            {
-                _logger.LogWarning($"Can't parse userId: {model.UserId}");
-                return;
-            }
-            
-            var groupName = GetGroupName(teamGuid, userGuid);
-            if(groupName == null) 
-                return;
-            
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+            _groupUsers.Add(teamGuid, user.Id);
         }
 
-        private string GetGroupName(Guid teamId, Guid userId)
+        public override async Task OnConnectedAsync()
         {
-            if (teamId == Guid.Empty || userId == Guid.Empty || teamId == userId)
-            {
-                _logger.LogWarning($"Can't create group name: \n teamId = {teamId} \n userId = {userId}");
-                return null;
-            }
+            var userResponse = await _usersProvider.GetById(Context.User.GetUserId());
+            if(!userResponse.IsSuccess)
+                return;
+            
+            var user = userResponse.Data;
+            
+            await Groups.AddToGroupAsync(Context.ConnectionId, user.Id.ToString());
+            await base.OnConnectedAsync();
+        }
 
-            return teamId.ToString("N") + userId.ToString("N");
+        public override async Task OnDisconnectedAsync(Exception exception)
+        {
+            await base.OnDisconnectedAsync(exception);
         }
     }
 }
