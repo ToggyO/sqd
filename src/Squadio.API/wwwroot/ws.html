@@ -148,16 +148,15 @@
         };
         socket.onmessage = function (event) {
             let object = JSON.parse(makeCorrect(event.data));
-            try {
-                if(object.target === "ReceiveMessage") {
-                    commsLog.innerHTML += '<tr>' +
-                        '<td class="commslog-server">Server</td>' +
-                        '<td class="commslog-client">Client</td>' +
-                        '<td class="commslog-data">' + htmlEscape(event.data) + '</td></tr>';
+            if (object.target === "ReceiveMessage") {
+                if (object.arguments != null) {
+                    if (object.arguments[0] != null) {
+                        commsLog.innerHTML += '<tr>' +
+                            '<td class="commslog-server">Server</td>' +
+                            '<td class="commslog-client">Client</td>' +
+                            '<td class="commslog-data"><b>' + htmlEscape(object.arguments[0].username) + ': </b>' + htmlEscape(object.arguments[0].message) + '</td></tr>';
+                    }
                 }
-            }
-            catch (e) {
-                
             }
         };
     };
@@ -171,16 +170,21 @@
     }
 
     function makeCorrect(str) {
-        if(str == null) 
+        try {
+            if (str == null)
+                return null;
+            if (str === "none")
+                return null;
+            if (str === "undefined")
+                return null;
+            let length = str.length;
+            if (length === 0)
+                return null;
+            return str.slice(0, length - 1);
+        }
+        catch {
             return null;
-        if(str === "none")
-            return null;
-        if(str === "undefined")
-            return null;
-        let length = str.length;
-        if(length === 0)
-            return null;
-        return str.slice(0, length - 1);
+        }
     }
 </script>
 </body>
