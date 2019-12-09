@@ -37,7 +37,7 @@
             public const string RefreshTokenInvalid = "Refresh token invalid";
             public const string RefreshTokenExpired = "Refresh token expired";
             public const string InviteInvalid = "Invite is invalid";
-            public const string ConfirmationCodeInvalid = "Confirmation code is invalid";
+            public const string ConfirmationCodeInvalid = "Code is invalid";
         }
 
         public static class System
