@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Logging;
 using Squadio.API.WebSocketHubs;
 using Squadio.BLL.Providers.Projects;
@@ -37,23 +38,21 @@ namespace Squadio.API.WebSocketHubHandlers.Projects.Implementation
             {
                 if (Guid.TryParse(model.TeamId, out var teamGuid))
                 {
-                    var projectsResponsePage = await _projectsProvider.GetProjects(
-                        new PageModel { Page = 1, PageSize = 10000 }, 
-                        new ProjectFilter { TeamId = teamGuid });
-                    var projectsPage = projectsResponsePage.Data;
-                    var projects = projectsPage.Items;
-
-                    var usersPageResponse = await _teamsProvider.GetTeamUsers(
-                        teamGuid, 
-                        new PageModel { Page = 1, PageSize = 10000 });
-                    var usersPage = usersPageResponse.Data;
-                    var users = usersPage.Items;
+                    var projectUsersResponsePage = await _projectsProvider.GetProjectUsers(
+                        new PageModel { Page = 1, PageSize = 100000 },
+                        teamId: teamGuid);
+                    var projectUsersPage = projectUsersResponsePage.Data;
+                    var projectUsers = projectUsersPage.Items.ToList();
+                    var userIds = projectUsers.Select(x => x.User.Id).Distinct();
                     
-                    foreach (var user in users)
+                    foreach (var userId in userIds)
                     {
-                        var projectsOfUser = projects.Where(x=>x.)
-                        var group = _hub.Clients.Groups(user.ToString());
-                        await group.SendAsync("BroadcastProjects", projectsPage);
+                        var projects = projectUsers
+                            .Where(x => x.UserId == userId)
+                            .Select(x => x.Project)
+                            .Distinct();
+                        var group = _hub.Clients.Groups(userId.ToString());
+                        await group.SendAsync("BroadcastProjects", projects);
                     }
                     
                 }

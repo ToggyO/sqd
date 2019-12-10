@@ -13,6 +13,7 @@ namespace Squadio.BLL.Providers.Projects
         Task<Response<PageModel<ProjectDTO>>> GetProjects(PageModel model, ProjectFilter filter);
         Task<Response<PageModel<ProjectUserDTO>>> GetUserProjects(Guid userId, PageModel model, Guid? companyId = null);
         Task<Response<PageModel<ProjectUserDTO>>> GetProjectUsers(Guid projectId, PageModel model);
+        Task<Response<PageModel<ProjectUserDTO>>> GetProjectUsers(PageModel model, Guid? companyId = null, Guid? teamId = null, Guid? userId = null);
         Task<Response<ProjectDTO>> GetById(Guid id);
     }
 }

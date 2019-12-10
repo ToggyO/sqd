@@ -367,7 +367,9 @@ namespace Squadio.BLL.Services.Invites.Implementation
             }
 
             var userProject =
-                (await _projectsUsersRepository.GetUserProjects(userId, pageModel, teamId: userTeam.TeamId))
+                (await _projectsUsersRepository.GetUserProjects(pageModel, 
+                    teamId: userTeam.TeamId, 
+                    userId: userId))
                 .Items
                 .FirstOrDefault();
 
