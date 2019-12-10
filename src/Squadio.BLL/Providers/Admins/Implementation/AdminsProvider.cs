@@ -124,8 +124,21 @@ namespace Squadio.BLL.Providers.Admins.Implementation
                     Field = ErrorFields.Company.Id
                 });
             }
-            
+
             var companyDetailDTO = _mapper.Map<CompanyModel, CompanyDetailDTO>(companyEntity);
+
+
+            var admins = await _companiesUsersRepository.GetCompaniesUsers(
+                companyId: companyId,
+                statuses: new[]
+                {
+                    UserStatus.SuperAdmin,
+                    UserStatus.Admin
+                });
+            companyDetailDTO.UsersCount = await _companiesUsersRepository.GetCompanyUsersCount(companyId);
+            companyDetailDTO.Admins = admins.Select(x => _mapper.Map<CompanyUserModel, CompanyUserDTO>(x));
+
+
             return new Response<CompanyDetailDTO>
             {
                 Data = companyDetailDTO

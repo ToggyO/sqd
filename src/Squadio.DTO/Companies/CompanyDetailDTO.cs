@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Squadio.DTO.Users;
 
 namespace Squadio.DTO.Companies
@@ -10,5 +11,7 @@ namespace Squadio.DTO.Companies
         public string Address { get; set; }
         public DateTime CreatedDate { get; set; }
         public UserDTO Creator { get; set; }
+        public int UsersCount { get; set; }
+        public IEnumerable<CompanyUserDTO> Admins { get; set; }
     }
 }
