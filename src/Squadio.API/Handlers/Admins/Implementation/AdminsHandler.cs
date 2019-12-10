@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Squadio.BLL.Providers.Admins;
 using Squadio.BLL.Services.Admins;
 using Squadio.Common.Models.Filters;
@@ -29,6 +30,12 @@ namespace Squadio.API.Handlers.Admins.Implementation
         public async Task<Response<PageModel<CompanyListDTO>>> GetCompaniesPage(PageModel model, CompaniesFilter filter, string search)
         {
             var result = await _provider.GetCompaniesPage(model, filter, search);
+            return result;
+        }
+
+        public async Task<Response<CompanyDetailDTO>> GetCompanyDetail(Guid companyId)
+        {
+            var result = await _provider.GetCompanyDetail(companyId);
             return result;
         }
     }

@@ -70,6 +70,9 @@
       <Compile Update="Teams\TeamUpdateDTO.Validator.cs">
         <DependentUpon>TeamUpdateDTO.cs</DependentUpon>
       </Compile>
+      <Compile Update="Companies\CompanyDetailModelMapper.cs">
+        <DependentUpon>CompanyDetailDTO.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

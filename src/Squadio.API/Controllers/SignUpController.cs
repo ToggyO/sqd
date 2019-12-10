@@ -142,7 +142,7 @@ namespace Squadio.API.Controllers
         /// </summary>
         [Obsolete]
         [HttpPost("admin/company")]
-        public async Task<Response<SignUpStepDTO<CompanyDTO>>> CreateCompanyObsolete([Required, FromBody] CreateCompanyDTO dto)
+        public async Task<Response<SignUpStepDTO<CompanyDTO>>> CreateCompanyObsolete([Required, FromBody] CompanyCreateDTO dto)
         {
             return await _handler.SignUpCompany(dto, User);
         }
@@ -151,7 +151,7 @@ namespace Squadio.API.Controllers
         /// Create new company (and set current user as admin for this company )
         /// </summary>
         [HttpPost("company")]
-        public async Task<Response<SignUpStepDTO<CompanyDTO>>> CreateCompany([Required, FromBody] CreateCompanyDTO dto)
+        public async Task<Response<SignUpStepDTO<CompanyDTO>>> CreateCompany([Required, FromBody] CompanyCreateDTO dto)
         {
             return await _handler.SignUpCompany(dto, User);
         }

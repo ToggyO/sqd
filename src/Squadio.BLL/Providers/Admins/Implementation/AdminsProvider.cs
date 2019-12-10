@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Mapper;
+using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
@@ -108,6 +110,26 @@ namespace Squadio.BLL.Providers.Admins.Implementation
                 Data = resultData
             };
             return result;
+        }
+
+        public async Task<Response<CompanyDetailDTO>> GetCompanyDetail(Guid companyId)
+        {
+            var companyEntity = await _companiesRepository.GetById(companyId);
+            if (companyEntity == null)
+            {
+                return new BusinessConflictErrorResponse<CompanyDetailDTO>(new Error
+                {
+                    Code = ErrorCodes.Common.NotFound,
+                    Message = ErrorMessages.Common.NotFound,
+                    Field = ErrorFields.Company.Id
+                });
+            }
+            
+            var companyDetailDTO = _mapper.Map<CompanyModel, CompanyDetailDTO>(companyEntity);
+            return new Response<CompanyDetailDTO>
+            {
+                Data = companyDetailDTO
+            };
         }
     }
 }

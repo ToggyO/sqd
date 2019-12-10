@@ -108,7 +108,7 @@ namespace Squadio.BLL.Services.Companies.Implementation
             return new Response();
         }
 
-        public async Task<Response<CompanyDTO>> Create(Guid userId, CreateCompanyDTO dto)
+        public async Task<Response<CompanyDTO>> Create(Guid userId, CompanyCreateDTO dto)
         {
             var entityCompany = new CompanyModel
             {

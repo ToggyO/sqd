@@ -145,7 +145,7 @@ namespace Squadio.API.Handlers.SignUp.Implementation
             return result;
         }
 
-        public async Task<Response<SignUpStepDTO<CompanyDTO>>> SignUpCompany(CreateCompanyDTO dto, ClaimsPrincipal claims)
+        public async Task<Response<SignUpStepDTO<CompanyDTO>>> SignUpCompany(CompanyCreateDTO dto, ClaimsPrincipal claims)
         {
             var result = await _service.SignUpCompany(claims.GetUserId(), dto);
             return result;

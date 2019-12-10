@@ -64,7 +64,7 @@ namespace Squadio.API.Controllers
         /// Create new company
         /// </summary>
         [HttpPost]
-        public Task<Response<CompanyDTO>> CreateCompany([Required, FromBody] CreateCompanyDTO dto)
+        public Task<Response<CompanyDTO>> CreateCompany([Required, FromBody] CompanyCreateDTO dto)
         {
             return _handler.CreateCompany(dto, User);
         }

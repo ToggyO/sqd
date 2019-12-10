@@ -371,7 +371,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             }
         }
 
-        public async Task<Response<SignUpStepDTO<CompanyDTO>>> SignUpCompany(Guid userId, CreateCompanyDTO dto)
+        public async Task<Response<SignUpStepDTO<CompanyDTO>>> SignUpCompany(Guid userId, CompanyCreateDTO dto)
         {
             var step = await _repository.GetRegistrationStepByUserId(userId);
             var stepValidate = ValidateStep<CompanyDTO>(step, RegistrationStep.CompanyCreated);

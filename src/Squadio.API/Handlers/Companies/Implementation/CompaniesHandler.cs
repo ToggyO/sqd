@@ -41,7 +41,7 @@ namespace Squadio.API.Handlers.Companies.Implementation
             return result;
         }
 
-        public async Task<Response<CompanyDTO>> CreateCompany(CreateCompanyDTO dto, ClaimsPrincipal claims)
+        public async Task<Response<CompanyDTO>> CreateCompany(CompanyCreateDTO dto, ClaimsPrincipal claims)
         {
             var result = await _service.Create(claims.GetUserId(), dto);
             return result;

@@ -18,7 +18,7 @@ namespace Squadio.BLL.Services.SignUp
         Task<Response<SignUpStepDTO>> SendNewCode(Guid userId);
         Task<Response<SignUpStepDTO>> SignUpConfirm(Guid userId, string code);
         Task<Response<SignUpStepDTO<UserDTO>>> SignUpUsername(Guid userId, UserUpdateDTO updateDTO);
-        Task<Response<SignUpStepDTO<CompanyDTO>>> SignUpCompany(Guid userId, CreateCompanyDTO dto);
+        Task<Response<SignUpStepDTO<CompanyDTO>>> SignUpCompany(Guid userId, CompanyCreateDTO dto);
         Task<Response<SignUpStepDTO<TeamDTO>>> SignUpTeam(Guid userId, TeamCreateDTO dto);
         Task<Response<SignUpStepDTO<ProjectDTO>>> SignUpProject(Guid userId, CreateProjectDTO dto);
         Task<Response<SignUpStepDTO>> SignUpDone(Guid userId);

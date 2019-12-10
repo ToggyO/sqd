@@ -1,15 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Squadio.API.Filters;
 using Squadio.API.Handlers.Admins;
-using Squadio.API.Handlers.Auth;
 using Squadio.Common.Enums;
 using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
-using Squadio.DTO.Auth;
 using Squadio.DTO.Companies;
 using Squadio.DTO.Users;
 
@@ -49,6 +46,16 @@ namespace Squadio.API.Controllers
             , [FromQuery] string search)
         {
             return await _handler.GetCompaniesPage(model, filter, search);
+        }
+        
+        /// <summary>
+        /// Get company details
+        /// </summary>
+        [HttpGet("companies/{id}")]
+        [PermissionFilter(Area.Admin)]
+        public async Task<Response<CompanyDetailDTO>> GetCompanyDetail([FromRoute] Guid id)
+        {
+            return await _handler.GetCompanyDetail(id);
         }
     }
 }
