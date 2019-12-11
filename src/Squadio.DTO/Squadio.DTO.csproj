@@ -82,6 +82,9 @@
       <Compile Update="Users\UserUpdateDTO.Validator.cs">
         <DependentUpon>UserUpdateDTO.cs</DependentUpon>
       </Compile>
+      <Compile Update="Resources\ResourceViewModelMapper.cs">
+        <DependentUpon>ResourceDTO.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

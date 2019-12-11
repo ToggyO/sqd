@@ -3,6 +3,7 @@ using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Companies;
 using Squadio.Domain.Models.Invites;
 using Squadio.Domain.Models.Projects;
+using Squadio.Domain.Models.Resources;
 using Squadio.Domain.Models.Roles;
 using Squadio.Domain.Models.Teams;
 using Squadio.Domain.Models.Users;
@@ -24,6 +25,7 @@ namespace Squadio.DAL
         public DbSet<ProjectUserModel> ProjectsUsers { get; set; }
         public DbSet<InviteModel> Invites { get; set; }
         public DbSet<RoleModel> Roles { get; set; }
+        public DbSet<ResourceModel> Resources { get; set; }
         
 
         public SquadioDbContext(DbContextOptions<SquadioDbContext> options)
@@ -168,6 +170,16 @@ namespace Squadio.DAL
                 item.HasIndex(p => p.Code)
                     .IsUnique();
                 item.HasOne(x => x.Creator)
+                    .WithMany()
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+            
+            modelBuilder.Entity<ResourceModel>(item =>
+            {
+                item.HasKey(c => c.Id);
+                item.HasIndex(p => p.FileName)
+                    .IsUnique();
+                item.HasOne(x => x.User)
                     .WithMany()
                     .OnDelete(DeleteBehavior.Cascade);
             });
