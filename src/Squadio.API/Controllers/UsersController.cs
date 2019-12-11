@@ -140,6 +140,15 @@ namespace Squadio.API.Controllers
         }
         
         /// <summary>
+        /// Set new password 
+        /// </summary>
+        [HttpPut("passwords/change")]
+        public async Task<Response> ChangePassword([FromBody] UserChangePasswordDTO dto)
+        {
+            return await _handler.ChangePassword(dto, User);
+        }
+        
+        /// <summary>
         /// Set new password, using link from "api/passwords/request"
         /// </summary>
         [HttpPut("passwords/set")]

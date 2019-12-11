@@ -6,10 +6,12 @@ using Squadio.BLL.Providers.Companies;
 using Squadio.BLL.Providers.Projects;
 using Squadio.BLL.Providers.Teams;
 using Squadio.BLL.Providers.Users;
+using Squadio.BLL.Services.Tokens;
 using Squadio.BLL.Services.Users;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
+using Squadio.DTO.Auth;
 using Squadio.DTO.Companies;
 using Squadio.DTO.Projects;
 using Squadio.DTO.Teams;
@@ -24,17 +26,20 @@ namespace Squadio.API.Handlers.Users.Implementation
         private readonly ITeamsProvider _teamsProvider;
         private readonly IProjectsProvider _projectsProvider;
         private readonly IUsersService _service;
+        private readonly ITokensService _tokensService;
         public UsersHandler(IUsersProvider provider
             , ICompaniesProvider companyProvider
             , ITeamsProvider teamsProvider
             , IProjectsProvider projectsProvider
-            , IUsersService service)
+            , IUsersService service
+            , ITokensService tokensService)
         {
             _service = service;
             _companyProvider = companyProvider;
             _teamsProvider = teamsProvider;
             _projectsProvider = projectsProvider;
             _provider = provider;
+            _tokensService = tokensService;
         }
 
         public async Task<Response<PageModel<UserDTO>>> GetPage(PageModel model)
@@ -101,6 +106,24 @@ namespace Squadio.API.Handlers.Users.Implementation
         {
             var result = await _provider.ValidateCode(code);
             return result;
+        }
+
+        public async Task<Response> ChangePassword(UserChangePasswordDTO dto, ClaimsPrincipal claims)
+        {
+            var userResponse = await _provider.GetById(claims.GetUserId());
+            if (!userResponse.IsSuccess)
+                return userResponse;
+            
+            var oldPasswordCorrectResponse = await _tokensService.Authenticate(new CredentialsDTO
+            {
+                Email = userResponse.Data.Email,
+                Password = dto.OldPassword
+            });
+
+            if (!oldPasswordCorrectResponse.IsSuccess)
+                return oldPasswordCorrectResponse;
+
+            return await _service.SetPassword(userResponse.Data.Email, dto.NewPassword);
         }
 
         public async Task<Response> ResetPasswordRequest(string email)
