@@ -6,11 +6,11 @@ using Squadio.Domain.Models.Resources;
 
 namespace Squadio.DAL.Repository.Resources.Implementation
 {
-    public class ResourceRepository : IResourceRepository
+    public class ResourcesRepository : IResourcesRepository
     {
         private readonly SquadioDbContext _context;
 
-        public ResourceRepository(SquadioDbContext context)
+        public ResourcesRepository(SquadioDbContext context)
         {
             _context = context;
         }

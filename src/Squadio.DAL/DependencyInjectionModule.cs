@@ -20,6 +20,8 @@ using Squadio.DAL.Repository.Projects;
 using Squadio.DAL.Repository.Projects.Implementation;
 using Squadio.DAL.Repository.ProjectsUsers;
 using Squadio.DAL.Repository.ProjectsUsers.Implementation;
+using Squadio.DAL.Repository.Resources;
+using Squadio.DAL.Repository.Resources.Implementation;
 using Squadio.DAL.Repository.SignUp;
 using Squadio.DAL.Repository.SignUp.Implementation;
 using Squadio.DAL.Repository.Teams;
@@ -52,6 +54,8 @@ namespace Squadio.DAL
             services.Add<ISignUpRepository, SignUpRepository>(serviceLifetime);
             
             services.Add<IAdminsRepository, AdminsRepository>(serviceLifetime);
+            
+            services.Add<IResourcesRepository, ResourcesRepository>(serviceLifetime);
         }
     }
 }

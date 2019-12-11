@@ -5,13 +5,6 @@ namespace Squadio.Common.Models.Resources
 {
     public class ResourceViewModel
     {
-        private DateTime _date;
-        public DateTime Date
-        {
-            get => _date;
-            set { _date = value; SetUrls(); }
-        }
-        
         private string _group;
         public string Group
         {
@@ -29,14 +22,14 @@ namespace Squadio.Common.Models.Resources
         private string _templateUrl;
         /// <summary>
         /// Template for URLs to Files with all allowed variables
-        /// <para>Example: http://127.0.0.1/{Group}/{Date}/{Resolution}/{Filename}</para>
+        /// <para>Example: http://127.0.0.1/{Group}/{Resolution}/{Filename}</para>
         /// </summary>
         public string TemplateUrl
         {
             get => _templateUrl;
             set { _templateUrl = value; SetTemplate(_templateUrl); }
         }
-        private const string _defaultTemplateUrl = "https://localhost:5005/{Group}/{Date}/{Resolution}/{Filename}";
+        private const string _defaultTemplateUrl = "https://localhost:5005/{Group}/{Resolution}/{Filename}";
 
         public ResourceViewModel()
         {
@@ -51,7 +44,6 @@ namespace Squadio.Common.Models.Resources
         {
             if (resource != null)
             {
-                _date = resource.CreateDate;
                 _group = resource.Group;
                 _filename = resource.FileName;
             }
@@ -86,8 +78,7 @@ namespace Squadio.Common.Models.Resources
             if (_group != null && _filename != null)
             {
                 var templateGroup = _templateUrl.Replace("{Group}", _group);
-                var templateDate = templateGroup.Replace("{Date}", _date.ToString("yyyyMMdd"));
-                var templateFileName = templateDate.Replace("{Filename}", _filename);
+                var templateFileName = templateGroup.Replace("{Filename}", _filename);
 
                 OriginalUrl = templateFileName.Replace("{Resolution}", "original");
                 Url140 = templateFileName.Replace("{Resolution}", "140");
