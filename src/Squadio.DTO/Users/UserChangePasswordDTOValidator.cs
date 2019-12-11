@@ -7,7 +7,7 @@ namespace Squadio.DTO.Users
     {
         public UserChangePasswordDTOValidator()
         {
-            RuleFor(model => model.NewPassword)
+            RuleFor(model => model.Password)
                 .MinimumLength(6).WithErrorCode(ErrorCodes.Common.FieldInvalid);
         }
     }

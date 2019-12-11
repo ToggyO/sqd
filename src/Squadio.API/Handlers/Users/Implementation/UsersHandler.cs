@@ -123,7 +123,7 @@ namespace Squadio.API.Handlers.Users.Implementation
             if (!oldPasswordCorrectResponse.IsSuccess)
                 return oldPasswordCorrectResponse;
 
-            return await _service.SetPassword(userResponse.Data.Email, dto.NewPassword);
+            return await _service.SetPassword(userResponse.Data.Email, dto.Password);
         }
 
         public async Task<Response> ResetPasswordRequest(string email)
