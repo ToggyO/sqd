@@ -13,6 +13,8 @@ using Squadio.BLL.Providers.Invites;
 using Squadio.BLL.Providers.Invites.Implementation;
 using Squadio.BLL.Providers.Projects;
 using Squadio.BLL.Providers.Projects.Implementation;
+using Squadio.BLL.Providers.Resources;
+using Squadio.BLL.Providers.Resources.Implementation;
 using Squadio.BLL.Providers.SignUp;
 using Squadio.BLL.Providers.SignUp.Implementation;
 using Squadio.BLL.Providers.Teams;
@@ -25,6 +27,8 @@ using Squadio.BLL.Services.Companies;
 using Squadio.BLL.Services.Companies.Implementation;
 using Squadio.BLL.Services.ConfirmEmail;
 using Squadio.BLL.Services.ConfirmEmail.Implementation;
+using Squadio.BLL.Services.Files;
+using Squadio.BLL.Services.Files.Implementation;
 using Squadio.BLL.Services.Invites;
 using Squadio.BLL.Services.Invites.Implementation;
 using Squadio.BLL.Services.Projects;
@@ -33,6 +37,8 @@ using Squadio.BLL.Services.Rabbit;
 using Squadio.BLL.Services.Rabbit.Implementations;
 using Squadio.BLL.Services.Rabbit.Publisher;
 using Squadio.BLL.Services.Rabbit.Publisher.Implementation;
+using Squadio.BLL.Services.Resources;
+using Squadio.BLL.Services.Resources.Implementation;
 using Squadio.BLL.Services.SignUp;
 using Squadio.BLL.Services.SignUp.Implementation;
 using Squadio.BLL.Services.Teams;
@@ -81,6 +87,10 @@ namespace Squadio.BLL
             
             services.Add<IAdminsProvider, AdminsProvider>(serviceLifetime);
             services.Add<IAdminsService, AdminsService>(serviceLifetime);
+            
+            services.Add<IFilesService, FilesService>(serviceLifetime);
+            services.Add<IResourcesProvider, ResourcesProvider>(serviceLifetime);
+            services.Add<IResourcesService, ResourcesService>(serviceLifetime);
             
             services.Add<ITokensFactory, TokensFactory>(serviceLifetime);
             services.AddMapper();
