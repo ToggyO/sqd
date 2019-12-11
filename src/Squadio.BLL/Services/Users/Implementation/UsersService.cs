@@ -182,7 +182,7 @@ namespace Squadio.BLL.Services.Users.Implementation
             };
         }
 
-        public async Task<Response> ChangeEmailRequest(Guid id, ChangeEmailRequestDTO dto)
+        public async Task<Response> ChangeEmailRequest(Guid id, UserChangeEmailRequestDTO dto)
         {
             var user = await _repository.GetById(id);
             var passwordIsCorrect =

@@ -3,9 +3,9 @@ using Squadio.Common.Models.Errors;
 
 namespace Squadio.DTO.Users
 {
-    public class ChangeEmailRequestDTOValidator: AbstractValidator<ChangeEmailRequestDTO>
+    public class UserChangeEmailRequestDTOValidator: AbstractValidator<UserChangeEmailRequestDTO>
     {
-        public ChangeEmailRequestDTOValidator()
+        public UserChangeEmailRequestDTOValidator()
         {
             RuleFor(model => model.NewEmail)
                 .EmailAddress().WithErrorCode(ErrorCodes.Common.FieldInvalid);

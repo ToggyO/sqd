@@ -37,7 +37,7 @@
       <Compile Update="Teams\TeamUserModelMapper.cs">
         <DependentUpon>TeamUserDTO.cs</DependentUpon>
       </Compile>
-      <Compile Update="Users\ChangeEmailDTO.Validator.cs">
+      <Compile Update="Users\UserChangeEmailDTO.Validator.cs">
         <DependentUpon>ChangeEmailRequestDTO.cs</DependentUpon>
       </Compile>
       <Compile Update="Users\UserSetPasswordDTO.Validator.cs">
@@ -58,7 +58,7 @@
       <Compile Update="SignUp\UserRegistrationStepMapper.cs">
         <DependentUpon>UserRegistrationStepDTO.cs</DependentUpon>
       </Compile>
-      <Compile Update="Projects\CreateProjectDTO.Validator.cs">
+      <Compile Update="Projects\ProjectCreateDTO.Validator.cs">
         <DependentUpon>CreateProjectDTO.cs</DependentUpon>
       </Compile>
       <Compile Update="Projects\ProjectUpdateDTO.Validator.cs">
@@ -72,6 +72,9 @@
       </Compile>
       <Compile Update="Companies\CompanyDetailModelMapper.cs">
         <DependentUpon>CompanyDetailDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Users\UserChangePasswordDTOValidator.cs">
+        <DependentUpon>UserChangePasswordDTO.cs</DependentUpon>
       </Compile>
     </ItemGroup>
 

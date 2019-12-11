@@ -2,7 +2,7 @@
 
 namespace Squadio.DTO.Users
 {
-    public class ChangeEmailRequestDTO
+    public class UserChangeEmailRequestDTO
     {
         [Required]
         public string NewEmail { get; set; }

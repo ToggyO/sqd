@@ -90,7 +90,7 @@ namespace Squadio.API.Controllers
         /// Create new project
         /// </summary>
         [HttpPost]
-        public async Task<Response<ProjectDTO>> Create([FromQuery, Required] Guid teamId, [FromBody] CreateProjectDTO dto)
+        public async Task<Response<ProjectDTO>> Create([FromQuery, Required] Guid teamId, [FromBody] ProjectCreateDTO dto)
         {
             return await _handler.Create(teamId, dto, User);
         }

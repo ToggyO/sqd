@@ -11,7 +11,7 @@ namespace Squadio.DTO.Users
                 .NotEmpty().WithErrorCode(ErrorCodes.Common.FieldInvalid);
             
             RuleFor(model => model.Password)
-                .NotEmpty().WithErrorCode(ErrorCodes.Common.FieldInvalid);
+                .MinimumLength(6).WithErrorCode(ErrorCodes.Common.FieldInvalid);
         }
     }
 }

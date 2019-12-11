@@ -145,7 +145,7 @@ namespace Squadio.API.Handlers.Users.Implementation
             return result;
         }
 
-        public async Task<Response> ChangeEmailRequest(ChangeEmailRequestDTO dto, ClaimsPrincipal claims)
+        public async Task<Response> ChangeEmailRequest(UserChangeEmailRequestDTO dto, ClaimsPrincipal claims)
         {
             var result = await _service.ChangeEmailRequest(claims.GetUserId(), dto);
             return result;

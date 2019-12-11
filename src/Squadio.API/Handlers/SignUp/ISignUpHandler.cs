@@ -24,7 +24,7 @@ namespace Squadio.API.Handlers.SignUp
         Task<Response<SignUpStepDTO<CompanyDTO>>> SignUpCompany(CompanyCreateDTO dto, ClaimsPrincipal claims);
         Task<Response<SignUpStepDTO<TeamDTO>>> SignUpTeam(TeamCreateDTO dto, ClaimsPrincipal claims);
         Task<Response<IEnumerable<string>>> GetTeamInvites(ClaimsPrincipal claims);
-        Task<Response<SignUpStepDTO<ProjectDTO>>> SignUpProject(CreateProjectDTO dto, ClaimsPrincipal claims);
+        Task<Response<SignUpStepDTO<ProjectDTO>>> SignUpProject(ProjectCreateDTO dto, ClaimsPrincipal claims);
         Task<Response<SignUpStepDTO>> SignUpDone(ClaimsPrincipal claims);
     }
 }

@@ -14,7 +14,7 @@ namespace Squadio.BLL.Services.Users
         Task<Response<UserDTO>> CreateUser(UserCreateDTO dto);
         Task<Response<UserDTO>> UpdateUser(Guid id, UserUpdateDTO dto);
         Task<Response<UserDTO>> DeleteUser(Guid id);
-        Task<Response> ChangeEmailRequest(Guid id, ChangeEmailRequestDTO requestDTO);
+        Task<Response> ChangeEmailRequest(Guid id, UserChangeEmailRequestDTO requestDTO);
         Task<Response<UserDTO>> SetEmail(Guid id, string code);
     }
 }

@@ -5,7 +5,7 @@
         public static class Common
         {
             public const string UnprocessableEntity = "Invalid entity or business request";
-            public const string InvalidField = "Invalid field";
+            public const string FieldInvalid = "Invalid field";
             public const string NotFound = "Not found";
         }
 

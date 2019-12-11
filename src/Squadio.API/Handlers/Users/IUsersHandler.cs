@@ -31,7 +31,7 @@ namespace Squadio.API.Handlers.Users
         Task<Response> ChangePassword(UserChangePasswordDTO dto, ClaimsPrincipal claims);
         Task<Response> ResetPasswordRequest(string email);
         Task<Response<UserDTO>> DeleteUser(Guid id);
-        Task<Response> ChangeEmailRequest(ChangeEmailRequestDTO dto, ClaimsPrincipal claims);
+        Task<Response> ChangeEmailRequest(UserChangeEmailRequestDTO dto, ClaimsPrincipal claims);
         Task<Response<UserDTO>> SetEmail(UserSetEmailDTO dto, ClaimsPrincipal claims);
     }
 }

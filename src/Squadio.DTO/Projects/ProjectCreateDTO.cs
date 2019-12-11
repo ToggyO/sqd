@@ -2,7 +2,7 @@
 
 namespace Squadio.DTO.Projects
 {
-    public class CreateProjectDTO
+    public class ProjectCreateDTO
     {
         public string Name { get; set; }
         public string[] Emails { get; set; }

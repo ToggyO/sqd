@@ -16,7 +16,9 @@ namespace Squadio.DTO.Teams
                         return false;
                     
                     return model[0] == '#';
-                }).WithErrorCode(ErrorCodes.Common.FieldInvalid);
+                })
+                .WithMessage(ErrorMessages.Common.FieldInvalid)
+                .WithErrorCode(ErrorCodes.Common.FieldInvalid);
 
             RuleFor(model => model.Name)
                 .NotEmpty().WithErrorCode(ErrorCodes.Common.FieldInvalid);

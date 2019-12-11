@@ -181,7 +181,7 @@ namespace Squadio.API.Controllers
         /// Send email for confirm new mailbox
         /// </summary>
         [HttpPost("email/request")]
-        public async Task<Response> ChangeEmailRequest([FromBody, Required] ChangeEmailRequestDTO dto)
+        public async Task<Response> ChangeEmailRequest([FromBody, Required] UserChangeEmailRequestDTO dto)
         {
             return await _handler.ChangeEmailRequest(dto, User);
         }

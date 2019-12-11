@@ -3,9 +3,9 @@ using Squadio.Common.Models.Errors;
 
 namespace Squadio.DTO.Projects
 {
-    public class CreateProjectDTOValidator: AbstractValidator<CreateProjectDTO>
+    public class ProjectCreateDTOValidator: AbstractValidator<ProjectCreateDTO>
     {
-        public CreateProjectDTOValidator()
+        public ProjectCreateDTOValidator()
         {
             RuleFor(model => model.ColorHex)
                 .NotEmpty()
@@ -16,7 +16,9 @@ namespace Squadio.DTO.Projects
                         return false;
                     
                     return model[0] == '#';
-                }).WithErrorCode(ErrorCodes.Common.FieldInvalid);
+                })
+                .WithMessage(ErrorMessages.Common.FieldInvalid)
+                .WithErrorCode(ErrorCodes.Common.FieldInvalid);
 
             RuleFor(model => model.Name)
                 .NotEmpty().WithErrorCode(ErrorCodes.Common.FieldInvalid);

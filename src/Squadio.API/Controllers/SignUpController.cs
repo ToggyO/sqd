@@ -189,7 +189,7 @@ namespace Squadio.API.Controllers
         /// </summary>
         [Obsolete]
         [HttpPost("admin/project")]
-        public async Task<Response<SignUpStepDTO<ProjectDTO>>> CreateProjectObsolete([Required, FromBody] CreateProjectDTO dto)
+        public async Task<Response<SignUpStepDTO<ProjectDTO>>> CreateProjectObsolete([Required, FromBody] ProjectCreateDTO dto)
         {
             return await _handler.SignUpProject(dto, User);
         }
@@ -198,7 +198,7 @@ namespace Squadio.API.Controllers
         /// Create new project, send invites (and set current user as admin for this project)
         /// </summary>
         [HttpPost("project")]
-        public async Task<Response<SignUpStepDTO<ProjectDTO>>> CreateProject([Required, FromBody] CreateProjectDTO dto)
+        public async Task<Response<SignUpStepDTO<ProjectDTO>>> CreateProject([Required, FromBody] ProjectCreateDTO dto)
         {
             return await _handler.SignUpProject(dto, User);
         }
