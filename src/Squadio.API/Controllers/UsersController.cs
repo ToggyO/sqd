@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Squadio.API.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
+using Squadio.DTO.Auth;
 using Squadio.DTO.Companies;
 using Squadio.DTO.Projects;
 using Squadio.DTO.Teams;
@@ -181,9 +182,18 @@ namespace Squadio.API.Controllers
         /// Send email for confirm new mailbox
         /// </summary>
         [HttpPost("email/request")]
-        public async Task<Response> ChangeEmailRequest([FromBody, Required] UserChangeEmailRequestDTO dto)
+        public async Task<Response<SimpleTokenDTO>> ChangeEmailRequest([FromBody, Required] UserChangeEmailRequestDTO dto)
         {
             return await _handler.ChangeEmailRequest(dto, User);
+        }
+        
+        /// <summary>
+        /// Send new email for confirm new mailbox
+        /// </summary>
+        [HttpPost("email/send-new-request")]
+        public async Task<Response> SendNewChangeEmailRequest([FromBody, Required] UserSendNewChangeEmailRequestDTO dto)
+        {
+            return await _handler.SendNewChangeEmailRequest(dto, User);
         }
     }
 }

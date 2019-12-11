@@ -13,6 +13,7 @@ using Squadio.DAL.Repository.SignUp;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Users;
+using Squadio.DTO.Auth;
 using Squadio.DTO.Users;
 
 namespace Squadio.BLL.Services.Users.Implementation
@@ -182,34 +183,14 @@ namespace Squadio.BLL.Services.Users.Implementation
             };
         }
 
-        public async Task<Response> ChangeEmailRequest(Guid id, UserChangeEmailRequestDTO dto)
+        public async Task<Response> ChangeEmailRequest(Guid id, string newEmail)
         {
             var user = await _repository.GetById(id);
-            var passwordIsCorrect =
-                await _passwordService.VerifyPassword(
-                    new PasswordModel { Hash = user.Hash, Salt = user.Salt },
-                    dto.Password);
 
-            if (!passwordIsCorrect)
-            {
-                return new SecurityErrorResponse(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Security.AuthDataInvalid,
-                        Message = ErrorMessages.Security.AuthDataInvalid,
-                        Field = ErrorFields.User.Password
-                    }
-                })
-                {
-                    HttpStatusCode = ErrorCodes.UnprocessableEntityCode
-                };
-            }
-
-            var checkEmail = await _repository.GetByEmail(dto.NewEmail);
+            var checkEmail = await _repository.GetByEmail(newEmail);
             if (checkEmail != null)
             {
-                return new BusinessConflictErrorResponse<UserDTO>(new []
+                return new BusinessConflictErrorResponse(new []
                 {
                     new Error
                     {
@@ -219,15 +200,17 @@ namespace Squadio.BLL.Services.Users.Implementation
                 });
             }
 
+            await _changeEmailRepository.ActivateAllRequestsForUser(user.Id);
+
             var code = _codeProvider.GenerateNumberCode();
 
             await _rabbitService.Send(new UserConfirmEmailModel
             {
                Code = code,
-               To = dto.NewEmail
+               To = newEmail
             });
 
-            await _changeEmailRepository.AddRequest(user.Id, code, dto.NewEmail);
+            await _changeEmailRepository.AddRequest(user.Id, code, newEmail);
 
             return new Response();
         }

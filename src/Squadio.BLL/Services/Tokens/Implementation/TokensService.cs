@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Security;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Google.Apis.Auth;
 using Magora.Passwords;
@@ -51,7 +52,29 @@ namespace Squadio.BLL.Services.Tokens.Implementation
             _logger = logger;
             //_googleSettings = googleSettings;
         }
-        
+
+        public async Task<Response<SimpleTokenDTO>> CreateCustomToken(int lifeTime, string tokenName, Dictionary<string, string> claims = null)
+        {
+            var token = await _tokenFactory.CreateCustomToken(lifeTime, tokenName, claims);
+            return new Response<SimpleTokenDTO>
+            {
+                Data = token
+            };
+        }
+
+        public async Task<Response> ValidateCustomToken(string token, string tokenName)
+        {
+            var valid = _tokenFactory.ValidateCustomToken(token, tokenName);
+            if(valid == TokenStatus.Valid)
+                return new Response();
+            
+            return new PermissionDeniedErrorResponse(new Error
+            {
+                Code = ErrorCodes.Security.TokenInvalid,
+                Message = ErrorMessages.Security.TokenInvalid
+            });
+        }
+
         public async Task<Response<AuthInfoDTO>> Authenticate(CredentialsDTO dto)
         {
             var user = await _usersRepository.GetByEmail(dto.Email);

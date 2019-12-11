@@ -145,9 +145,38 @@ namespace Squadio.API.Handlers.Users.Implementation
             return result;
         }
 
-        public async Task<Response> ChangeEmailRequest(UserChangeEmailRequestDTO dto, ClaimsPrincipal claims)
+        public async Task<Response<SimpleTokenDTO>> ChangeEmailRequest(UserChangeEmailRequestDTO dto, ClaimsPrincipal claims)
         {
-            var result = await _service.ChangeEmailRequest(claims.GetUserId(), dto);
+            var userResponse = await _provider.GetById(claims.GetUserId());
+            if (!userResponse.IsSuccess)
+                return ErrorResponse.MapResponse<SimpleTokenDTO, UserDTO>(userResponse);
+            
+            var oldPasswordCorrectResponse = await _tokensService.Authenticate(new CredentialsDTO
+            {
+                Email = userResponse.Data.Email,
+                Password = dto.Password
+            });
+
+            if (!oldPasswordCorrectResponse.IsSuccess)
+                return ErrorResponse.MapResponse<SimpleTokenDTO, AuthInfoDTO>(oldPasswordCorrectResponse);
+            
+            var sendConfirmationResponse = await _service.ChangeEmailRequest(claims.GetUserId(), dto.NewEmail);
+            if(!sendConfirmationResponse.IsSuccess)
+                return ErrorResponse.MapResponse<SimpleTokenDTO>(sendConfirmationResponse);
+
+            var tokenResponse = await _tokensService.CreateCustomToken(5
+                , "ChangeEmail"
+                , new Dictionary<string, string> {{"email", dto.NewEmail}});
+            return tokenResponse;
+        }
+
+        public async Task<Response> SendNewChangeEmailRequest(UserSendNewChangeEmailRequestDTO dto, ClaimsPrincipal claims)
+        {
+            var validateResponse = await _tokensService.ValidateCustomToken(dto.Token, "ChangeEmail");
+            if (!validateResponse.IsSuccess)
+                return validateResponse;
+
+            var result = await _service.ChangeEmailRequest(claims.GetUserId(), dto.NewEmail);
             return result;
         }
 

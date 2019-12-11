@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,7 +22,53 @@ namespace Squadio.BLL.Factories.Implementation
         {
             _settings = settings;
         }
-        
+
+        public Task<SimpleTokenDTO> CreateCustomToken(int lifeTime, string tokenName, Dictionary<string, string> claims = null)
+        {
+            var exp = DateTime.UtcNow;
+            exp = exp.AddMinutes(lifeTime);
+            var tempClaims = new List<Claim>();
+            if (claims != null)
+            {
+                tempClaims.AddRange(claims.Select(claim => new Claim(claim.Key, claim.Value)));
+            }
+            var upperTokenName = tokenName.ToUpper();
+            var token = new JwtSecurityToken(
+                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.Value.PublicKey)),
+                    SecurityAlgorithms.HmacSha256),
+                issuer: upperTokenName,
+                audience: upperTokenName,
+                expires: exp,
+                claims: tempClaims);
+            
+            var result = new SimpleTokenDTO
+            {
+                Token = EncodeToken(token)
+            };
+            
+            return Task.FromResult(result);
+        }
+
+        public TokenStatus ValidateCustomToken(string token, string tokenName)
+        {
+            try
+            {
+                var principal = new JwtSecurityTokenHandler().ValidateToken(token, GetCustomTokenValidationParameters(tokenName), out var securityToken);
+                
+                if (DateTime.UtcNow > securityToken.ValidTo)
+                    return TokenStatus.Expired;
+
+                var isValid = (securityToken is JwtSecurityToken jwtSecurityToken &&
+                               jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase));
+                
+                return isValid ? TokenStatus.Valid : TokenStatus.Invalid;
+            }
+            catch
+            {
+                return TokenStatus.Invalid;
+            }
+        }
+
         public Task<TokenDTO> CreateToken(UserModel user)
         {
             var now = DateTime.UtcNow;
@@ -103,6 +151,23 @@ namespace Squadio.BLL.Factories.Implementation
                 
                 ValidateAudience = true,
                 ValidAudience = _settings.Value.AUDIENCE,
+                
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(_settings.Value.PublicKeyBytes),
+                
+                ValidateLifetime = false
+            };
+        }
+        private TokenValidationParameters GetCustomTokenValidationParameters(string tokenName)
+        {
+            var upperTokenName = tokenName.ToUpper();
+            return new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = upperTokenName,
+                
+                ValidateAudience = true,
+                ValidAudience = upperTokenName,
                 
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(_settings.Value.PublicKeyBytes),

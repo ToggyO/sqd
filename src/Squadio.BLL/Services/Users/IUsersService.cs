@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Squadio.Common.Models.Responses;
 using Squadio.Domain.Models.Users;
+using Squadio.DTO.Auth;
 using Squadio.DTO.Users;
 
 namespace Squadio.BLL.Services.Users
@@ -14,7 +15,7 @@ namespace Squadio.BLL.Services.Users
         Task<Response<UserDTO>> CreateUser(UserCreateDTO dto);
         Task<Response<UserDTO>> UpdateUser(Guid id, UserUpdateDTO dto);
         Task<Response<UserDTO>> DeleteUser(Guid id);
-        Task<Response> ChangeEmailRequest(Guid id, UserChangeEmailRequestDTO requestDTO);
+        Task<Response> ChangeEmailRequest(Guid id, string newEmail);
         Task<Response<UserDTO>> SetEmail(Guid id, string code);
     }
 }

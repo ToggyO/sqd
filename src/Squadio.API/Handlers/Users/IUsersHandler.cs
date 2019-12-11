@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
+using Squadio.DTO.Auth;
 using Squadio.DTO.Companies;
 using Squadio.DTO.Projects;
 using Squadio.DTO.Teams;
@@ -31,7 +32,8 @@ namespace Squadio.API.Handlers.Users
         Task<Response> ChangePassword(UserChangePasswordDTO dto, ClaimsPrincipal claims);
         Task<Response> ResetPasswordRequest(string email);
         Task<Response<UserDTO>> DeleteUser(Guid id);
-        Task<Response> ChangeEmailRequest(UserChangeEmailRequestDTO dto, ClaimsPrincipal claims);
+        Task<Response<SimpleTokenDTO>> ChangeEmailRequest(UserChangeEmailRequestDTO dto, ClaimsPrincipal claims);
+        Task<Response> SendNewChangeEmailRequest(UserSendNewChangeEmailRequestDTO dto, ClaimsPrincipal claims);
         Task<Response<UserDTO>> SetEmail(UserSetEmailDTO dto, ClaimsPrincipal claims);
     }
 }

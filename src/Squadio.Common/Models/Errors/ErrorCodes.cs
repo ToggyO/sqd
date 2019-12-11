@@ -39,6 +39,7 @@ namespace Squadio.Common.Models.Errors
             public const string Forbidden = "forbidden";
             public const string FieldAccessToken = "accessToken";
             public const string AuthDataInvalid = "sec.auth_data_invalid";
+            public const string TokenInvalid = "sec.token_invalid";
             public const string AccessTokenInvalid = "sec.access_token_invalid";
             public const string AccessTokenExpired = "sec.access_token_expired";
             public const string GoogleTokenInvalid = "sec.google_token_invalid";

@@ -30,6 +30,45 @@ namespace Squadio.Common.Models.Responses
     {
         public string Message { get; set; }
         public IEnumerable<Error> Errors { get; set; } = new Error[0];
+        public static ErrorResponse<TRes> MapResponse<TRes>(Response inputResponse) where TRes : class
+        {
+            if(!(inputResponse is ErrorResponse response))
+                return new ErrorResponse<TRes>();
+            
+            return new ErrorResponse<TRes>
+            {
+                Code = response.Code,
+                Message = response.Message,
+                Errors = response.Errors,
+                HttpStatusCode = response.HttpStatusCode,
+            };
+        }
+        public static ErrorResponse<TRes> MapResponse<TRes, TIn>(Response inputResponse) where TRes : class where TIn : class
+        {
+            if(!(inputResponse is ErrorResponse<TIn> response))
+                return new ErrorResponse<TRes>();
+            
+            return new ErrorResponse<TRes>
+            {
+                Code = response.Code,
+                Message = response.Message,
+                Errors = response.Errors,
+                HttpStatusCode = response.HttpStatusCode,
+            };
+        }
+        public static ErrorResponse<TRes> MapResponse<TRes, TIn>(Response<TIn> inputResponse) where TRes : class where TIn : class
+        {
+            if(!(inputResponse is ErrorResponse<TIn> response))
+                return new ErrorResponse<TRes>();
+            
+            return new ErrorResponse<TRes>
+            {
+                Code = response.Code,
+                Message = response.Message,
+                Errors = response.Errors,
+                HttpStatusCode = response.HttpStatusCode,
+            };
+        }
     }
     
     public class Error
