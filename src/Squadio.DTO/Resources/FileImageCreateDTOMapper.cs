@@ -26,7 +26,6 @@ namespace Squadio.DTO.Resources
             return new ResourceImageCreateDTO
             {
                 ContentType = item.File.ContentType,
-                FileName = item.File.FileName,
                 Bytes = bytes
             };
         }
