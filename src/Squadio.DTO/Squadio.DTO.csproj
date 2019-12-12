@@ -91,6 +91,9 @@
       <Compile Update="Resources\FileCreateDTOMapper.cs">
         <DependentUpon>ResourceCreateDTO.cs</DependentUpon>
       </Compile>
+      <Compile Update="Resources\ResourceImageViewModelMapper.cs">
+        <DependentUpon>ResourceImageDTO.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

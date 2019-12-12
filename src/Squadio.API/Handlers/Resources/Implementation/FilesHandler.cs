@@ -29,10 +29,12 @@ namespace Squadio.API.Handlers.Resources.Implementation
 
         public async Task<FileContentResult> GetFile(string group, string filename, string resolution = null)
         {
-            var resource = await _resourceProvider.GetModelByFileName(filename);
+            var resourceResponse = await _resourceProvider.GetModelByFileName(filename);
 
-            if (resource == null)
+            if (!resourceResponse.IsSuccess)
                 throw new Exception("File not exist in DB");
+
+            var resource = resourceResponse.Data;
             
             try
             {

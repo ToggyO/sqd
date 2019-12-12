@@ -30,5 +30,12 @@
             public const string Id = "id";
             public const string Name = "name";
         }
+
+
+        public static class Resource
+        {
+            public const string FileName = "filename";
+            //public const string Path = "path";
+        }
     }
 }

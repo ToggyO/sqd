@@ -12,6 +12,7 @@ using Squadio.Common.Models.Responses;
 using Squadio.DTO.Auth;
 using Squadio.DTO.Companies;
 using Squadio.DTO.Projects;
+using Squadio.DTO.Resources;
 using Squadio.DTO.Teams;
 using Squadio.DTO.Users;
 
@@ -194,6 +195,15 @@ namespace Squadio.API.Controllers
         public async Task<Response> SendNewChangeEmailRequest([FromBody, Required] UserSendNewChangeEmailRequestDTO dto)
         {
             return await _handler.SendNewChangeEmailRequest(dto, User);
+        }
+        
+        /// <summary>
+        /// Save new avatar for current user
+        /// </summary>
+        [HttpPost("avatar")]
+        public async Task<Response<ResourceImageDTO>> SaveNewAvatar([FromForm, Required] FileImageCreateDTO dto)
+        {
+            return await _handler.SaveNewAvatar(dto, User);
         }
     }
 }

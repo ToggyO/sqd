@@ -3,16 +3,21 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Squadio.Common.Settings;
 
 namespace Squadio.BLL.Services.Files.Implementation
 {
     public class FilesService : IFilesService
     {
         private readonly ILogger<FilesService> _logger;
+        private readonly IOptions<FileRootDirectoryModel> _options;
         
-        public FilesService(ILogger<FilesService> logger)
+        public FilesService(ILogger<FilesService> logger
+            , IOptions<FileRootDirectoryModel> options)
         {
             _logger = logger;
+            _options = options;
         }
         
         public async Task UploadImageFile(string group, string resolution, string filename, byte[] data)
@@ -29,8 +34,7 @@ namespace Squadio.BLL.Services.Files.Implementation
         
         private string GenerateFilePath(string group, string filename)
         {
-            // TODO: Add path across settings
-            var path = "C:/Users/karpov/Source/repos/MaFiles/Squadio";
+            var path = _options.Value.Path;
 
             if (string.IsNullOrEmpty(path))
             {
@@ -67,8 +71,7 @@ namespace Squadio.BLL.Services.Files.Implementation
 
         private string GenerateImagePath(string group, string resolution, string filename)
         {
-            // TODO: Add path across settings
-            var path = "C:/Users/karpov/Source/repos/MaFiles/Squadio";
+            var path = _options.Value.Path;
 
             if (string.IsNullOrEmpty(path))
             {

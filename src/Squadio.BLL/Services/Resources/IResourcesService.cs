@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Squadio.Common.Enums;
+using Squadio.Common.Models.Responses;
 using Squadio.DTO.Resources;
 
 namespace Squadio.BLL.Services.Resources
 {
     public interface IResourcesService
     {
-        Task CreateResource(Guid userId, FileGroup group, ResourceCreateDTO model);
-        Task CreateImageResource(Guid userId, FileGroup group, ResourceImageCreateDTO model);
+        Task<Response<ResourceDTO>> CreateResource(Guid userId, FileGroup group, FileCreateDTO dto);
+        Task<Response<ResourceDTO>> CreateResource(Guid userId, FileGroup group, ResourceCreateDTO dto);
+        Task<Response<ResourceImageDTO>> CreateResource(Guid userId, FileGroup group, FileImageCreateDTO dto);
+        Task<Response<ResourceImageDTO>> CreateResource(Guid userId, FileGroup group, ResourceImageCreateDTO dto);
     }
 }

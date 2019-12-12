@@ -6,14 +6,17 @@ using Squadio.BLL.Providers.Companies;
 using Squadio.BLL.Providers.Projects;
 using Squadio.BLL.Providers.Teams;
 using Squadio.BLL.Providers.Users;
+using Squadio.BLL.Services.Resources;
 using Squadio.BLL.Services.Tokens;
 using Squadio.BLL.Services.Users;
+using Squadio.Common.Enums;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Auth;
 using Squadio.DTO.Companies;
 using Squadio.DTO.Projects;
+using Squadio.DTO.Resources;
 using Squadio.DTO.Teams;
 using Squadio.DTO.Users;
 
@@ -27,12 +30,14 @@ namespace Squadio.API.Handlers.Users.Implementation
         private readonly IProjectsProvider _projectsProvider;
         private readonly IUsersService _service;
         private readonly ITokensService _tokensService;
+        private readonly IResourcesService _resourcesService;
         public UsersHandler(IUsersProvider provider
             , ICompaniesProvider companyProvider
             , ITeamsProvider teamsProvider
             , IProjectsProvider projectsProvider
             , IUsersService service
-            , ITokensService tokensService)
+            , ITokensService tokensService
+            , IResourcesService resourcesService)
         {
             _service = service;
             _companyProvider = companyProvider;
@@ -40,6 +45,7 @@ namespace Squadio.API.Handlers.Users.Implementation
             _projectsProvider = projectsProvider;
             _provider = provider;
             _tokensService = tokensService;
+            _resourcesService = resourcesService;
         }
 
         public async Task<Response<PageModel<UserDTO>>> GetPage(PageModel model)
@@ -183,6 +189,12 @@ namespace Squadio.API.Handlers.Users.Implementation
         public async Task<Response<UserDTO>> SetEmail(UserSetEmailDTO dto, ClaimsPrincipal claims)
         {
             var result = await _service.SetEmail(claims.GetUserId(), dto.Code);
+            return result;
+        }
+
+        public async Task<Response<ResourceImageDTO>> SaveNewAvatar(FileImageCreateDTO dto, ClaimsPrincipal claims)
+        {
+            var result = await _resourcesService.CreateResource(claims.GetUserId(), FileGroup.Avatar, dto);
             return result;
         }
     }

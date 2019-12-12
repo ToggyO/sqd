@@ -18,15 +18,8 @@ namespace Squadio.DTO.Resources
         {
             return new ResourceDTO
             {
-                OriginalUrl = item.OriginalUrl,
-                FormatUrls = new Dictionary<string, string>
-                {
-                    {"140", item.Url140},
-                    {"360", item.Url360},
-                    {"480", item.Url480},
-                    {"720", item.Url720},
-                    {"1080", item.Url1080},
-                },
+                ResourceId = item.Id,
+                OriginalUrl = item.OriginalUrl
             };
         }
     }
