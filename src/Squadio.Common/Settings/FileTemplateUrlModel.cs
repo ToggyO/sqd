@@ -2,6 +2,7 @@
 {
     public class FileTemplateUrlModel
     {
-        public string Template { get; set; }
+        public string ImageTemplate { get; set; }
+        public string FileTemplate { get; set; }
     }
 }

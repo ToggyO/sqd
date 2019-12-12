@@ -23,18 +23,27 @@ namespace Squadio.BLL.Providers.Resources.Implementation
 
         public async Task<Response<ResourceViewModel>> GetViewModelByFileName(string filename)
         {
-            var resource = await _repository.GetByFilename(filename);
-            if (resource == null)
+            var resourceResponse = await GetModelByFileName(filename);
+            if (!resourceResponse.IsSuccess)
             {
-                return new BusinessConflictErrorResponse<ResourceViewModel>(new Error
-                {
-                    Code = ErrorCodes.Common.NotFound,
-                    Message = ErrorMessages.Common.NotFound,
-                    Field = ErrorFields.Resource.FileName
-                });
+                return ErrorResponse.MapResponse<ResourceViewModel, ResourceModel>(resourceResponse);
             }
-            var viewModel = new ResourceViewModel(resource, _options.Value.Template);
+            var viewModel = new ResourceViewModel(resourceResponse.Data, _options.Value.FileTemplate);
             return new Response<ResourceViewModel>
+            {
+                Data = viewModel
+            };
+        }
+
+        public async Task<Response<ResourceImageViewModel>> GetImageViewModelByFileName(string filename)
+        {
+            var resourceResponse = await GetModelByFileName(filename);
+            if (!resourceResponse.IsSuccess)
+            {
+                return ErrorResponse.MapResponse<ResourceImageViewModel, ResourceModel>(resourceResponse);
+            }
+            var viewModel = new ResourceImageViewModel(resourceResponse.Data, _options.Value.ImageTemplate);
+            return new Response<ResourceImageViewModel>
             {
                 Data = viewModel
             };

@@ -5,7 +5,7 @@ using Squadio.Common.Models.Resources;
 
 namespace Squadio.DTO.Resources
 {
-    public class ResourceImageViewModelMapper: IMapper<ResourceViewModel, ResourceImageDTO>
+    public class ResourceImageViewModelMapper: IMapper<ResourceImageViewModel, ResourceImageDTO>
     {
         private readonly IMapper _mapper;
 
@@ -14,7 +14,7 @@ namespace Squadio.DTO.Resources
             _mapper = mapper;
         }
     
-        public ResourceImageDTO Map(ResourceViewModel item)
+        public ResourceImageDTO Map(ResourceImageViewModel item)
         {
             return new ResourceImageDTO
             {
@@ -32,7 +32,7 @@ namespace Squadio.DTO.Resources
         }
     }
     
-    public class EnumerableResourceImageViewModelMapper : IMapper<IEnumerable<ResourceViewModel>, IEnumerable<ResourceImageDTO>>
+    public class EnumerableResourceImageViewModelMapper : IMapper<IEnumerable<ResourceImageViewModel>, IEnumerable<ResourceImageDTO>>
     {
         private readonly IMapper _mapper;
 
@@ -41,9 +41,9 @@ namespace Squadio.DTO.Resources
             _mapper = mapper;
         }
     
-        public IEnumerable<ResourceImageDTO> Map(IEnumerable<ResourceViewModel> items)
+        public IEnumerable<ResourceImageDTO> Map(IEnumerable<ResourceImageViewModel> items)
         {
-            var result = items.Select(x => _mapper.Map<ResourceViewModel, ResourceImageDTO>(x));
+            var result = items.Select(x => _mapper.Map<ResourceImageViewModel, ResourceImageDTO>(x));
             return result;
         }
     }

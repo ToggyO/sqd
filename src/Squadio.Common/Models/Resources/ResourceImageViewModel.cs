@@ -3,7 +3,7 @@ using Squadio.Domain.Models.Resources;
 
 namespace Squadio.Common.Models.Resources
 {
-    public class ResourceViewModel
+    public class ResourceImageViewModel
     {
         public Guid Id { get; set; }
         private string _group;
@@ -23,25 +23,25 @@ namespace Squadio.Common.Models.Resources
         private string _templateUrl;
         /// <summary>
         /// Template for URLs to Files with all allowed variables
-        /// <para>Example: https://127.0.0.1/api/files/{Group}/{Filename}</para>
+        /// <para>Example: https://127.0.0.1/api/files/{Group}/{Resolution}/{Filename}</para>
         /// </summary>
         public string TemplateUrl
         {
             get => _templateUrl;
             set { _templateUrl = value; SetTemplate(_templateUrl); }
         }
-        private const string _defaultTemplateUrl = "http://localhost:5005/api/files/{Group}/{Filename}";
+        private const string _defaultTemplateUrl = "http://localhost:5005/api/files/{Group}/{Resolution}/{Filename}";
 
-        public ResourceViewModel()
+        public ResourceImageViewModel()
         {
             SetTemplate(null);
         }
 
         /// <summary>
         /// Constructor with setting URLs by specified template
-        /// <para>Example: https://127.0.0.1/api/files/{Group}/{Filename}</para>
+        /// <para>Example: https://127.0.0.1/api/files/{Group}/{Resolution}/{Filename}</para>
         /// </summary>
-        public ResourceViewModel(ResourceModel resource, string templateUrl = null)
+        public ResourceImageViewModel(ResourceModel resource, string templateUrl = null)
         {
             if (resource != null)
             {
@@ -53,10 +53,15 @@ namespace Squadio.Common.Models.Resources
         }
 
         public string OriginalUrl { get; private set; }
+        public string Url140 { get; private set; }
+        public string Url360 { get; private set; }
+        public string Url480 { get; private set; }
+        public string Url720 { get; private set; }
+        public string Url1080 { get; private set; }
 
         /// <summary>
         /// Set URLs by specified template
-        /// <para>Example: https://127.0.0.1/api/files/{Group}/{Filename}</para>
+        /// <para>Example: https://127.0.0.1/api/files/{Group}/{Resolution}/{Filename}</para>
         /// </summary>
         public void SetTemplate(string templateUrl)
         {
@@ -75,7 +80,14 @@ namespace Squadio.Common.Models.Resources
             if (_group != null && _filename != null)
             {
                 var templateGroup = _templateUrl.Replace("{Group}", _group);
-                OriginalUrl = templateGroup.Replace("{Filename}", _filename);
+                var templateFileName = templateGroup.Replace("{Filename}", _filename);
+
+                OriginalUrl = templateFileName.Replace("{Resolution}", "original");
+                Url140 = templateFileName.Replace("{Resolution}", "140");
+                Url360 = templateFileName.Replace("{Resolution}", "360");
+                Url480 = templateFileName.Replace("{Resolution}", "480");
+                Url720 = templateFileName.Replace("{Resolution}", "720");
+                Url1080 = templateFileName.Replace("{Resolution}", "1080");
             }
             else
             {

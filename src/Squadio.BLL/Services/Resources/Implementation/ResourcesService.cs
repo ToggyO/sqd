@@ -36,7 +36,7 @@ namespace Squadio.BLL.Services.Resources.Implementation
         {
             var resourceCreateDTO = _mapper.Map<FileCreateDTO, ResourceCreateDTO>(dto);
             var resource = await CreateResource(userId, group.ToString().ToLower(), resourceCreateDTO);
-            var viewModel = new ResourceViewModel(resource, _options.Value.Template);
+            var viewModel = new ResourceViewModel(resource, _options.Value.FileTemplate);
             var result = _mapper.Map<ResourceViewModel, ResourceDTO>(viewModel);
             return new Response<ResourceDTO>
             {
@@ -47,7 +47,7 @@ namespace Squadio.BLL.Services.Resources.Implementation
         public async Task<Response<ResourceDTO>> CreateResource(Guid userId, FileGroup group, ResourceCreateDTO dto)
         {
             var resource = await CreateResource(userId, group.ToString().ToLower(), dto);
-            var viewModel = new ResourceViewModel(resource, _options.Value.Template);
+            var viewModel = new ResourceViewModel(resource, _options.Value.FileTemplate);
             var result = _mapper.Map<ResourceViewModel, ResourceDTO>(viewModel);
             return new Response<ResourceDTO>
             {
@@ -59,8 +59,8 @@ namespace Squadio.BLL.Services.Resources.Implementation
         {
             var resourceImageCreateDTO = _mapper.Map<FileImageCreateDTO, ResourceImageCreateDTO>(dto);
             var resource = await CreateResource(userId, group.ToString().ToLower(), resourceImageCreateDTO);
-            var viewModel = new ResourceViewModel(resource, _options.Value.Template);
-            var result = _mapper.Map<ResourceViewModel, ResourceImageDTO>(viewModel);
+            var viewModel = new ResourceImageViewModel(resource, _options.Value.ImageTemplate);
+            var result = _mapper.Map<ResourceImageViewModel, ResourceImageDTO>(viewModel);
             return new Response<ResourceImageDTO>
             {
                 Data = result
@@ -70,8 +70,8 @@ namespace Squadio.BLL.Services.Resources.Implementation
         public async Task<Response<ResourceImageDTO>> CreateResource(Guid userId, FileGroup group, ResourceImageCreateDTO dto)
         {
             var resource = await CreateResource(userId, group.ToString().ToLower(), dto);
-            var viewModel = new ResourceViewModel(resource, _options.Value.Template);
-            var result = _mapper.Map<ResourceViewModel, ResourceImageDTO>(viewModel);
+            var viewModel = new ResourceImageViewModel(resource, _options.Value.ImageTemplate);
+            var result = _mapper.Map<ResourceImageViewModel, ResourceImageDTO>(viewModel);
             return new Response<ResourceImageDTO>
             {
                 Data = result
