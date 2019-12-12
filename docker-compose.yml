@@ -31,6 +31,9 @@ services:
       - AppSettings:APISettings:AUDIENCE=${AppSettings_APISettings_AUDIENCE}
       - AppSettings:APISettings:RefreshTokenExpiresInMinutes=${AppSettings_APISettings_RefreshTokenExpiresInMinutes}
       - AppSettings:APISettings:AccessTokenExpiresInMinutes=${AppSettings_APISettings_AccessTokenExpiresInMinutes}
+      - FileTemplateUrl:ImageTemplate=https://squad.api.magora.work/api/files/{Group}/{Resolution}/{Filename}
+      - FileTemplateUrl:FileTemplate=https://squad.api.magora.work/api/files/{Group}/{Filename}
+      - FileRootDirectory:Path=/var/www/squadio/backend/files
       #
       - GoogleOAuth:ClientId=${GoogleOAuth_ClientId}
       - GoogleOAuth:ClientSecret=${GoogleOAuth_ClientSecret}
@@ -40,6 +43,8 @@ services:
       - RabbitConnection:Port=${RabbitConnection_Port}
       - RabbitConnection:Username=${RabbitConnection_Username}
       - RabbitConnection:Password=${RabbitConnection_Password}
+    volumes:
+      - ../.files:/var/www/squadio/backend/files
   
   email-sender-dev:
     container_name: squadio-email-sender-dev
