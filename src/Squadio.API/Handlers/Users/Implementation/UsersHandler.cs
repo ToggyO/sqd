@@ -205,5 +205,19 @@ namespace Squadio.API.Handlers.Users.Implementation
             }
             return savingResourceResponse;
         }
+
+        public async Task<Response<ResourceImageDTO>> SaveNewAvatar(ResourceImageCreateDTO dto, ClaimsPrincipal claims)
+        {
+            var savingResourceResponse = await _resourcesService.CreateResource(claims.GetUserId(), FileGroup.Avatar, dto);
+            if (savingResourceResponse.IsSuccess)
+            {
+                var savingAvatarResponse = await _service.SaveNewAvatar(claims.GetUserId(), savingResourceResponse.Data.ResourceId);
+                if (!savingAvatarResponse.IsSuccess)
+                {
+                    return ErrorResponse.MapResponse<ResourceImageDTO, UserDTO>(savingAvatarResponse);
+                }
+            }
+            return savingResourceResponse;
+        }
     }
 }
