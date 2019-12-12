@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Squadio.Domain.Models.Resources;
 using Squadio.Domain.Models.Roles;
 
 namespace Squadio.Domain.Models.Users
@@ -15,5 +16,8 @@ namespace Squadio.Domain.Models.Users
         public string Salt { get; set; }
         public Guid RoleId { get; set; }
         public RoleModel Role { get; set; }
+        
+        public Guid? AvatarId { get; set; }
+        public ResourceModel Avatar { get; set; }
     }
 }

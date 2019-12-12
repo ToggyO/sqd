@@ -194,8 +194,16 @@ namespace Squadio.API.Handlers.Users.Implementation
 
         public async Task<Response<ResourceImageDTO>> SaveNewAvatar(FileImageCreateDTO dto, ClaimsPrincipal claims)
         {
-            var result = await _resourcesService.CreateResource(claims.GetUserId(), FileGroup.Avatar, dto);
-            return result;
+            var savingResourceResponse = await _resourcesService.CreateResource(claims.GetUserId(), FileGroup.Avatar, dto);
+            if (savingResourceResponse.IsSuccess)
+            {
+                var savingAvatarResponse = await _service.SaveNewAvatar(claims.GetUserId(), savingResourceResponse.Data.ResourceId);
+                if (!savingAvatarResponse.IsSuccess)
+                {
+                    return ErrorResponse.MapResponse<ResourceImageDTO, UserDTO>(savingAvatarResponse);
+                }
+            }
+            return savingResourceResponse;
         }
     }
 }

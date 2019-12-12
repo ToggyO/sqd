@@ -2,26 +2,39 @@
 using System.Linq;
 using Squadio.Domain.Models.Users;
 using Mapper;
+using Microsoft.Extensions.Options;
+using Squadio.Common.Models.Resources;
+using Squadio.Common.Settings;
+using Squadio.DTO.Resources;
 
 namespace Squadio.DTO.Users
 {
     public class UserModelMapper : IMapper<UserModel, UserDTO>
     {
         private readonly IMapper _mapper;
+        private readonly IOptions<FileTemplateUrlModel> _options;
 
-        public UserModelMapper(IMapper mapper)
+        public UserModelMapper(IMapper mapper
+            , IOptions<FileTemplateUrlModel> options)
         {
             _mapper = mapper;
+            _options = options;
         }
     
         public UserDTO Map(UserModel item)
         {
-            return new UserDTO
+            var result = new UserDTO
             {
                 Id = item.Id,
                 Email = item.Email,
                 Name = item.Name
             };
+            if (item.Avatar != null)
+            {
+                var viewModel = new ResourceImageViewModel(item.Avatar, _options.Value.ImageTemplate);
+                result.Avatar = _mapper.Map<ResourceImageViewModel, ResourceImageDTO>(viewModel);
+            }
+            return result;
         }
     }
     

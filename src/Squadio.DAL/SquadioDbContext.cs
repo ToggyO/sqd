@@ -48,6 +48,9 @@ namespace Squadio.DAL
                 item.HasKey(c => c.Id);
                 item.HasIndex(p => p.Email)
                     .IsUnique();
+                item.HasOne(x => x.Avatar)
+                    .WithOne()
+                    .OnDelete(DeleteBehavior.SetNull);
                 item.Property(x => x.RoleId)
                     .HasDefaultValue(RoleGuid.User);
                 item.HasOne(p => p.Role)
