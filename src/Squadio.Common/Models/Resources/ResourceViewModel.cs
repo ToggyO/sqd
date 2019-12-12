@@ -1,5 +1,4 @@
-﻿using System;
-using Squadio.Domain.Models.Resources;
+﻿using Squadio.Domain.Models.Resources;
 
 namespace Squadio.Common.Models.Resources
 {
@@ -22,14 +21,14 @@ namespace Squadio.Common.Models.Resources
         private string _templateUrl;
         /// <summary>
         /// Template for URLs to Files with all allowed variables
-        /// <para>Example: http://127.0.0.1/{Group}/{Resolution}/{Filename}</para>
+        /// <para>Example: https://127.0.0.1/api/files/{Group}/{Resolution}/{Filename}</para>
         /// </summary>
         public string TemplateUrl
         {
             get => _templateUrl;
             set { _templateUrl = value; SetTemplate(_templateUrl); }
         }
-        private const string _defaultTemplateUrl = "https://localhost:5005/{Group}/{Resolution}/{Filename}";
+        private const string _defaultTemplateUrl = "http://localhost:5005/api/files/{Group}/{Resolution}/{Filename}";
 
         public ResourceViewModel()
         {
@@ -38,9 +37,9 @@ namespace Squadio.Common.Models.Resources
 
         /// <summary>
         /// Constructor with setting URLs by specified template
-        /// <para>Example: http://127.0.0.1/{Group}/{Bucket}/{Resolution}/{Filename}</para>
+        /// <para>Example: https://127.0.0.1/api/files/{Group}/{Resolution}/{Filename}</para>
         /// </summary>
-        public ResourceViewModel(string templateUrl, ResourceModel resource = null)
+        public ResourceViewModel(ResourceModel resource, string templateUrl = null)
         {
             if (resource != null)
             {
@@ -59,7 +58,7 @@ namespace Squadio.Common.Models.Resources
 
         /// <summary>
         /// Set URLs by specified template
-        /// <para>Example: http://127.0.0.1/{Group}/{Date}/{Resolution}/{Filename}</para>
+        /// <para>Example: https://127.0.0.1/api/files/{Group}/{Resolution}/{Filename}</para>
         /// </summary>
         public void SetTemplate(string templateUrl)
         {

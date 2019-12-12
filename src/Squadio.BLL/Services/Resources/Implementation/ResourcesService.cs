@@ -27,19 +27,17 @@ namespace Squadio.BLL.Services.Resources.Implementation
             await CreateResource(userId, group.ToString().ToLower(), model);
         }
 
-        public async Task CreateImageResource(Guid userId, FileGroup group, ResourceCreateDTO model)
+        public async Task CreateImageResource(Guid userId, FileGroup group, ResourceImageCreateDTO model)
         {
             await CreateImageResource(userId, group.ToString().ToLower(), model);
         }
         
         private async Task CreateResource(Guid userId, string group, ResourceCreateDTO model)
         {
-            var id = Guid.NewGuid();
-            var fileName = id.ToString("N");
+            var fileName = Guid.NewGuid().ToString("N");
 
             var resourceEntity = new ResourceModel
             {
-                Id = id,
                 UserId = userId,
                 Group = group,
                 FileName = fileName,
@@ -52,14 +50,12 @@ namespace Squadio.BLL.Services.Resources.Implementation
             await _filesService.UploadFile(group, fileName, model.Bytes);
         }
         
-        private async Task CreateImageResource(Guid userId, string group, ResourceCreateDTO model)
+        private async Task CreateImageResource(Guid userId, string group, ResourceImageCreateDTO model)
         {
-            var id = Guid.NewGuid();
-            var fileName = id.ToString("N");
+            var fileName = Guid.NewGuid().ToString("N");
 
             var resourceEntity = new ResourceModel
             {
-                Id = id,
                 UserId = userId,
                 Group = group,
                 FileName = fileName,

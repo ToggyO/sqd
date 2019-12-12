@@ -92,6 +92,8 @@ namespace Squadio.API
             services.Configure<GoogleSettings>(Configuration.GetSection("GoogleOAuth"));
             services.Configure<RabbitConnectionModel>(Configuration.GetSection("RabbitConnection"));
             services.Configure<ApiSettings>(Configuration.GetSection("AppSettings:APISettings"));
+            services.Configure<FileTemplateUrlModel>(Configuration.GetSection("FileTemplateUrl"));
+            services.Configure<FileRootDirectoryModel>(Configuration.GetSection("FileRootDirectory"));
             
             var columnWriters = new Dictionary<string, ColumnWriterBase>
             {

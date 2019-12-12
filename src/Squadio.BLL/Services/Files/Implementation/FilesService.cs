@@ -30,7 +30,7 @@ namespace Squadio.BLL.Services.Files.Implementation
         private string GenerateFilePath(string group, string filename)
         {
             // TODO: Add path across settings
-            var path = "path to root folder";
+            var path = "C:/Users/karpov/Source/repos/MaFiles/Squadio";
 
             if (string.IsNullOrEmpty(path))
             {
@@ -49,6 +49,10 @@ namespace Squadio.BLL.Services.Files.Implementation
                 _logger.LogError("Group folder for files not specified");
                 throw new Exception("Group folder for files not specified");
             }
+
+            path += group;
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
             
             if(string.IsNullOrEmpty(filename))
             {
@@ -64,7 +68,7 @@ namespace Squadio.BLL.Services.Files.Implementation
         private string GenerateImagePath(string group, string resolution, string filename)
         {
             // TODO: Add path across settings
-            var path = "path to root folder";
+            var path = "C:/Users/karpov/Source/repos/MaFiles/Squadio";
 
             if (string.IsNullOrEmpty(path))
             {
@@ -84,7 +88,7 @@ namespace Squadio.BLL.Services.Files.Implementation
                 throw new Exception("Group folder for files not specified");
             }
 
-            path += "/" + group;
+            path += group;
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
             

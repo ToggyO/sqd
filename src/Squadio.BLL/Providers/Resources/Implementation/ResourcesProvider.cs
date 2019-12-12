@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Squadio.Common.Models.Resources;
 using Squadio.DAL.Repository.Resources;
 using Squadio.Domain.Models.Resources;
 
@@ -12,10 +14,18 @@ namespace Squadio.BLL.Providers.Resources.Implementation
         {
             _repository = repository;
         }
-        
-        public Task<ResourceModel> GetModelByFilename(string filename)
+
+        public async Task<ResourceViewModel> GetViewModelByFileName(string filename)
         {
-            throw new System.NotImplementedException();
+            var resource = await GetModelByFileName(filename);
+            var viewModel = new ResourceViewModel(resource);
+            return viewModel;
+        }
+
+        public async Task<ResourceModel> GetModelByFileName(string filename)
+        {
+            var resource = await _repository.GetByFilename(filename);
+            return resource;
         }
     }
 }
