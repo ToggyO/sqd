@@ -17,13 +17,10 @@ namespace Squadio.API.Controllers
     {
         private const string Version = "0.2.6 b";
         private readonly ILogger<VersionController> _logger;
-        private readonly ISidebarHubHandler _sidebarHubHandler;
 
-        public VersionController(ILogger<VersionController> logger
-            , ISidebarHubHandler sidebarHubHandler)
+        public VersionController(ILogger<VersionController> logger)
         {
             _logger = logger;
-            _sidebarHubHandler = sidebarHubHandler;
         }
 
         /// <summary>
@@ -34,18 +31,6 @@ namespace Squadio.API.Controllers
         public string GetVersion()
         {
             return Version;
-        }
-        
-        [HttpGet("ws/{teamId}")]
-        [AllowAnonymous]
-        public async Task<string> WS([FromRoute] Guid teamId)
-        {
-            await _sidebarHubHandler.BroadcastSidebarChanges(new BroadcastSidebarChangesModel
-            {
-                TeamId = teamId.ToString(),
-                Token = ""
-            });
-            return "Done";
         }
     }
 }
