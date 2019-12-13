@@ -213,7 +213,7 @@ namespace Squadio.API.Controllers
         /// </summary>
         [HttpPost("avatar")]
         [AllowAnonymous]
-        public async Task<Response<ResourceImageDTO>> SaveNewAvatar([FromBody, Required] ResourceImageCreateDTO dto)
+        public async Task<Response<UserDTO>> SaveNewAvatar([FromBody, Required] ResourceImageCreateDTO dto)
         {
             return await _handler.SaveNewAvatar(dto, User);
         }

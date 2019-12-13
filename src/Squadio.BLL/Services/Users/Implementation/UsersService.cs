@@ -259,7 +259,7 @@ namespace Squadio.BLL.Services.Users.Implementation
             };
         }
 
-        public async Task<Response> SaveNewAvatar(Guid userId, Guid resourceId)
+        public async Task<Response<UserDTO>> SaveNewAvatar(Guid userId, Guid resourceId)
         {
             var userEntity = await _repository.GetById(userId);
             if (userEntity == null)

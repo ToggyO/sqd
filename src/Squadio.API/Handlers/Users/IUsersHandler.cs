@@ -36,7 +36,7 @@ namespace Squadio.API.Handlers.Users
         Task<Response<SimpleTokenDTO>> ChangeEmailRequest(UserChangeEmailRequestDTO dto, ClaimsPrincipal claims);
         Task<Response> SendNewChangeEmailRequest(UserSendNewChangeEmailRequestDTO dto, ClaimsPrincipal claims);
         Task<Response<UserDTO>> SetEmail(UserSetEmailDTO dto, ClaimsPrincipal claims);
-        Task<Response<ResourceImageDTO>> SaveNewAvatar(FileImageCreateDTO dto, ClaimsPrincipal claims);
-        Task<Response<ResourceImageDTO>> SaveNewAvatar(ResourceImageCreateDTO dto, ClaimsPrincipal claims);
+        Task<Response<UserDTO>> SaveNewAvatar(FileImageCreateDTO dto, ClaimsPrincipal claims);
+        Task<Response<UserDTO>> SaveNewAvatar(ResourceImageCreateDTO dto, ClaimsPrincipal claims);
     }
 }

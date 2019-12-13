@@ -192,32 +192,24 @@ namespace Squadio.API.Handlers.Users.Implementation
             return result;
         }
 
-        public async Task<Response<ResourceImageDTO>> SaveNewAvatar(FileImageCreateDTO dto, ClaimsPrincipal claims)
+        public async Task<Response<UserDTO>> SaveNewAvatar(FileImageCreateDTO dto, ClaimsPrincipal claims)
         {
             var savingResourceResponse = await _resourcesService.CreateResource(claims.GetUserId(), FileGroup.Avatar, dto);
-            if (savingResourceResponse.IsSuccess)
+            if (!savingResourceResponse.IsSuccess)
             {
-                var savingAvatarResponse = await _service.SaveNewAvatar(claims.GetUserId(), savingResourceResponse.Data.ResourceId);
-                if (!savingAvatarResponse.IsSuccess)
-                {
-                    return ErrorResponse.MapResponse<ResourceImageDTO, UserDTO>(savingAvatarResponse);
-                }
+                return ErrorResponse.MapResponse<UserDTO, ResourceImageDTO>(savingResourceResponse);
             }
-            return savingResourceResponse;
+            return await _service.SaveNewAvatar(claims.GetUserId(), savingResourceResponse.Data.ResourceId);
         }
 
-        public async Task<Response<ResourceImageDTO>> SaveNewAvatar(ResourceImageCreateDTO dto, ClaimsPrincipal claims)
+        public async Task<Response<UserDTO>> SaveNewAvatar(ResourceImageCreateDTO dto, ClaimsPrincipal claims)
         {
             var savingResourceResponse = await _resourcesService.CreateResource(claims.GetUserId(), FileGroup.Avatar, dto);
-            if (savingResourceResponse.IsSuccess)
+            if (!savingResourceResponse.IsSuccess)
             {
-                var savingAvatarResponse = await _service.SaveNewAvatar(claims.GetUserId(), savingResourceResponse.Data.ResourceId);
-                if (!savingAvatarResponse.IsSuccess)
-                {
-                    return ErrorResponse.MapResponse<ResourceImageDTO, UserDTO>(savingAvatarResponse);
-                }
+                return ErrorResponse.MapResponse<UserDTO, ResourceImageDTO>(savingResourceResponse);
             }
-            return savingResourceResponse;
+            return await _service.SaveNewAvatar(claims.GetUserId(), savingResourceResponse.Data.ResourceId);
         }
     }
 }
