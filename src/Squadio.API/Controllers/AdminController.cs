@@ -1,6 +1,8 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Squadio.API.Filters;
 using Squadio.API.Handlers.Admins;
 using Squadio.Common.Enums;
@@ -56,6 +58,35 @@ namespace Squadio.API.Controllers
         public async Task<Response<CompanyDetailDTO>> GetCompanyDetail([FromRoute] Guid id)
         {
             return await _handler.GetCompanyDetail(id);
+        }
+        
+        /// <summary>
+        /// Set new password 
+        /// </summary>
+        [HttpPut("passwords/change")]
+        public async Task<Response> ChangePassword([FromBody] UserChangePasswordDTO dto)
+        {
+            return await _handler.ChangePassword(dto, User);
+        }
+        
+        /// <summary>
+        /// Set new password, using link from "api/passwords/request"
+        /// </summary>
+        [HttpPut("passwords/set")]
+        [AllowAnonymous]
+        public async Task<Response<UserDTO>> SetPassword([FromBody] UserResetPasswordDTO dto)
+        {
+            return await _handler.ResetPassword(dto);
+        }
+        
+        /// <summary>
+        /// Send link to email for restore password
+        /// </summary>
+        [HttpPost("passwords/request")]
+        [AllowAnonymous]
+        public async Task<Response> ResetPasswordRequest([FromBody, Required] UserEmailDTO dto)
+        {
+            return await _handler.ResetPasswordRequest(dto.Email);
         }
     }
 }

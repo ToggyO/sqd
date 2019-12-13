@@ -13,5 +13,6 @@ namespace Squadio.DAL.Repository.Admins
     public interface IAdminsRepository
     {
         Task<PageModel<UserModel>> GetUsers(PageModel pageModel, string search, UserWithCompaniesFilter filter);
+        Task<UserModel> GetUserById(Guid userId);
     }
 }

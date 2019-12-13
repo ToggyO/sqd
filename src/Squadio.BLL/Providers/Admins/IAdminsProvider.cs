@@ -14,5 +14,6 @@ namespace Squadio.BLL.Providers.Admins
         Task<Response<PageModel<CompanyListDTO>>> GetCompaniesPage(PageModel model, CompaniesFilter filter,
             string search);
         Task<Response<CompanyDetailDTO>> GetCompanyDetail(Guid companyId);
+        Task<Response<UserDTO>> GetUserDetail(Guid userId);
     }
 }

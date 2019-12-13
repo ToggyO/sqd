@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
@@ -14,5 +15,8 @@ namespace Squadio.API.Handlers.Admins
         Task<Response<PageModel<CompanyListDTO>>> GetCompaniesPage(PageModel model, CompaniesFilter filter,
             string search);
         Task<Response<CompanyDetailDTO>> GetCompanyDetail(Guid companyId);
+        Task<Response> ChangePassword(UserChangePasswordDTO dto, ClaimsPrincipal claims);
+        Task<Response> ResetPasswordRequest(string email);
+        Task<Response<UserDTO>> ResetPassword(UserResetPasswordDTO dto);
     }
 }

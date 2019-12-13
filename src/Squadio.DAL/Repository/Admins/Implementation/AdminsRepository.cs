@@ -65,5 +65,14 @@ namespace Squadio.DAL.Repository.Admins.Implementation
                 Items = items
             };
         }
+
+        public async Task<UserModel> GetUserById(Guid userId)
+        {
+            var entity = await _context.Users
+                .Include(x => x.Role)
+                .Include(x => x.Avatar)
+                .FirstOrDefaultAsync(x => x.Id == userId);
+            return entity;
+        }
     }
 }

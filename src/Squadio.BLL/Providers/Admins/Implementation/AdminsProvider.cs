@@ -144,5 +144,26 @@ namespace Squadio.BLL.Providers.Admins.Implementation
                 Data = companyDetailDTO
             };
         }
+
+        public async Task<Response<UserDTO>> GetUserDetail(Guid userId)
+        {
+            var userEntity = await _repository.GetUserById(userId);
+            
+            if (userEntity == null)
+            {
+                return new BusinessConflictErrorResponse<UserDTO>(new Error
+                {
+                    Code = ErrorCodes.Common.NotFound,
+                    Message = ErrorCodes.Common.NotFound,
+                    Field = ErrorFields.User.Id
+                });
+            }
+            
+            var result = _mapper.Map<UserModel, UserDTO>(userEntity);
+            return new Response<UserDTO>
+            {
+                Data = result
+            };
+        }
     }
 }
