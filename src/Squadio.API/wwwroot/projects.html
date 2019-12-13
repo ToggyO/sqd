@@ -1,0 +1,279 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Project Sample</title>
+    <style>
+        table { border: 0 }
+        .commslog-data { font-family: Consolas, Courier New, Courier, monospace; }
+        .commslog-server { background-color: red; color: white }
+        .commslog-client { background-color: green; color: white }
+        #MaTable td { padding: 5px 10px; }
+    </style>
+</head>
+<body>
+<h1>WebSocket Project Sample</h1>
+<h3 id="stateLabel">Ready to connect...</h3>
+<table style="width: 100%;" id="MaTable">
+    <thead>
+    <tr>
+        <th>
+            Connection
+        </th>
+        <th>
+            Token
+        </th>
+        <th>
+            Team
+        </th>
+        <th>
+            User
+        </th>
+        <th>
+            Buttons
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>
+            <div>
+                <label for="connectionUrl">WebSocket Server URL:</label>
+                <br>
+                <input id="connectionUrl"  style="width: 100%;"/>
+                <button id="connectButton" type="submit">Connect</button>
+                <button id="closeButton" disabled>Close Socket</button>
+            </div>
+        </td>
+        <td>
+            <div>
+                <label for="Token">Token: </label>
+                <br>
+                <input id="Token" style="width: 100%;"/>
+            </div>
+        </td>
+        <td>
+            <div>
+                <label for="TeamId">TeamId: </label>
+                <br>
+                <input id="TeamId" style="width: 100%;" disabled />
+            </div>
+        </td>
+        <td>
+            <div>
+                <label for="UserId">UserId: </label>
+                <br>
+                <input id="UserId" style="width: 100%;"/>
+            </div>
+        </td>
+        <td>
+            <div>
+                <button id="addButton" type="submit" disabled>Add from group</button>
+                <button id="removeButton">Remove from group</button>
+                <button id="broadcastButton">Broadcast</button>
+            </div>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<h2>Communication Log</h2>
+<table style="width: 800px">
+    <thead>
+    <tr>
+        <td style="width: 100px">From</td>
+        <td style="width: 100px">To</td>
+        <td>Data</td>
+    </tr>
+    </thead>
+    <tbody id="commsLog">
+    </tbody>
+</table>
+
+<script>
+    var connectionUrl = document.getElementById("connectionUrl");
+    var connectButton = document.getElementById("connectButton");
+    var stateLabel = document.getElementById("stateLabel");
+    var teamId = document.getElementById("TeamId");
+    var userId = document.getElementById("UserId");
+    var token = document.getElementById("Token");
+    var addButton = document.getElementById("addButton");
+    var commsLog = document.getElementById("commsLog");
+    var closeButton = document.getElementById("closeButton");
+    var removeButton = document.getElementById("removeButton");
+    var broadcastButton = document.getElementById("broadcastButton");
+    var socket;
+    var scheme = document.location.protocol === "https:" ? "wss" : "ws";
+    var port = document.location.port ? (":" + document.location.port) : "";
+    connectionUrl.value = scheme + "://" + document.location.hostname + port + "/api/ws/projects" ;
+    token.value = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl9pZCI6IjMzMjIxZTRiMTcxNTQwZmFiYTNlNzZlY2ZiZDk3ZGYzIiwidXNlcl9pZCI6ImMzYjBlZWU5OTg4YTQwNWQ5MDkwZDcxNTA3MTA0MGE2Iiwicm9sZV9pZCI6ImJmMjJhM2ZkZjdlYjQ4NzFiODRhNGQ4ZmY1MWQwZjdkIiwiZXhwIjoxNTc1ODYzMzIzLCJpc3MiOiJTcXVhZCIsImF1ZCI6IklPIn0.PxjQUmMf_2pUaUojSz7LKYg56tMAhTOdBqgry1V6eVQ";
+    
+    function updateState() {
+        function disable() {
+            userId.disabled = true;
+            teamId.disabled = true;
+            addButton.disabled = true;
+            closeButton.disabled = true;
+        }
+        function enable() {
+            userId.disabled = false;
+            teamId.disabled = false;
+            addButton.disabled = false;
+            closeButton.disabled = false;
+        }
+        connectionUrl.disabled = true;
+        connectButton.disabled = true;
+        if (!socket) {
+            disable();
+        } else {
+            switch (socket.readyState) {
+                case WebSocket.CLOSED:
+                    stateLabel.innerHTML = "Closed";
+                    disable();
+                    connectionUrl.disabled = false;
+                    connectButton.disabled = false;
+                    break;
+                case WebSocket.CLOSING:
+                    stateLabel.innerHTML = "Closing...";
+                    disable();
+                    break;
+                case WebSocket.CONNECTING:
+                    stateLabel.innerHTML = "Connecting...";
+                    disable();
+                    break;
+                case WebSocket.OPEN:
+                    stateLabel.innerHTML = "Open";
+                    enable();
+                    break;
+                default:
+                    stateLabel.innerHTML = "Unknown WebSocket State: " + htmlEscape(socket.readyState);
+                    disable();
+                    break;
+            }
+        }
+    }
+    
+    closeButton.onclick = function () {
+        console.log("closeButton.onclick");
+        if (!socket || socket.readyState !== WebSocket.OPEN) {
+            alert("socket not connected");
+        }
+        socket.close(1000, "Closing from client");
+    };
+    
+    addButton.onclick = function () {
+        console.log("addButton.onclick");
+        if (!socket || socket.readyState !== WebSocket.OPEN) {
+            alert("socket not connected");
+        }
+        let data = {
+            "arguments":[
+                {
+                    "Token": token.value,
+                    "TeamId": teamId.value,
+                    "UserId": userId.value
+                }],
+            "target":"SubscribeToSidebar",
+            "type":1
+        };
+        socket.send(JSON.stringify(data)+"\x1e");
+    };
+    
+    removeButton.onclick = function () {
+        console.log("removeButton.onclick");
+        if (!socket || socket.readyState !== WebSocket.OPEN) {
+            alert("socket not connected");
+        }
+        let data = {
+            "arguments":[
+                {
+                    "Token": token.value,
+                    "TeamId": teamId.value,
+                    "UserId": userId.value
+                }],
+            "target":"UnsubscribeFromSidebar",
+            "type":1
+        };
+        socket.send(JSON.stringify(data)+"\x1e");
+    };
+
+    broadcastButton.onclick = function () {
+        console.log("broadcastButton.onclick");
+        if (!socket || socket.readyState !== WebSocket.OPEN) {
+            alert("socket not connected");
+        }
+        let data = {
+            "arguments":[
+                {
+                    "Token": token.value,
+                    "TeamId": teamId.value,
+                    "UserId": userId.value
+                }],
+            "target":"BroadcastSidebarChanges",
+            "type":1
+        };
+        socket.send(JSON.stringify(data)+"\x1e");
+    };
+    
+    connectButton.onclick = function() {
+        console.log("connectButton.onclick");
+        stateLabel.innerHTML = "Connecting";
+        socket = new WebSocket(connectionUrl.value+"?access_token="+token.value);
+        socket.onopen = function (event) {
+            updateState();
+            
+            let dataOnOpen = {"protocol":"json","version":1};
+            socket.send(JSON.stringify(dataOnOpen)+"\x1e");
+            
+            commsLog.innerHTML += '<tr>' +
+                '<td colspan="3" class="commslog-data">Connection opened</td>' +
+                '</tr>';
+        };
+        socket.onclose = function (event) {
+            updateState();
+            commsLog.innerHTML += '<tr>' +
+                '<td colspan="3" class="commslog-data">Connection closed. Code: ' + htmlEscape(event.code) + '. Reason: ' + htmlEscape(event.reason) + '</td>' +
+                '</tr>';
+        };
+        socket.onerror = function (event) {
+            console.log("socket.onerror: ", event);
+            updateState();
+        };
+        socket.onmessage = function (event) {
+            let object = JSON.parse(makeCorrect(event.data));
+            if (object.type != 6) {
+                
+                console.log("target: " + object.target);
+                console.log("arguments: ", object.arguments);
+                
+                commsLog.innerHTML += '<tr>' +
+                    '<td class="commslog-server">Server</td>' +
+                    '<td class="commslog-client">Client</td>' +
+                    '<td class="commslog-data">' + htmlEscape(event.data) + '</td></tr>';
+            }
+        };
+    };
+    function htmlEscape(str) {
+        return str.toString()
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
+    function makeCorrect(str) {
+        if(str == null)
+            return null;
+        if(str === "none")
+            return null;
+        if(str === "undefined")
+            return null;
+        let length = str.length;
+        if(length === 0)
+            return null;
+        return str.slice(0, length - 1);
+    }
+</script>
+</body>
+</html>

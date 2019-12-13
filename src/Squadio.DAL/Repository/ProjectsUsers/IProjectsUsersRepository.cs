@@ -11,7 +11,7 @@ namespace Squadio.DAL.Repository.ProjectsUsers
 {
     public interface IProjectsUsersRepository
     {
-        Task<PageModel<ProjectUserModel>> GetUserProjects(Guid userId, PageModel model, Guid? companyId = null, Guid? teamId = null);
+        Task<PageModel<ProjectUserModel>> GetUserProjects(PageModel model, Guid? companyId = null, Guid? teamId = null, Guid? userId = null);
         Task<PageModel<ProjectUserModel>> GetProjectUsers(Guid projectId, PageModel model);
         Task<ProjectUserModel> GetProjectUser(Guid projectId, Guid userId);
         Task<ProjectUserModel> GetFullProjectUser(Guid projectId, Guid userId);

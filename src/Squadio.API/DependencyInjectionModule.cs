@@ -18,6 +18,8 @@ using Squadio.API.Handlers.Teams;
 using Squadio.API.Handlers.Teams.Implementation;
 using Squadio.API.Handlers.Users;
 using Squadio.API.Handlers.Users.Implementation;
+using Squadio.API.WebSocketHubHandlers.Projects;
+using Squadio.API.WebSocketHubHandlers.Projects.Implementation;
 using Squadio.Common.Extensions;
 
 namespace Squadio.API
@@ -39,6 +41,8 @@ namespace Squadio.API
             services.Add<IFilesHandler, FilesHandler>(serviceLifetime);
             
             services.Add<AuthorizationFilter>(serviceLifetime);
+            
+            services.Add<ISidebarHubHandler, SidebarHubHandler>(serviceLifetime);
         }
     }
 }

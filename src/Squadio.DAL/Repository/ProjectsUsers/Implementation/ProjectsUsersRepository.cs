@@ -18,12 +18,12 @@ namespace Squadio.DAL.Repository.ProjectsUsers.Implementation
             _context = context;
         }
 
-        public async Task<PageModel<ProjectUserModel>> GetUserProjects(Guid userId, PageModel model, Guid? companyId = null, Guid? teamId = null)
+        public async Task<PageModel<ProjectUserModel>> GetUserProjects(PageModel model, Guid? companyId = null, Guid? teamId = null, Guid? userId = null)
         {
             var query = _context.ProjectsUsers
                 .Include(x => x.User)
                 .Include(x => x.Project)
-                .Where(x => x.UserId == userId);
+                as IQueryable<ProjectUserModel>;
 
             if (companyId.HasValue)
             {
@@ -33,6 +33,11 @@ namespace Squadio.DAL.Repository.ProjectsUsers.Implementation
             if (teamId.HasValue)
             {
                 query = query.Where(x => x.Project.TeamId == teamId);
+            }
+
+            if (userId.HasValue)
+            {
+                query = query.Where(x => x.UserId == userId);
             }
             
             var total = await query.CountAsync();

@@ -50,7 +50,7 @@ namespace Squadio.BLL.Providers.Projects.Implementation
 
         public async Task<Response<PageModel<ProjectUserDTO>>> GetUserProjects(Guid userId, PageModel model, Guid? companyId = null)
         {
-            var page = await _projectsUsersRepository.GetUserProjects(userId, model);
+            var page = await _projectsUsersRepository.GetUserProjects(model, userId: userId);
             
             var items = page.Items.Select(x => _mapper.Map<ProjectUserModel, ProjectUserDTO>(x)).ToList();
             items.ForEach(x => x.User = null);
@@ -75,6 +75,26 @@ namespace Squadio.BLL.Providers.Projects.Implementation
             
             var items = page.Items.Select(x => _mapper.Map<ProjectUserModel, ProjectUserDTO>(x)).ToList();
             items.ForEach(x => x.Project = null);
+
+            var result = new PageModel<ProjectUserDTO>
+            {
+                Page = page.Page,
+                PageSize = page.PageSize,
+                Total = page.Total,
+                Items = items
+            };
+            
+            return new Response<PageModel<ProjectUserDTO>>
+            {
+                Data = result
+            };
+        }
+
+        public async Task<Response<PageModel<ProjectUserDTO>>> GetProjectUsers(PageModel model, Guid? companyId = null, Guid? teamId = null, Guid? userId = null)
+        {
+            var page = await _projectsUsersRepository.GetUserProjects(model, companyId, teamId, userId);
+            
+            var items = page.Items.Select(x => _mapper.Map<ProjectUserModel, ProjectUserDTO>(x)).ToList();
 
             var result = new PageModel<ProjectUserDTO>
             {

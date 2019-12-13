@@ -22,7 +22,8 @@ namespace Squadio.DTO.Projects
             {
                 Id = item.Id,
                 Name = item.Name,
-                ColorHex = item.ColorHex
+                ColorHex = item.ColorHex,
+                TeamId = item.TeamId
             };
             
             if (item.Creator != null)
