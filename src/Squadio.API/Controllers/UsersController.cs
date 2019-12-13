@@ -197,21 +197,19 @@ namespace Squadio.API.Controllers
             return await _handler.SendNewChangeEmailRequest(dto, User);
         }
         
-        /*
         /// <summary>
         /// Save new avatar for current user
         /// </summary>
-        [HttpPost("avatar")]
-        public async Task<Response<ResourceImageDTO>> SaveNewAvatar([FromForm, Required] FileImageCreateDTO dto)
+        [HttpPost("avatar-from-form")]
+        public async Task<Response<UserDTO>> SaveNewAvatar([FromForm, Required] FileImageCreateDTO dto)
         {
             return await _handler.SaveNewAvatar(dto, User);
         }
-        */
         
         /// <summary>
         /// Save new avatar for current user
         /// </summary>
-        [HttpPost("avatar")]
+        [HttpPost("avatar-from-body")]
         [AllowAnonymous]
         public async Task<Response<UserDTO>> SaveNewAvatar([FromBody, Required] ResourceImageCreateDTO dto)
         {
