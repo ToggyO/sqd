@@ -17,13 +17,15 @@ namespace Squadio.EmailSender.RabbitMessageHandler.Implementation
         private readonly IEmailService<InviteToCompanyEmailModel> _inviteToCompanyMailService;
         private readonly IEmailService<InviteToTeamEmailModel> _inviteToTeamMailService;
         private readonly IEmailService<InviteToProjectEmailModel> _inviteToProjectMailService;
+        private readonly IEmailService<PasswordRestoreAdminEmailModel> _passwordRestoreAdminMailService;
 
         public RabbitMessageHandler(ILogger<RabbitMessageHandler> logger
             , IEmailService<UserConfirmEmailModel> userConfirmMailService
             , IEmailService<PasswordRestoreEmailModel> passwordRestoreMailService
             , IEmailService<InviteToCompanyEmailModel> inviteToCompanyMailService
             , IEmailService<InviteToTeamEmailModel> inviteToTeamMailService
-            , IEmailService<InviteToProjectEmailModel> inviteToProjectMailService)
+            , IEmailService<InviteToProjectEmailModel> inviteToProjectMailService
+            , IEmailService<PasswordRestoreAdminEmailModel> passwordRestoreAdminMailService)
         {
             _logger = logger;
             _userConfirmMailService = userConfirmMailService;
@@ -31,6 +33,7 @@ namespace Squadio.EmailSender.RabbitMessageHandler.Implementation
             _inviteToCompanyMailService = inviteToCompanyMailService;
             _inviteToTeamMailService = inviteToTeamMailService;
             _inviteToProjectMailService = inviteToProjectMailService;
+            _passwordRestoreAdminMailService = passwordRestoreAdminMailService;
             
             _logger.LogInformation("Initialization RabbitMessageHandler success");
         }
@@ -54,6 +57,10 @@ namespace Squadio.EmailSender.RabbitMessageHandler.Implementation
                 onMessage: async item => { await this.HandleEmailMessage(item); });
             
             bus.Subscribe<InviteToProjectEmailModel>(
+                subscriptionId: "SquadioEMailListenerRabbitMQ",
+                onMessage: async item => { await this.HandleEmailMessage(item); });
+            
+            bus.Subscribe<PasswordRestoreAdminEmailModel>(
                 subscriptionId: "SquadioEMailListenerRabbitMQ",
                 onMessage: async item => { await this.HandleEmailMessage(item); });
             
@@ -85,6 +92,11 @@ namespace Squadio.EmailSender.RabbitMessageHandler.Implementation
         private async Task HandleEmailMessage(InviteToProjectEmailModel item)
         {
             await _inviteToProjectMailService.Send(item);
+        }
+
+        private async Task HandleEmailMessage(PasswordRestoreAdminEmailModel item)
+        {
+            await _passwordRestoreAdminMailService.Send(item);
         }
     }
 }
