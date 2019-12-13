@@ -17,6 +17,7 @@ using Squadio.Common.Models.Responses;
 using Squadio.Common.Settings;
 using Squadio.DAL.Repository.SignUp;
 using Squadio.DAL.Repository.Users;
+using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Auth;
 using Squadio.DTO.SignUp;
@@ -244,6 +245,12 @@ namespace Squadio.BLL.Services.Tokens.Implementation
             var tokenDTO = await _tokenFactory.CreateToken(user);
             var userDTO = _mapper.Map<UserModel, UserDTO>(user);
             var step = await _signUpRepository.GetRegistrationStepByUserId(user.Id);
+
+            if (step.Step == RegistrationStep.New)
+            {
+                step = await _signUpRepository.SetRegistrationStep(user.Id, RegistrationStep.EmailConfirmed);
+            }
+            
             var stepDTO = _mapper.Map<UserRegistrationStepModel, UserRegistrationStepDTO>(step);
 
             var result = new AuthInfoDTO
