@@ -18,19 +18,16 @@ namespace Squadio.API.WebSocketHubHandlers.Projects.Implementation
     {
         private readonly ILogger<SidebarHubHandler> _logger;
         private readonly IProjectsProvider _projectsProvider;
-        private readonly ITeamsProvider _teamsProvider;
         private readonly IHubContext<SidebarHub> _hub;
         private readonly GroupUsersDictionary<Guid> _dictionary;
 
         public SidebarHubHandler(ILogger<SidebarHubHandler> logger
             , IProjectsProvider projectsProvider
-            , ITeamsProvider teamsProvider
             , IHubContext<SidebarHub> hub
             , GroupUsersDictionary<Guid> dictionary)
         {
             _logger = logger;
             _projectsProvider = projectsProvider;
-            _teamsProvider = teamsProvider;
             _hub = hub;
             _dictionary = dictionary;
         }

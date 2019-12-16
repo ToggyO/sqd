@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Google.Apis.Util;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using Squadio.BLL.Providers.Projects;
 using Squadio.BLL.Providers.Users;
 using Squadio.Common.Enums;
 using Squadio.Common.Extensions;
+using Squadio.Common.Models.Pages;
 using Squadio.Common.WebSocket;
 
 namespace Squadio.API.WebSocketHubs
@@ -17,12 +20,15 @@ namespace Squadio.API.WebSocketHubs
         private readonly ILogger<SidebarHub> _logger;
         private readonly IUsersProvider _usersProvider;
         private readonly GroupUsersDictionary<Guid> _dictionary;
+        private readonly IProjectsProvider _projectsProvider;
         
         public SidebarHub(ILogger<SidebarHub> logger
+            , IProjectsProvider projectsProvider
             , IUsersProvider usersProvider
             , GroupUsersDictionary<Guid> dictionary)
         {
             _logger = logger;
+            _projectsProvider = projectsProvider;
             _usersProvider = usersProvider;
             _dictionary = dictionary;
         }
@@ -64,8 +70,18 @@ namespace Squadio.API.WebSocketHubs
             
             _dictionary.Add(model.TeamId, user.Id, Context.ConnectionId);
             
-            var group = Clients.Groups(user.Id.ToString());
-            await group.SendAsync("BroadcastProjects");
+            var projectUsersResponsePage = await _projectsProvider.GetProjectUsers(
+                new PageModel { Page = 1, PageSize = 100000 },
+                teamId: model.TeamId);
+            var projectUsersPage = projectUsersResponsePage.Data;
+            var projectUsers = projectUsersPage.Items.ToList();
+            
+            var projects = projectUsers
+                .Where(x => x.UserId == user.Id)
+                .Select(x => x.Project)
+                .Distinct();
+            
+            await Clients.Clients(Context.ConnectionId).SendAsync("BroadcastProjects", projects);
         }
     }
 }

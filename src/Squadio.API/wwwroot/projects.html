@@ -61,16 +61,7 @@
         </td>
         <td>
             <div>
-                <label for="UserId">UserId: </label>
-                <br>
-                <input id="UserId" style="width: 100%;"/>
-            </div>
-        </td>
-        <td>
-            <div>
-                <button id="addButton" type="submit" disabled>Add from group</button>
-                <button id="removeButton">Remove from group</button>
-                <button id="broadcastButton">Broadcast</button>
+                <button id="subscribeButton">Subscribe</button>
             </div>
         </td>
     </tr>
@@ -97,11 +88,9 @@
     var teamId = document.getElementById("TeamId");
     var userId = document.getElementById("UserId");
     var token = document.getElementById("Token");
-    var addButton = document.getElementById("addButton");
     var commsLog = document.getElementById("commsLog");
     var closeButton = document.getElementById("closeButton");
-    var removeButton = document.getElementById("removeButton");
-    var broadcastButton = document.getElementById("broadcastButton");
+    var subscribeButton = document.getElementById("subscribeButton");
     var socket;
     var scheme = document.location.protocol === "https:" ? "wss" : "ws";
     var port = document.location.port ? (":" + document.location.port) : "";
@@ -112,13 +101,11 @@
         function disable() {
             userId.disabled = true;
             teamId.disabled = true;
-            addButton.disabled = true;
             closeButton.disabled = true;
         }
         function enable() {
             userId.disabled = false;
             teamId.disabled = false;
-            addButton.disabled = false;
             closeButton.disabled = false;
         }
         connectionUrl.disabled = true;
@@ -160,45 +147,9 @@
         }
         socket.close(1000, "Closing from client");
     };
-    
-    addButton.onclick = function () {
-        console.log("addButton.onclick");
-        if (!socket || socket.readyState !== WebSocket.OPEN) {
-            alert("socket not connected");
-        }
-        let data = {
-            "arguments":[
-                {
-                    "Token": token.value,
-                    "TeamId": teamId.value,
-                    "UserId": userId.value
-                }],
-            "target":"SubscribeToSidebar",
-            "type":1
-        };
-        socket.send(JSON.stringify(data)+"\x1e");
-    };
-    
-    removeButton.onclick = function () {
-        console.log("removeButton.onclick");
-        if (!socket || socket.readyState !== WebSocket.OPEN) {
-            alert("socket not connected");
-        }
-        let data = {
-            "arguments":[
-                {
-                    "Token": token.value,
-                    "TeamId": teamId.value,
-                    "UserId": userId.value
-                }],
-            "target":"UnsubscribeFromSidebar",
-            "type":1
-        };
-        socket.send(JSON.stringify(data)+"\x1e");
-    };
 
-    broadcastButton.onclick = function () {
-        console.log("broadcastButton.onclick");
+    subscribeButton.onclick = function () {
+        console.log("subscribeButton.onclick");
         if (!socket || socket.readyState !== WebSocket.OPEN) {
             alert("socket not connected");
         }
@@ -206,10 +157,9 @@
             "arguments":[
                 {
                     "Token": token.value,
-                    "TeamId": teamId.value,
-                    "UserId": userId.value
+                    "TeamId": teamId.value
                 }],
-            "target":"BroadcastSidebarChanges",
+            "target":"SubscribeTeam",
             "type":1
         };
         socket.send(JSON.stringify(data)+"\x1e");
