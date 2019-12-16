@@ -86,7 +86,6 @@
     var connectButton = document.getElementById("connectButton");
     var stateLabel = document.getElementById("stateLabel");
     var teamId = document.getElementById("TeamId");
-    var userId = document.getElementById("UserId");
     var token = document.getElementById("Token");
     var commsLog = document.getElementById("commsLog");
     var closeButton = document.getElementById("closeButton");
@@ -99,12 +98,10 @@
     
     function updateState() {
         function disable() {
-            userId.disabled = true;
             teamId.disabled = true;
             closeButton.disabled = true;
         }
         function enable() {
-            userId.disabled = false;
             teamId.disabled = false;
             closeButton.disabled = false;
         }

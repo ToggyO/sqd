@@ -23,13 +23,12 @@ namespace Squadio.API.WebSocketHubHandlers.Projects.Implementation
 
         public SidebarHubHandler(ILogger<SidebarHubHandler> logger
             , IProjectsProvider projectsProvider
-            , IHubContext<SidebarHub> hub
-            , GroupUsersDictionary<Guid> dictionary)
+            , IHubContext<SidebarHub> hub)
         {
             _logger = logger;
             _projectsProvider = projectsProvider;
             _hub = hub;
-            _dictionary = dictionary;
+            _dictionary = GroupUsersDictionary<Guid>.GetInstance();
         }
 
         public async Task BroadcastSidebarChanges(BroadcastSidebarChangesModel model)

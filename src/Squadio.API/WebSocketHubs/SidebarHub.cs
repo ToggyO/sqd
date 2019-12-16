@@ -24,13 +24,12 @@ namespace Squadio.API.WebSocketHubs
         
         public SidebarHub(ILogger<SidebarHub> logger
             , IProjectsProvider projectsProvider
-            , IUsersProvider usersProvider
-            , GroupUsersDictionary<Guid> dictionary)
+            , IUsersProvider usersProvider)
         {
             _logger = logger;
             _projectsProvider = projectsProvider;
             _usersProvider = usersProvider;
-            _dictionary = dictionary;
+            _dictionary = GroupUsersDictionary<Guid>.GetInstance();
         }
 
         public override async Task OnConnectedAsync()
