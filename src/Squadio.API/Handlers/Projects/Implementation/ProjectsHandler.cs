@@ -54,7 +54,7 @@ namespace Squadio.API.Handlers.Projects.Implementation
             {
                 await _sidebarHubHandler.BroadcastSidebarChanges(new BroadcastSidebarChangesModel
                 {
-                    TeamId = result.Data.TeamId.ToString()
+                    TeamId = result.Data.TeamId
                 });
             }
             return result;
@@ -67,7 +67,7 @@ namespace Squadio.API.Handlers.Projects.Implementation
             {
                 await _sidebarHubHandler.BroadcastSidebarChanges(new BroadcastSidebarChangesModel
                 {
-                    TeamId = result.Data.TeamId.ToString()
+                    TeamId = result.Data.TeamId
                 });
             }
             return result;
@@ -80,7 +80,7 @@ namespace Squadio.API.Handlers.Projects.Implementation
             {
                 await _sidebarHubHandler.BroadcastSidebarChanges(new BroadcastSidebarChangesModel
                 {
-                    TeamId = result.Data.TeamId.ToString()
+                    TeamId = result.Data.TeamId
                 });
             }
             return result;

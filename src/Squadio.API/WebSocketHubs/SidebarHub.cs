@@ -44,7 +44,7 @@ namespace Squadio.API.WebSocketHubs
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            // TODO: тут удаляем коннектион из словаря
+            _dictionary.Remove(Context.ConnectionId);
             await base.OnDisconnectedAsync(exception);
         }
 
@@ -62,8 +62,7 @@ namespace Squadio.API.WebSocketHubs
             
             _logger.LogInformation($"User {user.Name} subscribed to team with ID {model.TeamId}");
             
-            // TODO: тут юзаем наш словарь
-            
+            _dictionary.Add(model.TeamId, user.Id, Context.ConnectionId);
             
             var group = Clients.Groups(user.Id.ToString());
             await group.SendAsync("BroadcastProjects");

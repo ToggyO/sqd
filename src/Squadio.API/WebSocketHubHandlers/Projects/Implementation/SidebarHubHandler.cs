@@ -20,30 +20,33 @@ namespace Squadio.API.WebSocketHubHandlers.Projects.Implementation
         private readonly IProjectsProvider _projectsProvider;
         private readonly ITeamsProvider _teamsProvider;
         private readonly IHubContext<SidebarHub> _hub;
+        private readonly GroupUsersDictionary<Guid> _dictionary;
 
         public SidebarHubHandler(ILogger<SidebarHubHandler> logger
             , IProjectsProvider projectsProvider
             , ITeamsProvider teamsProvider
-            , IHubContext<SidebarHub> hub)
+            , IHubContext<SidebarHub> hub
+            , GroupUsersDictionary<Guid> dictionary)
         {
             _logger = logger;
             _projectsProvider = projectsProvider;
             _teamsProvider = teamsProvider;
             _hub = hub;
+            _dictionary = dictionary;
         }
 
         public async Task BroadcastSidebarChanges(BroadcastSidebarChangesModel model)
         {
             try
             {
-                if (Guid.TryParse(model.TeamId, out var teamGuid))
+                if (model != null && model?.TeamId != Guid.Empty)
                 {
+                    var userIds = _dictionary.GetUsers(model.TeamId);
                     var projectUsersResponsePage = await _projectsProvider.GetProjectUsers(
                         new PageModel { Page = 1, PageSize = 100000 },
-                        teamId: teamGuid);
+                        teamId: model.TeamId);
                     var projectUsersPage = projectUsersResponsePage.Data;
                     var projectUsers = projectUsersPage.Items.ToList();
-                    var userIds = projectUsers.Select(x => x.User.Id).Distinct();
                     
                     foreach (var userId in userIds)
                     {
@@ -51,8 +54,8 @@ namespace Squadio.API.WebSocketHubHandlers.Projects.Implementation
                             .Where(x => x.UserId == userId)
                             .Select(x => x.Project)
                             .Distinct();
-                        var group = _hub.Clients.Groups(userId.ToString());
-                        await group.SendAsync("BroadcastProjects", projects);
+                        var connections = _dictionary.GetConnections(model.TeamId, userId);
+                        await _hub.Clients.Clients(connections).SendAsync("BroadcastProjects", projects);
                     }
                     
                 }
