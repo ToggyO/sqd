@@ -16,20 +16,26 @@ namespace Squadio.API.WebSocketHubs
     {
         private readonly ILogger<SidebarHub> _logger;
         private readonly IUsersProvider _usersProvider;
+        private readonly GroupUsersDictionary<Guid> _dictionary;
         
         public SidebarHub(ILogger<SidebarHub> logger
-            , IUsersProvider usersProvider)
+            , IUsersProvider usersProvider
+            , GroupUsersDictionary<Guid> dictionary)
         {
             _logger = logger;
             _usersProvider = usersProvider;
+            _dictionary = dictionary;
         }
 
         public override async Task OnConnectedAsync()
         {
             var userResponse = await _usersProvider.GetById(Context.User.GetUserId());
-            if(!userResponse.IsSuccess)
+            if (!userResponse.IsSuccess)
+            {
+                Context.Abort();
                 return;
-            
+            }
+
             var user = userResponse.Data;
             
             await Groups.AddToGroupAsync(Context.ConnectionId, user.Id.ToString());
@@ -38,7 +44,29 @@ namespace Squadio.API.WebSocketHubs
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
+            // TODO: тут удаляем коннектион из словаря
             await base.OnDisconnectedAsync(exception);
+        }
+
+        [HubMethodName("SubscribeTeam")]
+        public async Task SubscribeTeam(SubscribeToSidebarModel model)
+        {
+            var userResponse = await _usersProvider.GetById(Context.User.GetUserId());
+            if (!userResponse.IsSuccess)
+            {
+                Context.Abort();
+                return;
+            }
+
+            var user = userResponse.Data;
+            
+            _logger.LogInformation($"User {user.Name} subscribed to team with ID {model.TeamId}");
+            
+            // TODO: тут юзаем наш словарь
+            
+            
+            var group = Clients.Groups(user.Id.ToString());
+            await group.SendAsync("BroadcastProjects");
         }
     }
 }
