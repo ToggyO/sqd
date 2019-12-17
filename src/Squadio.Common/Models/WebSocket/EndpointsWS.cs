@@ -1,4 +1,4 @@
-﻿namespace Squadio.Common.WebSocket
+﻿namespace Squadio.Common.Models.WebSocket
 {
     public static class EndpointsWS
     {

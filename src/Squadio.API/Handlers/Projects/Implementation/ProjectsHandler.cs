@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Squadio.API.WebSocketHubHandlers.Projects;
 using Squadio.BLL.Providers.Projects;
+using Squadio.BLL.Providers.WebSocket.BaseHubProvider;
 using Squadio.BLL.Services.Projects;
 using Squadio.Common.Enums;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
+using Squadio.Common.Models.WebSocket;
 using Squadio.Common.WebSocket;
 using Squadio.DTO.Projects;
-using Squadio.DTO.Users;
 
 namespace Squadio.API.Handlers.Projects.Implementation
 {
@@ -19,15 +19,15 @@ namespace Squadio.API.Handlers.Projects.Implementation
     {
         private readonly IProjectsProvider _provider;
         private readonly IProjectsService _service;
-        private readonly ISidebarHubHandler _sidebarHubHandler;
+        private readonly IBaseHubProvider _baseHubProvider;
 
         public ProjectsHandler(IProjectsProvider provider
             , IProjectsService service
-            , ISidebarHubHandler sidebarHubHandler)
+            , IBaseHubProvider baseHubProvider)
         {
             _provider = provider;
             _service = service;
-            _sidebarHubHandler = sidebarHubHandler;
+            _baseHubProvider = baseHubProvider;
         }
 
         public async Task<Response<PageModel<ProjectDTO>>> GetProjects(PageModel model, ProjectFilter filter)
@@ -51,45 +51,21 @@ namespace Squadio.API.Handlers.Projects.Implementation
         public async Task<Response<ProjectDTO>> Create(Guid teamId, ProjectCreateDTO dto, ClaimsPrincipal claims)
         {
             var result = await _service.Create(claims.GetUserId(), teamId, dto);
-            if (result.IsSuccess)
-            {
-                await _sidebarHubHandler.BroadcastSidebarChanges(new BroadcastChangesModel
-                {
-                    EntityId = result.Data.TeamId,
-                    EntityType = EntityType.Team,
-                    ConnectionGroup = ConnectionGroup.Sidebar
-                });
-            }
+            await BroadcastChanges(result);
             return result;
         }
 
         public async Task<Response<ProjectDTO>> Update(Guid projectId, ProjectUpdateDTO dto, ClaimsPrincipal claims)
         {
             var result = await _service.Update(projectId, claims.GetUserId(), dto);
-            if (result.IsSuccess)
-            {
-                await _sidebarHubHandler.BroadcastSidebarChanges(new BroadcastChangesModel
-                {
-                    EntityId = result.Data.TeamId,
-                    EntityType = EntityType.Team,
-                    ConnectionGroup = ConnectionGroup.Sidebar
-                });
-            }
+            await BroadcastChanges(result);
             return result;
         }
 
         public async Task<Response> Delete(Guid projectId, ClaimsPrincipal claims)
         {
             var result = await _service.Delete(projectId, claims.GetUserId());
-            if (result.IsSuccess)
-            {
-                await _sidebarHubHandler.BroadcastSidebarChanges(new BroadcastChangesModel
-                {
-                    EntityId = result.Data.TeamId,
-                    EntityType = EntityType.Team,
-                    ConnectionGroup = ConnectionGroup.Sidebar
-                });
-            }
+            await BroadcastChanges(result);
             return result;
         }
 
@@ -97,6 +73,22 @@ namespace Squadio.API.Handlers.Projects.Implementation
         {
             var result = await _service.DeleteUserFromProject(projectId, userId, claims.GetUserId());
             return result;
+        }
+
+        private async Task BroadcastChanges(Response<ProjectDTO> response)
+        {
+            if (response.IsSuccess)
+            {
+                await _baseHubProvider.BroadcastSidebarChanges(
+                    response.Data.TeamId, 
+                    ConnectionGroup.Sidebar, 
+                    EndpointsWS.Sidebar.Broadcast,
+                    new BroadcastSidebarProjectChangesModel
+                    {
+                        TeamId = response.Data.TeamId,
+                        ProjectId = response.Data.Id
+                    });
+            }
         }
     }
 }

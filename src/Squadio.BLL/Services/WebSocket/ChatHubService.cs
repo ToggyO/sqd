@@ -2,25 +2,25 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using Squadio.Common.WebSocket;
+using Squadio.Common.Models.WebSocket;
 
-namespace Squadio.API.WebSocketHubs
+namespace Squadio.BLL.Services.WebSocket
 {
     [Authorize]
-    public class ChatHub : Hub
+    public class ChatHubService : Hub
     {
-        private readonly ILogger<ChatHub> _logger;
+        private readonly ILogger<ChatHubService> _logger;
         
-        public ChatHub(ILogger<ChatHub> logger)
+        public ChatHubService(ILogger<ChatHubService> logger)
         {
             _logger = logger;
-            _logger.LogInformation("ChatHub constructor work done");
+            _logger.LogInformation("ChatHubService constructor work done");
         }
 
         [HubMethodName(EndpointsWS.Chat.SendMessage)]
         public async Task SendMessage(SimpleMessage model)
         {
-            _logger.LogInformation($"Enter into ChatHub.SendMessage from '{model.Username}' with message: {model.Message}");
+            _logger.LogInformation($"Enter into ChatHubService.SendMessage from '{model.Username}' with message: {model.Message}");
             
             var message = model.Message;
             var newMessage = new SimpleMessage

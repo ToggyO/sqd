@@ -3,18 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Squadio.API.Filters;
 using Squadio.API.Handlers.Invites;
 using Squadio.API.Handlers.Projects;
-using Squadio.API.WebSocketHubHandlers.Projects;
 using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
-using Squadio.Common.WebSocket;
 using Squadio.Domain.Enums;
 using Squadio.DTO.Invites;
 using Squadio.DTO.Projects;
-using Squadio.DTO.Users;
 
 namespace Squadio.API.Controllers
 {

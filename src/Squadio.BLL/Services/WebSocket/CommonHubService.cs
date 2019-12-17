@@ -6,19 +6,20 @@ using Microsoft.Extensions.Logging;
 using Squadio.BLL.Providers.Users;
 using Squadio.Common.Enums;
 using Squadio.Common.Extensions;
+using Squadio.Common.Models.WebSocket;
 using Squadio.Common.WebSocket;
 
-namespace Squadio.API.WebSocketHubs
+namespace Squadio.BLL.Services.WebSocket
 {
     [Authorize]
-    public class CommonHub : Hub
+    public class CommonHubService : Hub
     {
-        private readonly ILogger<CommonHub> _logger;
+        private readonly ILogger<CommonHubService> _logger;
         private readonly IUsersProvider _usersProvider;
         private readonly GroupUsersDictionary<Guid> _dictionary;
         
         
-        public CommonHub(ILogger<CommonHub> logger
+        public CommonHubService(ILogger<CommonHubService> logger
             , IUsersProvider usersProvider)
         {
             _logger = logger;

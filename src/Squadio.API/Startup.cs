@@ -24,7 +24,7 @@ using Serilog.Sinks.SystemConsole.Themes;
 using Squadio.DAL;
 using Squadio.API.Extensions;
 using Squadio.API.Filters;
-using Squadio.API.WebSocketHubs;
+using Squadio.BLL.Services.WebSocket;
 using Squadio.Common.Models.Rabbit;
 using Squadio.Common.Settings;
 
@@ -238,8 +238,8 @@ namespace Squadio.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<ChatHub>("api/ws/chat");
-                endpoints.MapHub<CommonHub>("api/ws");
+                endpoints.MapHub<ChatHubService>("api/ws/chat");
+                endpoints.MapHub<CommonHubService>("api/ws");
             });
         }
     }

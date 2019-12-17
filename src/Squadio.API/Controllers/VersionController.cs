@@ -5,8 +5,9 @@ using Mapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
-using Squadio.API.WebSocketHubHandlers.Projects;
+using Squadio.BLL.Providers.WebSocket.BaseHubProvider;
 using Squadio.Common.Enums;
+using Squadio.Common.Models.WebSocket;
 using Squadio.Common.WebSocket;
 
 namespace Squadio.API.Controllers
@@ -19,15 +20,15 @@ namespace Squadio.API.Controllers
         private const string Version = "0.5.2 b";
         private readonly ILogger<VersionController> _logger;
         private readonly IMapper _mapper;
-        private readonly ISidebarHubHandler _handler;
+        private readonly IBaseHubProvider _provider;
 
         public VersionController(ILogger<VersionController> logger
             , IMapper mapper
-            , ISidebarHubHandler handler)
+            , IBaseHubProvider provider)
         {
             _logger = logger;
             _mapper = mapper;
-            _handler = handler;
+            _provider = provider;
         }
 
         /// <summary>
@@ -47,12 +48,15 @@ namespace Squadio.API.Controllers
         [AllowAnonymous]
         public async Task LOL([FromRoute, Required] Guid teamId)
         {
-            await _handler.BroadcastSidebarChanges(new BroadcastChangesModel
-            {
-                EntityId = teamId,
-                ConnectionGroup = ConnectionGroup.Sidebar,
-                EntityType = EntityType.Team
-            });
+            await _provider.BroadcastSidebarChanges(
+                teamId, 
+                ConnectionGroup.Sidebar, 
+                EndpointsWS.Sidebar.Broadcast,
+                new BroadcastSidebarProjectChangesModel
+                {
+                    TeamId = teamId,
+                    ProjectId = Guid.NewGuid()
+                });
         }
     }
 }
