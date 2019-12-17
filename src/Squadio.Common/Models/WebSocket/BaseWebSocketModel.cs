@@ -2,6 +2,5 @@
 {
     public class BaseWebSocketModel
     {
-        public string Token { get; set; }
     }
 }

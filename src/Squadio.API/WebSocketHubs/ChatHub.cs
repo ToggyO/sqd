@@ -1,10 +1,8 @@
-﻿using System;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using Squadio.API.Handlers.Users;
+using Squadio.Common.WebSocket;
 
 namespace Squadio.API.WebSocketHubs
 {
@@ -19,7 +17,7 @@ namespace Squadio.API.WebSocketHubs
             _logger.LogInformation("ChatHub constructor work done");
         }
 
-        [HubMethodName("SendMessage")]
+        [HubMethodName(EndpointsWS.Chat.SendMessage)]
         public async Task SendMessage(SimpleMessage model)
         {
             _logger.LogInformation($"Enter into ChatHub.SendMessage from '{model.Username}' with message: {model.Message}");
@@ -31,7 +29,7 @@ namespace Squadio.API.WebSocketHubs
                 Username = model.Username
             };
 
-            await Clients.All.SendAsync("ReceiveMessage", newMessage);
+            await Clients.All.SendAsync(EndpointsWS.Chat.ReceiveMessage, newMessage);
         }
     }
 

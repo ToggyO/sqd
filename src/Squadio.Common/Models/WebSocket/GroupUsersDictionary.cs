@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Squadio.Common.Enums;
 
 namespace Squadio.Common.WebSocket
 {
@@ -9,17 +10,18 @@ namespace Squadio.Common.WebSocket
         private GroupUsersDictionary(){}
         private static readonly GroupUsersDictionary<T> Instance = new GroupUsersDictionary<T>();
         public static GroupUsersDictionary<T> GetInstance() => Instance;
-        private readonly Dictionary<T, Dictionary<Guid, HashSet<string>>> _connections =
-            new Dictionary<T, Dictionary<Guid, HashSet<string>>>();
+        private readonly Dictionary<Tuple<T, ConnectionGroup>, Dictionary<Guid, HashSet<string>>> _connections =
+            new Dictionary<Tuple<T, ConnectionGroup>, Dictionary<Guid, HashSet<string>>>();
         
-        public void Add(T groupKey, Guid userId, string connectionId)
+        public void Add(T groupKey, ConnectionGroup group , Guid userId, string connectionId)
         {
             lock (_connections)
             {
-                if (!_connections.TryGetValue(groupKey, out var users))
+                var key = new Tuple<T, ConnectionGroup>(groupKey, group);
+                if (!_connections.TryGetValue(key, out var users))
                 {
                     users = new Dictionary<Guid, HashSet<string>>();
-                    _connections.Add(groupKey, users);
+                    _connections.Add(key, users);
                 }
                 lock (users)
                 {
@@ -62,18 +64,20 @@ namespace Squadio.Common.WebSocket
             }
         }
 
-        public List<Guid> GetUsers(T groupKey)
+        public List<Guid> GetUsers(T groupKey, ConnectionGroup group)
         {
-            var values = GetValues(groupKey);
+            var key = new Tuple<T, ConnectionGroup>(groupKey, group);
+            var values = GetValues(key);
             lock (values)
             {
                 return values.Select(x => x.Key).ToList();
             }
         }
         
-        public List<string> GetConnections(T groupKey, Guid userId)
+        public List<string> GetConnections(T groupKey, ConnectionGroup group, Guid userId)
         {
-            var values = GetValues(groupKey);
+            var key = new Tuple<T, ConnectionGroup>(groupKey, group);
+            var values = GetValues(key);
             lock (values)
             {
                 return values.TryGetValue(userId, out var conn) 
@@ -94,11 +98,11 @@ namespace Squadio.Common.WebSocket
             }
         }
         
-        private Dictionary<Guid, HashSet<string>> GetValues(T groupKey)
+        private Dictionary<Guid, HashSet<string>> GetValues(Tuple<T, ConnectionGroup> key)
         {
             lock (_connections)
             {
-                if (_connections.TryGetValue(groupKey, out var userIds))
+                if (_connections.TryGetValue(key, out var userIds))
                 {
                     return userIds;
                 }
@@ -106,7 +110,7 @@ namespace Squadio.Common.WebSocket
             return new Dictionary<Guid, HashSet<string>>();
         }
 
-        private List<T> GetGroupsByConnection(string connectionId)
+        private List<Tuple<T, ConnectionGroup>> GetGroupsByConnection(string connectionId)
         {
             lock (_connections)
             {

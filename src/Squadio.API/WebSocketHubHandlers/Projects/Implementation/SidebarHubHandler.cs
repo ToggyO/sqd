@@ -17,43 +17,31 @@ namespace Squadio.API.WebSocketHubHandlers.Projects.Implementation
     public class SidebarHubHandler : ISidebarHubHandler
     {
         private readonly ILogger<SidebarHubHandler> _logger;
-        private readonly IProjectsProvider _projectsProvider;
-        private readonly IHubContext<SidebarHub> _hub;
+        private readonly IHubContext<CommonHub> _hub;
         private readonly GroupUsersDictionary<Guid> _dictionary;
+        private const ConnectionGroup _group = ConnectionGroup.Sidebar;
 
         public SidebarHubHandler(ILogger<SidebarHubHandler> logger
-            , IProjectsProvider projectsProvider
-            , IHubContext<SidebarHub> hub)
+            , IHubContext<CommonHub> hub)
         {
             _logger = logger;
-            _projectsProvider = projectsProvider;
             _hub = hub;
             _dictionary = GroupUsersDictionary<Guid>.GetInstance();
         }
 
-        public async Task BroadcastSidebarChanges(BroadcastSidebarChangesModel model)
+        public async Task BroadcastSidebarChanges(BroadcastChangesModel model)
         {
             try
             {
-                if (model != null && model?.TeamId != Guid.Empty)
+                if (model != null && model?.EntityId != Guid.Empty)
                 {
-                    var userIds = _dictionary.GetUsers(model.TeamId);
-                    var projectUsersResponsePage = await _projectsProvider.GetProjectUsers(
-                        new PageModel { Page = 1, PageSize = 100000 },
-                        teamId: model.TeamId);
-                    var projectUsersPage = projectUsersResponsePage.Data;
-                    var projectUsers = projectUsersPage.Items.ToList();
+                    var userIds = _dictionary.GetUsers(model.EntityId, _group);
                     
                     foreach (var userId in userIds)
                     {
-                        var projects = projectUsers
-                            .Where(x => x.UserId == userId)
-                            .Select(x => x.Project)
-                            .Distinct();
-                        var connections = _dictionary.GetConnections(model.TeamId, userId);
-                        await _hub.Clients.Clients(connections).SendAsync("BroadcastProjects", projects);
+                        var connections = _dictionary.GetConnections(model.EntityId, _group, userId);
+                        await _hub.Clients.Clients(connections).SendAsync(EndpointsWS.Sidebar.Broadcast);
                     }
-                    
                 }
             }
             catch (Exception e)

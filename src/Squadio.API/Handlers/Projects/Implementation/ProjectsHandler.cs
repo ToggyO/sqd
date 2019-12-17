@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Squadio.API.WebSocketHubHandlers.Projects;
 using Squadio.BLL.Providers.Projects;
 using Squadio.BLL.Services.Projects;
+using Squadio.Common.Enums;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
@@ -52,9 +53,11 @@ namespace Squadio.API.Handlers.Projects.Implementation
             var result = await _service.Create(claims.GetUserId(), teamId, dto);
             if (result.IsSuccess)
             {
-                await _sidebarHubHandler.BroadcastSidebarChanges(new BroadcastSidebarChangesModel
+                await _sidebarHubHandler.BroadcastSidebarChanges(new BroadcastChangesModel
                 {
-                    TeamId = result.Data.TeamId
+                    EntityId = result.Data.TeamId,
+                    EntityType = EntityType.Team,
+                    ConnectionGroup = ConnectionGroup.Sidebar
                 });
             }
             return result;
@@ -65,9 +68,11 @@ namespace Squadio.API.Handlers.Projects.Implementation
             var result = await _service.Update(projectId, claims.GetUserId(), dto);
             if (result.IsSuccess)
             {
-                await _sidebarHubHandler.BroadcastSidebarChanges(new BroadcastSidebarChangesModel
+                await _sidebarHubHandler.BroadcastSidebarChanges(new BroadcastChangesModel
                 {
-                    TeamId = result.Data.TeamId
+                    EntityId = result.Data.TeamId,
+                    EntityType = EntityType.Team,
+                    ConnectionGroup = ConnectionGroup.Sidebar
                 });
             }
             return result;
@@ -78,9 +83,11 @@ namespace Squadio.API.Handlers.Projects.Implementation
             var result = await _service.Delete(projectId, claims.GetUserId());
             if (result.IsSuccess)
             {
-                await _sidebarHubHandler.BroadcastSidebarChanges(new BroadcastSidebarChangesModel
+                await _sidebarHubHandler.BroadcastSidebarChanges(new BroadcastChangesModel
                 {
-                    TeamId = result.Data.TeamId
+                    EntityId = result.Data.TeamId,
+                    EntityType = EntityType.Team,
+                    ConnectionGroup = ConnectionGroup.Sidebar
                 });
             }
             return result;
