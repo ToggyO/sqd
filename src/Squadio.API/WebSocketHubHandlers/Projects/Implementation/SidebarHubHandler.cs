@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
@@ -31,24 +32,24 @@ namespace Squadio.API.WebSocketHubHandlers.Projects.Implementation
 
         public async Task BroadcastSidebarChanges(BroadcastChangesModel model)
         {
-            try
+            var connections = GetConnections(model);
+            await _hub.Clients.Clients(connections).SendAsync(EndpointsWS.Sidebar.Broadcast);
+        }
+
+        private List<string> GetConnections(BroadcastChangesModel model)
+        {
+            var connections = new List<string>();
+            if (model != null && model?.EntityId != Guid.Empty)
             {
-                if (model != null && model?.EntityId != Guid.Empty)
+                var userIds = _dictionary.GetUsers(model.EntityId, _group);
+
+                foreach (var userId in userIds)
                 {
-                    var userIds = _dictionary.GetUsers(model.EntityId, _group);
-                    
-                    foreach (var userId in userIds)
-                    {
-                        var connections = _dictionary.GetConnections(model.EntityId, _group, userId);
-                        await _hub.Clients.Clients(connections).SendAsync(EndpointsWS.Sidebar.Broadcast);
-                    }
+                    connections.AddRange(_dictionary.GetConnections(model.EntityId, _group, userId));
                 }
             }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message, e);
-                throw;
-            }
+
+            return connections;
         }
     }
 }

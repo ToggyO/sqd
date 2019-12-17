@@ -93,7 +93,7 @@
     var socket;
     var scheme = document.location.protocol === "https:" ? "wss" : "ws";
     var port = document.location.port ? (":" + document.location.port) : "";
-    connectionUrl.value = scheme + "://" + document.location.hostname + port + "/api/ws/projects" ;
+    connectionUrl.value = scheme + "://" + document.location.hostname + port + "/api/ws" ;
     token.value = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl9pZCI6IjMzMjIxZTRiMTcxNTQwZmFiYTNlNzZlY2ZiZDk3ZGYzIiwidXNlcl9pZCI6ImMzYjBlZWU5OTg4YTQwNWQ5MDkwZDcxNTA3MTA0MGE2Iiwicm9sZV9pZCI6ImJmMjJhM2ZkZjdlYjQ4NzFiODRhNGQ4ZmY1MWQwZjdkIiwiZXhwIjoxNTc1ODYzMzIzLCJpc3MiOiJTcXVhZCIsImF1ZCI6IklPIn0.PxjQUmMf_2pUaUojSz7LKYg56tMAhTOdBqgry1V6eVQ";
     
     function updateState() {
@@ -156,7 +156,7 @@
                     "Token": token.value,
                     "TeamId": teamId.value
                 }],
-            "target":"SubscribeTeam",
+            "target":"SidebarSubscribeTeam",
             "type":1
         };
         socket.send(JSON.stringify(data)+"\x1e");
