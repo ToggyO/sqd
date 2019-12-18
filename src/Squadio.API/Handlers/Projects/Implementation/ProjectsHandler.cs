@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Squadio.BLL.Providers.Projects;
 using Squadio.BLL.Providers.WebSocket.BaseHubProvider;
+using Squadio.BLL.Providers.WebSocket.Sidebar;
 using Squadio.BLL.Services.Projects;
 using Squadio.Common.Enums;
 using Squadio.Common.Extensions;
@@ -19,15 +20,15 @@ namespace Squadio.API.Handlers.Projects.Implementation
     {
         private readonly IProjectsProvider _provider;
         private readonly IProjectsService _service;
-        private readonly IBaseHubProvider _baseHubProvider;
+        private readonly ISidebarHubProvider _hubProvider;
 
         public ProjectsHandler(IProjectsProvider provider
             , IProjectsService service
-            , IBaseHubProvider baseHubProvider)
+            , ISidebarHubProvider hubProvider)
         {
             _provider = provider;
             _service = service;
-            _baseHubProvider = baseHubProvider;
+            _hubProvider = hubProvider;
         }
 
         public async Task<Response<PageModel<ProjectDTO>>> GetProjects(PageModel model, ProjectFilter filter)
@@ -51,21 +52,21 @@ namespace Squadio.API.Handlers.Projects.Implementation
         public async Task<Response<ProjectDTO>> Create(Guid teamId, ProjectCreateDTO dto, ClaimsPrincipal claims)
         {
             var result = await _service.Create(claims.GetUserId(), teamId, dto);
-            await BroadcastChanges(result);
+            await BroadcastChanges(result, ChangesType.Created);
             return result;
         }
 
         public async Task<Response<ProjectDTO>> Update(Guid projectId, ProjectUpdateDTO dto, ClaimsPrincipal claims)
         {
             var result = await _service.Update(projectId, claims.GetUserId(), dto);
-            await BroadcastChanges(result);
+            await BroadcastChanges(result, ChangesType.Updated);
             return result;
         }
 
         public async Task<Response> Delete(Guid projectId, ClaimsPrincipal claims)
         {
             var result = await _service.Delete(projectId, claims.GetUserId());
-            await BroadcastChanges(result);
+            await BroadcastChanges(result, ChangesType.Deleted);
             return result;
         }
 
@@ -75,18 +76,16 @@ namespace Squadio.API.Handlers.Projects.Implementation
             return result;
         }
 
-        private async Task BroadcastChanges(Response<ProjectDTO> response)
+        private async Task BroadcastChanges(Response<ProjectDTO> response, ChangesType changesType)
         {
             if (response.IsSuccess)
             {
-                await _baseHubProvider.BroadcastSidebarChanges(
-                    response.Data.TeamId, 
-                    ConnectionGroup.Sidebar, 
-                    EndpointsWS.Sidebar.Broadcast,
+                await _hubProvider.BroadcastProjectChanges(response.Data.TeamId, 
                     new BroadcastSidebarProjectChangesModel
                     {
                         TeamId = response.Data.TeamId,
-                        ProjectId = response.Data.Id
+                        ProjectId = response.Data.Id,
+                        ChangesType = changesType
                     });
             }
         }

@@ -6,6 +6,6 @@ namespace Squadio.BLL.Providers.WebSocket.BaseHubProvider
 {
     public interface IBaseHubProvider
     {
-        Task BroadcastSidebarChanges(Guid groupId, ConnectionGroup connectionGroup, string methodName, object model);
+        Task BroadcastChanges(Guid groupId, ConnectionGroup connectionGroup, string methodName, object model);
     }
 }

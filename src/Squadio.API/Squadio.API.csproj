@@ -37,7 +37,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="WebSocketHubProviders" />
     <Folder Include="wwwroot\" />
     <Folder Include="wwwroot\js" />
   </ItemGroup>

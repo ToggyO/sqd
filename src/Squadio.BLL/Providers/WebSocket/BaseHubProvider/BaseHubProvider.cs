@@ -23,7 +23,7 @@ namespace Squadio.BLL.Providers.WebSocket.BaseHubProvider
             _dictionary = GroupUsersDictionary<Guid>.GetInstance();
         }
         
-        public async Task BroadcastSidebarChanges(Guid groupId, ConnectionGroup connectionGroup, string methodName, object model)
+        public async Task BroadcastChanges(Guid groupId, ConnectionGroup connectionGroup, string methodName, object model)
         {
             var connections = GetConnections(groupId, connectionGroup);
             await _hub.Clients.Clients(connections).SendAsync(methodName, model);

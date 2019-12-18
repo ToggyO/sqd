@@ -21,6 +21,8 @@ using Squadio.BLL.Providers.Teams;
 using Squadio.BLL.Providers.Teams.Implementation;
 using Squadio.BLL.Providers.Users;
 using Squadio.BLL.Providers.Users.Implementation;
+using Squadio.BLL.Providers.WebSocket.BaseHubProvider;
+using Squadio.BLL.Providers.WebSocket.Sidebar;
 using Squadio.BLL.Services.Admins;
 using Squadio.BLL.Services.Admins.Implementation;
 using Squadio.BLL.Services.Companies;
@@ -91,6 +93,9 @@ namespace Squadio.BLL
             services.Add<IFilesService, FilesService>(serviceLifetime);
             services.Add<IResourcesProvider, ResourcesProvider>(serviceLifetime);
             services.Add<IResourcesService, ResourcesService>(serviceLifetime);
+            
+            services.Add<IBaseHubProvider, BaseHubProvider>(serviceLifetime);
+            services.Add<ISidebarHubProvider, SidebarHubProvider>(serviceLifetime);
             
             services.Add<ITokensFactory, TokensFactory>(serviceLifetime);
             services.AddMapper();

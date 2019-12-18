@@ -48,7 +48,7 @@ namespace Squadio.API.Controllers
         [AllowAnonymous]
         public async Task LOL([FromRoute, Required] Guid teamId)
         {
-            await _provider.BroadcastSidebarChanges(
+            await _provider.BroadcastChanges(
                 teamId, 
                 ConnectionGroup.Sidebar, 
                 EndpointsWS.Sidebar.Broadcast,
