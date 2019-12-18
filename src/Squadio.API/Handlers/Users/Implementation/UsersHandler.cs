@@ -211,5 +211,10 @@ namespace Squadio.API.Handlers.Users.Implementation
             }
             return await _service.SaveNewAvatar(claims.GetUserId(), savingResourceResponse.Data.ResourceId);
         }
+
+        public async Task<Response<UserDTO>> DeleteAvatar(ClaimsPrincipal claims)
+        {
+            return await _service.DeleteAvatar(claims.GetUserId());
+        }
     }
 }

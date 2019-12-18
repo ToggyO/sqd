@@ -94,6 +94,7 @@ namespace Squadio.API
             services.Configure<ApiSettings>(Configuration.GetSection("AppSettings:APISettings"));
             services.Configure<FileTemplateUrlModel>(Configuration.GetSection("FileTemplateUrl"));
             services.Configure<FileRootDirectoryModel>(Configuration.GetSection("FileRootDirectory"));
+            services.Configure<CropSizesModel>(Configuration.GetSection("CropSizes"));
             
             var columnWriters = new Dictionary<string, ColumnWriterBase>
             {

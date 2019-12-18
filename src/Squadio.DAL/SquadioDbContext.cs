@@ -185,6 +185,8 @@ namespace Squadio.DAL
                 item.HasOne(x => x.User)
                     .WithMany()
                     .OnDelete(DeleteBehavior.Cascade);
+                item.Property(x => x.IsWithResolution)
+                    .HasDefaultValue(true);
             });
         }
     }

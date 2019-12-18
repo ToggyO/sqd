@@ -284,5 +284,31 @@ namespace Squadio.BLL.Services.Users.Implementation
                 Data = result
             };
         }
+
+        public async Task<Response<UserDTO>> DeleteAvatar(Guid userId)
+        {
+            var userEntity = await _repository.GetById(userId);
+            if (userEntity == null)
+            {
+                return new BusinessConflictErrorResponse<UserDTO>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Business.UserDoesNotExists,
+                        Message = ErrorMessages.Business.UserDoesNotExists,
+                        Field = ErrorFields.User.Id
+                    }
+                });
+            }
+
+            userEntity.AvatarId = null;
+            userEntity = await _repository.Update(userEntity);
+            
+            var result = _mapper.Map<UserModel, UserDTO>(userEntity);
+            return new Response<UserDTO>
+            {
+                Data = result
+            };
+        }
     }
 }

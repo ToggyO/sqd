@@ -210,10 +210,18 @@ namespace Squadio.API.Controllers
         /// Save new avatar for current user
         /// </summary>
         [HttpPost("avatar-from-body")]
-        [AllowAnonymous]
         public async Task<Response<UserDTO>> SaveNewAvatar([FromBody, Required] ResourceImageCreateDTO dto)
         {
             return await _handler.SaveNewAvatar(dto, User);
+        }
+        
+        /// <summary>
+        /// Save new avatar for current user
+        /// </summary>
+        [HttpDelete("avatar")]
+        public async Task<Response<UserDTO>> DeleteAvatar()
+        {
+            return await _handler.DeleteAvatar(User);
         }
     }
 }

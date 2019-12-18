@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Mapper;
 using Microsoft.Extensions.Options;
 using Squadio.BLL.Services.Files;
 using Squadio.BLL.Services.ImageResizeTools;
 using Squadio.Common.Enums;
+using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Resources;
 using Squadio.Common.Models.Responses;
 using Squadio.Common.Settings;
@@ -20,16 +22,19 @@ namespace Squadio.BLL.Services.Resources.Implementation
         private readonly IFilesService _filesService;
         private readonly IMapper _mapper;
         private readonly IOptions<FileTemplateUrlModel> _options;
+        private readonly IOptions<CropSizesModel> _sizeOptions;
 
         public ResourcesService(IResourcesRepository repository
             , IFilesService filesService
             , IMapper mapper
-            , IOptions<FileTemplateUrlModel> options)
+            , IOptions<FileTemplateUrlModel> options
+            , IOptions<CropSizesModel> sizeOptions)
         {
             _repository = repository;
             _filesService = filesService;
             _mapper = mapper;
             _options = options;
+            _sizeOptions = sizeOptions;
         }
 
         public async Task<Response<ResourceDTO>> CreateResource(Guid userId, FileGroup group, FileCreateDTO dto)
@@ -77,7 +82,26 @@ namespace Squadio.BLL.Services.Resources.Implementation
                 Data = result
             };
         }
-        
+
+        public async Task<Response> DeleteResource(string filename)
+        {
+            var entity = await _repository.GetByFilename(filename);
+            if(entity == null)
+                return new BusinessConflictErrorResponse(new Error
+                {
+                    Code = ErrorCodes.Common.NotFound,
+                    Field = ErrorFields.Resource.FileName,
+                    Message = ErrorMessages.Common.NotFound
+                });
+
+            if (entity.IsWithResolution)
+                await DeleteImageResource(entity);
+            else
+                await DeleteResource(entity);
+            
+            return new Response();
+        }
+
         private async Task<ResourceModel> CreateResource(Guid userId, string group, ResourceCreateDTO dto)
         {
             var fileName = Guid.NewGuid().ToString("N");
@@ -88,7 +112,8 @@ namespace Squadio.BLL.Services.Resources.Implementation
                 Group = group,
                 FileName = fileName,
                 ContentType = dto.ContentType,
-                CreateDate = DateTime.UtcNow
+                CreateDate = DateTime.UtcNow,
+                IsWithResolution = false
             };
 
             var resource = await _repository.Create(resourceEntity);
@@ -108,21 +133,32 @@ namespace Squadio.BLL.Services.Resources.Implementation
                 Group = group,
                 FileName = fileName,
                 ContentType = dto.ContentType,
-                CreateDate = DateTime.UtcNow
+                CreateDate = DateTime.UtcNow,
+                IsWithResolution = true
             };
 
             var resource = await _repository.Create(resourceEntity);
 
             await _filesService.UploadImageFile(group, "original", fileName, dto.Bytes);
 
-            var sizes = new[] {"140", "360", "480", "720", "1080"};
+            var sizes = _sizeOptions.Value.Sizes;
             foreach (var size in sizes)
             {
-                var image = ImageResizer.Resize(dto.Bytes, int.Parse(size), dto.ContentType);
-                await _filesService.UploadImageFile(group, size, fileName, image);
+                var image = ImageResizer.Resize(dto.Bytes, size, dto.ContentType);
+                await _filesService.UploadImageFile(group, size.ToString(), fileName, image);
             }
 
             return resource;
+        }
+        
+        private async Task DeleteResource(ResourceModel model)
+        {
+            await _filesService.DeleteFile(model.Group, model.FileName);
+        }
+        
+        private async Task DeleteImageResource(ResourceModel model)
+        {
+            await _filesService.DeleteImageFile(model.Group, model.FileName);
         }
     }
 }

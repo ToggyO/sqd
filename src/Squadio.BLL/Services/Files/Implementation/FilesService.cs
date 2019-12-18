@@ -12,12 +12,15 @@ namespace Squadio.BLL.Services.Files.Implementation
     {
         private readonly ILogger<FilesService> _logger;
         private readonly IOptions<FileRootDirectoryModel> _options;
+        private readonly IOptions<CropSizesModel> _sizeOptions;
         
         public FilesService(ILogger<FilesService> logger
-            , IOptions<FileRootDirectoryModel> options)
+            , IOptions<FileRootDirectoryModel> options
+            , IOptions<CropSizesModel> sizeOptions)
         {
             _logger = logger;
             _options = options;
+            _sizeOptions = sizeOptions;
         }
         
         public async Task UploadImageFile(string group, string resolution, string filename, byte[] data)
@@ -25,13 +28,27 @@ namespace Squadio.BLL.Services.Files.Implementation
             var path = GenerateImagePath(group, resolution, filename);
             await UploadFile(path, data);
         }
-        
+
+        public Task DeleteImageFile(string group, string filename)
+        {
+            var sizes = _sizeOptions.Value.Sizes;
+            foreach (var size in sizes)
+            {
+            }
+            throw new NotImplementedException();
+        }
+
         public async Task UploadFile(string group, string filename, byte[] data)
         {
             var path = GenerateFilePath(group, filename);
             await UploadFile(path, data);
         }
-        
+
+        public Task DeleteFile(string group, string filename)
+        {
+            throw new NotImplementedException();
+        }
+
         private string GenerateFilePath(string group, string filename)
         {
             var path = _options.Value.Path;

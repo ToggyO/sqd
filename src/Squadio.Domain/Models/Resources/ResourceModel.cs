@@ -12,5 +12,6 @@ namespace Squadio.Domain.Models.Resources
         public string ContentType { get; set; }
         public string FileName { get; set; }
         public string Group { get; set; }
+        public bool IsWithResolution { get; set; }
     }
 }
