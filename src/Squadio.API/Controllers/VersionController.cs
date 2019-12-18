@@ -17,18 +17,12 @@ namespace Squadio.API.Controllers
     [Route("api/versions")]
     public class VersionController : ControllerBase
     {
-        private const string Version = "0.5.2 b";
+        private const string Version = "0.5.3 b";
         private readonly ILogger<VersionController> _logger;
-        private readonly IMapper _mapper;
-        private readonly IBaseHubProvider _provider;
 
-        public VersionController(ILogger<VersionController> logger
-            , IMapper mapper
-            , IBaseHubProvider provider)
+        public VersionController(ILogger<VersionController> logger)
         {
             _logger = logger;
-            _mapper = mapper;
-            _provider = provider;
         }
 
         /// <summary>
@@ -39,24 +33,6 @@ namespace Squadio.API.Controllers
         public string GetVersion()
         {
             return Version;
-        }
-
-        /// <summary>
-        /// Get current version of API
-        /// </summary>
-        [HttpGet("ws/{teamId}")]
-        [AllowAnonymous]
-        public async Task LOL([FromRoute, Required] Guid teamId)
-        {
-            await _provider.BroadcastChanges(
-                teamId, 
-                ConnectionGroup.Sidebar, 
-                EndpointsWS.Sidebar.Broadcast,
-                new BroadcastSidebarProjectChangesModel
-                {
-                    TeamId = teamId,
-                    ProjectId = Guid.NewGuid()
-                });
         }
     }
 }
