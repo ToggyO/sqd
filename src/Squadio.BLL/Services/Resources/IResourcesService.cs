@@ -13,5 +13,6 @@ namespace Squadio.BLL.Services.Resources
         Task<Response<ResourceImageDTO>> CreateResource(Guid userId, FileGroup group, FileImageCreateDTO dto);
         Task<Response<ResourceImageDTO>> CreateResource(Guid userId, FileGroup group, ResourceImageCreateDTO dto);
         Task<Response> DeleteResource(string filename);
+        Task<Response> DeleteResource(Guid resourceId);
     }
 }

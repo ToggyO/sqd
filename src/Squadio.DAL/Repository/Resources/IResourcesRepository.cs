@@ -8,6 +8,7 @@ namespace Squadio.DAL.Repository.Resources
     {
         Task<ResourceModel> Create(ResourceModel model);
         Task<ResourceModel> GetById(Guid id);
+        Task<ResourceModel> Delete(Guid id);
         Task<ResourceModel> GetByFilename(string filename);
     }
 }

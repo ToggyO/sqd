@@ -31,6 +31,14 @@ namespace Squadio.DAL.Repository.Resources.Implementation
             return result;
         }
 
+        public async Task<ResourceModel> Delete(Guid id)
+        {
+            var result = await _context.Resources.FindAsync(id);
+            _context.Resources.Remove(result);
+            await _context.SaveChangesAsync();
+            return result;
+        }
+
         public async Task<ResourceModel> GetByFilename(string filename)
         {
             var result = await _context.Resources.

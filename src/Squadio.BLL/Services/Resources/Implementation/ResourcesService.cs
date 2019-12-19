@@ -102,6 +102,27 @@ namespace Squadio.BLL.Services.Resources.Implementation
             return new Response();
         }
 
+        public async Task<Response> DeleteResource(Guid resourceId)
+        {
+            var entity = await _repository.GetById(resourceId);
+            if(entity == null)
+                return new BusinessConflictErrorResponse(new Error
+                {
+                    Code = ErrorCodes.Common.NotFound,
+                    Field = ErrorFields.Resource.FileName,
+                    Message = ErrorMessages.Common.NotFound
+                });
+
+            if (entity.IsWithResolution)
+                await DeleteImageResource(entity);
+            else
+                await DeleteResource(entity);
+
+            await _repository.Delete(entity.Id);
+            
+            return new Response();
+        }
+
         private async Task<ResourceModel> CreateResource(Guid userId, string group, ResourceCreateDTO dto)
         {
             var fileName = Guid.NewGuid().ToString("N");

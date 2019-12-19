@@ -10,7 +10,10 @@
         }
         
         private int[] _Sizes;
-        public int[] Sizes { get; }
+        public int[] Sizes
+        {
+            get => _Sizes;
+        }
 
         private void ParseSizes()
         {

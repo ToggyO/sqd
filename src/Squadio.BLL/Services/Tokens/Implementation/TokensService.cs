@@ -96,10 +96,7 @@ namespace Squadio.BLL.Services.Tokens.Implementation
                         Code = ErrorCodes.Security.AuthDataInvalid,
                         Message = ErrorMessages.Security.AuthDataInvalid
                     }
-                })
-                {
-                    HttpStatusCode = ErrorCodes.UnprocessableEntityCode
-                };
+                });
             }
             
             if(user == null || !isPasswordValid)
@@ -111,10 +108,7 @@ namespace Squadio.BLL.Services.Tokens.Implementation
                         Code = ErrorCodes.Security.AuthDataInvalid,
                         Message = ErrorMessages.Security.AuthDataInvalid
                     }
-                })
-                {
-                    HttpStatusCode = ErrorCodes.UnprocessableEntityCode
-                };
+                });
             }
 
             var tokenDTO = await _tokenFactory.CreateToken(user);
@@ -203,10 +197,7 @@ namespace Squadio.BLL.Services.Tokens.Implementation
                         Message = ErrorMessages.Security.GoogleTokenInvalid,
                         Field = ErrorFields.User.GoogleToken
                     }
-                })
-                {
-                    HttpStatusCode = ErrorCodes.UnprocessableEntityCode
-                };
+                });
             }
             
             //TODO: think how validate google token
@@ -236,10 +227,7 @@ namespace Squadio.BLL.Services.Tokens.Implementation
                         Message = ErrorMessages.Business.UserDoesNotExists,
                         Field = ErrorFields.User.GoogleToken
                     }
-                })
-                {
-                    HttpStatusCode = ErrorCodes.UnprocessableEntityCode
-                };
+                });
             }
             
             var tokenDTO = await _tokenFactory.CreateToken(user);

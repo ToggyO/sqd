@@ -4,6 +4,7 @@ using Magora.Passwords;
 using Mapper;
 using Squadio.BLL.Providers.Codes;
 using Squadio.BLL.Services.Rabbit;
+using Squadio.BLL.Services.Resources;
 using Squadio.Common.Models.Email;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
@@ -28,6 +29,7 @@ namespace Squadio.BLL.Services.Users.Implementation
         private readonly IRabbitService _rabbitService;
         private readonly IPasswordService _passwordService;
         private readonly IMapper _mapper;
+        private readonly IResourcesService _resourcesService;
         public UsersService(IUsersRepository repository
             , ISignUpRepository signUpRepository
             , ICodeProvider codeProvider
@@ -36,7 +38,7 @@ namespace Squadio.BLL.Services.Users.Implementation
             , IRabbitService rabbitService
             , IPasswordService passwordService
             , IMapper mapper
-            )
+            , IResourcesService resourcesService)
         {
             _repository = repository;
             _signUpRepository = signUpRepository;
@@ -46,6 +48,7 @@ namespace Squadio.BLL.Services.Users.Implementation
             _rabbitService = rabbitService;
             _passwordService = passwordService;
             _mapper = mapper;
+            _resourcesService = resourcesService;
         }
 
         public async Task<Response<UserDTO>> SetPassword(string email, string password)
@@ -275,6 +278,11 @@ namespace Squadio.BLL.Services.Users.Implementation
                 });
             }
 
+            if (userEntity.AvatarId != null)
+            {
+                var deleteResult = await _resourcesService.DeleteResource(userEntity.AvatarId.Value);
+            }
+
             userEntity.AvatarId = resourceId;
             userEntity = await _repository.Update(userEntity);
             
@@ -301,8 +309,11 @@ namespace Squadio.BLL.Services.Users.Implementation
                 });
             }
 
-            userEntity.AvatarId = null;
-            userEntity = await _repository.Update(userEntity);
+            var avatar = userEntity.Avatar;
+            if (avatar != null)
+            {
+                var deleteResult = await _resourcesService.DeleteResource(avatar.Id);
+            }
             
             var result = _mapper.Map<UserModel, UserDTO>(userEntity);
             return new Response<UserDTO>

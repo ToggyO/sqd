@@ -29,13 +29,16 @@ namespace Squadio.BLL.Services.Files.Implementation
             await UploadFile(path, data);
         }
 
-        public Task DeleteImageFile(string group, string filename)
+        public async Task DeleteImageFile(string group, string filename)
         {
             var sizes = _sizeOptions.Value.Sizes;
             foreach (var size in sizes)
             {
+                var path = GenerateImagePath(group, size.ToString(), filename);
+                await DeleteFileSystem(path);
             }
-            throw new NotImplementedException();
+            var originalPath = GenerateImagePath(group, "original", filename);
+            await DeleteFileSystem(originalPath);
         }
 
         public async Task UploadFile(string group, string filename, byte[] data)
@@ -44,9 +47,10 @@ namespace Squadio.BLL.Services.Files.Implementation
             await UploadFile(path, data);
         }
 
-        public Task DeleteFile(string group, string filename)
+        public async Task DeleteFile(string group, string filename)
         {
-            throw new NotImplementedException();
+            var path = GenerateFilePath(group, filename);
+            await DeleteFileSystem(path);
         }
 
         private string GenerateFilePath(string group, string filename)
@@ -142,6 +146,26 @@ namespace Squadio.BLL.Services.Files.Implementation
                 _logger.LogError("Input file is empty. Not saved: " + path);
                 throw new Exception("Input file is empty. Not saved: " + path);
             }
+        }
+
+        private async Task DeleteFileSystem(string path)
+        {
+            
+            await Task.Run(() =>
+            {
+                try
+                {
+                    var fileInf = new FileInfo(path);
+                    if (fileInf.Exists)
+                    {
+                        fileInf.Delete();
+                    }
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError($"File {path} not removed cause: {e.Message}");
+                }
+            });
         }
     }
 }
