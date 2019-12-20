@@ -76,6 +76,15 @@
       <Compile Update="Resources\ResourceImageViewModelMapper.cs">
         <DependentUpon>ResourceImageDTO.cs</DependentUpon>
       </Compile>
+      <Compile Update="Users\UserTeamModelMapper.cs">
+        <DependentUpon>UserWithRoleDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Users\UserProjectModelMapper.cs">
+        <DependentUpon>UserWithRoleDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Users\UserCompanyModelMapper.cs">
+        <DependentUpon>UserWithRoleDTO.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

@@ -31,6 +31,7 @@ namespace Squadio.API
 
             services.Add<ISignUpHandler, SignUpHandler>(serviceLifetime);
             services.Add<IUsersHandler, UsersHandler>(serviceLifetime);
+            services.Add<IUsersSettingsHandler, UsersSettingsHandler>(serviceLifetime);
             services.Add<IAuthHandler, AuthHandler>(serviceLifetime);
             services.Add<ICompaniesHandler, CompaniesHandler>(serviceLifetime);
             services.Add<ITeamsHandler, TeamsHandler>(serviceLifetime);
@@ -40,8 +41,6 @@ namespace Squadio.API
             services.Add<IFilesHandler, FilesHandler>(serviceLifetime);
             
             services.Add<AuthorizationFilter>(serviceLifetime);
-            
-            services.Add<IBaseHubProvider, BaseHubProvider>(serviceLifetime);
         }
     }
 }
