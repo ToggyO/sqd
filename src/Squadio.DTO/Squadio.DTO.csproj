@@ -74,7 +74,7 @@
         <DependentUpon>CompanyDetailDTO.cs</DependentUpon>
       </Compile>
       <Compile Update="Users\UserChangePasswordDTOValidator.cs">
-        <DependentUpon>UserChangePasswordDTO.cs</DependentUpon>
+        <DependentUpon>UserSetPasswordDTO.cs</DependentUpon>
       </Compile>
       <Compile Update="Users\UserSendNewChangeEmailRequestDTO.Validator.cs">
         <DependentUpon>UserSendNewChangeEmailRequestDTO.cs</DependentUpon>

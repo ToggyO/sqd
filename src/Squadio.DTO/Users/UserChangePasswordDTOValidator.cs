@@ -3,7 +3,7 @@ using Squadio.Common.Models.Errors;
 
 namespace Squadio.DTO.Users
 {
-    public class UserChangePasswordDTOValidator: AbstractValidator<UserChangePasswordDTO>
+    public class UserChangePasswordDTOValidator: AbstractValidator<UserSetPasswordDTO>
     {
         public UserChangePasswordDTOValidator()
         {

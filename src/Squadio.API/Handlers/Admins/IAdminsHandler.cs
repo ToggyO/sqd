@@ -15,7 +15,7 @@ namespace Squadio.API.Handlers.Admins
         Task<Response<PageModel<CompanyListDTO>>> GetCompaniesPage(PageModel model, CompaniesFilter filter,
             string search);
         Task<Response<CompanyDetailDTO>> GetCompanyDetail(Guid companyId);
-        Task<Response> ChangePassword(UserChangePasswordDTO dto, ClaimsPrincipal claims);
+        Task<Response> ChangePassword(UserSetPasswordDTO dto, ClaimsPrincipal claims);
         Task<Response> ResetPasswordRequest(string email);
         Task<Response<UserDTO>> ResetPassword(UserResetPasswordDTO dto);
     }

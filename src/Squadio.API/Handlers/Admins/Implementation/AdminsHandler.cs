@@ -46,7 +46,7 @@ namespace Squadio.API.Handlers.Admins.Implementation
             return result;
         }
 
-        public async Task<Response> ChangePassword(UserChangePasswordDTO dto, ClaimsPrincipal claims)
+        public async Task<Response> ChangePassword(UserSetPasswordDTO dto, ClaimsPrincipal claims)
         {
             var userResponse = await _provider.GetUserDetail(claims.GetUserId());
             if (!userResponse.IsSuccess)

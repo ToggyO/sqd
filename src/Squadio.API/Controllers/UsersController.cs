@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Squadio.API.Handlers.Users;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Squadio.API.Filters;
 using Squadio.Common.Models.Pages;
@@ -24,14 +22,17 @@ namespace Squadio.API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUsersHandler _handler;
+        private readonly IUsersSettingsHandler _settingsHandler;
 
-        public UsersController(IUsersHandler handler)
+        public UsersController(IUsersHandler handler
+            , IUsersSettingsHandler settingsHandler)
         {
             _handler = handler;
+            _settingsHandler = settingsHandler;
         }
         
         /// <summary>
-        /// Get users with pagination
+        /// Get users with pagination (for development purposes)
         /// </summary>
         [HttpGet]
         [AllowAnonymous]
@@ -48,6 +49,15 @@ namespace Squadio.API.Controllers
         public async Task<Response<UserDTO>> DeleteUser([Required, FromRoute] Guid id)
         {
             return await _handler.DeleteUser(id);
+        }
+        
+        /// <summary>
+        /// Get current user
+        /// </summary>
+        [HttpGet]
+        public async Task<Response<UserDTO>> GetCurrentUser()
+        {
+            return await _handler.GetCurrentUser(User);
         }
         
         /// <summary>
@@ -90,7 +100,7 @@ namespace Squadio.API.Controllers
         /// Get current user
         /// </summary>
         [HttpGet("current")]
-        public async Task<Response<UserDTO>> GetCurrentUser()
+        public async Task<Response<UserDTO>> GetCurrentUserObsolete()
         {
             return await _handler.GetCurrentUser(User);
         }
@@ -125,103 +135,114 @@ namespace Squadio.API.Controllers
         /// <summary>
         /// Update current user
         /// </summary>
+        [Obsolete]
         [HttpPut("current")]
         public async Task<Response<UserDTO>> UpdateCurrentUser([FromBody] UserUpdateDTO dto)
         {
-            return await _handler.UpdateCurrentUser(dto, User);
+            return await _settingsHandler.UpdateCurrentUser(dto, User);
         }
         
         /// <summary>
         /// Check the password restore code for validity
         /// </summary>
+        [Obsolete]
         [HttpGet("passwords/validate")]
         [AllowAnonymous]
         public async Task<Response> ValidateCode([FromQuery, Required] string code)
         {
-            return await _handler.ValidateCode(code);
+            return await _settingsHandler.ValidateCode(code);
         }
         
         /// <summary>
         /// Set new password 
         /// </summary>
+        [Obsolete]
         [HttpPut("passwords/change")]
-        public async Task<Response> ChangePassword([FromBody] UserChangePasswordDTO dto)
+        public async Task<Response> ChangePassword([FromBody] UserSetPasswordDTO dto)
         {
-            return await _handler.ChangePassword(dto, User);
+            return await _settingsHandler.SetPassword(dto, User);
         }
         
         /// <summary>
         /// Set new password, using link from "api/passwords/request"
         /// </summary>
+        [Obsolete]
         [HttpPut("passwords/set")]
         [AllowAnonymous]
         public async Task<Response<UserDTO>> SetPassword([FromBody] UserResetPasswordDTO dto)
         {
-            return await _handler.ResetPassword(dto);
+            return await _settingsHandler.ResetPassword(dto);
         }
         
         /// <summary>
         /// Send link to email for restore password
         /// </summary>
+        [Obsolete]
         [HttpPost("passwords/request")]
         [AllowAnonymous]
         public async Task<Response> ResetPasswordRequest([FromBody, Required] UserEmailDTO dto)
         {
-            return await _handler.ResetPasswordRequest(dto.Email);
+            return await _settingsHandler.ResetPasswordRequest(dto.Email);
         }
         
         /// <summary>
         /// Set email from "api/email/request" for current user
         /// </summary>
+        [Obsolete]
         [HttpPut("email/set")]
         public async Task<Response<UserDTO>> SetEmail([FromBody] UserSetEmailDTO dto)
         {
-            return await _handler.SetEmail(dto, User);
+            return await _settingsHandler.SetEmail(dto, User);
         }
         
         /// <summary>
         /// Send email for confirm new mailbox
         /// </summary>
+        [Obsolete]
         [HttpPost("email/request")]
         public async Task<Response<SimpleTokenDTO>> ChangeEmailRequest([FromBody, Required] UserChangeEmailRequestDTO dto)
         {
-            return await _handler.ChangeEmailRequest(dto, User);
+            return await _settingsHandler.ChangeEmailRequest(dto, User);
         }
         
         /// <summary>
         /// Send new email for confirm new mailbox
         /// </summary>
+        [Obsolete]
         [HttpPost("email/send-new-request")]
         public async Task<Response> SendNewChangeEmailRequest([FromBody, Required] UserSendNewChangeEmailRequestDTO dto)
         {
-            return await _handler.SendNewChangeEmailRequest(dto, User);
+            return await _settingsHandler.SendNewChangeEmailRequest(dto, User);
         }
         
         /// <summary>
         /// Save new avatar for current user
         /// </summary>
+        [Obsolete]
         [HttpPost("avatar-from-form")]
         public async Task<Response<UserDTO>> SaveNewAvatar([FromForm, Required] FileImageCreateDTO dto)
         {
-            return await _handler.SaveNewAvatar(dto, User);
+            return await _settingsHandler.SaveNewAvatar(dto, User);
         }
         
         /// <summary>
         /// Save new avatar for current user
         /// </summary>
+        [Obsolete]
         [HttpPost("avatar-from-body")]
         public async Task<Response<UserDTO>> SaveNewAvatar([FromBody, Required] ResourceImageCreateDTO dto)
         {
-            return await _handler.SaveNewAvatar(dto, User);
+            return await _settingsHandler.SaveNewAvatar(dto, User);
         }
         
         /// <summary>
         /// Save new avatar for current user
         /// </summary>
+        [Obsolete]
         [HttpDelete("avatar")]
         public async Task<Response<UserDTO>> DeleteAvatar()
         {
-            return await _handler.DeleteAvatar(User);
+            return await _settingsHandler.DeleteAvatar(User);
         }
     }
 }

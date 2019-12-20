@@ -2,7 +2,7 @@
 
 namespace Squadio.DTO.Users
 {
-    public class UserChangePasswordDTO
+    public class UserSetPasswordDTO
     {
         [Required]
         public string OldPassword { get; set; }
