@@ -11,7 +11,7 @@ namespace Squadio.API.Handlers.Projects
 {
     public interface IProjectsHandler
     {
-        Task<Response<PageModel<ProjectDTO>>> GetProjects(PageModel model, ProjectFilter filter);
+        Task<Response<PageModel<ProjectDTO>>> GetProjects(PageModel model, Guid? companyId = null, Guid? teamId = null);
         Task<Response<PageModel<UserWithRoleDTO>>> GetProjectUsers(Guid projectId, PageModel model);
         Task<Response<ProjectDTO>> GetById(Guid id);
         Task<Response<ProjectDTO>> Create(Guid teamId, ProjectCreateDTO dto, ClaimsPrincipal claims);

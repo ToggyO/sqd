@@ -32,9 +32,9 @@ namespace Squadio.API.Handlers.Projects.Implementation
             _hubProvider = hubProvider;
         }
 
-        public async Task<Response<PageModel<ProjectDTO>>> GetProjects(PageModel model, ProjectFilter filter)
+        public async Task<Response<PageModel<ProjectDTO>>> GetProjects(PageModel model, Guid? companyId = null, Guid? teamId = null)
         {
-            var result = await _provider.GetProjects(model, filter);
+            var result = await _provider.GetProjects(model, companyId, teamId);
             return result;
         }
 

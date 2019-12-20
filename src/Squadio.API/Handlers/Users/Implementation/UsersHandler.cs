@@ -7,7 +7,6 @@ using Squadio.BLL.Providers.Teams;
 using Squadio.BLL.Providers.Users;
 using Squadio.BLL.Services.Users;
 using Squadio.Common.Extensions;
-using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Companies;
@@ -49,21 +48,26 @@ namespace Squadio.API.Handlers.Users.Implementation
             return result;
         }
 
-        public async Task<Response<PageModel<CompanyWithUserRoleDTO>>> GetUserCompanies(ClaimsPrincipal claims, PageModel model, CompanyFilter filter)
+        public async Task<Response<PageModel<CompanyWithUserRoleDTO>>> GetUserCompanies(ClaimsPrincipal claims, PageModel model, Guid? companyId = null)
         {
-            var result = await _companyProvider.GetUserCompanies(claims.GetUserId(), model);
+            var result = await _companyProvider.GetUserCompanies(claims.GetUserId(), model, companyId);
             return result;
         }
 
-        public async Task<Response<PageModel<TeamWithUserRoleDTO>>> GetUserTeams(ClaimsPrincipal claims, PageModel model, TeamFilter filter)
+        public async Task<Response<PageModel<TeamWithUserRoleDTO>>> GetUserTeams(ClaimsPrincipal claims, PageModel model
+            , Guid? companyId = null
+            , Guid? teamId = null)
         {
-            var result = await _teamsProvider.GetUserTeams(claims.GetUserId(), model, filter.CompanyId);
+            var result = await _teamsProvider.GetUserTeams(claims.GetUserId(), model, companyId, teamId);
             return result;
         }
 
-        public async Task<Response<PageModel<ProjectWithUserRoleDTO>>> GetUserProjects(ClaimsPrincipal claims, PageModel model, ProjectFilter filter)
+        public async Task<Response<PageModel<ProjectWithUserRoleDTO>>> GetUserProjects(ClaimsPrincipal claims, PageModel model
+            , Guid? companyId = null
+            , Guid? teamId = null
+            , Guid? projectId = null)
         {
-            var result = await _projectsProvider.GetUserProjects(claims.GetUserId(), model, filter.CompanyId, filter.TeamId);
+            var result = await _projectsProvider.GetUserProjects(claims.GetUserId(), model, companyId, teamId, projectId);
             return result;
         }
 
@@ -73,21 +77,26 @@ namespace Squadio.API.Handlers.Users.Implementation
             return result;
         }
 
-        public async Task<Response<PageModel<CompanyWithUserRoleDTO>>> GetUserCompanies(Guid id, PageModel model, CompanyFilter filter)
+        public async Task<Response<PageModel<CompanyWithUserRoleDTO>>> GetUserCompanies(Guid id, PageModel model, Guid? companyId = null)
         {
-            var result = await _companyProvider.GetUserCompanies(id, model);
+            var result = await _companyProvider.GetUserCompanies(id, model, companyId);
             return result;
         }
 
-        public async Task<Response<PageModel<TeamWithUserRoleDTO>>> GetUserTeams(Guid id, PageModel model, TeamFilter filter)
+        public async Task<Response<PageModel<TeamWithUserRoleDTO>>> GetUserTeams(Guid id, PageModel model
+            , Guid? companyId = null
+            , Guid? teamId = null)
         {
-            var result = await _teamsProvider.GetUserTeams(id, model, filter.CompanyId);
+            var result = await _teamsProvider.GetUserTeams(id, model, companyId, teamId);
             return result;
         }
 
-        public async Task<Response<PageModel<ProjectWithUserRoleDTO>>> GetUserProjects(Guid id, PageModel model, ProjectFilter filter)
+        public async Task<Response<PageModel<ProjectWithUserRoleDTO>>> GetUserProjects(Guid id, PageModel model
+            , Guid? companyId = null
+            , Guid? teamId = null
+            , Guid? projectId = null)
         {
-            var result = await _projectsProvider.GetUserProjects(id, model, filter.CompanyId, filter.TeamId);
+            var result = await _projectsProvider.GetUserProjects(id, model, companyId, teamId, projectId);
             return result;
         }
 

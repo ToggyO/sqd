@@ -24,7 +24,7 @@ namespace Squadio.API.Handlers.Companies.Implementation
             _service = service;
         }
 
-        public async Task<Response<PageModel<CompanyDTO>>> GetCompanies(PageModel model, CompanyFilter filter)
+        public async Task<Response<PageModel<CompanyDTO>>> GetCompanies(PageModel model)
         {
             var result = await _provider.GetCompanies(model);
             return result;

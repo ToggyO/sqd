@@ -8,6 +8,6 @@ namespace Squadio.DAL.Repository.Projects
 {
     public interface IProjectsRepository : IBaseRepository<ProjectModel>
     {
-        Task<PageModel<ProjectModel>> GetProjects(PageModel model, ProjectFilter filter = null);
+        Task<PageModel<ProjectModel>> GetProjects(PageModel model, Guid? companyId = null, Guid? teamId = null);
     }
 }

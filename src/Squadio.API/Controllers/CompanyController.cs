@@ -37,10 +37,9 @@ namespace Squadio.API.Controllers
         /// Get companies with pagination
         /// </summary>
         [HttpGet]
-        public async Task<Response<PageModel<CompanyDTO>>> GetCompanies([FromQuery] PageModel model
-            , [FromQuery] CompanyFilter filter)
+        public async Task<Response<PageModel<CompanyDTO>>> GetCompanies([FromQuery] PageModel model)
         {
-            return await _handler.GetCompanies(model, filter);
+            return await _handler.GetCompanies(model);
         }
         
         /// <summary>

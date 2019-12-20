@@ -68,9 +68,9 @@ namespace Squadio.API.Controllers
         [HttpGet("{id}/companies")]
         public async Task<Response<PageModel<CompanyWithUserRoleDTO>>> GetUserCompanies([Required, FromRoute] Guid id
             , [FromQuery] PageModel model
-            , [FromQuery] CompanyFilter filter)
+            , [FromQuery] Guid? companyId)
         {
-            return await _handler.GetUserCompanies(id, model, filter);
+            return await _handler.GetUserCompanies(id, model, companyId);
         }
         
         /// <summary>
@@ -79,9 +79,10 @@ namespace Squadio.API.Controllers
         [HttpGet("{id}/teams")]
         public async Task<Response<PageModel<TeamWithUserRoleDTO>>> GetUserTeams([Required, FromRoute] Guid id
             , [FromQuery] PageModel model
-            , [FromQuery] TeamFilter filter)
+            , [FromQuery] Guid? companyId
+            , [FromQuery] Guid? teamId)
         {
-            return await _handler.GetUserTeams(id, model, filter);
+            return await _handler.GetUserTeams(id, model, companyId, teamId);
         }
         
         /// <summary>
@@ -90,9 +91,11 @@ namespace Squadio.API.Controllers
         [HttpGet("{id}/projects")]
         public async Task<Response<PageModel<ProjectWithUserRoleDTO>>> GetUserProjects([Required, FromRoute] Guid id
             , [FromQuery] PageModel model
-            , [FromQuery] ProjectFilter filter)
+            , [FromQuery] Guid? companyId
+            , [FromQuery] Guid? teamId
+            , [FromQuery] Guid? projectId)
         {
-            return await _handler.GetUserProjects(id, model, filter);
+            return await _handler.GetUserProjects(id, model, companyId, teamId, projectId);
         }
         
         /// <summary>
@@ -109,9 +112,9 @@ namespace Squadio.API.Controllers
         /// </summary>
         [HttpGet("current/companies")]
         public async Task<Response<PageModel<CompanyWithUserRoleDTO>>> GetUserCompanies([FromQuery] PageModel model
-            , [FromQuery] CompanyFilter filter)
+            , [FromQuery] Guid? companyId)
         {
-            return await _handler.GetUserCompanies(User, model, filter);
+            return await _handler.GetUserCompanies(User, model, companyId);
         }
         
         /// <summary>
@@ -119,9 +122,10 @@ namespace Squadio.API.Controllers
         /// </summary>
         [HttpGet("current/teams")]
         public async Task<Response<PageModel<TeamWithUserRoleDTO>>> GetUserTeams([FromQuery] PageModel model
-            , [FromQuery] TeamFilter filter)
+            , [FromQuery] Guid? companyId
+            , [FromQuery] Guid? teamId)
         {
-            return await _handler.GetUserTeams(User, model, filter);
+            return await _handler.GetUserTeams(User, model, companyId, teamId);
         }
         
         /// <summary>
@@ -129,9 +133,11 @@ namespace Squadio.API.Controllers
         /// </summary>
         [HttpGet("current/projects")]
         public async Task<Response<PageModel<ProjectWithUserRoleDTO>>> GetUserProjects([FromQuery] PageModel model
-            , [FromQuery] ProjectFilter filter)
+            , [FromQuery] Guid? companyId
+            , [FromQuery] Guid? teamId
+            , [FromQuery] Guid? projectId)
         {
-            return await _handler.GetUserProjects(User, model, filter);
+            return await _handler.GetUserProjects(User, model, companyId, teamId, projectId);
         }
         
         /// <summary>

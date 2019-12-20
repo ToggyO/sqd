@@ -34,9 +34,10 @@ namespace Squadio.API.Controllers
         /// </summary>
         [HttpGet]
         public async Task<Response<PageModel<ProjectDTO>>> GetProjects([FromQuery] PageModel model
-            , [FromQuery] ProjectFilter filter)
+            , [FromQuery] Guid? companyId
+            , [FromQuery] Guid? teamId)
         {
-            return await _handler.GetProjects(model, filter);
+            return await _handler.GetProjects(model, companyId, teamId);
         }
         
         /// <summary>

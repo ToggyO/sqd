@@ -45,25 +45,22 @@ namespace Squadio.DAL.Repository.Teams.Implementation
             return entity;
         }
 
-        public async Task<PageModel<TeamModel>> GetTeams(PageModel model, TeamFilter filter = null)
+        public async Task<PageModel<TeamModel>> GetTeams(PageModel model, Guid? companyId = null)
         {
             IQueryable<TeamModel> query = _context.Teams;
 
-            if (filter != null)
+            if (companyId.HasValue)
             {
-                if (filter.CompanyId.HasValue)
-                {
-                    query = query.Where(x => x.CompanyId == filter.CompanyId);
-                }
+                query = query.Where(x => x.CompanyId == companyId);
             }
-            
+
             var items = await query
                 .Skip((model.Page - 1) * model.PageSize)
                 .Take(model.PageSize)
                 .ToListAsync();
-            
+
             var total = await query.CountAsync();
-            
+
             var result = new PageModel<TeamModel>
             {
                 Page = model.Page,

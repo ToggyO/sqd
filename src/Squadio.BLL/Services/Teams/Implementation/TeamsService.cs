@@ -158,7 +158,7 @@ namespace Squadio.BLL.Services.Teams.Implementation
             {
                 Page = 1,
                 PageSize = 1000
-            }, new TeamFilter{CompanyId = companyId});
+            }, companyId);
             
             foreach (var team in teams.Items)
             {

@@ -188,7 +188,7 @@ namespace Squadio.BLL.Services.Projects.Implementation
             {
                 Page = 1,
                 PageSize = 1000
-            }, new ProjectFilter { TeamId = teamId });
+            }, teamId);
             
             foreach (var project in projects.Items)
             {

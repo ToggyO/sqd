@@ -30,9 +30,9 @@ namespace Squadio.BLL.Providers.Projects.Implementation
             _mapper = mapper;
         }
 
-        public async Task<Response<PageModel<ProjectDTO>>> GetProjects(PageModel model, ProjectFilter filter)
+        public async Task<Response<PageModel<ProjectDTO>>> GetProjects(PageModel model, Guid? companyId = null, Guid? teamId = null)
         {
-            var page = await _repository.GetProjects(model, filter);
+            var page = await _repository.GetProjects(model, companyId, teamId);
 
             var result = new PageModel<ProjectDTO>
             {

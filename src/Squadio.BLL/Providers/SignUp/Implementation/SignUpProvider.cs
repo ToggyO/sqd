@@ -102,7 +102,7 @@ namespace Squadio.BLL.Providers.SignUp.Implementation
                 });
             }
 
-            var teamPage = await _teamsProvider.GetTeams(new PageModel(), new TeamFilter{CompanyId = company.CompanyId});
+            var teamPage = await _teamsProvider.GetTeams(new PageModel(), company.CompanyId);
             var team = teamPage.Data.Items.FirstOrDefault();
             
             if (team == null)

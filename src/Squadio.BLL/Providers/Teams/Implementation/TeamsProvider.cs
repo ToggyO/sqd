@@ -72,9 +72,9 @@ namespace Squadio.BLL.Providers.Teams.Implementation
             };
         }
 
-        public async Task<Response<PageModel<TeamDTO>>> GetTeams(PageModel model, TeamFilter filter)
+        public async Task<Response<PageModel<TeamDTO>>> GetTeams(PageModel model, Guid? companyId = null)
         {
-            var page = await _repository.GetTeams(model, filter);
+            var page = await _repository.GetTeams(model, companyId);
 
             var result = new PageModel<TeamDTO>
             {
