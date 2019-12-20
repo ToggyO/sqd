@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NpgsqlTypes;
@@ -205,8 +206,10 @@ namespace Squadio.API
         }
 
         public void Configure(IApplicationBuilder app
-            , IWebHostEnvironment env)
+            , IWebHostEnvironment env
+            , ILogger<Startup> logger)
         {
+            logger.LogInformation("Enter Configure");
             if (!env.IsProduction())
             {
                 app.UseDeveloperExceptionPage();
@@ -217,31 +220,40 @@ namespace Squadio.API
                 app.UseHttpsRedirection();
             }
             
+            logger.LogInformation("Routing");
             app.UseRouting();
 
+            logger.LogInformation("Auth");
             app.UseAuthentication();
             app.UseAuthorization();
             
+            logger.LogInformation("Middleware");
             app.UseMiddleware(typeof(ExceptionMiddleware));
 
+            logger.LogInformation("Cors");
             app.UseCors(MyAllowSquadioOrigins);
             
+            logger.LogInformation("Statis files");
             app.UseStaticFiles();
 
+            logger.LogInformation("Swagger");
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Squad.io API V1");
             });
 
+            logger.LogInformation("EnsureMigrationOfContext");
             app.EnsureMigrationOfContext<SquadioDbContext>();
 
+            logger.LogInformation("Endpoints");
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<ChatHubService>("api/ws/chat");
                 endpoints.MapHub<CommonHubService>("api/ws");
             });
+            logger.LogInformation("Exit Configure");
         }
     }
 }
