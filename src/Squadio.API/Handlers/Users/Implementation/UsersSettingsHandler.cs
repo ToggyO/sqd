@@ -1,23 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Squadio.BLL.Providers.Companies;
-using Squadio.BLL.Providers.Projects;
-using Squadio.BLL.Providers.Teams;
 using Squadio.BLL.Providers.Users;
 using Squadio.BLL.Services.Resources;
 using Squadio.BLL.Services.Tokens;
 using Squadio.BLL.Services.Users;
 using Squadio.Common.Enums;
 using Squadio.Common.Extensions;
-using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Auth;
-using Squadio.DTO.Companies;
-using Squadio.DTO.Projects;
 using Squadio.DTO.Resources;
-using Squadio.DTO.Teams;
 using Squadio.DTO.Users;
 
 namespace Squadio.API.Handlers.Users.Implementation
@@ -25,25 +17,16 @@ namespace Squadio.API.Handlers.Users.Implementation
     public class UsersSettingsHandler : IUsersSettingsHandler
     {
         private readonly IUsersProvider _provider;
-        private readonly ICompaniesProvider _companyProvider;
-        private readonly ITeamsProvider _teamsProvider;
-        private readonly IProjectsProvider _projectsProvider;
         private readonly IUsersService _service;
         private readonly ITokensService _tokensService;
         private readonly IResourcesService _resourcesService;
         
         public UsersSettingsHandler(IUsersProvider provider
-            , ICompaniesProvider companyProvider
-            , ITeamsProvider teamsProvider
-            , IProjectsProvider projectsProvider
             , IUsersService service
             , ITokensService tokensService
             , IResourcesService resourcesService)
         {
             _service = service;
-            _companyProvider = companyProvider;
-            _teamsProvider = teamsProvider;
-            _projectsProvider = projectsProvider;
             _provider = provider;
             _tokensService = tokensService;
             _resourcesService = resourcesService;

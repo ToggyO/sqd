@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Squadio.API.Filters;
 using Squadio.API.Handlers.Companies;
 using Squadio.API.Handlers.Invites;
+using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.Domain.Enums;
@@ -36,9 +37,10 @@ namespace Squadio.API.Controllers
         /// Get companies with pagination
         /// </summary>
         [HttpGet]
-        public async Task<Response<PageModel<CompanyDTO>>> GetCompanies([FromQuery] PageModel model)
+        public async Task<Response<PageModel<CompanyDTO>>> GetCompanies([FromQuery] PageModel model
+            , [FromQuery] CompanyFilter filter)
         {
-            return await _handler.GetCompanies(model);
+            return await _handler.GetCompanies(model, filter);
         }
         
         /// <summary>

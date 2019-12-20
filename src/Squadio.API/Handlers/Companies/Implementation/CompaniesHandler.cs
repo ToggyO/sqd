@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Squadio.BLL.Providers.Companies;
 using Squadio.BLL.Services.Companies;
 using Squadio.Common.Extensions;
+using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Companies;
@@ -23,7 +24,7 @@ namespace Squadio.API.Handlers.Companies.Implementation
             _service = service;
         }
 
-        public async Task<Response<PageModel<CompanyDTO>>> GetCompanies(PageModel model)
+        public async Task<Response<PageModel<CompanyDTO>>> GetCompanies(PageModel model, CompanyFilter filter)
         {
             var result = await _provider.GetCompanies(model);
             return result;

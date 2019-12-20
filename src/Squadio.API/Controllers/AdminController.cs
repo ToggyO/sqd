@@ -45,7 +45,7 @@ namespace Squadio.API.Controllers
         [HttpGet("companies")]
         [PermissionFilter(Area.Admin)]
         public async Task<Response<PageModel<CompanyListDTO>>> GetCompaniesPage([FromQuery] PageModel model
-            , [FromQuery] CompaniesFilter filter
+            , [FromQuery] CompanyAdminFilter filter
             , [FromQuery] string search)
         {
             return await _handler.GetCompaniesPage(model, filter, search);

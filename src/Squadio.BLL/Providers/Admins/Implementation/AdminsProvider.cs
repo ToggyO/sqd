@@ -71,7 +71,7 @@ namespace Squadio.BLL.Providers.Admins.Implementation
             return result;
         }
 
-        public async Task<Response<PageModel<CompanyListDTO>>> GetCompaniesPage(PageModel model, CompaniesFilter filter, string search)
+        public async Task<Response<PageModel<CompanyListDTO>>> GetCompaniesPage(PageModel model, CompanyAdminFilter filter, string search)
         {
             var companiesPage = await _companiesRepository.GetCompanies(model, filter, search);
 

@@ -48,9 +48,9 @@ namespace Squadio.BLL.Providers.Projects.Implementation
             };
         }
 
-        public async Task<Response<PageModel<ProjectUserDTO>>> GetUserProjects(Guid userId, PageModel model, Guid? companyId = null)
+        public async Task<Response<PageModel<ProjectUserDTO>>> GetUserProjects(Guid userId, PageModel model, Guid? companyId = null, Guid? teamId = null)
         {
-            var page = await _projectsUsersRepository.GetUserProjects(model, userId: userId);
+            var page = await _projectsUsersRepository.GetUserProjects(model, companyId, teamId, userId);
             
             var items = page.Items.Select(x => _mapper.Map<ProjectUserModel, ProjectUserDTO>(x)).ToList();
             items.ForEach(x => x.User = null);

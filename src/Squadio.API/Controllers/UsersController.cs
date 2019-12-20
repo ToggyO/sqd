@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Squadio.API.Filters;
+using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Auth;
@@ -68,32 +69,38 @@ namespace Squadio.API.Controllers
         {
             return await _handler.GetById(id);
         }
-        
+
         /// <summary>
         /// Get companies of user
         /// </summary>
         [HttpGet("{id}/companies")]
-        public async Task<Response<PageModel<CompanyUserDTO>>> GetUserCompanies([Required, FromRoute] Guid id, [FromQuery] PageModel model)
+        public async Task<Response<PageModel<CompanyUserDTO>>> GetUserCompanies([Required, FromRoute] Guid id
+            , [FromQuery] PageModel model
+            , [FromQuery] CompanyFilter filter)
         {
-            return await _handler.GetUserCompanies(id, model);
+            return await _handler.GetUserCompanies(id, model, filter);
         }
         
         /// <summary>
         /// Get teams of user
         /// </summary>
         [HttpGet("{id}/teams")]
-        public async Task<Response<PageModel<TeamUserDTO>>> GetUserTeams([Required, FromRoute] Guid id, [FromQuery] PageModel model)
+        public async Task<Response<PageModel<TeamUserDTO>>> GetUserTeams([Required, FromRoute] Guid id
+            , [FromQuery] PageModel model
+            , [FromQuery] TeamFilter filter)
         {
-            return await _handler.GetUserTeams(id, model);
+            return await _handler.GetUserTeams(id, model, filter);
         }
         
         /// <summary>
         /// Get projects of user
         /// </summary>
         [HttpGet("{id}/projects")]
-        public async Task<Response<PageModel<ProjectUserDTO>>> GetUserProjects([Required, FromRoute] Guid id, [FromQuery] PageModel model)
+        public async Task<Response<PageModel<ProjectUserDTO>>> GetUserProjects([Required, FromRoute] Guid id
+            , [FromQuery] PageModel model
+            , [FromQuery] ProjectFilter filter)
         {
-            return await _handler.GetUserProjects(id, model);
+            return await _handler.GetUserProjects(id, model, filter);
         }
         
         /// <summary>
@@ -109,27 +116,30 @@ namespace Squadio.API.Controllers
         /// Get companies current user
         /// </summary>
         [HttpGet("current/companies")]
-        public async Task<Response<PageModel<CompanyUserDTO>>> GetUserCompanies([FromQuery] PageModel model)
+        public async Task<Response<PageModel<CompanyUserDTO>>> GetUserCompanies([FromQuery] PageModel model
+            , [FromQuery] CompanyFilter filter)
         {
-            return await _handler.GetUserCompanies(User, model);
+            return await _handler.GetUserCompanies(User, model, filter);
         }
         
         /// <summary>
         /// Get teams current user
         /// </summary>
         [HttpGet("current/teams")]
-        public async Task<Response<PageModel<TeamUserDTO>>> GetUserTeams([FromQuery] PageModel model)
+        public async Task<Response<PageModel<TeamUserDTO>>> GetUserTeams([FromQuery] PageModel model
+            , [FromQuery] TeamFilter filter)
         {
-            return await _handler.GetUserTeams(User, model);
+            return await _handler.GetUserTeams(User, model, filter);
         }
         
         /// <summary>
         /// Get projects current user
         /// </summary>
         [HttpGet("current/projects")]
-        public async Task<Response<PageModel<ProjectUserDTO>>> GetUserProjects([FromQuery] PageModel model)
+        public async Task<Response<PageModel<ProjectUserDTO>>> GetUserProjects([FromQuery] PageModel model
+            , [FromQuery] ProjectFilter filter)
         {
-            return await _handler.GetUserProjects(User, model);
+            return await _handler.GetUserProjects(User, model, filter);
         }
         
         /// <summary>

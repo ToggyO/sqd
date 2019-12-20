@@ -2,7 +2,7 @@
 
 namespace Squadio.Common.Models.Filters
 {
-    public class CompaniesFilter
+    public class CompanyAdminFilter
     {
         public DateTime? FromDate { get; set; }
         public DateTime? ToDate { get; set; }
