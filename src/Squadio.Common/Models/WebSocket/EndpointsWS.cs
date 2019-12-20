@@ -5,6 +5,9 @@
         public static class Sidebar
         {
             public const string Broadcast = "SidebarBroadcast";
+            public const string BroadcastProjectChanged = "SidebarBroadcastProjectChanged";
+            public const string BroadcastFolderChanged = "SidebarBroadcastFolderChanged";
+            public const string BroadcastBoardChanged = "SidebarBroadcastBoardChanged";
             public const string SubscribeTeam = "SidebarSubscribeTeam";
         }
         

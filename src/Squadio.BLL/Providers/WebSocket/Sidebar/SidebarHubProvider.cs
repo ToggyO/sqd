@@ -22,17 +22,17 @@ namespace Squadio.BLL.Providers.WebSocket.Sidebar
         }
         public async Task BroadcastProjectChanges(Guid groupId, BroadcastSidebarProjectChangesModel model)
         {
-            await _baseHubProvider.BroadcastChanges(groupId, _group, EndpointsWS.Sidebar.Broadcast, model);
+            await _baseHubProvider.BroadcastChanges(groupId, _group, EndpointsWS.Sidebar.BroadcastProjectChanged, model);
         }
 
         public async Task BroadcastFolderChanges(Guid groupId, BroadcastSidebarFolderChangesModel model)
         {
-            await _baseHubProvider.BroadcastChanges(groupId, _group, EndpointsWS.Sidebar.Broadcast, model);
+            await _baseHubProvider.BroadcastChanges(groupId, _group, EndpointsWS.Sidebar.BroadcastFolderChanged, model);
         }
 
         public async Task BroadcastBoardChanges(Guid groupId, BroadcastSidebarBoardChangesModel model)
         {
-            await _baseHubProvider.BroadcastChanges(groupId, _group, EndpointsWS.Sidebar.Broadcast, model);
+            await _baseHubProvider.BroadcastChanges(groupId, _group, EndpointsWS.Sidebar.BroadcastBoardChanged, model);
         }
     }
 }
