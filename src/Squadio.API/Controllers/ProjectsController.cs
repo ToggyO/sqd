@@ -11,6 +11,7 @@ using Squadio.Common.Models.Responses;
 using Squadio.Domain.Enums;
 using Squadio.DTO.Invites;
 using Squadio.DTO.Projects;
+using Squadio.DTO.Users;
 
 namespace Squadio.API.Controllers
 {
@@ -78,7 +79,7 @@ namespace Squadio.API.Controllers
         /// Get users of project
         /// </summary>
         [HttpGet("{id}/users")]
-        public Task<Response<PageModel<ProjectUserDTO>>> GetProjectUsers([Required, FromRoute] Guid id
+        public Task<Response<PageModel<UserWithRoleDTO>>> GetProjectUsers([Required, FromRoute] Guid id
             , [FromQuery] PageModel model)
         {
             return _handler.GetProjectUsers(id, model);

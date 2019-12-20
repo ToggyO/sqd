@@ -9,6 +9,7 @@ using Squadio.DAL.Repository.Companies;
 using Squadio.DAL.Repository.CompaniesUsers;
 using Squadio.Domain.Models.Companies;
 using Squadio.DTO.Companies;
+using Squadio.DTO.Users;
 
 namespace Squadio.BLL.Providers.Companies.Implementation
 {
@@ -43,14 +44,13 @@ namespace Squadio.BLL.Providers.Companies.Implementation
             };
         }
 
-        public async Task<Response<PageModel<CompanyUserDTO>>> GetUserCompanies(Guid userId, PageModel model)
+        public async Task<Response<PageModel<CompanyWithUserRoleDTO>>> GetUserCompanies(Guid userId, PageModel model)
         {
             var page = await _companiesUsersRepository.GetUserCompanies(userId, model);
             
-            var items = page.Items.Select(x => _mapper.Map<CompanyUserModel, CompanyUserDTO>(x)).ToList();
-            items.ForEach(x => x.User = null);
+            var items = page.Items.Select(x => _mapper.Map<CompanyUserModel, CompanyWithUserRoleDTO>(x)).ToList();
 
-            var result = new PageModel<CompanyUserDTO>
+            var result = new PageModel<CompanyWithUserRoleDTO>
             {
                 Page = page.Page,
                 PageSize = page.PageSize,
@@ -58,20 +58,19 @@ namespace Squadio.BLL.Providers.Companies.Implementation
                 Items = items
             };
             
-            return new Response<PageModel<CompanyUserDTO>>
+            return new Response<PageModel<CompanyWithUserRoleDTO>>
             {
                 Data = result
             };
         }
 
-        public async Task<Response<PageModel<CompanyUserDTO>>> GetCompanyUsers(Guid companyId, PageModel model)
+        public async Task<Response<PageModel<UserWithRoleDTO>>> GetCompanyUsers(Guid companyId, PageModel model)
         {
             var page = await _companiesUsersRepository.GetCompanyUsers(companyId, model);
 
-            var items = page.Items.Select(x => _mapper.Map<CompanyUserModel, CompanyUserDTO>(x)).ToList();
-            items.ForEach(x => x.Company = null);
+            var items = page.Items.Select(x => _mapper.Map<CompanyUserModel, UserWithRoleDTO>(x)).ToList();
 
-            var result = new PageModel<CompanyUserDTO>
+            var result = new PageModel<UserWithRoleDTO>
             {
                 Page = page.Page,
                 PageSize = page.PageSize,
@@ -79,7 +78,7 @@ namespace Squadio.BLL.Providers.Companies.Implementation
                 Items = items
             };
             
-            return new Response<PageModel<CompanyUserDTO>>
+            return new Response<PageModel<UserWithRoleDTO>>
             {
                 Data = result
             };

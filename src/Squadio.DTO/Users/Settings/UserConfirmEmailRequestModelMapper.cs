@@ -3,7 +3,7 @@ using System.Linq;
 using Mapper;
 using Squadio.Domain.Models.Users;
 
-namespace Squadio.DTO.Users
+namespace Squadio.DTO.Users.Settings
 {
     public class UserConfirmEmailRequestModelMapper: IMapper<UserConfirmEmailRequestModel, UserConfirmEmailRequestDTO>
     {

@@ -11,7 +11,7 @@ namespace Squadio.API.Handlers.Teams
 {
     public interface ITeamsHandler
     {
-        Task<Response<PageModel<TeamUserDTO>>> GetTeamUsers(Guid teamId, PageModel model);
+        Task<Response<PageModel<UserWithRoleDTO>>> GetTeamUsers(Guid teamId, PageModel model);
         Task<Response<PageModel<TeamDTO>>> GetTeams(PageModel model, TeamFilter filter);
         Task<Response<TeamDTO>> GetById(Guid id);
         Task<Response<TeamDTO>> Create(Guid companyId, TeamCreateDTO dto, ClaimsPrincipal claims);

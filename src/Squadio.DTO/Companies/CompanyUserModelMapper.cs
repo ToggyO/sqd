@@ -8,7 +8,7 @@ using Squadio.DTO.Users;
 
 namespace Squadio.DTO.Companies
 {
-    public class CompanyUserModelMapper : IMapper<CompanyUserModel, CompanyUserDTO>
+    public class CompanyUserModelMapper : IMapper<CompanyUserModel, CompanyWithUserRoleDTO>
     {
         private readonly IMapper _mapper;
 
@@ -17,20 +17,15 @@ namespace Squadio.DTO.Companies
             _mapper = mapper;
         }
     
-        public CompanyUserDTO Map(CompanyUserModel item)
+        public CompanyWithUserRoleDTO Map(CompanyUserModel item)
         {
-            var result = new CompanyUserDTO
+            var result = new CompanyWithUserRoleDTO
             {
-                UserId = item.UserId,
                 CompanyId = item.CompanyId,
                 Status = (int) item.Status,
                 StatusName = item.Status.ToString(),
                 CreatedDate = item.CreatedDate
             };
-            if (item.User != null)
-            {
-                result.User = _mapper.Map<UserModel, UserDTO>(item.User);
-            }
             if (item.Company != null)
             {
                 result.Company = _mapper.Map<CompanyModel, CompanyDTO>(item.Company);
@@ -39,7 +34,7 @@ namespace Squadio.DTO.Companies
         }
     }
     
-    public class EnumerableCompanyUserModelMapper : IMapper<IEnumerable<CompanyUserModel>, IEnumerable<CompanyUserDTO>>
+    public class EnumerableCompanyUserModelMapper : IMapper<IEnumerable<CompanyUserModel>, IEnumerable<CompanyWithUserRoleDTO>>
     {
         private readonly IMapper _mapper;
 
@@ -48,9 +43,9 @@ namespace Squadio.DTO.Companies
             _mapper = mapper;
         }
     
-        public IEnumerable<CompanyUserDTO> Map(IEnumerable<CompanyUserModel> items)
+        public IEnumerable<CompanyWithUserRoleDTO> Map(IEnumerable<CompanyUserModel> items)
         {
-            var result = items.Select(x => _mapper.Map<CompanyUserModel, CompanyUserDTO>(x));
+            var result = items.Select(x => _mapper.Map<CompanyUserModel, CompanyWithUserRoleDTO>(x));
             return result;
         }
     }

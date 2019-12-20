@@ -12,6 +12,6 @@ namespace Squadio.DTO.Companies
         public DateTime CreatedDate { get; set; }
         public UserDTO Creator { get; set; }
         public int UsersCount { get; set; }
-        public IEnumerable<CompanyUserDTO> Admins { get; set; }
+        public IEnumerable<UserWithRoleDTO> Admins { get; set; }
     }
 }

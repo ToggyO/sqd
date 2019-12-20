@@ -49,19 +49,19 @@ namespace Squadio.API.Handlers.Users.Implementation
             return result;
         }
 
-        public async Task<Response<PageModel<CompanyUserDTO>>> GetUserCompanies(ClaimsPrincipal claims, PageModel model, CompanyFilter filter)
+        public async Task<Response<PageModel<CompanyWithUserRoleDTO>>> GetUserCompanies(ClaimsPrincipal claims, PageModel model, CompanyFilter filter)
         {
             var result = await _companyProvider.GetUserCompanies(claims.GetUserId(), model);
             return result;
         }
 
-        public async Task<Response<PageModel<TeamUserDTO>>> GetUserTeams(ClaimsPrincipal claims, PageModel model, TeamFilter filter)
+        public async Task<Response<PageModel<TeamWithUserRoleDTO>>> GetUserTeams(ClaimsPrincipal claims, PageModel model, TeamFilter filter)
         {
             var result = await _teamsProvider.GetUserTeams(claims.GetUserId(), model, filter.CompanyId);
             return result;
         }
 
-        public async Task<Response<PageModel<ProjectUserDTO>>> GetUserProjects(ClaimsPrincipal claims, PageModel model, ProjectFilter filter)
+        public async Task<Response<PageModel<ProjectWithUserRoleDTO>>> GetUserProjects(ClaimsPrincipal claims, PageModel model, ProjectFilter filter)
         {
             var result = await _projectsProvider.GetUserProjects(claims.GetUserId(), model, filter.CompanyId, filter.TeamId);
             return result;
@@ -73,19 +73,19 @@ namespace Squadio.API.Handlers.Users.Implementation
             return result;
         }
 
-        public async Task<Response<PageModel<CompanyUserDTO>>> GetUserCompanies(Guid id, PageModel model, CompanyFilter filter)
+        public async Task<Response<PageModel<CompanyWithUserRoleDTO>>> GetUserCompanies(Guid id, PageModel model, CompanyFilter filter)
         {
             var result = await _companyProvider.GetUserCompanies(id, model);
             return result;
         }
 
-        public async Task<Response<PageModel<TeamUserDTO>>> GetUserTeams(Guid id, PageModel model, TeamFilter filter)
+        public async Task<Response<PageModel<TeamWithUserRoleDTO>>> GetUserTeams(Guid id, PageModel model, TeamFilter filter)
         {
             var result = await _teamsProvider.GetUserTeams(id, model, filter.CompanyId);
             return result;
         }
 
-        public async Task<Response<PageModel<ProjectUserDTO>>> GetUserProjects(Guid id, PageModel model, ProjectFilter filter)
+        public async Task<Response<PageModel<ProjectWithUserRoleDTO>>> GetUserProjects(Guid id, PageModel model, ProjectFilter filter)
         {
             var result = await _projectsProvider.GetUserProjects(id, model, filter.CompanyId, filter.TeamId);
             return result;

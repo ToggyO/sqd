@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Squadio.DTO.Users
+namespace Squadio.DTO.Users.Settings
 {
     public class UserSetPasswordDTO
     {

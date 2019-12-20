@@ -7,7 +7,7 @@ using Squadio.DTO.Users;
 
 namespace Squadio.DTO.Teams
 {
-    public class TeamUserModelMapper : IMapper<TeamUserModel, TeamUserDTO>
+    public class TeamUserModelMapper : IMapper<TeamUserModel, TeamWithUserRoleDTO>
     {
         private readonly IMapper _mapper;
 
@@ -16,20 +16,15 @@ namespace Squadio.DTO.Teams
             _mapper = mapper;
         }
     
-        public TeamUserDTO Map(TeamUserModel item)
+        public TeamWithUserRoleDTO Map(TeamUserModel item)
         {
-            var result = new TeamUserDTO
+            var result = new TeamWithUserRoleDTO
             {
-                UserId = item.UserId,
                 TeamId = item.TeamId,
                 Status = (int) item.Status,
                 StatusName = item.Status.ToString(),
                 CreatedDate = item.CreatedDate
             };
-            if (item.User != null)
-            {
-                result.User = _mapper.Map<UserModel, UserDTO>(item.User);
-            }
             if (item.Team != null)
             {
                 result.Team = _mapper.Map<TeamModel, TeamDTO>(item.Team);
@@ -38,7 +33,7 @@ namespace Squadio.DTO.Teams
         }
     }
     
-    public class EnumerableTeamUserModelMapper : IMapper<IEnumerable<TeamUserModel>, IEnumerable<TeamUserDTO>>
+    public class EnumerableTeamUserModelMapper : IMapper<IEnumerable<TeamUserModel>, IEnumerable<TeamWithUserRoleDTO>>
     {
         private readonly IMapper _mapper;
 
@@ -47,9 +42,9 @@ namespace Squadio.DTO.Teams
             _mapper = mapper;
         }
     
-        public IEnumerable<TeamUserDTO> Map(IEnumerable<TeamUserModel> items)
+        public IEnumerable<TeamWithUserRoleDTO> Map(IEnumerable<TeamUserModel> items)
         {
-            var result = items.Select(x => _mapper.Map<TeamUserModel, TeamUserDTO>(x));
+            var result = items.Select(x => _mapper.Map<TeamUserModel, TeamWithUserRoleDTO>(x));
             return result;
         }
     }

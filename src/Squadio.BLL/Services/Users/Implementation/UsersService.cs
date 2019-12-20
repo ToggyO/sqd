@@ -16,6 +16,7 @@ using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Auth;
 using Squadio.DTO.Users;
+using Squadio.DTO.Users.Settings;
 
 namespace Squadio.BLL.Services.Users.Implementation
 {

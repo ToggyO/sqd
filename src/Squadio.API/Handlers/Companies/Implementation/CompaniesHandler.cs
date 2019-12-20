@@ -30,7 +30,7 @@ namespace Squadio.API.Handlers.Companies.Implementation
             return result;
         }
 
-        public async Task<Response<PageModel<CompanyUserDTO>>> GetCompanyUsers(Guid companyId, PageModel model)
+        public async Task<Response<PageModel<UserWithRoleDTO>>> GetCompanyUsers(Guid companyId, PageModel model)
         {
             var result = await _provider.GetCompanyUsers(companyId, model);
             return result;

@@ -6,6 +6,6 @@ namespace Squadio.DTO.Users
     public class UserWithCompaniesDTO
     {
         public UserDTO User { get; set; }
-        public IEnumerable<CompanyUserDTO> Companies { get; set; }
+        public IEnumerable<CompanyWithUserRoleDTO> Companies { get; set; }
     }
 }

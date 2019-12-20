@@ -12,7 +12,7 @@ namespace Squadio.API.Handlers.Companies
     public interface ICompaniesHandler
     {
         Task<Response<PageModel<CompanyDTO>>> GetCompanies(PageModel model, CompanyFilter filter);
-        Task<Response<PageModel<CompanyUserDTO>>> GetCompanyUsers(Guid companyId, PageModel model);
+        Task<Response<PageModel<UserWithRoleDTO>>> GetCompanyUsers(Guid companyId, PageModel model);
         Task<Response<CompanyDTO>> GetCompany(Guid id);
         Task<Response<CompanyDTO>> CreateCompany(CompanyCreateDTO dto, ClaimsPrincipal claims);
         Task<Response<CompanyDTO>> UpdateCompany(Guid companyId, CompanyUpdateDTO dto, ClaimsPrincipal claims);

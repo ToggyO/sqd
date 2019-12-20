@@ -11,9 +11,8 @@ namespace Squadio.BLL.Providers.Projects
     public interface IProjectsProvider
     {
         Task<Response<PageModel<ProjectDTO>>> GetProjects(PageModel model, ProjectFilter filter);
-        Task<Response<PageModel<ProjectUserDTO>>> GetUserProjects(Guid userId, PageModel model, Guid? companyId = null, Guid? teamId = null);
-        Task<Response<PageModel<ProjectUserDTO>>> GetProjectUsers(Guid projectId, PageModel model);
-        Task<Response<PageModel<ProjectUserDTO>>> GetProjectUsers(PageModel model, Guid? companyId = null, Guid? teamId = null, Guid? userId = null);
+        Task<Response<PageModel<ProjectWithUserRoleDTO>>> GetUserProjects(Guid userId, PageModel model, Guid? companyId = null, Guid? teamId = null);
+        Task<Response<PageModel<UserWithRoleDTO>>> GetProjectUsers(Guid projectId, PageModel model);
         Task<Response<ProjectDTO>> GetById(Guid id);
     }
 }

@@ -24,6 +24,7 @@ using Squadio.DTO.Projects;
 using Squadio.DTO.SignUp;
 using Squadio.DTO.Teams;
 using Squadio.DTO.Users;
+using Squadio.DTO.Users.Settings;
 
 namespace Squadio.BLL.Services.SignUp.Implementation
 {

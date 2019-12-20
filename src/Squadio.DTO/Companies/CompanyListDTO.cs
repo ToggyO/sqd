@@ -8,6 +8,6 @@ namespace Squadio.DTO.Companies
     {
         public CompanyDTO Company { get; set; }
         public int UsersCount { get; set; }
-        public IEnumerable<CompanyUserDTO> Admins { get; set; }
+        public IEnumerable<UserWithRoleDTO> Admins { get; set; }
     }
 }

@@ -12,6 +12,7 @@ using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Companies;
 using Squadio.DTO.Users;
+using Squadio.DTO.Users.Settings;
 
 namespace Squadio.API.Controllers
 {

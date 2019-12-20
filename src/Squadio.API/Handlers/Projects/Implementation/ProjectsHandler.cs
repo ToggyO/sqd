@@ -13,6 +13,7 @@ using Squadio.Common.Models.Responses;
 using Squadio.Common.Models.WebSocket;
 using Squadio.Common.WebSocket;
 using Squadio.DTO.Projects;
+using Squadio.DTO.Users;
 
 namespace Squadio.API.Handlers.Projects.Implementation
 {
@@ -37,7 +38,7 @@ namespace Squadio.API.Handlers.Projects.Implementation
             return result;
         }
 
-        public async Task<Response<PageModel<ProjectUserDTO>>> GetProjectUsers(Guid projectId, PageModel model)
+        public async Task<Response<PageModel<UserWithRoleDTO>>> GetProjectUsers(Guid projectId, PageModel model)
         {
             var result = await _provider.GetProjectUsers(projectId, model);
             return result;

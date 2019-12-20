@@ -48,14 +48,13 @@ namespace Squadio.BLL.Providers.Projects.Implementation
             };
         }
 
-        public async Task<Response<PageModel<ProjectUserDTO>>> GetUserProjects(Guid userId, PageModel model, Guid? companyId = null, Guid? teamId = null)
+        public async Task<Response<PageModel<ProjectWithUserRoleDTO>>> GetUserProjects(Guid userId, PageModel model, Guid? companyId = null, Guid? teamId = null)
         {
             var page = await _projectsUsersRepository.GetUserProjects(model, companyId, teamId, userId);
             
-            var items = page.Items.Select(x => _mapper.Map<ProjectUserModel, ProjectUserDTO>(x)).ToList();
-            items.ForEach(x => x.User = null);
+            var items = page.Items.Select(x => _mapper.Map<ProjectUserModel, ProjectWithUserRoleDTO>(x)).ToList();
 
-            var result = new PageModel<ProjectUserDTO>
+            var result = new PageModel<ProjectWithUserRoleDTO>
             {
                 Page = page.Page,
                 PageSize = page.PageSize,
@@ -63,20 +62,19 @@ namespace Squadio.BLL.Providers.Projects.Implementation
                 Items = items
             };
             
-            return new Response<PageModel<ProjectUserDTO>>
+            return new Response<PageModel<ProjectWithUserRoleDTO>>
             {
                 Data = result
             };
         }
 
-        public async Task<Response<PageModel<ProjectUserDTO>>> GetProjectUsers(Guid projectId, PageModel model)
+        public async Task<Response<PageModel<UserWithRoleDTO>>> GetProjectUsers(Guid projectId, PageModel model)
         {
             var page = await _projectsUsersRepository.GetProjectUsers(projectId, model);
             
-            var items = page.Items.Select(x => _mapper.Map<ProjectUserModel, ProjectUserDTO>(x)).ToList();
-            items.ForEach(x => x.Project = null);
+            var items = page.Items.Select(x => _mapper.Map<ProjectUserModel, UserWithRoleDTO>(x)).ToList();
 
-            var result = new PageModel<ProjectUserDTO>
+            var result = new PageModel<UserWithRoleDTO>
             {
                 Page = page.Page,
                 PageSize = page.PageSize,
@@ -84,27 +82,7 @@ namespace Squadio.BLL.Providers.Projects.Implementation
                 Items = items
             };
             
-            return new Response<PageModel<ProjectUserDTO>>
-            {
-                Data = result
-            };
-        }
-
-        public async Task<Response<PageModel<ProjectUserDTO>>> GetProjectUsers(PageModel model, Guid? companyId = null, Guid? teamId = null, Guid? userId = null)
-        {
-            var page = await _projectsUsersRepository.GetUserProjects(model, companyId, teamId, userId);
-            
-            var items = page.Items.Select(x => _mapper.Map<ProjectUserModel, ProjectUserDTO>(x)).ToList();
-
-            var result = new PageModel<ProjectUserDTO>
-            {
-                Page = page.Page,
-                PageSize = page.PageSize,
-                Total = page.Total,
-                Items = items
-            };
-            
-            return new Response<PageModel<ProjectUserDTO>>
+            return new Response<PageModel<UserWithRoleDTO>>
             {
                 Data = result
             };

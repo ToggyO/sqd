@@ -30,14 +30,13 @@ namespace Squadio.BLL.Providers.Teams.Implementation
             _mapper = mapper;
         }
 
-        public async Task<Response<PageModel<TeamUserDTO>>> GetUserTeams(Guid userId, PageModel model, Guid? companyId = null)
+        public async Task<Response<PageModel<TeamWithUserRoleDTO>>> GetUserTeams(Guid userId, PageModel model, Guid? companyId = null)
         {
             var page = await _teamsUsersRepository.GetUserTeams(userId, model, companyId);
             
-            var items = page.Items.Select(x => _mapper.Map<TeamUserModel, TeamUserDTO>(x)).ToList();
-            items.ForEach(x => x.User = null);
+            var items = page.Items.Select(x => _mapper.Map<TeamUserModel, TeamWithUserRoleDTO>(x)).ToList();
 
-            var result = new PageModel<TeamUserDTO>
+            var result = new PageModel<TeamWithUserRoleDTO>
             {
                 Page = page.Page,
                 PageSize = page.PageSize,
@@ -45,20 +44,19 @@ namespace Squadio.BLL.Providers.Teams.Implementation
                 Items = items
             };
             
-            return new Response<PageModel<TeamUserDTO>>
+            return new Response<PageModel<TeamWithUserRoleDTO>>
             {
                 Data = result
             };
         }
 
-        public async Task<Response<PageModel<TeamUserDTO>>> GetTeamUsers(Guid teamId, PageModel model)
+        public async Task<Response<PageModel<UserWithRoleDTO>>> GetTeamUsers(Guid teamId, PageModel model)
         {
             var page = await _teamsUsersRepository.GetTeamUsers(teamId, model);
             
-            var items = page.Items.Select(x => _mapper.Map<TeamUserModel, TeamUserDTO>(x)).ToList();
-            items.ForEach(x => x.Team = null);
+            var items = page.Items.Select(x => _mapper.Map<TeamUserModel, UserWithRoleDTO>(x)).ToList();
 
-            var result = new PageModel<TeamUserDTO>
+            var result = new PageModel<UserWithRoleDTO>
             {
                 Page = page.Page,
                 PageSize = page.PageSize,
@@ -66,7 +64,7 @@ namespace Squadio.BLL.Providers.Teams.Implementation
                 Items = items
             };
             
-            return new Response<PageModel<TeamUserDTO>>
+            return new Response<PageModel<UserWithRoleDTO>>
             {
                 Data = result
             };

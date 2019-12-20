@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using Squadio.Common.Models.Errors;
 
-namespace Squadio.DTO.Users
+namespace Squadio.DTO.Users.Settings
 {
     public class UserUpdateDTOValidator: AbstractValidator<UserUpdateDTO>
     {

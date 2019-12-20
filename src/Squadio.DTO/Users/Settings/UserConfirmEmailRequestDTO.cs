@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Squadio.DTO.Users
+namespace Squadio.DTO.Users.Settings
 {
     public class UserConfirmEmailRequestDTO
     {

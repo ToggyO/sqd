@@ -1,11 +1,11 @@
 ﻿using FluentValidation;
 using Squadio.Common.Models.Errors;
 
-namespace Squadio.DTO.Users
+namespace Squadio.DTO.Users.Settings
 {
-    public class UserChangeEmailRequestDTOValidator: AbstractValidator<UserChangeEmailRequestDTO>
+    public class UserSendNewChangeEmailRequestDTOValidator: AbstractValidator<UserSendNewChangeEmailRequestDTO>
     {
-        public UserChangeEmailRequestDTOValidator()
+        public UserSendNewChangeEmailRequestDTOValidator()
         {
             RuleFor(model => model.NewEmail)
                 .EmailAddress().WithErrorCode(ErrorCodes.Common.FieldInvalid);

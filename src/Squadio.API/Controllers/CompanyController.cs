@@ -56,7 +56,7 @@ namespace Squadio.API.Controllers
         /// Get users of company
         /// </summary>
         [HttpGet("{id}/users")]
-        public Task<Response<PageModel<CompanyUserDTO>>> GetCompanyUsers([Required, FromRoute] Guid id
+        public Task<Response<PageModel<UserWithRoleDTO>>> GetCompanyUsers([Required, FromRoute] Guid id
             , [FromQuery] PageModel model)
         {
             return _handler.GetCompanyUsers(id, model);

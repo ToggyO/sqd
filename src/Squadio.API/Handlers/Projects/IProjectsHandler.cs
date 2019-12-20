@@ -12,7 +12,7 @@ namespace Squadio.API.Handlers.Projects
     public interface IProjectsHandler
     {
         Task<Response<PageModel<ProjectDTO>>> GetProjects(PageModel model, ProjectFilter filter);
-        Task<Response<PageModel<ProjectUserDTO>>> GetProjectUsers(Guid projectId, PageModel model);
+        Task<Response<PageModel<UserWithRoleDTO>>> GetProjectUsers(Guid projectId, PageModel model);
         Task<Response<ProjectDTO>> GetById(Guid id);
         Task<Response<ProjectDTO>> Create(Guid teamId, ProjectCreateDTO dto, ClaimsPrincipal claims);
         Task<Response<ProjectDTO>> Update(Guid projectId, ProjectUpdateDTO dto, ClaimsPrincipal claims);

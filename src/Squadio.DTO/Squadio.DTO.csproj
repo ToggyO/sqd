@@ -32,25 +32,16 @@
         <DependentUpon>UserEmailDTO.cs</DependentUpon>
       </Compile>
       <Compile Update="Companies\CompanyUserModelMapper.cs">
-        <DependentUpon>CompanyUserDTO.cs</DependentUpon>
+        <DependentUpon>CompanyWithUserRoleDTO.cs</DependentUpon>
       </Compile>
       <Compile Update="Teams\TeamUserModelMapper.cs">
-        <DependentUpon>TeamUserDTO.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Users\UserChangeEmailDTO.Validator.cs">
-        <DependentUpon>ChangeEmailRequestDTO.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Users\UserSetPasswordDTO.Validator.cs">
-        <DependentUpon>UserResetPasswordDTO.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Users\UserConfirmEmailRequestModelMapper.cs">
-        <DependentUpon>UserConfirmEmailRequestDTO.cs</DependentUpon>
+        <DependentUpon>TeamWithUserRoleDTO.cs</DependentUpon>
       </Compile>
       <Compile Update="Projects\ProjectModelMapper.cs">
         <DependentUpon>ProjectDTO.cs</DependentUpon>
       </Compile>
       <Compile Update="Projects\ProjectUserModelMapper.cs">
-        <DependentUpon>ProjectUserDTO.cs</DependentUpon>
+        <DependentUpon>ProjectWithUserRoleDTO.cs</DependentUpon>
       </Compile>
       <Compile Update="SignUp\SignUpStepMapper.cs">
         <DependentUpon>SignUpStepDTO.cs</DependentUpon>
@@ -59,7 +50,7 @@
         <DependentUpon>UserRegistrationStepDTO.cs</DependentUpon>
       </Compile>
       <Compile Update="Projects\ProjectCreateDTO.Validator.cs">
-        <DependentUpon>CreateProjectDTO.cs</DependentUpon>
+        <DependentUpon>ProjectCreateDTO.cs</DependentUpon>
       </Compile>
       <Compile Update="Projects\ProjectUpdateDTO.Validator.cs">
         <DependentUpon>ProjectUpdateDTO.cs</DependentUpon>
@@ -72,15 +63,6 @@
       </Compile>
       <Compile Update="Companies\CompanyDetailModelMapper.cs">
         <DependentUpon>CompanyDetailDTO.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Users\UserChangePasswordDTOValidator.cs">
-        <DependentUpon>UserSetPasswordDTO.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Users\UserSendNewChangeEmailRequestDTO.Validator.cs">
-        <DependentUpon>UserSendNewChangeEmailRequestDTO.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Users\UserUpdateDTO.Validator.cs">
-        <DependentUpon>UserUpdateDTO.cs</DependentUpon>
       </Compile>
       <Compile Update="Resources\ResourceViewModelMapper.cs">
         <DependentUpon>ResourceDTO.cs</DependentUpon>

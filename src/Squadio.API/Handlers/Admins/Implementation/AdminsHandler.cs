@@ -11,6 +11,7 @@ using Squadio.Common.Models.Responses;
 using Squadio.DTO.Auth;
 using Squadio.DTO.Companies;
 using Squadio.DTO.Users;
+using Squadio.DTO.Users.Settings;
 
 namespace Squadio.API.Handlers.Admins.Implementation
 {
