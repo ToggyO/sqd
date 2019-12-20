@@ -44,9 +44,9 @@ namespace Squadio.BLL.Providers.Companies.Implementation
             };
         }
 
-        public async Task<Response<PageModel<CompanyWithUserRoleDTO>>> GetUserCompanies(Guid userId, PageModel model)
+        public async Task<Response<PageModel<CompanyWithUserRoleDTO>>> GetUserCompanies(Guid userId, PageModel model, Guid? companyId = null)
         {
-            var page = await _companiesUsersRepository.GetCompaniesUsers(model, userId);
+            var page = await _companiesUsersRepository.GetCompaniesUsers(model, userId, companyId);
             
             var items = page.Items.Select(x => _mapper.Map<CompanyUserModel, CompanyWithUserRoleDTO>(x)).ToList();
 
