@@ -141,7 +141,7 @@ namespace Squadio.API.Controllers
         }
         
         /// <summary>
-        /// Update current user
+        /// use PUT 'api/users/settings'
         /// </summary>
         [Obsolete]
         [HttpPut("current")]
@@ -151,7 +151,7 @@ namespace Squadio.API.Controllers
         }
         
         /// <summary>
-        /// Check the password restore code for validity
+        /// use GET 'api/users/settings/password/validate'
         /// </summary>
         [Obsolete]
         [HttpGet("passwords/validate")]
@@ -162,7 +162,7 @@ namespace Squadio.API.Controllers
         }
         
         /// <summary>
-        /// Set new password 
+        /// use PUT 'api/users/settings/password/set'
         /// </summary>
         [Obsolete]
         [HttpPut("passwords/change")]
@@ -172,7 +172,7 @@ namespace Squadio.API.Controllers
         }
         
         /// <summary>
-        /// Set new password, using link from "api/passwords/request"
+        /// use PUT 'api/users/settings/password/reset'
         /// </summary>
         [Obsolete]
         [HttpPut("passwords/set")]
@@ -183,7 +183,7 @@ namespace Squadio.API.Controllers
         }
         
         /// <summary>
-        /// Send link to email for restore password
+        /// use POST 'api/users/settings/password/request'
         /// </summary>
         [Obsolete]
         [HttpPost("passwords/request")]
@@ -194,7 +194,7 @@ namespace Squadio.API.Controllers
         }
         
         /// <summary>
-        /// Set email from "api/email/request" for current user
+        /// use PUT 'api/users/settings/email/set'
         /// </summary>
         [Obsolete]
         [HttpPut("email/set")]
@@ -204,7 +204,7 @@ namespace Squadio.API.Controllers
         }
         
         /// <summary>
-        /// Send email for confirm new mailbox
+        /// use POST 'api/users/settings/email/request'
         /// </summary>
         [Obsolete]
         [HttpPost("email/request")]
@@ -214,7 +214,7 @@ namespace Squadio.API.Controllers
         }
         
         /// <summary>
-        /// Send new email for confirm new mailbox
+        /// use POST 'api/users/settings/email/send-new-request'
         /// </summary>
         [Obsolete]
         [HttpPost("email/send-new-request")]
@@ -224,7 +224,7 @@ namespace Squadio.API.Controllers
         }
         
         /// <summary>
-        /// Save new avatar for current user
+        /// use POST 'api/users/settings/avatar-from-form'
         /// </summary>
         [Obsolete]
         [HttpPost("avatar-from-form")]
@@ -234,7 +234,7 @@ namespace Squadio.API.Controllers
         }
         
         /// <summary>
-        /// Save new avatar for current user
+        /// use POST 'api/users/settings/avatar-from-body'
         /// </summary>
         [Obsolete]
         [HttpPost("avatar-from-body")]
@@ -244,7 +244,7 @@ namespace Squadio.API.Controllers
         }
         
         /// <summary>
-        /// Save new avatar for current user
+        /// use DELETE 'api/users/settings/avatar'
         /// </summary>
         [Obsolete]
         [HttpDelete("avatar")]

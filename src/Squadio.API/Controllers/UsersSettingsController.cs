@@ -60,7 +60,7 @@ namespace Squadio.API.Controllers
         }
         
         /// <summary>
-        /// Set new password
+        /// Set new password, using code from email
         /// </summary>
         [HttpPut("password/reset")]
         [AllowAnonymous]
