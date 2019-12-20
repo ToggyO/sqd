@@ -78,13 +78,6 @@ namespace Squadio.API.Controllers
             return _handler.UpdateCompany(id, dto, User);
         }
         
-        [Obsolete]
-        [HttpGet("{id}/invite")]
-        public async Task<Response<IEnumerable<InviteDTO>>> GetInvites([Required, FromRoute] Guid id)
-        {
-            return await _invitesHandler.GetInvites(id, User, EntityType.Company);
-        }
-        
         /// <summary>
         /// Send invites to company
         /// </summary>

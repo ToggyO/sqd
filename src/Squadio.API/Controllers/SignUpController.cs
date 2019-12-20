@@ -26,8 +26,6 @@ namespace Squadio.API.Controllers
 
         public SignUpController(ISignUpHandler handler)
         {
-            // TODO: Remove obsolete endpoints
-            
             _handler = handler;
         }
 
@@ -90,42 +88,12 @@ namespace Squadio.API.Controllers
         }
         
         /// <summary>
-        /// use PUT api/signup/confirm
-        /// </summary>
-        [Obsolete]
-        [HttpPut("admin/confirm")]
-        public async Task<Response<SignUpStepDTO>> SignUpConfirmObsolete([Required, FromBody] SignUpCodeDTO dto)
-        {
-            return await _handler.SignUpConfirm(dto.Code, User);
-        }
-        
-        /// <summary>
         /// Confirm email of current user
         /// </summary>
         [HttpPut("confirm")]
         public async Task<Response<SignUpStepDTO>> SignUpConfirm([Required, FromBody] SignUpCodeDTO dto)
         {
             return await _handler.SignUpConfirm(dto.Code, User);
-        }
-        
-        /// <summary>
-        /// use PUT api/signup/username
-        /// </summary>
-        [Obsolete]
-        [HttpPut("member/username")]
-        public async Task<Response<SignUpStepDTO<UserDTO>>> SignUpMemberUsernameObsolete([FromBody] UserUpdateDTO dto)
-        {
-            return await _handler.SignUpUsername(dto, User);
-        }
-        
-        /// <summary>
-        /// use PUT api/signup/username
-        /// </summary>
-        [Obsolete]
-        [HttpPut("admin/username")]
-        public async Task<Response<SignUpStepDTO<UserDTO>>> SignUpUsernameObsolete([FromBody] UserUpdateDTO dto)
-        {
-            return await _handler.SignUpUsername(dto, User);
         }
         
         /// <summary>
@@ -138,32 +106,12 @@ namespace Squadio.API.Controllers
         }
         
         /// <summary>
-        /// use POST api/signup/company
-        /// </summary>
-        [Obsolete]
-        [HttpPost("admin/company")]
-        public async Task<Response<SignUpStepDTO<CompanyDTO>>> CreateCompanyObsolete([Required, FromBody] CompanyCreateDTO dto)
-        {
-            return await _handler.SignUpCompany(dto, User);
-        }
-        
-        /// <summary>
         /// Create new company (and set current user as admin for this company )
         /// </summary>
         [HttpPost("company")]
         public async Task<Response<SignUpStepDTO<CompanyDTO>>> CreateCompany([Required, FromBody] CompanyCreateDTO dto)
         {
             return await _handler.SignUpCompany(dto, User);
-        }
-        
-        /// <summary>
-        /// use POST api/signup/team
-        /// </summary>
-        [Obsolete]
-        [HttpPost("admin/team")]
-        public async Task<Response<SignUpStepDTO<TeamDTO>>> CreateTeamObsolete([Required, FromBody] TeamCreateDTO dto)
-        {
-            return await _handler.SignUpTeam(dto, User);
         }
         
         /// <summary>
@@ -185,32 +133,12 @@ namespace Squadio.API.Controllers
         }
         
         /// <summary>
-        /// use POST api/signup/project
-        /// </summary>
-        [Obsolete]
-        [HttpPost("admin/project")]
-        public async Task<Response<SignUpStepDTO<ProjectDTO>>> CreateProjectObsolete([Required, FromBody] ProjectCreateDTO dto)
-        {
-            return await _handler.SignUpProject(dto, User);
-        }
-        
-        /// <summary>
         /// Create new project, send invites (and set current user as admin for this project)
         /// </summary>
         [HttpPost("project")]
         public async Task<Response<SignUpStepDTO<ProjectDTO>>> CreateProject([Required, FromBody] ProjectCreateDTO dto)
         {
             return await _handler.SignUpProject(dto, User);
-        }
-        
-        /// <summary>
-        /// use PUT api/signup/done
-        /// </summary>
-        [Obsolete]
-        [HttpPut("admin/done")]
-        public async Task<Response<SignUpStepDTO>> SignUpDoneObsolete()
-        {
-            return await _handler.SignUpDone(User);
         }
         
         /// <summary>

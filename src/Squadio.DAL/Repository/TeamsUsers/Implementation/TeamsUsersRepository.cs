@@ -20,10 +20,11 @@ namespace Squadio.DAL.Repository.TeamsUsers.Implementation
 
         public async Task<PageModel<TeamUserModel>> GetUserTeams(Guid userId, PageModel model, Guid? companyId = null)
         {
-            var query = _context.TeamsUsers
+            IQueryable<TeamUserModel> query = _context.TeamsUsers
                 .Include(x => x.User)
                 .Include(x => x.Team)
-                .Where(x => x.UserId == userId);
+                .Where(x => x.UserId == userId)
+                .OrderBy(x => x.Team.CreatedDate);
 
             if (companyId.HasValue)
             {

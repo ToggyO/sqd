@@ -23,7 +23,8 @@ namespace Squadio.DAL.Repository.CompaniesUsers.Implementation
             IQueryable<CompanyUserModel> query = _context.CompaniesUsers
                 .Include(x => x.User)
                 .Include(x => x.Company)
-                .Where(x => x.CompanyId == companyId);
+                .Where(x => x.CompanyId == companyId)
+                .OrderBy(x => x.CreatedDate);
             
             var skip = (model.Page - 1) * model.PageSize;
             var take = model.PageSize;

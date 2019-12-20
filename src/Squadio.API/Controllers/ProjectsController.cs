@@ -93,13 +93,6 @@ namespace Squadio.API.Controllers
             return await _handler.Create(teamId, dto, User);
         }
         
-        [Obsolete]
-        [HttpGet("{id}/invite")]
-        public async Task<Response<IEnumerable<InviteDTO>>> GetInvites([Required, FromRoute] Guid id)
-        {
-            return await _invitesHandler.GetInvites(id, User, EntityType.Project);
-        }
-        
         /// <summary>
         /// Send invites to project
         /// </summary>
