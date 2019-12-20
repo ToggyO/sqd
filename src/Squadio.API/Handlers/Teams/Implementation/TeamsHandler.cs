@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Squadio.BLL.Providers.Teams;
 using Squadio.BLL.Services.Teams;
 using Squadio.Common.Extensions;
-using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Teams;

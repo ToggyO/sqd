@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Squadio.API.Handlers.SignUp;
-using Squadio.BLL.Services.SignUp;
 using Squadio.BLL.Services.Tokens;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Auth;

@@ -1,14 +1,6 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
-using Mapper;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
-using Squadio.BLL.Providers.WebSocket.BaseHubProvider;
-using Squadio.Common.Enums;
-using Squadio.Common.Models.WebSocket;
-using Squadio.Common.WebSocket;
 
 namespace Squadio.API.Controllers
 {

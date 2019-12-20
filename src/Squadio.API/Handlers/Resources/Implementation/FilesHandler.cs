@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Net.Http.Headers;
 using Squadio.BLL.Providers.Resources;
 using Squadio.BLL.Services.Files.Implementation;
 using Squadio.Common.Settings;

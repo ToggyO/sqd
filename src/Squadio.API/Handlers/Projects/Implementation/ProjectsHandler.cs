@@ -2,15 +2,12 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Squadio.BLL.Providers.Projects;
-using Squadio.BLL.Providers.WebSocket.BaseHubProvider;
 using Squadio.BLL.Providers.WebSocket.Sidebar;
 using Squadio.BLL.Services.Projects;
 using Squadio.Common.Enums;
 using Squadio.Common.Extensions;
-using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
-using Squadio.Common.Models.WebSocket;
 using Squadio.Common.WebSocket;
 using Squadio.DTO.Projects;
 using Squadio.DTO.Users;

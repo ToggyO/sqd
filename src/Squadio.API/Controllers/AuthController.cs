@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using Squadio.API.Filters;
 using Squadio.API.Handlers.Auth;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Auth;

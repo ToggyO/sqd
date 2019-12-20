@@ -1,19 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Squadio.API.Handlers.Users;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Squadio.API.Filters;
-using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Auth;
-using Squadio.DTO.Companies;
-using Squadio.DTO.Projects;
 using Squadio.DTO.Resources;
-using Squadio.DTO.Teams;
 using Squadio.DTO.Users;
 using Squadio.DTO.Users.Settings;
 
