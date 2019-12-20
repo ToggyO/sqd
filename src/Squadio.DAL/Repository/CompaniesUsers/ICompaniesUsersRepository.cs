@@ -11,11 +11,11 @@ namespace Squadio.DAL.Repository.CompaniesUsers
 {
     public interface ICompaniesUsersRepository
     {
-        Task<PageModel<CompanyUserModel>> GetCompanyUsers(Guid companyId, PageModel model);
-        Task<PageModel<CompanyUserModel>> GetUserCompanies(Guid userId, PageModel model);
+        Task<PageModel<CompanyUserModel>> GetCompaniesUsers(PageModel model
+            , Guid? userId = null
+            , Guid? companyId = null
+            , IEnumerable<UserStatus> statuses = null);
         Task<CompanyUserModel> GetCompanyUser(Guid companyId, Guid userId);
-        Task<CompanyUserModel> GetFullCompanyUser(Guid companyId, Guid userId);
-        Task<IEnumerable<CompanyUserModel>> GetCompaniesUsers(Guid? companyId = null, Guid? userId = null, IEnumerable<UserStatus> statuses = null);
         Task<int> GetCompanyUsersCount(Guid companyId);
         Task AddCompanyUser(Guid companyId, Guid userId, UserStatus userStatus);
         Task DeleteCompanyUser(Guid companyId, Guid userId);

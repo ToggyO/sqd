@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Squadio.Common.Models.Pages;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Companies;
@@ -18,38 +19,35 @@ namespace Squadio.DAL.Repository.CompaniesUsers.Implementation
             _context = context;
         }
 
-        public async Task<PageModel<CompanyUserModel>> GetCompanyUsers(Guid companyId, PageModel model)
+        public async Task<PageModel<CompanyUserModel>> GetCompaniesUsers(PageModel model
+            , Guid? userId = null
+            , Guid? companyId = null
+            , IEnumerable<UserStatus> statuses = null)
         {
             IQueryable<CompanyUserModel> query = _context.CompaniesUsers
                 .Include(x => x.User)
-                .Include(x => x.Company)
-                .Where(x => x.CompanyId == companyId)
-                .OrderBy(x => x.CreatedDate);
-            
-            var skip = (model.Page - 1) * model.PageSize;
-            var take = model.PageSize;
+                .Include(x => x.Company);
 
-            var total = await query.CountAsync();
-            var items = await query
-                .Skip(skip)
-                .Take(take)
-                .ToListAsync();
-
-            return new PageModel<CompanyUserModel>
+            if (userId.HasValue)
             {
-                Page = model.Page,
-                PageSize = model.PageSize,
-                Total = total,
-                Items = items
-            };
-        }
-        
-        public async Task<PageModel<CompanyUserModel>> GetUserCompanies(Guid userId, PageModel model)
-        {
-            IQueryable<CompanyUserModel> query = _context.CompaniesUsers
-                .Include(x => x.User)
-                .Include(x => x.Company)
-                .Where(x => x.UserId == userId);
+                query = query.Where(x => x.UserId == userId);
+            }
+
+            if (companyId.HasValue)
+            {
+                query = query.Where(x => x.CompanyId == companyId);
+            }
+            
+            if (statuses != null)
+            {
+                var userStatuses = statuses.ToList();
+                if (userStatuses?.Any() == true)
+                {
+                    query = query.Where(x => userStatuses.Contains(x.Status));
+                }
+            }
+
+            query = query.OrderByDescending(x => x.CreatedDate);
             
             var skip = (model.Page - 1) * model.PageSize;
             var take = model.PageSize;
@@ -72,49 +70,11 @@ namespace Squadio.DAL.Repository.CompaniesUsers.Implementation
         public async Task<CompanyUserModel> GetCompanyUser(Guid companyId, Guid userId)
         {
             var item = await _context.CompaniesUsers
-                .Include(x => x.Company)
-                .Include(x => x.User)
+                .Include(x => x.Company).ThenInclude(x=>x.Creator).ThenInclude(x=>x.Avatar)
+                .Include(x=>x.User).ThenInclude(x=>x.Avatar)
                 .Where(x => x.CompanyId == companyId && x.UserId == userId)
                 .FirstOrDefaultAsync();
             return item;
-        }
-
-        public async Task<CompanyUserModel> GetFullCompanyUser(Guid companyId, Guid userId)
-        {
-            var item = await _context.CompaniesUsers
-                .Include(x => x.Company)
-                .Include(x => x.User)
-                    .ThenInclude(x=>x.Role)
-                .Where(x => x.CompanyId == companyId && x.UserId == userId)
-                .FirstOrDefaultAsync();
-            return item;
-        }
-
-        public async Task<IEnumerable<CompanyUserModel>> GetCompaniesUsers(Guid? companyId = null, Guid? userId = null, IEnumerable<UserStatus> statuses = null)
-        {
-            IQueryable<CompanyUserModel> query = _context.CompaniesUsers
-                .Include(x => x.User)
-                .Include(x => x.Company);
-
-            if (statuses != null)
-            {
-                if (statuses.Any())
-                {
-                    query = query.Where(x => statuses.Contains(x.Status));
-                }
-            }
-
-            if (userId.HasValue)
-            {
-                query = query.Where(x => x.UserId == userId);
-            }
-
-            if (companyId.HasValue)
-            {
-                query = query.Where(x => x.CompanyId == companyId);
-            }
-
-            return await query.ToListAsync();
         }
 
         public async Task AddCompanyUser(Guid companyId, Guid userId, UserStatus userStatus)

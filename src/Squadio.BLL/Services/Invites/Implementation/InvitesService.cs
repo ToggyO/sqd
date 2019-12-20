@@ -320,7 +320,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
         {
             var pageModel = new PageModel {Page = 1, PageSize = 1};
 
-            var userCompany = (await _companiesUsersRepository.GetUserCompanies(userId, pageModel))
+            var userCompany = (await _companiesUsersRepository.GetCompaniesUsers(pageModel, userId))
                 .Items
                 .FirstOrDefault();
 
@@ -343,7 +343,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
                 });
             }
 
-            var userTeam = (await _teamsUsersRepository.GetUserTeams(userId, pageModel, userCompany.CompanyId))
+            var userTeam = (await _teamsUsersRepository.GetTeamsUsers(pageModel, userId, userCompany.CompanyId))
                 .Items
                 .FirstOrDefault();
 
@@ -367,7 +367,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
             }
 
             var userProject =
-                (await _projectsUsersRepository.GetUserProjects(pageModel, 
+                (await _projectsUsersRepository.GetProjectsUsers(pageModel, 
                     teamId: userTeam.TeamId, 
                     userId: userId))
                 .Items

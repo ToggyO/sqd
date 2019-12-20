@@ -10,10 +10,12 @@ namespace Squadio.DAL.Repository.TeamsUsers
 {
     public interface ITeamsUsersRepository
     {
-        Task<PageModel<TeamUserModel>> GetUserTeams(Guid userId, PageModel model, Guid? companyId = null);
-        Task<PageModel<TeamUserModel>> GetTeamUsers(Guid teamId, PageModel model);
+        Task<PageModel<TeamUserModel>> GetTeamsUsers(PageModel model
+            , Guid? userId = null
+            , Guid? companyId = null
+            , Guid? teamId = null
+            , IEnumerable<UserStatus> statuses = null);
         Task<TeamUserModel> GetTeamUser(Guid teamId, Guid userId);
-        Task<TeamUserModel> GetFullTeamUser(Guid teamId, Guid userId);
         Task AddTeamUser(Guid teamId, Guid userId, UserStatus userStatus);
         Task DeleteTeamUser(Guid teamId, Guid userId);
         Task DeleteTeamUsers(Guid teamId, IEnumerable<string> emails);

@@ -32,7 +32,7 @@ namespace Squadio.BLL.Providers.Teams.Implementation
 
         public async Task<Response<PageModel<TeamWithUserRoleDTO>>> GetUserTeams(Guid userId, PageModel model, Guid? companyId = null)
         {
-            var page = await _teamsUsersRepository.GetUserTeams(userId, model, companyId);
+            var page = await _teamsUsersRepository.GetTeamsUsers(model, userId, companyId);
             
             var items = page.Items.Select(x => _mapper.Map<TeamUserModel, TeamWithUserRoleDTO>(x)).ToList();
 
@@ -52,7 +52,7 @@ namespace Squadio.BLL.Providers.Teams.Implementation
 
         public async Task<Response<PageModel<UserWithRoleDTO>>> GetTeamUsers(Guid teamId, PageModel model)
         {
-            var page = await _teamsUsersRepository.GetTeamUsers(teamId, model);
+            var page = await _teamsUsersRepository.GetTeamsUsers(model, teamId: teamId);
             
             var items = page.Items.Select(x => _mapper.Map<TeamUserModel, UserWithRoleDTO>(x)).ToList();
 

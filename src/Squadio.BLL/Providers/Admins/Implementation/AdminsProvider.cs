@@ -53,7 +53,8 @@ namespace Squadio.BLL.Providers.Admins.Implementation
             
             foreach (var user in users)
             {
-                var items = await _companiesUsersRepository.GetCompaniesUsers(userId: user.Id);
+                var page = await _companiesUsersRepository.GetCompaniesUsers(new PageModel{ PageSize = 1000 }, user.Id);
+                var items = page.Items;
                 resultDataItems.Add(new UserWithCompaniesDTO
                 {
                     User = _mapper.Map<UserModel, UserDTO>(user),
@@ -88,13 +89,14 @@ namespace Squadio.BLL.Providers.Admins.Implementation
             
             foreach (var company in companies)
             {
-                var admins = await _companiesUsersRepository.GetCompaniesUsers(
-                        companyId: company.Id,
-                        statuses: new[]
-                        {
-                            UserStatus.SuperAdmin, 
-                            UserStatus.Admin
-                        });
+                var page = await _companiesUsersRepository.GetCompaniesUsers(new PageModel{ PageSize = 1000 },
+                    companyId: company.Id,
+                    statuses: new[]
+                    {
+                        UserStatus.SuperAdmin, 
+                        UserStatus.Admin
+                    });
+                var admins = page.Items;
                 resultDataItems.Add(new CompanyListDTO
                 {
                     Company = _mapper.Map<CompanyModel, CompanyDTO>(company),
@@ -126,15 +128,15 @@ namespace Squadio.BLL.Providers.Admins.Implementation
             }
 
             var companyDetailDTO = _mapper.Map<CompanyModel, CompanyDetailDTO>(companyEntity);
-
-
-            var admins = await _companiesUsersRepository.GetCompaniesUsers(
+            
+            var page = await _companiesUsersRepository.GetCompaniesUsers(new PageModel{ PageSize = 1000 },
                 companyId: companyId,
                 statuses: new[]
                 {
                     UserStatus.SuperAdmin,
                     UserStatus.Admin
                 });
+            var admins = page.Items;
             companyDetailDTO.UsersCount = await _companiesUsersRepository.GetCompanyUsersCount(companyId);
             companyDetailDTO.Admins = admins.Select(x => _mapper.Map<CompanyUserModel, UserWithRoleDTO>(x));
 
