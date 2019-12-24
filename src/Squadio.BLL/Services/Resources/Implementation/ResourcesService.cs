@@ -168,18 +168,6 @@ namespace Squadio.BLL.Services.Resources.Implementation
             await _filesService.UploadImageFile(group, "original", fileName, dto.Bytes);
             
             var sizes = _sizeOptions.Value.Sizes;
-            
-            if(sizes == null)
-                _logger.LogError("sizes is null");
-            else
-            {
-                _logger.LogError($"_sizeOptions.Value.SizesStr str = {_sizeOptions.Value.SizesStr}");
-                if (sizes.Length == 0)
-                    _logger.LogError($"sizes not null but empty!");
-                if (sizes.Length > 0)
-                    _logger.LogError($"sizes[0] = {sizes[0]}");
-            }
-
 
             foreach (var size in sizes)
             {

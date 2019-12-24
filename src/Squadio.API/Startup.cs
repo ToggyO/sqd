@@ -95,7 +95,7 @@ namespace Squadio.API
             services.Configure<ApiSettings>(Configuration.GetSection("AppSettings:APISettings"));
             services.Configure<FileTemplateUrlModel>(Configuration.GetSection("FileTemplateUrl"));
             services.Configure<FileRootDirectoryModel>(Configuration.GetSection("FileRootDirectory"));
-            services.Configure<CropSizesModel>(Configuration.GetSection("CropSizes"));
+            services.Configure<CropSizesModel>(options => { options.SizesStr = "140,360,480,720,1080"; });
             
             var columnWriters = new Dictionary<string, ColumnWriterBase>
             {
@@ -127,12 +127,6 @@ namespace Squadio.API
                         .UseNpgsql(dbSettings.PostgresConnectionString,
                             optionsBuilder =>
                                 optionsBuilder.MigrationsAssembly(typeof(SquadioDbContext).Assembly.FullName)));
-
-            
-            Log.Logger.Error($"Startup, CropSizes:SizesStr: {Configuration.GetSection("CropSizes:SizesStr").Value}");
-            var b = Configuration.GetSection("CropSizes").Get<CropSizesModel>();
-            Log.Logger.Error($"Startup, CropSizes, parsed: {b.SizesStr}");
-
 
             services.AddSwaggerGen(options =>
             {
