@@ -127,6 +127,8 @@ namespace Squadio.API
                         .UseNpgsql(dbSettings.PostgresConnectionString,
                             optionsBuilder =>
                                 optionsBuilder.MigrationsAssembly(typeof(SquadioDbContext).Assembly.FullName)));
+            
+            Log.Logger.Error($"Startup, CropSizes: {Configuration.GetSection("CropSizes").Value}");
 
 
             services.AddSwaggerGen(options =>
