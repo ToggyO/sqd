@@ -127,8 +127,11 @@ namespace Squadio.API
                         .UseNpgsql(dbSettings.PostgresConnectionString,
                             optionsBuilder =>
                                 optionsBuilder.MigrationsAssembly(typeof(SquadioDbContext).Assembly.FullName)));
+
             
-            Log.Logger.Error($"Startup, CropSizes: {Configuration.GetSection("CropSizes").Value}");
+            Log.Logger.Error($"Startup, CropSizes:SizesStr: {Configuration.GetSection("CropSizes:SizesStr").Value}");
+            var b = Configuration.GetSection("CropSizes").Get<CropSizesModel>();
+            Log.Logger.Error($"Startup, CropSizes, parsed: {b.SizesStr}");
 
 
             services.AddSwaggerGen(options =>

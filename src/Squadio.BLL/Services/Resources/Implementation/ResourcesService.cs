@@ -173,7 +173,7 @@ namespace Squadio.BLL.Services.Resources.Implementation
                 _logger.LogError("sizes is null");
             else
             {
-                _logger.LogError($"_sizeOptions.Value.CropSizes str = {_sizeOptions.Value.CropSizes}");
+                _logger.LogError($"_sizeOptions.Value.SizesStr str = {_sizeOptions.Value.SizesStr}");
                 if (sizes.Length == 0)
                     _logger.LogError($"sizes not null but empty!");
                 if (sizes.Length > 0)

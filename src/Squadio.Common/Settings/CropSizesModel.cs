@@ -2,29 +2,29 @@
 {
     public class CropSizesModel
     {
-        private string _CropSizes;
-        public string CropSizes 
+        private string _sizesStr;
+        public string SizesStr 
         { 
-            get => _CropSizes;
-            set { _CropSizes = value; ParseSizes(); } 
+            get => _sizesStr;
+            set { _sizesStr = value; ParseSizes(); } 
         }
         
-        private int[] _Sizes;
+        private int[] _sizes;
         public int[] Sizes
         {
-            get => _Sizes;
+            get => _sizes;
         }
 
         private void ParseSizes()
         {
-            var sizes = _CropSizes.Split(',');
+            var sizes = _sizesStr.Split(',');
             if(sizes == null || sizes?.Length == 0)
                 return;
             
-            _Sizes = new int[sizes.Length];
+            _sizes = new int[sizes.Length];
             for (int i = 0; i < sizes.Length; i++)
             {
-                _Sizes[i] = int.Parse(sizes[i]);
+                _sizes[i] = int.Parse(sizes[i]);
             }
         }
     }
