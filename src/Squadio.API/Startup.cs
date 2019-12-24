@@ -96,30 +96,8 @@ namespace Squadio.API
             services.Configure<FileTemplateUrlModel>(Configuration.GetSection("FileTemplateUrl"));
             services.Configure<FileRootDirectoryModel>(Configuration.GetSection("FileRootDirectory"));
             services.Configure<CropSizesModel>(options => { options.SizesStr = "140,360,480,720,1080"; });
-            
-            var columnWriters = new Dictionary<string, ColumnWriterBase>
-            {
-                {"Message", new RenderedMessageColumnWriter() },
-                {"MessageTemplate", new MessageTemplateColumnWriter() },
-                {"Level", new LevelColumnWriter(true, NpgsqlDbType.Varchar) },
-                {"Date", new TimestampColumnWriter() },
-                {"Exception", new ExceptionColumnWriter() }
-            };
 
-            Log.Logger = new LoggerConfiguration()
-                .WriteTo.Async(x => x.PostgreSQL(
-                    dbSettings.PostgresConnectionString, 
-                    "Logs", 
-                    columnWriters, 
-                    restrictedToMinimumLevel: LogEventLevel.Error, 
-                    schemaName: "public", 
-                    needAutoCreateTable: true))
-                .WriteTo.Async(x => x.Console(
-                    theme: SystemConsoleTheme.Literate,
-                    outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message}{NewLine}{Exception}"))
-                .CreateLogger();
-
-            AppDomain.CurrentDomain.ProcessExit += (s, e) => Log.CloseAndFlush();
+            services.AddSerilog(dbSettings);
 
             services.AddDbContext<SquadioDbContext>(builder =>
                     builder
@@ -206,8 +184,11 @@ namespace Squadio.API
 
         public void Configure(IApplicationBuilder app
             , IWebHostEnvironment env
+            , IHostApplicationLifetime hostLifetime
             , ILogger<Startup> logger)
         {
+            hostLifetime.SerilogRegisterCloseAndFlush();
+            
             logger.LogInformation("Enter Configure");
             if (!env.IsProduction())
             {
@@ -232,7 +213,7 @@ namespace Squadio.API
             logger.LogInformation("Cors");
             app.UseCors(MyAllowSquadioOrigins);
             
-            logger.LogInformation("Statis files");
+            logger.LogInformation("Static files");
             app.UseStaticFiles();
 
             logger.LogInformation("Swagger");
