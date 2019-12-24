@@ -170,13 +170,17 @@ namespace Squadio.BLL.Services.Resources.Implementation
             var sizes = _sizeOptions.Value.Sizes;
             
             if(sizes == null)
-                _logger.LogWarning("sizes is null");
-            if(sizes != null && sizes.Length == 0) 
-                _logger.LogWarning($"sizes not null but empty!");
-            if(sizes != null && sizes.Length > 0) 
-                _logger.LogWarning($"sizes[0] = {sizes[0]}");
-            
-            
+                _logger.LogError("sizes is null");
+            else
+            {
+                _logger.LogError($"_sizeOptions.Value.CropSizes str = {_sizeOptions.Value.CropSizes}");
+                if (sizes.Length == 0)
+                    _logger.LogError($"sizes not null but empty!");
+                if (sizes.Length > 0)
+                    _logger.LogError($"sizes[0] = {sizes[0]}");
+            }
+
+
             foreach (var size in sizes)
             {
                 var image = ImageResizer.Resize(dto.Bytes, size, dto.ContentType);
