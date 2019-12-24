@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Squadio.Common.Enums;
 
-namespace Squadio.Common.WebSocket
+namespace Squadio.Common.Models.WebSocket
 {
     public class GroupUsersDictionary<T>
     {

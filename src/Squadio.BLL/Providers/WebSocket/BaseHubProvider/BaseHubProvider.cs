@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Squadio.BLL.Services.WebSocket;
 using Squadio.Common.Enums;
+using Squadio.Common.Models.WebSocket;
 using Squadio.Common.WebSocket;
 
 namespace Squadio.BLL.Providers.WebSocket.BaseHubProvider

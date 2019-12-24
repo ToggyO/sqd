@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Google.Apis.Logging;
 using Mapper;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Squadio.BLL.Services.Files;
 using Squadio.BLL.Services.ImageResizeTools;
@@ -23,18 +25,21 @@ namespace Squadio.BLL.Services.Resources.Implementation
         private readonly IMapper _mapper;
         private readonly IOptions<FileTemplateUrlModel> _options;
         private readonly IOptions<CropSizesModel> _sizeOptions;
+        private readonly ILogger<ResourcesService> _logger;
 
         public ResourcesService(IResourcesRepository repository
             , IFilesService filesService
             , IMapper mapper
             , IOptions<FileTemplateUrlModel> options
-            , IOptions<CropSizesModel> sizeOptions)
+            , IOptions<CropSizesModel> sizeOptions
+            , ILogger<ResourcesService> logger)
         {
             _repository = repository;
             _filesService = filesService;
             _mapper = mapper;
             _options = options;
             _sizeOptions = sizeOptions;
+            _logger = logger;
         }
 
         public async Task<Response<ResourceDTO>> CreateResource(Guid userId, FileGroup group, FileCreateDTO dto)
@@ -161,8 +166,17 @@ namespace Squadio.BLL.Services.Resources.Implementation
             var resource = await _repository.Create(resourceEntity);
 
             await _filesService.UploadImageFile(group, "original", fileName, dto.Bytes);
-
+            
             var sizes = _sizeOptions.Value.Sizes;
+            
+            if(sizes == null)
+                _logger.LogWarning("sizes is null");
+            if(sizes != null && sizes.Length == 0) 
+                _logger.LogWarning($"sizes not null but empty!");
+            if(sizes != null && sizes.Length > 0) 
+                _logger.LogWarning($"sizes[0] = {sizes[0]}");
+            
+            
             foreach (var size in sizes)
             {
                 var image = ImageResizer.Resize(dto.Bytes, size, dto.ContentType);
