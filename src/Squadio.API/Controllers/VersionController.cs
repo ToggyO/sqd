@@ -11,15 +11,12 @@ namespace Squadio.API.Controllers
     [Route("api/versions")]
     public class VersionController : ControllerBase
     {
-        private const string Version = "0.6.1 b";
+        private const string Version = "0.6.2 b";
         private readonly ILogger<VersionController> _logger;
-        private readonly IOptions<CropSizesModel> _options;
 
-        public VersionController(ILogger<VersionController> logger
-            , IOptions<CropSizesModel> options)
+        public VersionController(ILogger<VersionController> logger)
         {
             _logger = logger;
-            _options = options;
         }
 
         /// <summary>
@@ -30,26 +27,6 @@ namespace Squadio.API.Controllers
         public string GetVersion()
         {
             return Version;
-        }
-        
-        [HttpGet("test")]
-        [AllowAnonymous]
-        public string Test()
-        {
-            if (_options == null)
-            {
-                return "Options is null";
-            }
-            if (_options.Value == null)
-            {
-                return "Options.Value is null";
-            }
-            if (_options.Value.SizesStr == null)
-            {
-                return "Options.Value.SizesStr is null";
-            }
-
-            return $"Res: {_options.Value.SizesStr}";
         }
     }
 }
