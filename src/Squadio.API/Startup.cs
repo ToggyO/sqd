@@ -95,9 +95,44 @@ namespace Squadio.API
             services.Configure<ApiSettings>(Configuration.GetSection("AppSettings:APISettings"));
             services.Configure<FileTemplateUrlModel>(Configuration.GetSection("FileTemplateUrl"));
             services.Configure<FileRootDirectoryModel>(Configuration.GetSection("FileRootDirectory"));
-            services.Configure<CropSizesModel>(options => { options.SizesStr = "140,360,480,720,1080"; });
+            //services.Configure<CropSizesModel>(options => { options.SizesStr = "140,360,480,720,1080"; });
+            services.Configure<CropSizesModel>(Configuration.GetSection("CropSizes"));
+
+            var a = Configuration;
 
             services.AddSerilog(dbSettings);
+            
+            Log.Logger.Information("Startup.ConfigureServices (my test)");
+            Log.Logger.Information("------------------------- Start");
+            foreach (var item in Configuration.GetChildren())
+            {
+                if (item.Key?.ToUpper().Contains("CROP") == true)
+                {
+                    Log.Logger.Information("- - - - - - - - - - - - -");
+                    Log.Logger.Information($"Value : {item.Value}");
+                    Log.Logger.Information($"Key   : {item.Key}");
+                    Log.Logger.Information($"Path  : {item.Path}");
+                    var kek = Configuration.GetSection(item.Key).Get<CropSizesModel>();
+                    if (kek != null)
+                    {
+                        if (kek.SizesStr != null)
+                        {
+                            Log.Logger.Information($"Model : {kek.SizesStr}");
+                        }
+                        else
+                        {
+                            Log.Logger.Information($"Model : str is null");
+                        }
+                    }
+                    else
+                    {
+                        Log.Logger.Information($"Model : is null");
+                    }
+                }
+            }
+            Log.Logger.Information("- - - - - - - - - - - - -");
+            Log.Logger.Information("------------------------- End");
+            
 
             services.AddDbContext<SquadioDbContext>(builder =>
                     builder
