@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Squadio.API.Handlers.Users;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Squadio.API.Filters;
+using Squadio.API.Handlers.Users;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Auth;
@@ -15,7 +15,7 @@ using Squadio.DTO.Teams;
 using Squadio.DTO.Users;
 using Squadio.DTO.Users.Settings;
 
-namespace Squadio.API.Controllers
+namespace Squadio.API.Unversioned
 {
     [ApiController]
     [AuthorizationFilter]

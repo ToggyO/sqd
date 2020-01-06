@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Squadio.API.Handlers.Auth;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Auth;
 
-namespace Squadio.API.Controllers
+namespace Squadio.API.Versioned.V01
 {
     [ApiController]
-    [Route("api/auth")]
+    [ApiVersion("0.1")]
+    [Route("api/v{version:apiVersion}/auth")]
     public class AuthController : ControllerBase
     {
         private readonly IAuthHandler _handler;

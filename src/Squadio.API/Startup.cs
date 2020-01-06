@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -13,15 +12,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using NpgsqlTypes;
-using Serilog;
-using Serilog.Events;
-using Serilog.Sinks.PostgreSQL;
-using Serilog.Sinks.SystemConsole.Themes;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Squadio.DAL;
 using Squadio.API.Extensions;
 using Squadio.API.Filters;
@@ -63,7 +58,7 @@ namespace Squadio.API
                             .AllowAnyMethod();
                     });
             });
-            
+
             services.AddSignalR();
 
             services.AddMvcCore(options =>
@@ -73,12 +68,13 @@ namespace Squadio.API
                 })
                 .AddApiExplorer()
                 .AddFluentValidation(configuration =>
-                    configuration.RegisterValidatorsFromAssemblyContaining<DTO.DependencyInjectionModule>());;
+                    configuration.RegisterValidatorsFromAssemblyContaining<DTO.DependencyInjectionModule>());
+            
 
             var apiSettings = Configuration.GetSection("AppSettings:APISettings").Get<ApiSettings>();
 
             services.AddMemoryCache();
-            
+
             services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 
             var dbSettings = new DbSettings
@@ -100,15 +96,27 @@ namespace Squadio.API
             services.AddSerilog(dbSettings);
 
             services.AddDbContext<SquadioDbContext>(builder =>
-                    builder
-                        .EnableSensitiveDataLogging()
-                        .UseNpgsql(dbSettings.PostgresConnectionString,
-                            optionsBuilder =>
-                                optionsBuilder.MigrationsAssembly(typeof(SquadioDbContext).Assembly.FullName)));
+                builder
+                    .EnableSensitiveDataLogging()
+                    .UseNpgsql(dbSettings.PostgresConnectionString,
+                        optionsBuilder =>
+                            optionsBuilder.MigrationsAssembly(typeof(SquadioDbContext).Assembly.FullName)));
+
+            services.AddVersionedApiExplorer(o => o.GroupNameFormat = "'v'VVV");
+            services.AddApiVersioning(o =>
+            {
+                o.ReportApiVersions = true;
+                o.AssumeDefaultVersionWhenUnspecified = true;
+                o.DefaultApiVersion = new ApiVersion(0, 0, "unversioned");
+            });
 
             services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc("v1", new OpenApiInfo { Title = "Squad.io API", Version = "v1" });
+                var provider = services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
+                foreach (var description in provider.ApiVersionDescriptions) 
+                    options.SwaggerDoc(description.GroupName, new OpenApiInfo { Title = "Squad.io API", Version = description.ApiVersion.ToString() });
+
+                //options.SwaggerDoc("v1", new OpenApiInfo { Title = "Squad.io API", Version = "v1" });
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     In = ParameterLocation.Header,
@@ -127,6 +135,8 @@ namespace Squadio.API
                     }
                 });
                 options.DescribeAllEnumsAsStrings();
+                options.OperationFilter<SwaggerRemoveVersionParameters>();
+                options.DocumentFilter<SwaggerSetVersionInPaths>();
             
                 // Set the comments path for the Swagger JSON and UI.
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -185,6 +195,7 @@ namespace Squadio.API
         public void Configure(IApplicationBuilder app
             , IWebHostEnvironment env
             , IHostApplicationLifetime hostLifetime
+            , IApiVersionDescriptionProvider apiVersionProvider
             , ILogger<Startup> logger)
         {
             hostLifetime.SerilogRegisterCloseAndFlush();
@@ -218,9 +229,14 @@ namespace Squadio.API
 
             logger.LogInformation("Swagger");
             app.UseSwagger();
-            app.UseSwaggerUI(c =>
+            app.UseSwaggerUI(options =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Squad.io API V1");
+                foreach (var description in apiVersionProvider.ApiVersionDescriptions)
+                {
+                    options.SwaggerEndpoint($"{description.GroupName}/swagger.json"
+                        , description.GroupName.ToUpperInvariant());
+                }
+                //options.SwaggerEndpoint("/swagger/v1/swagger.json", "Squad.io API V1");
             });
 
             logger.LogInformation("EnsureMigrationOfContext");

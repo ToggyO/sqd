@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Squadio.API.Filters;
 using Squadio.API.Handlers.SignUp;
 using Squadio.Common.Models.Responses;
@@ -14,11 +14,12 @@ using Squadio.DTO.Teams;
 using Squadio.DTO.Users;
 using Squadio.DTO.Users.Settings;
 
-namespace Squadio.API.Controllers
+namespace Squadio.API.Versioned.V01
 {
     [ApiController]
     [AuthorizationFilter]
-    [Route("api/signup")]
+    [ApiVersion("0.1")]
+    [Route("api/v{version:apiVersion}/signup")]
     public class SignUpController : ControllerBase
     {
         private readonly ISignUpHandler _handler;

@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Squadio.API.Handlers.Users;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Squadio.API.Filters;
+using Squadio.API.Handlers.Users;
 using Squadio.Common.Models.Responses;
 using Squadio.Domain.Enums;
 using Squadio.DTO.Auth;
@@ -11,11 +11,12 @@ using Squadio.DTO.Resources;
 using Squadio.DTO.Users;
 using Squadio.DTO.Users.Settings;
 
-namespace Squadio.API.Controllers
+namespace Squadio.API.Versioned.V01
 {
     [ApiController]
     [AuthorizationFilter]
-    [Route("api/users/settings")]
+    [ApiVersion("0.1")]
+    [Route("api/v{version:apiVersion}/users/settings")]
     public class UsersSettingsController : ControllerBase
     {
         private readonly IUsersSettingsHandler _handler;

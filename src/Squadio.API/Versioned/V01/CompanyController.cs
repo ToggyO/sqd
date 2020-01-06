@@ -11,11 +11,12 @@ using Squadio.DTO.Companies;
 using Squadio.DTO.Invites;
 using Squadio.DTO.Users;
 
-namespace Squadio.API.Controllers
+namespace Squadio.API.Versioned.V01
 {
     [ApiController]
     //[AuthorizationFilter]
-    [Route("api/company")]
+    [ApiVersion("0.1")]
+    [Route("api/v{version:apiVersion}/company")]
     public class CompanyController : ControllerBase
     {
         private readonly ICompaniesHandler _handler;

@@ -1,17 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Squadio.Common.Settings;
 
-namespace Squadio.API.Controllers
+namespace Squadio.API.Versioned.V01
 {
     [ApiController]
     [AllowAnonymous]
-    [Route("api/versions")]
+    [ApiVersion("0.1")]
+    [Route("api/v{version:apiVersion}/versions")]
     public class VersionController : ControllerBase
     {
-        private const string Version = "0.6.4 b";
+        private const string Version = "0.7.0 b";
         private readonly ILogger<VersionController> _logger;
 
         public VersionController(ILogger<VersionController> logger)
