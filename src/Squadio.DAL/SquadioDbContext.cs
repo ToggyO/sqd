@@ -58,6 +58,8 @@ namespace Squadio.DAL
                     .OnDelete(DeleteBehavior.Restrict);
                 item.Property(p => p.UITheme)
                     .HasDefaultValue(UIThemeType.Default);
+                item.Property(p => p.SignUpType)
+                    .HasDefaultValue(SignUpType.Email);
             });
             modelBuilder.Entity<UserRegistrationStepModel>(item =>
             {

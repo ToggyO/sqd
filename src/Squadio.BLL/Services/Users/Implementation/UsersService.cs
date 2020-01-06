@@ -134,7 +134,8 @@ namespace Squadio.BLL.Services.Users.Implementation
                 Name = dto.Name,
                 RoleId = RoleGuid.User,
                 Email = dto.Email,
-                CreatedDate = DateTime.UtcNow
+                CreatedDate = DateTime.UtcNow,
+                SignUpType = dto.SignUpBy
             };
             
             entity = await _repository.Create(entity);
@@ -177,6 +178,8 @@ namespace Squadio.BLL.Services.Users.Implementation
 
         public async Task<Response<UserDTO>> DeleteUser(Guid id)
         {
+            await DeleteAvatar(id);
+            
             var resultEntity = await _repository.Delete(id);
             
             var result = _mapper.Map<UserModel, UserDTO>(resultEntity);

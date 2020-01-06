@@ -199,7 +199,8 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             {
                 Email = email,
                 Step = RegistrationStep.New,
-                Status = UserStatus.Admin
+                Status = UserStatus.Admin,
+                SignUpBy = SignUpType.Email
             };
 
             var createResponse = await _usersService.CreateUser(createUserDTO);
@@ -275,7 +276,8 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 Email = infoFromGoogleToken.Email,
                 Name = infoFromGoogleToken.Name,
                 Step = RegistrationStep.EmailConfirmed,
-                Status = UserStatus.Admin
+                Status = UserStatus.Admin,
+                SignUpBy = SignUpType.Google
             };
 
             var createResponse = await _usersService.CreateUser(createUserDTO);
