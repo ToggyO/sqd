@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Squadio.API.Filters;
 using Squadio.Common.Models.Responses;
+using Squadio.Domain.Enums;
 using Squadio.DTO.Auth;
 using Squadio.DTO.Resources;
 using Squadio.DTO.Users;
@@ -124,6 +125,15 @@ namespace Squadio.API.Controllers
         public async Task<Response<UserDTO>> DeleteAvatar()
         {
             return await _handler.DeleteAvatar(User);
+        }
+        
+        /// <summary>
+        /// Set email from for current user
+        /// </summary>
+        [HttpPut("ui-theme/{themeType}")]
+        public async Task<Response<UserDTO>> SaveUITheme([FromRoute] UIThemeType themeType)
+        {
+            return await _handler.SaveUITheme(themeType, User);
         }
     }
 }

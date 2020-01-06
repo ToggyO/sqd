@@ -8,6 +8,7 @@ namespace Squadio.DTO.Users
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
+        public string UITheme { get; set; }
         public ResourceImageDTO Avatar { get; set; }
     }
 }

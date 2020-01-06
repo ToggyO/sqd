@@ -56,6 +56,8 @@ namespace Squadio.DAL
                 item.HasOne(p => p.Role)
                     .WithMany()
                     .OnDelete(DeleteBehavior.Restrict);
+                item.Property(p => p.UITheme)
+                    .HasDefaultValue(UIThemeType.Default);
             });
             modelBuilder.Entity<UserRegistrationStepModel>(item =>
             {

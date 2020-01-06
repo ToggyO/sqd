@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Squadio.Common.Models.Responses;
+using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Auth;
 using Squadio.DTO.Users;
@@ -20,5 +21,6 @@ namespace Squadio.BLL.Services.Users
         Task<Response<UserDTO>> SetEmail(Guid id, string code);
         Task<Response<UserDTO>> SaveNewAvatar(Guid userId, Guid resourceId);
         Task<Response<UserDTO>> DeleteAvatar(Guid userId);
+        Task<Response<UserDTO>> SaveUITheme(Guid userId, UIThemeType themeType);
     }
 }

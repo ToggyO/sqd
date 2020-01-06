@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using System.Threading.Tasks;
 using Squadio.Common.Models.Responses;
+using Squadio.Domain.Enums;
 using Squadio.DTO.Auth;
 using Squadio.DTO.Resources;
 using Squadio.DTO.Users;
@@ -21,5 +22,6 @@ namespace Squadio.API.Handlers.Users
         Task<Response<UserDTO>> SaveNewAvatar(FileImageCreateDTO dto, ClaimsPrincipal claims);
         Task<Response<UserDTO>> SaveNewAvatar(ResourceImageCreateDTO dto, ClaimsPrincipal claims);
         Task<Response<UserDTO>> DeleteAvatar(ClaimsPrincipal claims);
+        Task<Response<UserDTO>> SaveUITheme(UIThemeType themeType, ClaimsPrincipal claims);
     }
 }

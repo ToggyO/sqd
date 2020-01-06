@@ -8,6 +8,7 @@ using Squadio.BLL.Services.Users;
 using Squadio.Common.Enums;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Responses;
+using Squadio.Domain.Enums;
 using Squadio.DTO.Auth;
 using Squadio.DTO.Resources;
 using Squadio.DTO.Users;
@@ -139,6 +140,11 @@ namespace Squadio.API.Handlers.Users.Implementation
         public async Task<Response<UserDTO>> DeleteAvatar(ClaimsPrincipal claims)
         {
             return await _service.DeleteAvatar(claims.GetUserId());
+        }
+
+        public async Task<Response<UserDTO>> SaveUITheme(UIThemeType themeType, ClaimsPrincipal claims)
+        {
+            return await _service.SaveUITheme(claims.GetUserId(), themeType);
         }
     }
 }
