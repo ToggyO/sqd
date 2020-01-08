@@ -60,7 +60,10 @@ namespace Squadio.API
                     });
             });
 
-            services.AddSignalR();
+            services.AddSignalR(options =>
+            {
+                options.EnableDetailedErrors = true;
+            });
 
             services.AddMvcCore(options =>
                 {
@@ -183,8 +186,8 @@ namespace Squadio.API
                             {
                                 context.Token = accessToken;
                                 Log.Logger.Information("Startup");
-                                Log.Logger.Information("/api/ws");
-                                Log.Logger.Information(path);
+                                Log.Logger.Information("This request is /api/ws");
+                                Log.Logger.Information($"Request path is '{path}'");
                             }
                             return Task.CompletedTask;
                         }
