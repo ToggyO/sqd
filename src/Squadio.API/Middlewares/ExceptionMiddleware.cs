@@ -25,6 +25,21 @@ namespace Squadio.API.Extensions
         {
             try
             {
+                var accessToken = context.Request.Query["access_token"];
+                var path = context.Request.Path;
+                
+                if (path.StartsWithSegments("/api/ws"))
+                {
+                    _logger.LogInformation("----- ExceptionMiddleware -----");
+                    _logger.LogInformation("This request is /api/ws");
+                    _logger.LogInformation($"Request path is '{path}'");
+                }
+                else
+                {
+                    _logger.LogInformation("This request is ! NOT ! /api/ws");
+                    _logger.LogInformation($"Request path is '{path}'");
+                }
+                
                 await _next.Invoke(context);
             }
             catch (Exception ex)
