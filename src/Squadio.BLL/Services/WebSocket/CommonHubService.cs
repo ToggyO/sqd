@@ -25,10 +25,12 @@ namespace Squadio.BLL.Services.WebSocket
             _logger = logger;
             _usersProvider = usersProvider;
             _dictionary = GroupUsersDictionary<Guid>.GetInstance();
+            _logger.LogInformation("CommonHubService constructor done");
         }
 
         public override async Task OnConnectedAsync()
         {
+            _logger.LogInformation("CommonHubService OnConnectedAsync enter");
             var userResponse = await _usersProvider.GetById(Context.User.GetUserId());
             if (!userResponse.IsSuccess)
             {
@@ -44,6 +46,7 @@ namespace Squadio.BLL.Services.WebSocket
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
+            _logger.LogInformation("CommonHubService OnDisconnectedAsync enter");
             _dictionary.Remove(Context.ConnectionId);
             await base.OnDisconnectedAsync(exception);
         }
@@ -51,6 +54,7 @@ namespace Squadio.BLL.Services.WebSocket
         [HubMethodName(EndpointsWS.Sidebar.SubscribeTeam)]
         public async Task SidebarSubscribeTeam(SubscribeToSidebarModel model)
         {
+            _logger.LogInformation("CommonHubService SidebarSubscribeTeam enter");
             var userResponse = await _usersProvider.GetById(Context.User.GetUserId());
             if (!userResponse.IsSuccess)
             {

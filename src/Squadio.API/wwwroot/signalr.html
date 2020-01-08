@@ -21,7 +21,10 @@
 
 <script src="js/signalr.min.js"></script>
 <script>
-    var originUrl = "http://localhost:5005";
+
+    var scheme = document.location.protocol === "https:" ? "wss" : "ws";
+    var port = document.location.port ? (":" + document.location.port) : "";    
+    var originUrl = scheme + "://" + document.location.hostname + port;
     let chatHubUrl = originUrl+'/api/ws/chat';
     var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl9pZCI6IjEzY2JhNTBkNjRlZjQyMDY5NzViYTdiMjkwN2Q5Yjg4IiwidXNlcl9pZCI6IjkyMzllNmNmYzQ0MjRiN2Q5YTgzNDhhOTk3OTQwY2U0Iiwicm9sZV9pZCI6ImJmMjJhM2ZkZjdlYjQ4NzFiODRhNGQ4ZmY1MWQwZjdkIiwiZXhwIjoxNTc1NDQ3MzcwLCJpc3MiOiJTcXVhZCIsImF1ZCI6IklPIn0.Qe0U--5_2WGKBF5_GR8cKwglWYDCqrzKshxHOlKK9yw";
 

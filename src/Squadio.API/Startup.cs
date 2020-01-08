@@ -17,6 +17,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using Serilog;
 using Squadio.DAL;
 using Squadio.API.Extensions;
 using Squadio.API.Filters;
@@ -181,6 +182,9 @@ namespace Squadio.API
                                 && path.StartsWithSegments("/api/ws"))
                             {
                                 context.Token = accessToken;
+                                Log.Logger.Information("Startup");
+                                Log.Logger.Information("/api/ws");
+                                Log.Logger.Information(path);
                             }
                             return Task.CompletedTask;
                         }
