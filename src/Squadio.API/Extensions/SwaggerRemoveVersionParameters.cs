@@ -9,9 +9,16 @@ namespace Squadio.API.Extensions
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             var versionParameter = operation.Parameters.SingleOrDefault(p => p.Name == "version");
-            if (versionParameter == null) return;
-
-            operation.Parameters.Remove(versionParameter);
+            if (versionParameter != null)
+            {
+                operation.Parameters.Remove(versionParameter);
+            }
+            
+            var apiVersionParameter = operation.Parameters.SingleOrDefault(p => p.Name == "api-version");
+            if (apiVersionParameter != null)
+            {
+                operation.Parameters.Remove(apiVersionParameter);
+            }
         }
     }
 }
