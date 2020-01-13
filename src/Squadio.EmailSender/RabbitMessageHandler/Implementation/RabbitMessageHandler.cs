@@ -18,6 +18,9 @@ namespace Squadio.EmailSender.RabbitMessageHandler.Implementation
         private readonly IEmailService<InviteToTeamEmailModel> _inviteToTeamMailService;
         private readonly IEmailService<InviteToProjectEmailModel> _inviteToProjectMailService;
         private readonly IEmailService<PasswordRestoreAdminEmailModel> _passwordRestoreAdminMailService;
+        private readonly IEmailService<AddToCompanyEmailModel> _addToCompanyMailService;
+        private readonly IEmailService<AddToTeamEmailModel> _addToTeamMailService;
+        private readonly IEmailService<AddToProjectEmailModel> _addToProjectMailService;
 
         public RabbitMessageHandler(ILogger<RabbitMessageHandler> logger
             , IEmailService<UserConfirmEmailModel> userConfirmMailService
@@ -25,7 +28,10 @@ namespace Squadio.EmailSender.RabbitMessageHandler.Implementation
             , IEmailService<InviteToCompanyEmailModel> inviteToCompanyMailService
             , IEmailService<InviteToTeamEmailModel> inviteToTeamMailService
             , IEmailService<InviteToProjectEmailModel> inviteToProjectMailService
-            , IEmailService<PasswordRestoreAdminEmailModel> passwordRestoreAdminMailService)
+            , IEmailService<PasswordRestoreAdminEmailModel> passwordRestoreAdminMailService
+            , IEmailService<AddToCompanyEmailModel> addToCompanyMailService
+            , IEmailService<AddToTeamEmailModel> addToTeamMailService
+            , IEmailService<AddToProjectEmailModel> addToProjectMailService)
         {
             _logger = logger;
             _userConfirmMailService = userConfirmMailService;
@@ -34,6 +40,10 @@ namespace Squadio.EmailSender.RabbitMessageHandler.Implementation
             _inviteToTeamMailService = inviteToTeamMailService;
             _inviteToProjectMailService = inviteToProjectMailService;
             _passwordRestoreAdminMailService = passwordRestoreAdminMailService;
+            
+            _addToCompanyMailService = addToCompanyMailService;
+            _addToTeamMailService = addToTeamMailService;
+            _addToProjectMailService = addToProjectMailService;
             
             _logger.LogInformation("Initialization RabbitMessageHandler success");
         }
@@ -61,6 +71,18 @@ namespace Squadio.EmailSender.RabbitMessageHandler.Implementation
                 onMessage: async item => { await this.HandleEmailMessage(item); });
             
             bus.Subscribe<PasswordRestoreAdminEmailModel>(
+                subscriptionId: "SquadioEMailListenerRabbitMQ",
+                onMessage: async item => { await this.HandleEmailMessage(item); });
+            
+            bus.Subscribe<AddToCompanyEmailModel>(
+                subscriptionId: "SquadioEMailListenerRabbitMQ",
+                onMessage: async item => { await this.HandleEmailMessage(item); });
+            
+            bus.Subscribe<AddToTeamEmailModel>(
+                subscriptionId: "SquadioEMailListenerRabbitMQ",
+                onMessage: async item => { await this.HandleEmailMessage(item); });
+            
+            bus.Subscribe<AddToProjectEmailModel>(
                 subscriptionId: "SquadioEMailListenerRabbitMQ",
                 onMessage: async item => { await this.HandleEmailMessage(item); });
             
@@ -97,6 +119,21 @@ namespace Squadio.EmailSender.RabbitMessageHandler.Implementation
         private async Task HandleEmailMessage(PasswordRestoreAdminEmailModel item)
         {
             await _passwordRestoreAdminMailService.Send(item);
+        }
+        
+        private async Task HandleEmailMessage(AddToCompanyEmailModel item)
+        {
+            await _addToCompanyMailService.Send(item);
+        }
+
+        private async Task HandleEmailMessage(AddToTeamEmailModel item)
+        {
+            await _addToTeamMailService.Send(item);
+        }
+
+        private async Task HandleEmailMessage(AddToProjectEmailModel item)
+        {
+            await _addToProjectMailService.Send(item);
         }
     }
 }

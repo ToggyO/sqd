@@ -87,6 +87,7 @@ namespace Squadio.BLL.Services.Companies.Implementation
                 {
                     await SendCompanyInvite(
                         createInviteResult.Item1,
+                        email,
                         companyUser.User.Name,
                         companyUser.Company.Name,
                         createInviteResult.Item2);
@@ -161,9 +162,7 @@ namespace Squadio.BLL.Services.Companies.Implementation
                 });
             }
 
-            var result = new Response();
-
-            result = await AcceptInvite(invite.EntityId, user.Id);
+            var result = await AcceptInvite(invite.EntityId, user.Id);
             await _repository.ActivateInvite(invite.Id);
 
             return result;
@@ -196,6 +195,8 @@ namespace Squadio.BLL.Services.Companies.Implementation
         private async Task<Tuple<InviteModel, bool>> CreateInviteToCompany(Guid companyId, string email, Guid authorId)
         {
             var code = _codeProvider.GenerateCodeAsGuid();
+            InviteModel invite = null;
+            var isAlreadyRegistered = true;
             
             var user = (await _usersProvider.GetByEmail(email)).Data;
             if (user == null)
@@ -207,54 +208,67 @@ namespace Squadio.BLL.Services.Companies.Implementation
                     Status = UserStatus.Member
                 };
                 user = (await _usersService.CreateUser(createUserDTO)).Data;
+                
+                var signUpStep = await _signUpRepository.GetRegistrationStepByUserId(user.Id);
+                if (signUpStep.Step == RegistrationStep.New)
+                {
+                    isAlreadyRegistered = false;
+                    await _changePasswordRepository.AddRequest(user.Id, code);
+                }
+            
+                var companyUser = await _companiesUsersRepository.GetCompanyUser(companyId, user.Id);
+                if (companyUser != null)
+                {
+                    return null;
+                }
+            
+                await _companiesUsersRepository.AddCompanyUser(companyId, user.Id, UserStatus.Pending);
+            
+                invite = new InviteModel
+                {
+                    Email = email,
+                    Activated = false,
+                    CreatedDate = DateTime.UtcNow,
+                    Code = code,
+                    EntityId = companyId,
+                    EntityType = EntityType.Company,
+                    CreatorId = authorId
+                };
+            
+                invite = await _repository.CreateInvite(invite);
             }
-
-            var signUpStep = await _signUpRepository.GetRegistrationStepByUserId(user.Id);
-            if (signUpStep.Step == RegistrationStep.New)
-            {
-                await _changePasswordRepository.AddRequest(user.Id, code);
-            }
             
-            var companyUser = await _companiesUsersRepository.GetCompanyUser(companyId, user.Id);
-            if (companyUser != null)
-            {
-                return null;
-            }
-            
-            await _companiesUsersRepository.AddCompanyUser(companyId, user.Id, UserStatus.Pending);
-            
-            var invite = new InviteModel
-            {
-                Email = email,
-                Activated = false,
-                CreatedDate = DateTime.UtcNow,
-                Code = code,
-                EntityId = companyId,
-                EntityType = EntityType.Company,
-                CreatorId = authorId
-            };
-            
-            invite = await _repository.CreateInvite(invite);
-
-            return new Tuple<InviteModel, bool>(invite, signUpStep.Step != RegistrationStep.New);
+            return new Tuple<InviteModel, bool>(invite, isAlreadyRegistered);
         }
         
-        private async Task SendCompanyInvite(InviteModel model, string authorName, string companyName, bool isAlreadyRegistered)
+        private async Task SendCompanyInvite(InviteModel model, string email, string authorName, string companyName, bool isAlreadyRegistered)
         {
             try
             {
-                await _rabbitService.Send(new InviteToCompanyEmailModel()
+                if (model != null)
                 {
-                    To = model.Email,
-                    AuthorName = authorName,
-                    Code = model.Code,
-                    CompanyName = companyName,
-                    IsAlreadyRegistered = isAlreadyRegistered
-                });
+                    await _rabbitService.Send(new InviteToCompanyEmailModel()
+                    {
+                        To = email,
+                        AuthorName = authorName,
+                        Code = model.Code,
+                        CompanyName = companyName,
+                        IsAlreadyRegistered = isAlreadyRegistered
+                    });
+                }
+                else
+                {
+                    await _rabbitService.Send(new AddToCompanyEmailModel()
+                    {
+                        To = email,
+                        AuthorName = authorName,
+                        CompanyName = companyName
+                    });
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"[{model.Email}][{model.Code}] : {ex.Message}");
+                _logger.LogError(ex, $"[{email}] : {ex.Message}");
             }
         }
     }

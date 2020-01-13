@@ -857,18 +857,23 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             return new Response();
         }
         
-        private async Task SendTeamInvite(InviteModel model, string authorName, string teamName, bool isAlreadyRegistered)
+        private async Task SendCompanyInvite(InviteModel model, string authorName, string companyName, bool isAlreadyRegistered)
         {
             try
             {
-                await _rabbitService.Send(new InviteToTeamEmailModel()
+                var invitedUser = await _usersRepository.GetByEmail(model.Email);
+
+                if (invitedUser == null /*|| invitedUser.SendEmails*/)
                 {
-                    To = model.Email,
-                    AuthorName = authorName,
-                    Code = model.Code,
-                    TeamName = teamName,
-                    IsAlreadyRegistered = isAlreadyRegistered
-                });
+                    await _rabbitService.Send(new InviteToCompanyEmailModel()
+                    {
+                        To = model.Email,
+                        AuthorName = authorName,
+                        Code = model.Code,
+                        CompanyName = companyName,
+                        IsAlreadyRegistered = isAlreadyRegistered
+                    });
+                }
             }
             catch (Exception ex)
             {
@@ -876,18 +881,23 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             }
         }
         
-        private async Task SendCompanyInvite(InviteModel model, string authorName, string companyName, bool isAlreadyRegistered)
+        private async Task SendTeamInvite(InviteModel model, string authorName, string teamName, bool isAlreadyRegistered)
         {
             try
             {
-                await _rabbitService.Send(new InviteToCompanyEmailModel()
+                var invitedUser = await _usersRepository.GetByEmail(model.Email);
+
+                if (invitedUser == null /*|| invitedUser.SendEmails*/)
                 {
-                    To = model.Email,
-                    AuthorName = authorName,
-                    Code = model.Code,
-                    CompanyName = companyName,
-                    IsAlreadyRegistered = isAlreadyRegistered
-                });
+                    await _rabbitService.Send(new InviteToTeamEmailModel()
+                    {
+                        To = model.Email,
+                        AuthorName = authorName,
+                        Code = model.Code,
+                        TeamName = teamName,
+                        IsAlreadyRegistered = isAlreadyRegistered
+                    });
+                }
             }
             catch (Exception ex)
             {
@@ -899,14 +909,19 @@ namespace Squadio.BLL.Services.SignUp.Implementation
         {
             try
             {
-                await _rabbitService.Send(new InviteToProjectEmailModel()
+                var invitedUser = await _usersRepository.GetByEmail(model.Email);
+
+                if (invitedUser == null /*|| invitedUser.SendEmails*/)
                 {
-                    To = model.Email,
-                    AuthorName = authorName,
-                    Code = model.Code,
-                    ProjectName = projectName,
-                    IsAlreadyRegistered = isAlreadyRegistered
-                });
+                    await _rabbitService.Send(new InviteToProjectEmailModel()
+                    {
+                        To = model.Email,
+                        AuthorName = authorName,
+                        Code = model.Code,
+                        ProjectName = projectName,
+                        IsAlreadyRegistered = isAlreadyRegistered
+                    });
+                }
             }
             catch (Exception ex)
             {

@@ -26,9 +26,6 @@ namespace Squadio.BLL.Services.Companies.Implementation
         private readonly ICompaniesRepository _repository;
         private readonly ICompaniesUsersRepository _companiesUsersRepository;
         private readonly ITeamsService _teamsService;
-        private readonly ICodeProvider _codeProvider;
-        private readonly IRabbitService _rabbitService;
-        private readonly IInvitesRepository _invitesRepository;
         private readonly IMapper _mapper;
         private readonly ILogger<CompaniesService> _logger;
         public CompaniesService(ICompaniesRepository repository

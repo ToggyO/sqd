@@ -18,6 +18,7 @@ using Squadio.DAL.Repository.Teams;
 using Squadio.DAL.Repository.TeamsUsers;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Invites;
+using Squadio.Domain.Models.Users;
 using Squadio.DTO.Invites;
 using Squadio.DTO.Users;
 
@@ -91,6 +92,7 @@ namespace Squadio.BLL.Services.Teams.Implementation
                 {
                     await SendTeamInvite(
                         createInviteResult.Item1,
+                        email,
                         teamUser.User.Name,
                         teamUser.Team.Name,
                         createInviteResult.Item2);
@@ -165,9 +167,7 @@ namespace Squadio.BLL.Services.Teams.Implementation
                 });
             }
 
-            var result = new Response();
-
-            result = await AcceptInvite(invite.EntityId, user.Id);
+            var result = await AcceptInvite(invite.EntityId, user.Id);
             await _repository.ActivateInvite(invite.Id);
 
             return result;
@@ -200,11 +200,13 @@ namespace Squadio.BLL.Services.Teams.Implementation
 
             return new Response();
         }
-        
+
         private async Task<Tuple<InviteModel, bool>> CreateInviteToTeam(Guid teamId, string email, Guid authorId)
         {
             var code = _codeProvider.GenerateCodeAsGuid();
-            
+            InviteModel invite = null;
+            var isAlreadyRegistered = true;
+
             var user = (await _usersProvider.GetByEmail(email)).Data;
             if (user == null)
             {
@@ -215,54 +217,67 @@ namespace Squadio.BLL.Services.Teams.Implementation
                     Status = UserStatus.Member
                 };
                 user = (await _usersService.CreateUser(createUserDTO)).Data;
+
+                var signUpStep = await _signUpRepository.GetRegistrationStepByUserId(user.Id);
+                if (signUpStep.Step == RegistrationStep.New)
+                {
+                    isAlreadyRegistered = false;
+                    await _changePasswordRepository.AddRequest(user.Id, code);
+                }
+
+                var teamUser = await _teamsUsersRepository.GetTeamUser(teamId, user.Id);
+                if (teamUser != null)
+                {
+                    return null;
+                }
+
+                await _teamsUsersRepository.AddTeamUser(teamId, user.Id, UserStatus.Pending);
+
+                invite = new InviteModel
+                {
+                    Email = email,
+                    Activated = false,
+                    CreatedDate = DateTime.UtcNow,
+                    Code = code,
+                    EntityId = teamId,
+                    EntityType = EntityType.Team,
+                    CreatorId = authorId
+                };
+
+                invite = await _repository.CreateInvite(invite);
             }
 
-            var signUpStep = await _signUpRepository.GetRegistrationStepByUserId(user.Id);
-            if (signUpStep.Step == RegistrationStep.New)
-            {
-                await _changePasswordRepository.AddRequest(user.Id, code);
-            }
-            
-            var teamUser = await _teamsUsersRepository.GetTeamUser(teamId, user.Id);
-            if (teamUser != null)
-            {
-                return null;
-            }
-            
-            await _teamsUsersRepository.AddTeamUser(teamId, user.Id, UserStatus.Pending);
-            
-            var invite = new InviteModel
-            {
-                Email = email,
-                Activated = false,
-                CreatedDate = DateTime.UtcNow,
-                Code = code,
-                EntityId = teamId,
-                EntityType = EntityType.Team,
-                CreatorId = authorId
-            };
-            
-            invite = await _repository.CreateInvite(invite);
-            
-            return new Tuple<InviteModel, bool>(invite, signUpStep.Step != RegistrationStep.New);
+            return new Tuple<InviteModel, bool>(invite, isAlreadyRegistered);
         }
-        
-        private async Task SendTeamInvite(InviteModel model, string authorName, string teamName, bool isAlreadyRegistered)
+
+        private async Task SendTeamInvite(InviteModel model, string email, string authorName, string teamName, bool isAlreadyRegistered)
         {
             try
             {
-                await _rabbitService.Send(new InviteToTeamEmailModel()
+                if (model != null)
                 {
-                    To = model.Email,
-                    AuthorName = authorName,
-                    Code = model.Code,
-                    TeamName = teamName,
-                    IsAlreadyRegistered = isAlreadyRegistered
-                });
+                    await _rabbitService.Send(new InviteToTeamEmailModel()
+                    {
+                        To = email,
+                        AuthorName = authorName,
+                        Code = model.Code,
+                        TeamName = teamName,
+                        IsAlreadyRegistered = isAlreadyRegistered
+                    });
+                }
+                else
+                {
+                    await _rabbitService.Send(new AddToTeamEmailModel()
+                    {
+                        To = email,
+                        AuthorName = authorName,
+                        TeamName = teamName
+                    });
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"[{model.Email}][{model.Code}] : {ex.Message}");
+                _logger.LogError(ex, $"[{email}] : {ex.Message}");
             }
         }
     }
