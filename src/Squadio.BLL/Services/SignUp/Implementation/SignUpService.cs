@@ -715,6 +715,78 @@ namespace Squadio.BLL.Services.SignUp.Implementation
         private async Task<Response> SendSignUpInvites(Guid userId)
         {
             var pageModel = new PageModel {Page = 1, PageSize = 1};
+            
+            var userCompany = (await _companiesProvider.GetUserCompanies(userId, pageModel))
+                .Data
+                .Items
+                .FirstOrDefault();
+
+            if (userCompany == null)
+            {
+                return new BusinessConflictErrorResponse(new[]
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound,
+                        Field = ErrorFields.Company.Id
+                    },
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound,
+                        Field = ErrorFields.User.Id
+                    }
+                });
+            }
+
+            var userTeam = (await _teamsProvider.GetUserTeams(userId, pageModel, userCompany.CompanyId))
+                .Data
+                .Items
+                .FirstOrDefault();
+
+            if (userTeam == null)
+            {
+                return new BusinessConflictErrorResponse(new[]
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound,
+                        Field = ErrorFields.Team.Id
+                    },
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound,
+                        Field = ErrorFields.User.Id
+                    }
+                });
+            }
+
+            var userProject = (await _projectsProvider.GetUserProjects(userId, pageModel, teamId: userTeam.TeamId))
+                .Data
+                .Items
+                .FirstOrDefault();
+
+            if (userProject == null)
+            {
+                return new BusinessConflictErrorResponse(new[]
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound,
+                        Field = ErrorFields.Project.Id
+                    },
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound,
+                        Field = ErrorFields.User.Id
+                    }
+                });
+            }
 
             var allInvites = (await _invitesRepository.GetInvites(
                 authorId: userId, 
@@ -736,7 +808,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             {
                 await SendProjectInvite(
                     invite,
-                    userProject.User.Name,
+                    userProject.Project.Creator.Name,
                     userProject.Project.Name,
                     false);
             }
@@ -751,7 +823,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             {
                 await SendTeamInvite(
                     invite,
-                    userTeam.User.Name,
+                    userTeam.Team.Creator.Name,
                     userTeam.Team.Name,
                     false);
             }
@@ -766,7 +838,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             {
                 await SendCompanyInvite(
                     invite,
-                    userCompany.User.Name,
+                    userCompany.Company.Creator.Name,
                     userCompany.Company.Name,
                     false);
             }
