@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Mapper;
-using Squadio.BLL.Services.Invites;
 using Squadio.BLL.Services.Projects;
 using Squadio.Common.Models.Errors;
-using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.CompaniesUsers;
 using Squadio.DAL.Repository.Teams;
 using Squadio.DAL.Repository.TeamsUsers;
 using Squadio.Domain.Enums;
-using Squadio.Domain.Models.Companies;
 using Squadio.Domain.Models.Teams;
-using Squadio.DTO.Companies;
 using Squadio.DTO.Invites;
 using Squadio.DTO.Teams;
 

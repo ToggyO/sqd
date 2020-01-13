@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Mapper;
-using Squadio.BLL.Services.Invites;
 using Squadio.Common.Models.Errors;
-using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.CompaniesUsers;
@@ -11,10 +9,8 @@ using Squadio.DAL.Repository.Projects;
 using Squadio.DAL.Repository.ProjectsUsers;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Projects;
-using Squadio.Domain.Models.Teams;
 using Squadio.DTO.Invites;
 using Squadio.DTO.Projects;
-using Squadio.DTO.Teams;
 
 namespace Squadio.BLL.Services.Projects.Implementation
 {
