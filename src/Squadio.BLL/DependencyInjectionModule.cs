@@ -60,7 +60,7 @@ namespace Squadio.BLL
             DAL.DependencyInjectionModule.Load(services);
             DTO.DependencyInjectionModule.Load(services);
 
-            LoadEmailServices(services);
+            LoadRabbitServices(services);
             
             services.AddTransient<IPasswordService, PasswordService>();
             
@@ -104,7 +104,7 @@ namespace Squadio.BLL
             services.AddMapper();
         }
         
-        private static void LoadEmailServices(IServiceCollection services)
+        private static void LoadRabbitServices(IServiceCollection services)
         {
             services.AddScoped<IRabbitPublisher, RabbitPublisher>();
             services.AddScoped<IRabbitService, RabbitService>();
