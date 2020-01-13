@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Squadio.API.Handlers.Companies;
-using Squadio.API.Handlers.Invites;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.Domain.Enums;
@@ -20,13 +19,10 @@ namespace Squadio.API.Controllers.V01
     public class CompanyController : ControllerBase
     {
         private readonly ICompaniesHandler _handler;
-        private readonly IInvitesHandler _invitesHandler;
 
-        public CompanyController(ICompaniesHandler handler
-            , IInvitesHandler invitesHandler)
+        public CompanyController(ICompaniesHandler handler)
         {
             _handler = handler;
-            _invitesHandler = invitesHandler;
         }
 
         /// <summary>
@@ -82,7 +78,7 @@ namespace Squadio.API.Controllers.V01
         public async Task<Response> CreateInvites([Required, FromRoute] Guid id
             , [Required, FromBody] CreateInvitesDTO dto)
         {
-            return await _invitesHandler.InviteToCompany(id, dto, User);
+            return await _handler.CreateInvite(id, dto, User);
         }
         /// <summary>
         /// Cancel of invites to company
@@ -91,7 +87,7 @@ namespace Squadio.API.Controllers.V01
         public async Task<Response> CancelInvite([Required, FromRoute] Guid id
             , [Required, FromBody] CancelInvitesDTO dto)
         {
-            return await _invitesHandler.CancelInvite(id, dto, User, EntityType.Company);
+            return await _handler.CancelInvite(id, dto, User);
         }
         
         /// <summary>
@@ -109,7 +105,7 @@ namespace Squadio.API.Controllers.V01
         [HttpPost("invite/accept")]
         public async Task<Response> AcceptInvite([Required, FromQuery] string code)
         {
-            return await _invitesHandler.AcceptInvite(User, code, EntityType.Company);
+            return await _handler.AcceptInvite(User, code);
         }
     }
 }

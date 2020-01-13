@@ -9,6 +9,7 @@ using Squadio.Common.Extensions;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.Common.WebSocket;
+using Squadio.DTO.Invites;
 using Squadio.DTO.Projects;
 using Squadio.DTO.Users;
 
@@ -19,14 +20,17 @@ namespace Squadio.API.Handlers.Projects.Implementation
         private readonly IProjectsProvider _provider;
         private readonly IProjectsService _service;
         private readonly ISidebarHubProvider _hubProvider;
+        private readonly IProjectInvitesService _projectInvitesService;
 
         public ProjectsHandler(IProjectsProvider provider
             , IProjectsService service
-            , ISidebarHubProvider hubProvider)
+            , ISidebarHubProvider hubProvider
+            , IProjectInvitesService projectInvitesService)
         {
             _provider = provider;
             _service = service;
             _hubProvider = hubProvider;
+            _projectInvitesService = projectInvitesService;
         }
 
         public async Task<Response<PageModel<ProjectDTO>>> GetProjects(PageModel model, Guid? companyId = null, Guid? teamId = null)
@@ -71,6 +75,24 @@ namespace Squadio.API.Handlers.Projects.Implementation
         public async Task<Response> DeleteProjectUser(Guid projectId, Guid userId, ClaimsPrincipal claims)
         {
             var result = await _service.DeleteUserFromProject(projectId, userId, claims.GetUserId());
+            return result;
+        }
+
+        public async Task<Response> CreateInvite(Guid projectId, CreateInvitesDTO dto, ClaimsPrincipal claims)
+        {
+            var result = await _projectInvitesService.CreateInvite(projectId, claims.GetUserId(), dto);
+            return result;
+        }
+
+        public async Task<Response> CancelInvite(Guid projectId, CancelInvitesDTO dto, ClaimsPrincipal claims)
+        {
+            var result = await _projectInvitesService.CancelInvite(projectId, claims.GetUserId(), dto);
+            return result;
+        }
+
+        public async Task<Response> AcceptInvite(ClaimsPrincipal claims, string code)
+        {
+            var result = await _projectInvitesService.AcceptInvite(claims.GetUserId(), code);
             return result;
         }
 

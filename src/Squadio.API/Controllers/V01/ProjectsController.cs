@@ -2,11 +2,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Squadio.API.Handlers.Invites;
 using Squadio.API.Handlers.Projects;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
-using Squadio.Domain.Enums;
 using Squadio.DTO.Invites;
 using Squadio.DTO.Projects;
 using Squadio.DTO.Users;
@@ -20,12 +18,9 @@ namespace Squadio.API.Controllers.V01
     public class ProjectsController : ControllerBase
     {
         private readonly IProjectsHandler _handler;
-        private readonly IInvitesHandler _invitesHandler;
-        public ProjectsController(IProjectsHandler handler
-            , IInvitesHandler invitesHandler)
+        public ProjectsController(IProjectsHandler handler)
         {
             _handler = handler;
-            _invitesHandler = invitesHandler;
         }
         
         /// <summary>
@@ -101,7 +96,7 @@ namespace Squadio.API.Controllers.V01
         public async Task<Response> CreateInvites([Required, FromRoute] Guid id
             , [Required, FromBody] CreateInvitesDTO dto)
         {
-            return await _invitesHandler.InviteToProject(id, dto, User);
+            return await _handler.CreateInvite(id, dto, User);
         }
         
         /// <summary>
@@ -111,7 +106,7 @@ namespace Squadio.API.Controllers.V01
         public async Task<Response> CancelInvite([Required, FromRoute] Guid id
             , [Required, FromBody] CancelInvitesDTO dto)
         {
-            return await _invitesHandler.CancelInvite(id, dto, User, EntityType.Project);
+            return await _handler.CancelInvite(id, dto, User);
         }
         
         /// <summary>
@@ -120,7 +115,7 @@ namespace Squadio.API.Controllers.V01
         [HttpPost("invite/accept")]
         public async Task<Response> AcceptInvite([Required, FromQuery] string code)
         {
-            return await _invitesHandler.AcceptInvite(User, code, EntityType.Project);
+            return await _handler.AcceptInvite(User, code);
         }
     }
 }

@@ -77,12 +77,15 @@ namespace Squadio.BLL
             
             services.Add<ICompaniesProvider, CompaniesProvider>(serviceLifetime);
             services.Add<ICompaniesService, CompaniesService>(serviceLifetime);
+            services.Add<ICompanyInvitesService, CompanyInvitesService>(serviceLifetime);
             
             services.Add<ITeamsProvider, TeamsProvider>(serviceLifetime);
             services.Add<ITeamsService, TeamsService>(serviceLifetime);
+            services.Add<ITeamInvitesService, TeamInvitesService>(serviceLifetime);
             
             services.Add<IProjectsProvider, ProjectsProvider>(serviceLifetime);
             services.Add<IProjectsService, ProjectsService>(serviceLifetime);
+            services.Add<IProjectInvitesService, ProjectInvitesService>(serviceLifetime);
             
             services.Add<IInvitesProvider, InvitesProvider>(serviceLifetime);
             services.Add<IInvitesService, InvitesService>(serviceLifetime);

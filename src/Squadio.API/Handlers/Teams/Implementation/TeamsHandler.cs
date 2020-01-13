@@ -6,6 +6,7 @@ using Squadio.BLL.Services.Teams;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
+using Squadio.DTO.Invites;
 using Squadio.DTO.Teams;
 using Squadio.DTO.Users;
 
@@ -15,11 +16,14 @@ namespace Squadio.API.Handlers.Teams.Implementation
     {
         private readonly ITeamsProvider _provider;
         private readonly ITeamsService _service;
+        private readonly ITeamInvitesService _teamInvitesService;
         public TeamsHandler(ITeamsProvider provider
-            , ITeamsService service)
+            , ITeamsService service
+            , ITeamInvitesService teamInvitesService)
         {
             _provider = provider;
             _service = service;
+            _teamInvitesService = teamInvitesService;
         }
 
         public async Task<Response<PageModel<UserWithRoleDTO>>> GetTeamUsers(Guid teamId, PageModel model)
@@ -67,6 +71,24 @@ namespace Squadio.API.Handlers.Teams.Implementation
         public async Task<Response> LeaveTeam(Guid teamId, ClaimsPrincipal claims)
         {
             var result = await _service.LeaveTeam(teamId, claims.GetUserId());
+            return result;
+        }
+
+        public async Task<Response> CreateInvite(Guid teamId, CreateInvitesDTO dto, ClaimsPrincipal claims)
+        {
+            var result = await _teamInvitesService.CreateInvite(teamId, claims.GetUserId(), dto);
+            return result;
+        }
+
+        public async Task<Response> CancelInvite(Guid teamId, CancelInvitesDTO dto, ClaimsPrincipal claims)
+        {
+            var result = await _teamInvitesService.CancelInvite(teamId, claims.GetUserId(), dto);
+            return result;
+        }
+
+        public async Task<Response> AcceptInvite(ClaimsPrincipal claims, string code)
+        {
+            var result = await _teamInvitesService.AcceptInvite(claims.GetUserId(), code);
             return result;
         }
     }

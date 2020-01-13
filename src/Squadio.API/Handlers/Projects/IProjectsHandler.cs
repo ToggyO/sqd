@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
+using Squadio.DTO.Invites;
 using Squadio.DTO.Projects;
 using Squadio.DTO.Users;
 
@@ -17,5 +18,9 @@ namespace Squadio.API.Handlers.Projects
         Task<Response<ProjectDTO>> Update(Guid projectId, ProjectUpdateDTO dto, ClaimsPrincipal claims);
         Task<Response> Delete(Guid projectId, ClaimsPrincipal claims);
         Task<Response> DeleteProjectUser(Guid projectId, Guid userId, ClaimsPrincipal claims);
+        
+        Task<Response> CreateInvite(Guid projectId, CreateInvitesDTO dto, ClaimsPrincipal claims);
+        Task<Response> CancelInvite(Guid projectId, CancelInvitesDTO dto, ClaimsPrincipal claims);
+        Task<Response> AcceptInvite(ClaimsPrincipal claims, string code);
     }
 }
