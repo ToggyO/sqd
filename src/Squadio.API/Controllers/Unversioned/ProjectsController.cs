@@ -11,12 +11,11 @@ using Squadio.DTO.Invites;
 using Squadio.DTO.Projects;
 using Squadio.DTO.Users;
 
-namespace Squadio.API.Versioned.V01
+namespace Squadio.API.Controllers.Unversioned
 {
     [ApiController]
     //[AuthorizationFilter]
-    [ApiVersion("0.1")]
-    [Route("api/v{version:apiVersion}/projects")]
+    [Route("api/projects")]
     public class ProjectsController : ControllerBase
     {
         private readonly IProjectsHandler _handler;

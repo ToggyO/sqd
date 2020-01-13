@@ -14,7 +14,7 @@ using Squadio.DTO.Teams;
 using Squadio.DTO.Users;
 using Squadio.DTO.Users.Settings;
 
-namespace Squadio.API.Versioned.V01
+namespace Squadio.API.Controllers.V01
 {
     [ApiController]
     [AuthorizationFilter]

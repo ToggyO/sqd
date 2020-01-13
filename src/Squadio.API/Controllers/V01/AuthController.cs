@@ -5,7 +5,7 @@ using Squadio.API.Handlers.Auth;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Auth;
 
-namespace Squadio.API.Versioned.V01
+namespace Squadio.API.Controllers.V01
 {
     [ApiController]
     [ApiVersion("0.1")]

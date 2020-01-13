@@ -11,12 +11,11 @@ using Squadio.DTO.Resources;
 using Squadio.DTO.Users;
 using Squadio.DTO.Users.Settings;
 
-namespace Squadio.API.Versioned.V01
+namespace Squadio.API.Controllers.Unversioned
 {
     [ApiController]
     [AuthorizationFilter]
-    [ApiVersion("0.1")]
-    [Route("api/v{version:apiVersion}/users/settings")]
+    [Route("api/users/settings")]
     public class UsersSettingsController : ControllerBase
     {
         private readonly IUsersSettingsHandler _handler;

@@ -5,7 +5,7 @@ using Squadio.API.Handlers.Auth;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Auth;
 
-namespace Squadio.API.Unversioned
+namespace Squadio.API.Controllers.Unversioned
 {
     [ApiController]
     [Route("api/auth")]

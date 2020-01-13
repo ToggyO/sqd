@@ -11,12 +11,11 @@ using Squadio.DTO.Invites;
 using Squadio.DTO.Teams;
 using Squadio.DTO.Users;
 
-namespace Squadio.API.Versioned.V01
+namespace Squadio.API.Controllers.Unversioned
 {
     [ApiController]
     //[AuthorizationFilter]
-    [ApiVersion("0.1")]
-    [Route("api/v{version:apiVersion}/teams")]
+    [Route("api/teams")]
     public class TeamsController : ControllerBase
     {
         private readonly ITeamsHandler _handler;

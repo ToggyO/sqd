@@ -39,7 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Versioned" />
+    <Folder Include="Controllers" />
     <Folder Include="wwwroot\" />
     <Folder Include="wwwroot\js" />
   </ItemGroup>

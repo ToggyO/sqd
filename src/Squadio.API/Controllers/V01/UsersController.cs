@@ -7,15 +7,12 @@ using Squadio.API.Filters;
 using Squadio.API.Handlers.Users;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
-using Squadio.DTO.Auth;
 using Squadio.DTO.Companies;
 using Squadio.DTO.Projects;
-using Squadio.DTO.Resources;
 using Squadio.DTO.Teams;
 using Squadio.DTO.Users;
-using Squadio.DTO.Users.Settings;
 
-namespace Squadio.API.Versioned.V01
+namespace Squadio.API.Controllers.V01
 {
     [ApiController]
     [AuthorizationFilter]

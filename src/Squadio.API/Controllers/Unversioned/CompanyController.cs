@@ -11,7 +11,7 @@ using Squadio.DTO.Companies;
 using Squadio.DTO.Invites;
 using Squadio.DTO.Users;
 
-namespace Squadio.API.Unversioned
+namespace Squadio.API.Controllers.Unversioned
 {
     [ApiController]
     //[AuthorizationFilter]

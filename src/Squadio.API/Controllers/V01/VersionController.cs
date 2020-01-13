@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace Squadio.API.Versioned.V01
+namespace Squadio.API.Controllers.V01
 {
     [ApiController]
     [AllowAnonymous]

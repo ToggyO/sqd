@@ -13,11 +13,12 @@ using Squadio.DTO.Companies;
 using Squadio.DTO.Users;
 using Squadio.DTO.Users.Settings;
 
-namespace Squadio.API.Unversioned
+namespace Squadio.API.Controllers.V01
 {
     [ApiController]
     [AuthorizationFilter]
-    [Route("api/admin")]
+    [ApiVersion("0.1")]
+    [Route("api/v{version:apiVersion}/admin")]
     public class AdminController : ControllerBase
     {
         private readonly IAdminsHandler _handler;

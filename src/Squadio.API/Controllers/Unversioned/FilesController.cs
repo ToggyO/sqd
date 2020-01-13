@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Squadio.API.Handlers.Resources;
 
-namespace Squadio.API.Unversioned
+namespace Squadio.API.Controllers.Unversioned
 {
     [ApiExplorerSettings(IgnoreApi = true)]
     [Route("api/files")]
