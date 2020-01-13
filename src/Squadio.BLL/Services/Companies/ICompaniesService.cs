@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Companies;
+using Squadio.DTO.Invites;
 
 namespace Squadio.BLL.Services.Companies
 {

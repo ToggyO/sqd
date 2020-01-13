@@ -35,286 +35,27 @@ namespace Squadio.BLL.Services.Invites.Implementation
         
         private readonly IInvitesRepository _repository;
         private readonly IRabbitService _rabbitService;
-        private readonly ICompaniesRepository _companiesRepository;
         private readonly ICompaniesUsersRepository _companiesUsersRepository;
-        private readonly ITeamsRepository _teamsRepository;
         private readonly ITeamsUsersRepository _teamsUsersRepository;
-        private readonly IProjectsRepository _projectsRepository;
         private readonly IProjectsUsersRepository _projectsUsersRepository;
-        private readonly ICodeProvider _codeProvider;
-        private readonly IUsersService _usersService;
-        private readonly IUsersProvider _usersProvider;
-        private readonly ISignUpRepository _signUpRepository;
-        private readonly IChangePasswordRequestRepository _changePasswordRepository;
-        private readonly IMapper _mapper;
         private readonly ILogger<InvitesService> _logger;
         
         public InvitesService(IInvitesRepository repository
             , IRabbitService rabbitService
-            , ICompaniesRepository companiesRepository
             , ICompaniesUsersRepository companiesUsersRepository
-            , ITeamsRepository teamsRepository
             , ITeamsUsersRepository teamsUsersRepository
-            , IProjectsRepository projectsRepository
             , IProjectsUsersRepository projectsUsersRepository
-            , ICodeProvider codeProvider
-            , IUsersService usersService
-            , IUsersProvider usersProvider
-            , ISignUpRepository signUpRepository
-            , IChangePasswordRequestRepository changePasswordRepository
-            , IMapper mapper
             , ILogger<InvitesService> logger)
         {
             _repository = repository;
             _rabbitService = rabbitService;
-            _companiesRepository = companiesRepository;
             _companiesUsersRepository = companiesUsersRepository;
-            _teamsRepository = teamsRepository;
             _teamsUsersRepository = teamsUsersRepository;
-            _projectsRepository = projectsRepository;
             _projectsUsersRepository = projectsUsersRepository;
-            _codeProvider = codeProvider;
-            _usersService = usersService;
-            _usersProvider = usersProvider;
-            _signUpRepository = signUpRepository;
-            _changePasswordRepository = changePasswordRepository;
-            _mapper = mapper;
             _logger = logger;
         }
         
         #endregion
-
-
-        public async Task<Response> InviteToCompany(Guid companyId, Guid authorId, CreateInvitesDTO dto, bool sendInvites = true)
-        {
-            var companyUser = await _companiesUsersRepository.GetCompanyUser(companyId, authorId);
-            if (companyUser == null || companyUser?.Status == UserStatus.Member)
-            {
-                return new PermissionDeniedErrorResponse<IEnumerable<InviteDTO>>(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Security.PermissionDenied,
-                        Message = ErrorMessages.Security.PermissionDenied,
-                    }
-                });
-            }
-            
-            foreach (var email in dto.Emails)
-            {
-                var createInviteResult = await CreateInviteToCompany(
-                    companyUser.CompanyId,
-                    email,
-                    authorId);
-                if (createInviteResult != null && sendInvites)
-                {
-                    await SendCompanyInvite(
-                        createInviteResult.Item1,
-                        companyUser.User.Name,
-                        companyUser.Company.Name,
-                        createInviteResult.Item2);
-                }
-            }
-
-            return new Response();
-        }
-
-        public async Task<Response> InviteToTeam(Guid teamId, Guid authorId, CreateInvitesDTO dto, bool sendInvites = true)
-        {
-            var teamUser = await _teamsUsersRepository.GetTeamUser(teamId, authorId);
-            if (teamUser == null || teamUser?.Status == UserStatus.Member)
-            {
-                return new PermissionDeniedErrorResponse<IEnumerable<InviteDTO>>(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Security.PermissionDenied,
-                        Message = ErrorMessages.Security.PermissionDenied,
-                    }
-                });
-            }
-            
-            foreach (var email in dto.Emails)
-            {
-                var createInviteResult = await CreateInviteToTeam(
-                    teamUser.TeamId,
-                    email,
-                    authorId);
-                if (createInviteResult != null && sendInvites)
-                {
-                    await SendTeamInvite(
-                        createInviteResult.Item1,
-                        teamUser.User.Name,
-                        teamUser.Team.Name,
-                        createInviteResult.Item2);
-                }
-            }
-
-            return new Response();
-        }
-
-        public async Task<Response> InviteToProject(Guid projectId, Guid authorId, CreateInvitesDTO dto, bool sendInvites = true)
-        {
-            
-            var projectUser = await _projectsUsersRepository.GetProjectUser(projectId, authorId);
-            if (projectUser == null || projectUser?.Status == UserStatus.Member)
-            {
-                return new PermissionDeniedErrorResponse<IEnumerable<InviteDTO>>(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Security.PermissionDenied,
-                        Message = ErrorMessages.Security.PermissionDenied,
-                    }
-                });
-            }
-            
-            foreach (var email in dto.Emails)
-            {
-                var createInviteResult = await CreateInviteToProject(
-                    projectUser.ProjectId,
-                    email,
-                    authorId);
-                if (createInviteResult != null && sendInvites)
-                {
-                    await SendProjectInvite(
-                        createInviteResult.Item1,
-                        projectUser.User.Name,
-                        projectUser.Project.Name,
-                        createInviteResult.Item2);
-                }
-            }
-            
-            return new Response();
-        }
-
-        public async Task<Response> CancelInvite(Guid entityId, Guid authorId, CancelInvitesDTO dto, EntityType entityType)
-        {
-            switch (entityType)
-            {
-                case EntityType.Company:
-                    var companyUser = await _companiesUsersRepository.GetCompanyUser(entityId, authorId);
-                    if (companyUser == null || companyUser?.Status == UserStatus.Member)
-                    {
-                        return new PermissionDeniedErrorResponse<IEnumerable<InviteDTO>>(new []
-                        {
-                            new Error
-                            {
-                                Code = ErrorCodes.Security.PermissionDenied,
-                                Message = ErrorMessages.Security.PermissionDenied,
-                            }
-                        });
-                    }
-                    await _companiesUsersRepository.DeleteCompanyUsers(entityId, dto.Emails);
-                    break;
-                case EntityType.Team:
-                    var teamUser = await _teamsUsersRepository.GetTeamUser(entityId, authorId);
-                    if (teamUser == null || teamUser?.Status == UserStatus.Member)
-                    {
-                        return new PermissionDeniedErrorResponse<IEnumerable<InviteDTO>>(new []
-                        {
-                            new Error
-                            {
-                                Code = ErrorCodes.Security.PermissionDenied,
-                                Message = ErrorMessages.Security.PermissionDenied,
-                            }
-                        });
-                    }
-                    await _teamsUsersRepository.DeleteTeamUsers(entityId, dto.Emails);
-                    break;
-                case EntityType.Project:
-                    var projectUser = await _projectsUsersRepository.GetProjectUser(entityId, authorId);
-                    if (projectUser == null || projectUser?.Status == UserStatus.Member)
-                    {
-                        return new PermissionDeniedErrorResponse<IEnumerable<InviteDTO>>(new []
-                        {
-                            new Error
-                            {
-                                Code = ErrorCodes.Security.PermissionDenied,
-                                Message = ErrorMessages.Security.PermissionDenied,
-                            }
-                        });
-                    }
-                    await _projectsUsersRepository.DeleteProjectUsers(entityId, dto.Emails);
-                    break;
-            }
-
-            await _repository.ActivateInvites(entityId, dto.Emails);
-            
-            return new Response();
-        }
-
-        public async Task<Response> AcceptInvite(Guid userId, string code, EntityType entityType)
-        {
-            var invite = await _repository.GetInviteByCode(code);
-            
-            if (invite == null || invite?.Activated == true || invite?.EntityType != entityType)
-            {
-                return new SecurityErrorResponse(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Security.InviteInvalid,
-                        Message = ErrorMessages.Security.InviteInvalid
-                    }
-                });
-            }
-            
-            var user = (await _usersProvider.GetById(userId)).Data;
-            if (user == null)
-            {
-                return new BusinessConflictErrorResponse(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Business.UserDoesNotExists,
-                        Message = ErrorMessages.Business.UserDoesNotExists
-                    }
-                });
-            }
-
-            if (user.Email.ToUpper() != invite.Email.ToUpper())
-            {
-                return new PermissionDeniedErrorResponse(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Security.PermissionDenied,
-                        Message = ErrorMessages.Security.PermissionDenied
-                    }
-                });
-            }
-
-            var result = new Response();
-
-            switch (invite.EntityType)
-            {
-                case EntityType.Company:
-                    result = await AcceptInviteToCompany(invite.EntityId, user.Id);
-                    await _repository.ActivateInvite(invite.Id);
-                    break;
-                case EntityType.Team:
-                    result = await AcceptInviteToTeam(invite.EntityId, user.Id);
-                    await _repository.ActivateInvite(invite.Id);
-                    break;
-                case EntityType.Project:
-                    result = await AcceptInviteToProject(invite.EntityId, user.Id);
-                    await _repository.ActivateInvite(invite.Id);
-                    break;
-                default:
-                    return new BusinessConflictErrorResponse(new []
-                    {
-                        new Error
-                        {
-                            Code = ErrorCodes.Common.NotFound,
-                            Message = ErrorMessages.Common.NotFound,
-                            Field = "EntityType"
-                        }
-                    });
-            }
-
-            return result;
-        }
 
         public async Task<Response> SendSignUpInvites(Guid userId)
         {
@@ -460,143 +201,24 @@ namespace Squadio.BLL.Services.Invites.Implementation
 
             return new Response();
         }
-
-        private async Task<Tuple<InviteModel, bool>> CreateInviteToCompany(Guid companyId, string email, Guid authorId)
-        {
-            var code = _codeProvider.GenerateCodeAsGuid();
-            
-            var user = (await _usersProvider.GetByEmail(email)).Data;
-            if (user == null)
-            {
-                var createUserDTO = new UserCreateDTO()
-                {
-                    Email = email,
-                    Step = RegistrationStep.New,
-                    Status = UserStatus.Member
-                };
-                user = (await _usersService.CreateUser(createUserDTO)).Data;
-            }
-
-            var signUpStep = await _signUpRepository.GetRegistrationStepByUserId(user.Id);
-            if (signUpStep.Step == RegistrationStep.New)
-            {
-                await _changePasswordRepository.AddRequest(user.Id, code);
-            }
-            
-            var companyUser = await _companiesUsersRepository.GetCompanyUser(companyId, user.Id);
-            if (companyUser != null)
-            {
-                return null;
-            }
-            
-            await _companiesUsersRepository.AddCompanyUser(companyId, user.Id, UserStatus.Pending);
-            
-            var invite = new InviteModel
-            {
-                Email = email,
-                Activated = false,
-                CreatedDate = DateTime.UtcNow,
-                Code = code,
-                EntityId = companyId,
-                EntityType = EntityType.Company,
-                CreatorId = authorId
-            };
-            
-            invite = await _repository.CreateInvite(invite);
-
-            return new Tuple<InviteModel, bool>(invite, signUpStep.Step != RegistrationStep.New);
-        }
         
-        private async Task<Tuple<InviteModel, bool>> CreateInviteToTeam(Guid teamId, string email, Guid authorId)
+        private async Task SendTeamInvite(InviteModel model, string authorName, string teamName, bool isAlreadyRegistered)
         {
-            var code = _codeProvider.GenerateCodeAsGuid();
-            
-            var user = (await _usersProvider.GetByEmail(email)).Data;
-            if (user == null)
+            try
             {
-                var createUserDTO = new UserCreateDTO()
+                await _rabbitService.Send(new InviteToTeamEmailModel()
                 {
-                    Email = email,
-                    Step = RegistrationStep.New,
-                    Status = UserStatus.Member
-                };
-                user = (await _usersService.CreateUser(createUserDTO)).Data;
+                    To = model.Email,
+                    AuthorName = authorName,
+                    Code = model.Code,
+                    TeamName = teamName,
+                    IsAlreadyRegistered = isAlreadyRegistered
+                });
             }
-
-            var signUpStep = await _signUpRepository.GetRegistrationStepByUserId(user.Id);
-            if (signUpStep.Step == RegistrationStep.New)
+            catch (Exception ex)
             {
-                await _changePasswordRepository.AddRequest(user.Id, code);
+                _logger.LogError(ex, $"[{model.Email}][{model.Code}] : {ex.Message}");
             }
-            
-            var teamUser = await _teamsUsersRepository.GetTeamUser(teamId, user.Id);
-            if (teamUser != null)
-            {
-                return null;
-            }
-            
-            await _teamsUsersRepository.AddTeamUser(teamId, user.Id, UserStatus.Pending);
-            
-            var invite = new InviteModel
-            {
-                Email = email,
-                Activated = false,
-                CreatedDate = DateTime.UtcNow,
-                Code = code,
-                EntityId = teamId,
-                EntityType = EntityType.Team,
-                CreatorId = authorId
-            };
-            
-            invite = await _repository.CreateInvite(invite);
-            
-            return new Tuple<InviteModel, bool>(invite, signUpStep.Step != RegistrationStep.New);
-        }
-
-        private async Task<Tuple<InviteModel, bool>> CreateInviteToProject(Guid projectId, string email, Guid authorId)
-        {
-            var code = _codeProvider.GenerateCodeAsGuid();
-            
-            var user = (await _usersProvider.GetByEmail(email)).Data;
-            if (user == null)
-            {
-                var createUserDTO = new UserCreateDTO()
-                {
-                    Email = email,
-                    Step = RegistrationStep.New,
-                    Status = UserStatus.Member
-                };
-                user = (await _usersService.CreateUser(createUserDTO)).Data;
-            }
-
-            var signUpStep = await _signUpRepository.GetRegistrationStepByUserId(user.Id);
-            if (signUpStep.Step == RegistrationStep.New)
-            {
-                await _changePasswordRepository.AddRequest(user.Id, code);
-            }
-            
-            var projectUser = await _projectsUsersRepository.GetProjectUser(projectId, user.Id);
-            if (projectUser != null)
-            {
-                return null;
-            }
-            
-            await _projectsUsersRepository.AddProjectUser(projectId, user.Id, UserStatus.Pending);
-            
-            var invite = new InviteModel
-            {
-                Email = email,
-                Activated = false,
-                CreatedDate = DateTime.UtcNow,
-                Code = code,
-                EntityId = projectId,
-                EntityType = EntityType.Project,
-                CreatorId = authorId
-            };
-            
-            invite = await _repository.CreateInvite(invite);
-            
-            return new Tuple<InviteModel, bool>(invite, signUpStep.Step != RegistrationStep.New);
         }
         
         private async Task SendCompanyInvite(InviteModel model, string authorName, string companyName, bool isAlreadyRegistered)
@@ -609,25 +231,6 @@ namespace Squadio.BLL.Services.Invites.Implementation
                     AuthorName = authorName,
                     Code = model.Code,
                     CompanyName = companyName,
-                    IsAlreadyRegistered = isAlreadyRegistered
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"[{model.Email}][{model.Code}] : {ex.Message}");
-            }
-        }
-        
-        private async Task SendTeamInvite(InviteModel model, string authorName, string teamName, bool isAlreadyRegistered)
-        {
-            try
-            {
-                await _rabbitService.Send(new InviteToTeamEmailModel()
-                {
-                    To = model.Email,
-                    AuthorName = authorName,
-                    Code = model.Code,
-                    TeamName = teamName,
                     IsAlreadyRegistered = isAlreadyRegistered
                 });
             }
@@ -655,86 +258,6 @@ namespace Squadio.BLL.Services.Invites.Implementation
                 _logger.LogError(ex, $"[{model.Email}][{model.Code}] : {ex.Message}");
             }
         }
-        
-        private async Task<Response> AcceptInviteToCompany(Guid companyId, Guid userId)
-        {
-            var company = await _companiesRepository.GetById(companyId);
-            if (company == null)
-            {
-                return new BusinessConflictErrorResponse(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Common.NotFound,
-                        Message = ErrorMessages.Common.NotFound
-                    }
-                });
-            }
 
-            var companyUser = await _companiesUsersRepository.GetCompanyUser(company.Id, userId);
-            if (companyUser == null)
-                await _companiesUsersRepository.AddCompanyUser(company.Id, userId, UserStatus.Member);
-            else if (companyUser.Status == UserStatus.Pending)
-                await _companiesUsersRepository.ChangeStatusCompanyUser(company.Id, userId, UserStatus.Member);
-
-            return new Response();
-        }
-
-        private async Task<Response> AcceptInviteToTeam(Guid teamId, Guid userId)
-        {
-            var team = await _teamsRepository.GetById(teamId);
-            if (team == null)
-            {
-                return new BusinessConflictErrorResponse(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Common.NotFound,
-                        Message = ErrorMessages.Common.NotFound,
-                        Field = ErrorFields.Team.Id
-                    }
-                });
-            }
-
-            var companyAccept = await AcceptInviteToCompany(team.CompanyId, userId);
-            if (!companyAccept.IsSuccess) return companyAccept;
-
-            var teamUser = await _teamsUsersRepository.GetTeamUser(team.Id, userId);
-            if (teamUser == null)
-                await _teamsUsersRepository.AddTeamUser(team.Id, userId, UserStatus.Member);
-            else if (teamUser.Status == UserStatus.Pending)
-                await _teamsUsersRepository.ChangeStatusTeamUser(team.Id, userId, UserStatus.Member);
-
-
-            return new Response();
-        }
-
-        private async Task<Response> AcceptInviteToProject(Guid projectId, Guid userId)
-        {
-            var project = await _projectsRepository.GetById(projectId);
-            if (project == null)
-            {
-                return new BusinessConflictErrorResponse(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Common.NotFound,
-                        Message = ErrorMessages.Common.NotFound,
-                        Field = ErrorFields.Project.Id
-                    }
-                });
-            }
-
-            var teamAccept = await AcceptInviteToTeam(project.TeamId, userId);
-            if (!teamAccept.IsSuccess) return teamAccept;
-
-            var projectUser = await _projectsUsersRepository.GetProjectUser(project.Id, userId);
-            if (projectUser == null)
-                await _projectsUsersRepository.AddProjectUser(project.Id, userId, UserStatus.Member);
-            else if (projectUser.Status == UserStatus.Pending)
-                await _projectsUsersRepository.ChangeStatusProjectUser(project.Id, userId, UserStatus.Member);
-            
-            return new Response();
-        }
     }
 }

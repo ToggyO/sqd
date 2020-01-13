@@ -23,13 +23,13 @@ namespace Squadio.BLL.Services.Projects.Implementation
         private readonly IProjectsRepository _repository;
         private readonly IProjectsUsersRepository _projectsUsersRepository;
         private readonly ICompaniesUsersRepository _companiesUsersRepository;
-        private readonly IInvitesService _invitesService;
+        private readonly IProjectInvitesService _invitesService;
         private readonly IMapper _mapper;
 
         public ProjectsService(IProjectsRepository repository
             , IProjectsUsersRepository projectsUsersRepository
             , ICompaniesUsersRepository companiesUsersRepository
-            , IInvitesService invitesService
+            , IProjectInvitesService invitesService
             , IMapper mapper)
         {
             _repository = repository;
@@ -54,7 +54,7 @@ namespace Squadio.BLL.Services.Projects.Implementation
 
             await _projectsUsersRepository.AddProjectUser(entity.Id, userId, UserStatus.SuperAdmin);
             
-            await _invitesService.InviteToProject(
+            await _invitesService.CreateInvite(
                 entity.Id,
                 userId,
                 new CreateInvitesDTO

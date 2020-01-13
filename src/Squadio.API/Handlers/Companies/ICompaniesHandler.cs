@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Companies;
+using Squadio.DTO.Invites;
 using Squadio.DTO.Users;
 
 namespace Squadio.API.Handlers.Companies
@@ -16,5 +17,9 @@ namespace Squadio.API.Handlers.Companies
         Task<Response<CompanyDTO>> CreateCompany(CompanyCreateDTO dto, ClaimsPrincipal claims);
         Task<Response<CompanyDTO>> UpdateCompany(Guid companyId, CompanyUpdateDTO dto, ClaimsPrincipal claims);
         Task<Response> DeleteCompanyUser(Guid companyId, Guid userId, ClaimsPrincipal claims);
+        
+        Task<Response> CreateInvite(Guid companyId, CreateInvitesDTO dto, ClaimsPrincipal claims);
+        Task<Response> CancelInvite(Guid companyId, CancelInvitesDTO dto, ClaimsPrincipal claims);
+        Task<Response> AcceptInvite(ClaimsPrincipal claims, string code);
     }
 }

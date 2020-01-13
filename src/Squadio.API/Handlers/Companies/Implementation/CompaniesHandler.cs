@@ -7,6 +7,7 @@ using Squadio.Common.Extensions;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Companies;
+using Squadio.DTO.Invites;
 using Squadio.DTO.Users;
 
 namespace Squadio.API.Handlers.Companies.Implementation
@@ -15,12 +16,15 @@ namespace Squadio.API.Handlers.Companies.Implementation
     {
         private readonly ICompaniesProvider _provider;
         private readonly ICompaniesService _service;
+        private readonly ICompanyInvitesService _companyInvitesService;
         
         public CompaniesHandler(ICompaniesProvider provider
-            , ICompaniesService service)
+            , ICompaniesService service
+            , ICompanyInvitesService companyInvitesService)
         {
             _provider = provider;
             _service = service;
+            _companyInvitesService = companyInvitesService;
         }
 
         public async Task<Response<PageModel<CompanyDTO>>> GetCompanies(PageModel model)
@@ -56,6 +60,24 @@ namespace Squadio.API.Handlers.Companies.Implementation
         public async Task<Response> DeleteCompanyUser(Guid companyId, Guid userId, ClaimsPrincipal claims)
         {
             var result = await _service.DeleteUserFromCompany(companyId, userId, claims.GetUserId());
+            return result;
+        }
+
+        public async Task<Response> CreateInvite(Guid companyId, CreateInvitesDTO dto, ClaimsPrincipal claims)
+        {
+            var result = await _companyInvitesService.CreateInvite(companyId, claims.GetUserId(), dto);
+            return result;
+        }
+
+        public async Task<Response> CancelInvite(Guid companyId, CancelInvitesDTO dto, ClaimsPrincipal claims)
+        {
+            var result = await _companyInvitesService.CancelInvite(companyId, claims.GetUserId(), dto);
+            return result;
+        }
+
+        public async Task<Response> AcceptInvite(ClaimsPrincipal claims, string code)
+        {
+            var result = await _companyInvitesService.AcceptInvite(claims.GetUserId(), code);
             return result;
         }
     }

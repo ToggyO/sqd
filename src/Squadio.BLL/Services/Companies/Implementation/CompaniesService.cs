@@ -1,14 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Mapper;
+using Microsoft.Extensions.Logging;
+using Squadio.BLL.Providers.Codes;
+using Squadio.BLL.Services.Rabbit;
 using Squadio.BLL.Services.Teams;
+using Squadio.Common.Models.Email;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Companies;
 using Squadio.DAL.Repository.CompaniesUsers;
+using Squadio.DAL.Repository.Invites;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Companies;
+using Squadio.Domain.Models.Invites;
 using Squadio.DTO.Companies;
+using Squadio.DTO.Invites;
+using Squadio.DTO.Users;
 
 namespace Squadio.BLL.Services.Companies.Implementation
 {
@@ -17,16 +26,22 @@ namespace Squadio.BLL.Services.Companies.Implementation
         private readonly ICompaniesRepository _repository;
         private readonly ICompaniesUsersRepository _companiesUsersRepository;
         private readonly ITeamsService _teamsService;
+        private readonly ICodeProvider _codeProvider;
+        private readonly IRabbitService _rabbitService;
+        private readonly IInvitesRepository _invitesRepository;
         private readonly IMapper _mapper;
+        private readonly ILogger<CompaniesService> _logger;
         public CompaniesService(ICompaniesRepository repository
             , ICompaniesUsersRepository companiesUsersRepository
             , ITeamsService teamsService
-            , IMapper mapper)
+            , IMapper mapper
+            , ILogger<CompaniesService> logger)
         {
             _repository = repository;
             _companiesUsersRepository = companiesUsersRepository;
             _teamsService = teamsService;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<Response<CompanyDTO>> Update(Guid companyId, Guid userId, CompanyUpdateDTO dto)

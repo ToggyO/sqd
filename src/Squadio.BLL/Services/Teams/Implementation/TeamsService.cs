@@ -25,14 +25,14 @@ namespace Squadio.BLL.Services.Teams.Implementation
         private readonly ITeamsUsersRepository _teamsUsersRepository;
         private readonly ICompaniesUsersRepository _companiesUsersRepository;
         private readonly IProjectsService _projectsService;
-        private readonly IInvitesService _invitesService;
+        private readonly ITeamInvitesService _invitesService;
         private readonly IMapper _mapper;
 
         public TeamsService(ITeamsRepository repository
             , ITeamsUsersRepository teamsUsersRepository
             , ICompaniesUsersRepository companiesUsersRepository
             , IProjectsService projectsService
-            , IInvitesService invitesService
+            , ITeamInvitesService invitesService
             , IMapper mapper)
         {
             _repository = repository;
@@ -58,7 +58,7 @@ namespace Squadio.BLL.Services.Teams.Implementation
 
             await _teamsUsersRepository.AddTeamUser(entity.Id, userId, UserStatus.SuperAdmin);
 
-            await _invitesService.InviteToTeam(
+            await _invitesService.CreateInvite(
                 entity.Id,
                 userId,
                 new CreateInvitesDTO
