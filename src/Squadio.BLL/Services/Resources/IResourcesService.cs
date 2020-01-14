@@ -8,10 +8,8 @@ namespace Squadio.BLL.Services.Resources
 {
     public interface IResourcesService
     {
-        Task<Response<ResourceDTO>> CreateResource(Guid userId, FileGroup group, FileCreateDTO dto);
-        Task<Response<ResourceDTO>> CreateResource(Guid userId, FileGroup group, ResourceCreateDTO dto);
-        Task<Response<ResourceImageDTO>> CreateResource(Guid userId, FileGroup group, FileImageCreateDTO dto);
-        Task<Response<ResourceImageDTO>> CreateResource(Guid userId, FileGroup group, ResourceImageCreateDTO dto);
+        Task<Response<ResourceDTO>> CreateFileResource(Guid userId, FileGroup group, FileCreateDTO dto);
+        Task<Response<ResourceImageDTO>> CreateImageResource(Guid userId, FileGroup group, ImageCreateDTO dto);
         Task<Response> DeleteResource(string filename);
         Task<Response> DeleteResource(Guid resourceId);
     }

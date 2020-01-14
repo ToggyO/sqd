@@ -67,12 +67,6 @@
       <Compile Update="Resources\ResourceViewModelMapper.cs">
         <DependentUpon>ResourceDTO.cs</DependentUpon>
       </Compile>
-      <Compile Update="Resources\FileImageCreateDTOMapper.cs">
-        <DependentUpon>ResourceImageCreateDTO.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Resources\FileCreateDTOMapper.cs">
-        <DependentUpon>ResourceCreateDTO.cs</DependentUpon>
-      </Compile>
       <Compile Update="Resources\ResourceImageViewModelMapper.cs">
         <DependentUpon>ResourceImageDTO.cs</DependentUpon>
       </Compile>
@@ -84,6 +78,30 @@
       </Compile>
       <Compile Update="Users\UserCompanyModelMapper.cs">
         <DependentUpon>UserWithRoleDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\FormFileCreateDTO.cs">
+        <DependentUpon>FileCreateDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\ByteFileCreateDTO.cs">
+        <DependentUpon>FileCreateDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\ByteFileCreateDTOMapper.cs">
+        <DependentUpon>ByteFileCreateDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\FormFileCreateDTOMapper.cs">
+        <DependentUpon>FormFileCreateDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\FormImageCreateDTO.cs">
+        <DependentUpon>ImageCreateDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\ByteImageCreateDTO.cs">
+        <DependentUpon>ImageCreateDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\FormImageCreateDTOMapper.cs">
+        <DependentUpon>FormImageCreateDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\ByteImageCreateDTOMapper.cs">
+        <DependentUpon>ByteImageCreateDTO.cs</DependentUpon>
       </Compile>
     </ItemGroup>
 

@@ -2,7 +2,7 @@
 
 namespace Squadio.DTO.Resources
 {
-    public class FileCreateDTO
+    public class ImageCreateDTO
     {
         public string ContentType { get; set; }
         public MemoryStream Stream { get; set; }

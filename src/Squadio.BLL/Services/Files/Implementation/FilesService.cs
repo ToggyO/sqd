@@ -22,11 +22,11 @@ namespace Squadio.BLL.Services.Files.Implementation
             _options = options;
             _sizeOptions = sizeOptions;
         }
-        
-        public async Task UploadImageFile(string group, string resolution, string filename, byte[] data)
+
+        public async Task UploadImageFile(string group, string resolution, string filename, Stream stream)
         {
             var path = GenerateImagePath(group, resolution, filename);
-            await UploadFile(path, data);
+            await UploadFile(path, stream);
         }
 
         public async Task DeleteImageFile(string group, string filename)
@@ -41,10 +41,10 @@ namespace Squadio.BLL.Services.Files.Implementation
             await DeleteFileSystem(originalPath);
         }
 
-        public async Task UploadFile(string group, string filename, byte[] data)
+        public async Task UploadFile(string group, string filename, Stream stream)
         {
             var path = GenerateFilePath(group, filename);
-            await UploadFile(path, data);
+            await UploadFile(path, stream);
         }
 
         public async Task DeleteFile(string group, string filename)
@@ -96,7 +96,6 @@ namespace Squadio.BLL.Services.Files.Implementation
 
             if (string.IsNullOrEmpty(path))
             {
-                _logger.LogError("Root folder for files not specified");
                 throw new Exception("Root folder for files not specified");
             }
 
@@ -108,7 +107,6 @@ namespace Squadio.BLL.Services.Files.Implementation
             
             if(string.IsNullOrEmpty(group))
             {
-                _logger.LogError("Group folder for files not specified");
                 throw new Exception("Group folder for files not specified");
             }
 
@@ -118,7 +116,6 @@ namespace Squadio.BLL.Services.Files.Implementation
             
             if(string.IsNullOrEmpty(resolution))
             {
-                _logger.LogError("Resolution folder for files not specified");
                 throw new Exception("Resolution folder for files not specified");
             }
 
@@ -128,7 +125,6 @@ namespace Squadio.BLL.Services.Files.Implementation
             
             if(string.IsNullOrEmpty(filename))
             {
-                _logger.LogError("Filename not specified");
                 throw new Exception("Filename not specified");
             }
 
@@ -137,14 +133,12 @@ namespace Squadio.BLL.Services.Files.Implementation
             return path;
         }
 
-        private async Task UploadFile(string path, byte[] data)
+        private async Task UploadFile(string path, Stream stream)
         {
-            if (data?.Length > 0)
-                await File.WriteAllBytesAsync(path, data);
-            else
+            using (var fileStream = File.Create(path))
             {
-                _logger.LogError("Input file is empty. Not saved: " + path);
-                throw new Exception("Input file is empty. Not saved: " + path);
+                stream.Seek(0, SeekOrigin.Begin);
+                stream.CopyTo(fileStream);
             }
         }
 

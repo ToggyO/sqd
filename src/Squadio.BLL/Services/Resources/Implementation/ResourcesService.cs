@@ -42,10 +42,9 @@ namespace Squadio.BLL.Services.Resources.Implementation
             _logger = logger;
         }
 
-        public async Task<Response<ResourceDTO>> CreateResource(Guid userId, FileGroup group, FileCreateDTO dto)
+        public async Task<Response<ResourceDTO>> CreateFileResource(Guid userId, FileGroup @group, FileCreateDTO dto)
         {
-            var resourceCreateDTO = _mapper.Map<FileCreateDTO, ResourceCreateDTO>(dto);
-            var resource = await CreateResource(userId, group.ToString().ToLower(), resourceCreateDTO);
+            var resource = await CreateFileResource(userId, group.ToString().ToLower(), dto);
             var viewModel = new ResourceViewModel(resource, _options.Value.FileTemplate);
             var result = _mapper.Map<ResourceViewModel, ResourceDTO>(viewModel);
             return new Response<ResourceDTO>
@@ -54,32 +53,9 @@ namespace Squadio.BLL.Services.Resources.Implementation
             };
         }
 
-        public async Task<Response<ResourceDTO>> CreateResource(Guid userId, FileGroup group, ResourceCreateDTO dto)
+        public async Task<Response<ResourceImageDTO>> CreateImageResource(Guid userId, FileGroup @group, ImageCreateDTO dto)
         {
-            var resource = await CreateResource(userId, group.ToString().ToLower(), dto);
-            var viewModel = new ResourceViewModel(resource, _options.Value.FileTemplate);
-            var result = _mapper.Map<ResourceViewModel, ResourceDTO>(viewModel);
-            return new Response<ResourceDTO>
-            {
-                Data = result
-            };
-        }
-
-        public async Task<Response<ResourceImageDTO>> CreateResource(Guid userId, FileGroup group, FileImageCreateDTO dto)
-        {
-            var resourceImageCreateDTO = _mapper.Map<FileImageCreateDTO, ResourceImageCreateDTO>(dto);
-            var resource = await CreateResource(userId, group.ToString().ToLower(), resourceImageCreateDTO);
-            var viewModel = new ResourceImageViewModel(resource, _options.Value.ImageTemplate);
-            var result = _mapper.Map<ResourceImageViewModel, ResourceImageDTO>(viewModel);
-            return new Response<ResourceImageDTO>
-            {
-                Data = result
-            };
-        }
-
-        public async Task<Response<ResourceImageDTO>> CreateResource(Guid userId, FileGroup group, ResourceImageCreateDTO dto)
-        {
-            var resource = await CreateResource(userId, group.ToString().ToLower(), dto);
+            var resource = await CreateImageResource(userId, group.ToString().ToLower(), dto);
             var viewModel = new ResourceImageViewModel(resource, _options.Value.ImageTemplate);
             var result = _mapper.Map<ResourceImageViewModel, ResourceImageDTO>(viewModel);
             return new Response<ResourceImageDTO>
@@ -128,7 +104,7 @@ namespace Squadio.BLL.Services.Resources.Implementation
             return new Response();
         }
 
-        private async Task<ResourceModel> CreateResource(Guid userId, string group, ResourceCreateDTO dto)
+        private async Task<ResourceModel> CreateFileResource(Guid userId, string group, FileCreateDTO dto)
         {
             var fileName = Guid.NewGuid().ToString("N");
 
@@ -144,12 +120,14 @@ namespace Squadio.BLL.Services.Resources.Implementation
 
             var resource = await _repository.Create(resourceEntity);
 
-            await _filesService.UploadFile(group, fileName, dto.Bytes);
+            await _filesService.UploadFile(group, fileName, dto.Stream);
+            
+            await dto.Stream.DisposeAsync();
 
             return resource;
         }
         
-        private async Task<ResourceModel> CreateResource(Guid userId, string group, ResourceImageCreateDTO dto)
+        private async Task<ResourceModel> CreateImageResource(Guid userId, string group, ImageCreateDTO dto)
         {
             var fileName = Guid.NewGuid().ToString("N");
 
@@ -164,16 +142,21 @@ namespace Squadio.BLL.Services.Resources.Implementation
             };
 
             var resource = await _repository.Create(resourceEntity);
-
-            await _filesService.UploadImageFile(group, "original", fileName, dto.Bytes);
+            
+            await _filesService.UploadImageFile(group, "original", fileName, dto.Stream);
             
             var sizes = _sizeOptions.Value.Sizes;
 
+            var baseImage = ImageResizer.GetBaseImage(dto.Stream);
+
             foreach (var size in sizes)
             {
-                var image = ImageResizer.Resize(dto.Bytes, size, dto.ContentType);
+                var image = ImageResizer.GetResizedImage(baseImage, size, dto.ContentType);
                 await _filesService.UploadImageFile(group, size.ToString(), fileName, image);
+                image.Dispose();
             }
+            
+            dto.Stream.Dispose();
 
             return resource;
         }

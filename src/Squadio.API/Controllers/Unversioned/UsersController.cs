@@ -227,7 +227,7 @@ namespace Squadio.API.Controllers.Unversioned
         /// </summary>
         [Obsolete]
         [HttpPost("avatar-from-form")]
-        public async Task<Response<UserDTO>> SaveNewAvatar([FromForm, Required] FileImageCreateDTO dto)
+        public async Task<Response<UserDTO>> SaveNewAvatar([FromForm, Required] FormImageCreateDTO dto)
         {
             return await _settingsHandler.SaveNewAvatar(dto, User);
         }
@@ -237,7 +237,7 @@ namespace Squadio.API.Controllers.Unversioned
         /// </summary>
         [Obsolete]
         [HttpPost("avatar-from-body")]
-        public async Task<Response<UserDTO>> SaveNewAvatar([FromBody, Required] ResourceImageCreateDTO dto)
+        public async Task<Response<UserDTO>> SaveNewAvatar([FromBody, Required] ByteImageCreateDTO dto)
         {
             return await _settingsHandler.SaveNewAvatar(dto, User);
         }

@@ -1,13 +1,14 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading.Tasks;
 using Squadio.DTO.Resources;
 
 namespace Squadio.BLL.Services.Files
 {
     public interface IFilesService
     {
-        Task UploadImageFile(string group, string resolution, string filename, byte[] data);
+        Task UploadImageFile(string group, string resolution, string filename, Stream stream);
         Task DeleteImageFile(string group, string filename);
-        Task UploadFile(string group, string filename, byte[] data);
+        Task UploadFile(string group, string filename, Stream stream);
         Task DeleteFile(string group, string filename);
     }
 }

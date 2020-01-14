@@ -2,7 +2,7 @@
 
 namespace Squadio.DTO.Resources
 {
-    public class FileImageCreateDTO
+    public class FormFileCreateDTO
     {
         public IFormFile File { get; set; }
     }

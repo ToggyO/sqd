@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Mapper;
 using Squadio.BLL.Providers.Users;
 using Squadio.BLL.Services.Resources;
 using Squadio.BLL.Services.Tokens;
@@ -22,16 +24,19 @@ namespace Squadio.API.Handlers.Users.Implementation
         private readonly IUsersService _service;
         private readonly ITokensService _tokensService;
         private readonly IResourcesService _resourcesService;
+        private readonly IMapper _mapper;
         
         public UsersSettingsHandler(IUsersProvider provider
             , IUsersService service
             , ITokensService tokensService
-            , IResourcesService resourcesService)
+            , IResourcesService resourcesService
+            , IMapper mapper)
         {
             _service = service;
             _provider = provider;
             _tokensService = tokensService;
             _resourcesService = resourcesService;
+            _mapper = mapper;
         }
 
         public async Task<Response<UserDTO>> UpdateCurrentUser(UserUpdateDTO dto, ClaimsPrincipal claims)
@@ -117,9 +122,10 @@ namespace Squadio.API.Handlers.Users.Implementation
             return result;
         }
 
-        public async Task<Response<UserDTO>> SaveNewAvatar(FileImageCreateDTO dto, ClaimsPrincipal claims)
+        public async Task<Response<UserDTO>> SaveNewAvatar(FormImageCreateDTO dto, ClaimsPrincipal claims)
         {
-            var savingResourceResponse = await _resourcesService.CreateResource(claims.GetUserId(), FileGroup.Avatar, dto);
+            var imageCreateDTO = _mapper.Map<FormImageCreateDTO, ImageCreateDTO>(dto);
+            var savingResourceResponse = await _resourcesService.CreateImageResource(claims.GetUserId(), FileGroup.Avatar, imageCreateDTO);
             if (!savingResourceResponse.IsSuccess)
             {
                 return ErrorResponse.MapResponse<UserDTO, ResourceImageDTO>(savingResourceResponse);
@@ -127,9 +133,10 @@ namespace Squadio.API.Handlers.Users.Implementation
             return await _service.SaveNewAvatar(claims.GetUserId(), savingResourceResponse.Data.ResourceId);
         }
 
-        public async Task<Response<UserDTO>> SaveNewAvatar(ResourceImageCreateDTO dto, ClaimsPrincipal claims)
+        public async Task<Response<UserDTO>> SaveNewAvatar(ByteImageCreateDTO dto, ClaimsPrincipal claims)
         {
-            var savingResourceResponse = await _resourcesService.CreateResource(claims.GetUserId(), FileGroup.Avatar, dto);
+            var imageCreateDTO = _mapper.Map<ByteImageCreateDTO, ImageCreateDTO>(dto);
+            var savingResourceResponse = await _resourcesService.CreateImageResource(claims.GetUserId(), FileGroup.Avatar, imageCreateDTO);
             if (!savingResourceResponse.IsSuccess)
             {
                 return ErrorResponse.MapResponse<UserDTO, ResourceImageDTO>(savingResourceResponse);
