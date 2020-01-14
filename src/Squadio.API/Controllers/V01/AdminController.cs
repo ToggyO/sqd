@@ -9,6 +9,7 @@ using Squadio.Common.Enums;
 using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
+using Squadio.Common.Models.Sorts;
 using Squadio.DTO.Companies;
 using Squadio.DTO.Users;
 using Squadio.DTO.Users.Settings;
@@ -47,9 +48,10 @@ namespace Squadio.API.Controllers.V01
         [PermissionFilter(Area.Admin)]
         public async Task<Response<PageModel<CompanyListDTO>>> GetCompaniesPage([FromQuery] PageModel model
             , [FromQuery] CompanyAdminFilter filter
+            , [FromQuery] SortCompaniesModel sort
             , [FromQuery] string search)
         {
-            return await _handler.GetCompaniesPage(model, filter, search);
+            return await _handler.GetCompaniesPage(model, filter, sort, search);
         }
         
         /// <summary>

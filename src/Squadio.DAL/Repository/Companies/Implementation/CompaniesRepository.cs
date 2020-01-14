@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Squadio.Common.Enums.Sorts;
 using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
+using Squadio.Common.Models.Sorts;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Companies;
 
@@ -48,7 +50,10 @@ namespace Squadio.DAL.Repository.Companies.Implementation
             return entity;
         }
 
-        public async Task<PageModel<CompanyModel>> GetCompanies(PageModel pageModel, CompanyAdminFilter filter = null, string search = null)
+        public async Task<PageModel<CompanyModel>> GetCompanies(PageModel pageModel
+            , CompanyAdminFilter filter = null
+            , SortCompaniesModel sort = null
+            , string search = null)
         {
             IQueryable<CompanyModel> query = _context.Companies;
 
@@ -69,6 +74,24 @@ namespace Squadio.DAL.Repository.Companies.Implementation
                 if (filter.ToDate != null)
                 {
                     query = query.Where(x => x.CreatedDate <= filter.ToDate);
+                }
+            }
+
+            if (sort?.Direction != null && sort.Field != null)
+            {
+                switch (sort.Field.Value)
+                {
+                    case SortCompanyFields.Name:
+                        query = sort.Direction.Value == SortDirection.Ascending 
+                            ? query.OrderBy(p => p.Name) 
+                            : query.OrderByDescending(p => p.Name);
+                        break;
+                            
+                    case SortCompanyFields.CreatedDate:
+                        query = sort.Direction.Value == SortDirection.Ascending 
+                            ? query.OrderBy(p => p.CreatedDate) 
+                            : query.OrderByDescending(p => p.CreatedDate);
+                        break;
                 }
             }
 

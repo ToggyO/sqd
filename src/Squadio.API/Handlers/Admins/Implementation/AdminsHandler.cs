@@ -8,6 +8,7 @@ using Squadio.Common.Extensions;
 using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
+using Squadio.Common.Models.Sorts;
 using Squadio.DTO.Auth;
 using Squadio.DTO.Companies;
 using Squadio.DTO.Users;
@@ -35,9 +36,12 @@ namespace Squadio.API.Handlers.Admins.Implementation
             return result;
         }
 
-        public async Task<Response<PageModel<CompanyListDTO>>> GetCompaniesPage(PageModel model, CompanyAdminFilter filter, string search)
+        public async Task<Response<PageModel<CompanyListDTO>>> GetCompaniesPage(PageModel model
+            , CompanyAdminFilter filter
+            , SortCompaniesModel sort
+            , string search)
         {
-            var result = await _provider.GetCompaniesPage(model, filter, search);
+            var result = await _provider.GetCompaniesPage(model, filter, sort, search);
             return result;
         }
 

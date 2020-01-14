@@ -7,6 +7,7 @@ using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
+using Squadio.Common.Models.Sorts;
 using Squadio.DAL.Repository.Admins;
 using Squadio.DAL.Repository.Companies;
 using Squadio.DAL.Repository.CompaniesUsers;
@@ -72,9 +73,12 @@ namespace Squadio.BLL.Providers.Admins.Implementation
             return result;
         }
 
-        public async Task<Response<PageModel<CompanyListDTO>>> GetCompaniesPage(PageModel model, CompanyAdminFilter filter, string search)
+        public async Task<Response<PageModel<CompanyListDTO>>> GetCompaniesPage(PageModel model
+            , CompanyAdminFilter filter
+            , SortCompaniesModel sort
+            , string search)
         {
-            var companiesPage = await _companiesRepository.GetCompanies(model, filter, search);
+            var companiesPage = await _companiesRepository.GetCompanies(model, filter, sort, search);
 
             var resultData = new PageModel<CompanyListDTO>()
             {

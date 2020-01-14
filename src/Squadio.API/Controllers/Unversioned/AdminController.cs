@@ -48,7 +48,7 @@ namespace Squadio.API.Controllers.Unversioned
             , [FromQuery] CompanyAdminFilter filter
             , [FromQuery] string search)
         {
-            return await _handler.GetCompaniesPage(model, filter, search);
+            return await _handler.GetCompaniesPage(model, filter, null, search);
         }
         
         /// <summary>
