@@ -24,7 +24,7 @@ namespace Squadio.DAL.Repository.TeamsUsers.Implementation
             , IEnumerable<UserStatus> statuses = null)
         {
             IQueryable<TeamUserModel> query = _context.TeamsUsers
-                .Include(x => x.User)
+                .Include(x => x.User).ThenInclude(x => x.Avatar)
                 .Include(x => x.Team).ThenInclude(x=>x.Company);
             
             if (userId.HasValue)

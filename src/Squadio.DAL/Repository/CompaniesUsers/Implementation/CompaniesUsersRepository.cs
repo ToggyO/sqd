@@ -25,7 +25,7 @@ namespace Squadio.DAL.Repository.CompaniesUsers.Implementation
             , IEnumerable<UserStatus> statuses = null)
         {
             IQueryable<CompanyUserModel> query = _context.CompaniesUsers
-                .Include(x => x.User)
+                .Include(x => x.User).ThenInclude(x => x.Avatar)
                 .Include(x => x.Company);
 
             if (userId.HasValue)
