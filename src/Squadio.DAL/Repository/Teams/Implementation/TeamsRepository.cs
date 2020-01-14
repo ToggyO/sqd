@@ -33,9 +33,12 @@ namespace Squadio.DAL.Repository.Teams.Implementation
             return item.Entity;
         }
 
-        public Task<TeamModel> Delete(Guid id)
+        public async Task<TeamModel> Delete(Guid id)
         {
-            throw new NotImplementedException();
+            var entity = await _context.Teams.FindAsync(id);
+            _context.Teams.Remove(entity);
+            await _context.SaveChangesAsync();
+            return entity;
         }
 
         public async Task<TeamModel> Update(TeamModel entity)

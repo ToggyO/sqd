@@ -57,6 +57,15 @@ namespace Squadio.API.Controllers.V01
         }
         
         /// <summary>
+        /// Delete team by id
+        /// </summary>
+        [HttpDelete("{id}")]
+        public async Task<Response<TeamDTO>> DeleteTeam([Required, FromRoute] Guid id)
+        {
+            return await _handler.Delete(id, User);
+        }
+        
+        /// <summary>
         /// Delete user from team
         /// </summary>
         [HttpDelete("{teamId}/user/{userId}")]

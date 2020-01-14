@@ -7,6 +7,7 @@ using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
+using Squadio.DAL.Repository.CompaniesUsers;
 using Squadio.DAL.Repository.Teams;
 using Squadio.DAL.Repository.TeamsUsers;
 using Squadio.Domain.Enums;
@@ -22,18 +23,21 @@ namespace Squadio.BLL.Services.Teams.Implementation
     {
         private readonly ITeamsRepository _repository;
         private readonly ITeamsUsersRepository _teamsUsersRepository;
+        private readonly ICompaniesUsersRepository _companiesUsersRepository;
         private readonly IProjectsService _projectsService;
         private readonly IInvitesService _invitesService;
         private readonly IMapper _mapper;
 
         public TeamsService(ITeamsRepository repository
             , ITeamsUsersRepository teamsUsersRepository
+            , ICompaniesUsersRepository companiesUsersRepository
             , IProjectsService projectsService
             , IInvitesService invitesService
             , IMapper mapper)
         {
             _repository = repository;
             _teamsUsersRepository = teamsUsersRepository;
+            _companiesUsersRepository = companiesUsersRepository;
             _projectsService = projectsService;
             _invitesService = invitesService;
             _mapper = mapper;
@@ -125,6 +129,41 @@ namespace Squadio.BLL.Services.Teams.Implementation
             return new Response<TeamDTO>
             {
                 Data = result
+            };
+        }
+
+        public async Task<Response<TeamDTO>> Delete(Guid teamId, Guid userId)
+        {
+            var teamUser = await _teamsUsersRepository.GetTeamUser(teamId, userId);
+            if (teamUser == null || teamUser.Status != UserStatus.SuperAdmin)
+            {
+                return new PermissionDeniedErrorResponse<TeamDTO>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.PermissionDenied,
+                        Message = ErrorMessages.Security.PermissionDenied
+                    }
+                }); 
+            }
+
+            var companyUser = await _companiesUsersRepository.GetCompanyUser(teamUser.Team.CompanyId, userId);
+            if (companyUser == null || companyUser.Status != UserStatus.SuperAdmin)
+            {
+                return new PermissionDeniedErrorResponse<TeamDTO>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.PermissionDenied,
+                        Message = ErrorMessages.Security.PermissionDenied
+                    }
+                }); 
+            }
+
+            var entity = await _repository.Delete(teamId);
+            return new Response<TeamDTO>
+            {
+                Data = _mapper.Map<TeamModel, TeamDTO>(entity)
             };
         }
 
