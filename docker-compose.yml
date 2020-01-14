@@ -68,7 +68,7 @@ services:
       #
       - StaticUrls:SetPasswordUrl=https://squad.magora.work/sign-up/set-password
       - StaticUrls:ResetPasswordUrl=https://squad.magora.work/auth/set-password
-      - StaticUrls:ResetPasswordAdminUrl=https://squad.web.magora.work/auth/set-password
+      - StaticUrls:ResetPasswordAdminUrl=https://squad.web.magora.work/set-password
       - StaticUrls:InviteToCompanyPageUrl=https://squad.magora.work/company/invite
       - StaticUrls:InviteToTeamPageUrl=https://squad.magora.work/team/invite
       - StaticUrls:InviteToProjectPageUrl=https://squad.magora.work/project/invite
