@@ -132,9 +132,6 @@ namespace Squadio.DAL.Repository.CompaniesUsers.Implementation
                 .Where(x => x.CompanyId == companyId && x.UserId == userId)
                 .FirstOrDefaultAsync();
             _context.CompaniesUsers.Remove(item);
-            
-            //TODO :
-            
             await _context.SaveChangesAsync();
         }
 

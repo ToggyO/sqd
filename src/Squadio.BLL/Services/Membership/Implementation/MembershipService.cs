@@ -75,6 +75,8 @@ namespace Squadio.BLL.Services.Membership.Implementation
         
         #endregion
 
+        //TODO: think how optimize invites. Now here many access to DB!
+        //TODO: add sending notification about adding user
         #region Invite
 
         public async Task<Response> InviteUsersToCompany(Guid companyId, Guid authorId, CreateInvitesDTO dto, bool sendMails = true)
