@@ -207,11 +207,11 @@ namespace Squadio.BLL.Services.Membership.Implementation
                 
                 var user = (await _usersProvider.GetByEmail(email)).Data;
 
-                await _projectsUsersRepository.AddProjectUser(teamId, user.Id, MembershipStatus.Member);
+                await _projectsUsersRepository.AddProjectUser(projectId, user.Id, MembershipStatus.Member);
                 
                 if (user.UserStatus == UserStatus.Pending)
                 {
-                    await _invitesService.CreateInvite(email, code, teamId, InviteEntityType.Team, authorId);
+                    await _invitesService.CreateInvite(email, code, projectId, InviteEntityType.Project, authorId);
                 }
                 else if (sendMails)
                 {

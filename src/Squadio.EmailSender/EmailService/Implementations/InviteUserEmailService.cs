@@ -22,10 +22,10 @@ namespace Squadio.EmailSender.EmailService.Implementations
             var resource = EmbeddedResources
                 .GetResource(
                     "Squadio.EmailSender.EmailService.Templates.InviteUserTemplate.html")
-                .Replace("{{InviteToTeamPageUrl}}", _options.Value.InviteToTeamPageUrl)
+                .Replace("{{InviteUserPageUrl}}", _options.Value.InviteUserPageUrl)
                 .Replace("{{AuthorName}}", model.AuthorName)
                 .Replace("{{EntityName}}", model.EntityName)
-                .Replace("{{InviteEntityType}}", model.InviteEntityType.ToString().ToLower())
+                .Replace("{{EntityType}}", model.EntityType.ToString().ToLower())
                 .Replace("{{Code}}", model.Code);
 
             return resource;

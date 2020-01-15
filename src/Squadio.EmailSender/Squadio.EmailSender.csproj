@@ -31,14 +31,13 @@
 
     <ItemGroup>
         <None Remove="EmailService\Templates\ConfirmEmailRequestTemplate.html" />
-        <EmbeddedResource Include="EmailService\Templates\AddedUserTemplate.html" />
         <EmbeddedResource Include="EmailService\Templates\ConfirmEmailRequestTemplate.html" />
-        
-        <None Remove="EmailService\Templates\InviteToCompanyTemplate.html" />
-        
-        <None Remove="EmailService\Templates\InviteToProjectTemplate.html" />
-        
-        <None Remove="EmailService\Templates\InviteToTeamTemplate.html" />
+
+        <None Remove="EmailService\Templates\InviteUserTemplate.html" />
+        <EmbeddedResource Include="EmailService\Templates\InviteUserTemplate.html" />
+
+        <None Remove="EmailService\Templates\AddedUserTemplate.html" />
+        <EmbeddedResource Include="EmailService\Templates\AddedUserTemplate.html" />
         
         <None Remove="EmailService\Templates\ResetPasswordTemplate.html" />
         <EmbeddedResource Include="EmailService\Templates\ResetPasswordTemplate.html" />

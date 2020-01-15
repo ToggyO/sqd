@@ -102,7 +102,8 @@ namespace Squadio.BLL.Services.Invites.Implementation
                     To = email,
                     AuthorName = projectInvite.Creator.Name,
                     EntityName = project.Name,
-                    InviteEntityType = InviteEntityType.Project
+                    EntityType = InviteEntityType.Project,
+                    Code = projectInvite.Code
                 });
                 return new Response();
             }
@@ -116,7 +117,8 @@ namespace Squadio.BLL.Services.Invites.Implementation
                     To = email,
                     AuthorName = teamInvite.Creator.Name,
                     EntityName = team.Name,
-                    InviteEntityType = InviteEntityType.Team
+                    EntityType = InviteEntityType.Team,
+                    Code = teamInvite.Code
                 });
                 return new Response();
             }
@@ -130,7 +132,8 @@ namespace Squadio.BLL.Services.Invites.Implementation
                     To = email,
                     AuthorName = companyInvite.Creator.Name,
                     EntityName = team.Name,
-                    InviteEntityType = InviteEntityType.Company
+                    EntityType = InviteEntityType.Company,
+                    Code = companyInvite.Code
                 });
                 return new Response();
             }

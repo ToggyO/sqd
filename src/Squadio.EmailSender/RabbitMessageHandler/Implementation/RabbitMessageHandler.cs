@@ -31,6 +31,8 @@ namespace Squadio.EmailSender.RabbitMessageHandler.Implementation
             _inviteUserMailService = inviteUserMailService;
             _passwordRestoreAdminMailService = passwordRestoreAdminMailService;
             _addUserMailService = addUserMailService;
+            
+            _logger.LogInformation("RabbitMessageHandler is created");
         }
 
         public Task Subscribe(IBus bus)
@@ -72,6 +74,7 @@ namespace Squadio.EmailSender.RabbitMessageHandler.Implementation
 
         private async Task HandleEmailMessage(InviteUserEmailModel item)
         {
+            _logger.LogInformation("Handle InviteUserEmailModel");
             await _inviteUserMailService.Send(item);
         }
 
@@ -82,6 +85,7 @@ namespace Squadio.EmailSender.RabbitMessageHandler.Implementation
 
         private async Task HandleEmailMessage(AddUserEmailModel item)
         {
+            _logger.LogInformation("Handle AddUserEmailModel");
             await _addUserMailService.Send(item);
         }
     }
