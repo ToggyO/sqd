@@ -52,11 +52,13 @@ namespace Squadio.DAL.Repository.Invites.Implementation
         public async Task<IEnumerable<InviteModel>> GetInvites(
             Guid? entityId = null, 
             Guid? authorId = null, 
+            string email = null, 
             InviteEntityType? entityType = null, 
             bool? activated = null,
             bool? isSent = null)
         {
-            var query = _context.Invites as IQueryable<InviteModel>;
+            var query = _context.Invites
+                .Include(x => x.Creator) as IQueryable<InviteModel>;
             
             if (entityId.HasValue)
             {
@@ -70,7 +72,7 @@ namespace Squadio.DAL.Repository.Invites.Implementation
             
             if (entityType.HasValue)
             {
-                query = query.Where(x => x.InviteEntityType == entityType);
+                query = query.Where(x => x.EntityType == entityType);
             }
             
             if (activated.HasValue)
@@ -83,8 +85,12 @@ namespace Squadio.DAL.Repository.Invites.Implementation
                 query = query.Where(x => x.IsSent == isSent);
             }
             
+            if (!string.IsNullOrEmpty(email))
+            {
+                query = query.Where(x => x.Email.ToUpper() == email.ToUpper());
+            }
+            
             var items = await query
-                .OrderByDescending(x => x.CreatedDate)
                 .ToListAsync();
             return items;
         }

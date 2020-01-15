@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Mapper" Version="0.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>
@@ -15,6 +16,9 @@
   <ItemGroup>
     <Compile Update="Models\Responses\CustomResponses.cs">
       <DependentUpon>Response.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Enums\EntityTypeMapper.cs">
+      <DependentUpon>EntityType.cs</DependentUpon>
     </Compile>
   </ItemGroup>
 

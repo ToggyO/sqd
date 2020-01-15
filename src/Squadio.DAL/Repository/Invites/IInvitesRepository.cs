@@ -12,8 +12,10 @@ namespace Squadio.DAL.Repository.Invites
         Task<InviteModel> GetInviteByCode(string code);
         Task<InviteModel> ActivateInvite(Guid inviteId);
         Task DeleteInvites(IEnumerable<Guid> ids);
-        Task<IEnumerable<InviteModel>> GetInvites(Guid? entityId = null, 
+        Task<IEnumerable<InviteModel>> GetInvites(
+            Guid? entityId = null, 
             Guid? authorId = null, 
+            string email = null, 
             InviteEntityType? entityType = null, 
             bool? activated = null,
             bool? isSent = null);

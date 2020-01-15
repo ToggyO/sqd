@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Squadio.Common.Models.Responses;
 using Squadio.Domain.Enums;
-using Squadio.Domain.Models.Invites;
 
 namespace Squadio.BLL.Services.Invites
 {
