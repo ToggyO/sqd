@@ -9,7 +9,5 @@ namespace Squadio.Common.Models.Email
         public string EntityName { get; set; }
         public EntityType EntityType { get; set; }
         public string AuthorName { get; set; }
-        [Obsolete]
-        public bool IsAlreadyRegistered { get; set; }
     }
 }

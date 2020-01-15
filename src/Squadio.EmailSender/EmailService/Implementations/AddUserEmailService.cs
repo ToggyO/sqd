@@ -21,17 +21,17 @@ namespace Squadio.EmailSender.EmailService.Implementations
         {
             var resource = EmbeddedResources
                 .GetResource(
-                    "Squadio.EmailSender.EmailService.Templates.AddedNotificationTemplate.html")
+                    "Squadio.EmailSender.EmailService.Templates.AddedUserTemplate.html")
                 .Replace("{{AuthorName}}", model.AuthorName)
-                .Replace("{{EntityName}}", "[name]")
-                .Replace("{{EntityType}}", "[type]");
+                .Replace("{{EntityName}}", model.EntityName)
+                .Replace("{{EntityType}}", model.EntityType.ToString().ToLower());
 
             return resource;
         }
 
         protected override string GetSubject(AddUserEmailModel emailModel)
         {
-            return $"{emailModel.AuthorName} added you to [name] [type]";
+            return $"{emailModel.AuthorName} added you to {emailModel.EntityName} {emailModel.EntityType.ToString().ToLower()}";
         }
     }
 }
