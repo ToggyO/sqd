@@ -31,6 +31,8 @@ using Squadio.BLL.Services.Files;
 using Squadio.BLL.Services.Files.Implementation;
 using Squadio.BLL.Services.Invites;
 using Squadio.BLL.Services.Invites.Implementation;
+using Squadio.BLL.Services.Membership;
+using Squadio.BLL.Services.Membership.Implementation;
 using Squadio.BLL.Services.Projects;
 using Squadio.BLL.Services.Projects.Implementation;
 using Squadio.BLL.Services.Rabbit;
@@ -74,6 +76,8 @@ namespace Squadio.BLL
             services.Add<ITokensService, TokensService>(serviceLifetime);
             
             services.Add<IInvitesService, InvitesService>(serviceLifetime);
+            
+            services.Add<IMembershipService, MembershipService>(serviceLifetime);
             
             services.Add<ICompaniesProvider, CompaniesProvider>(serviceLifetime);
             services.Add<ICompaniesService, CompaniesService>(serviceLifetime);

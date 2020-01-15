@@ -19,9 +19,6 @@ namespace Squadio.API.Handlers.Teams
         Task<Response<TeamDTO>> Delete(Guid teamId, ClaimsPrincipal claims);
         Task<Response> DeleteTeamUser(Guid teamId, Guid userId, ClaimsPrincipal claims);
         Task<Response> LeaveTeam(Guid teamId, ClaimsPrincipal claims);
-        
-        Task<Response> CreateInvite(Guid teamId, CreateInvitesDTO dto, ClaimsPrincipal claims);
-        Task<Response> CancelInvite(Guid teamId, CancelInvitesDTO dto, ClaimsPrincipal claims);
-        Task<Response> AcceptInvite(ClaimsPrincipal claims, string code);
+        Task<Response> InviteTeamUsers(Guid teamId, CreateInvitesDTO dto, ClaimsPrincipal claims);
     }
 }

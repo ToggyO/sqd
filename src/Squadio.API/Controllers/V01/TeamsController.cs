@@ -106,26 +106,7 @@ namespace Squadio.API.Controllers.V01
         public async Task<Response> CreateInvites([Required, FromRoute] Guid id
             , [Required, FromBody] CreateInvitesDTO dto)
         {
-            return await _handler.CreateInvite(id, dto, User);
-        }
-        
-        /// <summary>
-        /// Cancel of invites to team
-        /// </summary>
-        [HttpPut("{id}/invite/cancel")]
-        public async Task<Response> CancelInvite([Required, FromRoute] Guid id
-            , [Required, FromBody] CancelInvitesDTO dto)
-        {
-            return await _handler.CancelInvite(id, dto, User);
-        }
-        
-        /// <summary>
-        /// Accept invite to team
-        /// </summary>
-        [HttpPost("invite/accept")]
-        public async Task<Response> AcceptInvite([Required, FromQuery] string code)
-        {
-            return await _handler.AcceptInvite(User, code);
+            return await _handler.InviteTeamUsers(id, dto, User);
         }
     }
 }

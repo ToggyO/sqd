@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Squadio.BLL.Providers.Teams;
+using Squadio.BLL.Services.Membership;
 using Squadio.BLL.Services.Teams;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Pages;
@@ -16,14 +17,14 @@ namespace Squadio.API.Handlers.Teams.Implementation
     {
         private readonly ITeamsProvider _provider;
         private readonly ITeamsService _service;
-        private readonly ITeamInvitesService _teamInvitesService;
+        private readonly IMembershipService _membershipService;
         public TeamsHandler(ITeamsProvider provider
             , ITeamsService service
-            , ITeamInvitesService teamInvitesService)
+            , IMembershipService membershipService)
         {
             _provider = provider;
             _service = service;
-            _teamInvitesService = teamInvitesService;
+            _membershipService = membershipService;
         }
 
         public async Task<Response<PageModel<UserWithRoleDTO>>> GetTeamUsers(Guid teamId, PageModel model)
@@ -64,31 +65,19 @@ namespace Squadio.API.Handlers.Teams.Implementation
 
         public async Task<Response> DeleteTeamUser(Guid teamId, Guid userId, ClaimsPrincipal claims)
         {
-            var result = await _service.DeleteUserFromTeam(teamId, userId, claims.GetUserId());
+            var result = await _membershipService.DeleteUserFromTeam(teamId, userId, claims.GetUserId());
             return result;
         }
 
         public async Task<Response> LeaveTeam(Guid teamId, ClaimsPrincipal claims)
         {
-            var result = await _service.LeaveTeam(teamId, claims.GetUserId());
+            var result = await _membershipService.DeleteUserFromTeam(teamId, claims.GetUserId(), claims.GetUserId(), false);
             return result;
         }
 
-        public async Task<Response> CreateInvite(Guid teamId, CreateInvitesDTO dto, ClaimsPrincipal claims)
+        public async Task<Response> InviteTeamUsers(Guid teamId, CreateInvitesDTO dto, ClaimsPrincipal claims)
         {
-            var result = await _teamInvitesService.CreateInvite(teamId, claims.GetUserId(), dto);
-            return result;
-        }
-
-        public async Task<Response> CancelInvite(Guid teamId, CancelInvitesDTO dto, ClaimsPrincipal claims)
-        {
-            var result = await _teamInvitesService.CancelInvite(teamId, claims.GetUserId(), dto);
-            return result;
-        }
-
-        public async Task<Response> AcceptInvite(ClaimsPrincipal claims, string code)
-        {
-            var result = await _teamInvitesService.AcceptInvite(claims.GetUserId(), code);
+            var result = await _membershipService.InviteUsersToTeam(teamId, claims.GetUserId(), dto);
             return result;
         }
     }

@@ -78,16 +78,7 @@ namespace Squadio.API.Controllers.V01
         public async Task<Response> CreateInvites([Required, FromRoute] Guid id
             , [Required, FromBody] CreateInvitesDTO dto)
         {
-            return await _handler.CreateInvite(id, dto, User);
-        }
-        /// <summary>
-        /// Cancel of invites to company
-        /// </summary>
-        [HttpPut("{id}/invite/cancel")]
-        public async Task<Response> CancelInvite([Required, FromRoute] Guid id
-            , [Required, FromBody] CancelInvitesDTO dto)
-        {
-            return await _handler.CancelInvite(id, dto, User);
+            return await _handler.InviteCompanyUsers(id, dto, User);
         }
         
         /// <summary>
@@ -97,15 +88,6 @@ namespace Squadio.API.Controllers.V01
         public Task<Response> DeleteCompanyUser([Required, FromRoute] Guid companyId, [Required, FromRoute] Guid userId)
         {
             return _handler.DeleteCompanyUser(companyId, userId, User);
-        }
-        
-        /// <summary>
-        /// Accept invite to company
-        /// </summary>
-        [HttpPost("invite/accept")]
-        public async Task<Response> AcceptInvite([Required, FromQuery] string code)
-        {
-            return await _handler.AcceptInvite(User, code);
         }
     }
 }
