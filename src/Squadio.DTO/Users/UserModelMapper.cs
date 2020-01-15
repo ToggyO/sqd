@@ -29,7 +29,8 @@ namespace Squadio.DTO.Users
                 Email = item.Email,
                 Name = item.Name,
                 UITheme = item.UITheme.ToString(),
-                SignUpBy = item.SignUpType.ToString()
+                SignUpBy = item.SignUpType.ToString(),
+                UserStatus = item.Status
             };
             if (item.Avatar != null)
             {

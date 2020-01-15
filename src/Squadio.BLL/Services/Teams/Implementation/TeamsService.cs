@@ -1,7 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Mapper;
+using Squadio.BLL.Providers.Codes;
+using Squadio.BLL.Providers.Users;
+using Squadio.BLL.Services.Companies;
+using Squadio.BLL.Services.Invites;
+using Squadio.BLL.Services.Membership;
 using Squadio.BLL.Services.Projects;
+using Squadio.BLL.Services.Users;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
@@ -12,6 +20,7 @@ using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Teams;
 using Squadio.DTO.Invites;
 using Squadio.DTO.Teams;
+using Squadio.DTO.Users;
 
 namespace Squadio.BLL.Services.Teams.Implementation
 {
@@ -20,22 +29,19 @@ namespace Squadio.BLL.Services.Teams.Implementation
         private readonly ITeamsRepository _repository;
         private readonly ITeamsUsersRepository _teamsUsersRepository;
         private readonly ICompaniesUsersRepository _companiesUsersRepository;
-        private readonly IProjectsService _projectsService;
-        private readonly ITeamInvitesService _invitesService;
+        private readonly IMembershipService _membershipService;
         private readonly IMapper _mapper;
 
         public TeamsService(ITeamsRepository repository
             , ITeamsUsersRepository teamsUsersRepository
             , ICompaniesUsersRepository companiesUsersRepository
-            , IProjectsService projectsService
-            , ITeamInvitesService invitesService
+            , IMembershipService membershipService
             , IMapper mapper)
         {
             _repository = repository;
             _teamsUsersRepository = teamsUsersRepository;
             _companiesUsersRepository = companiesUsersRepository;
-            _projectsService = projectsService;
-            _invitesService = invitesService;
+            _membershipService = membershipService;
             _mapper = mapper;
         }
 
@@ -52,16 +58,9 @@ namespace Squadio.BLL.Services.Teams.Implementation
 
             entity = await _repository.Create(entity);
 
-            await _teamsUsersRepository.AddTeamUser(entity.Id, userId, UserStatus.SuperAdmin);
-
-            await _invitesService.CreateInvite(
-                entity.Id,
-                userId,
-                new CreateInvitesDTO
-                {
-                    Emails = dto.Emails
-                }, 
-                sendInvites);
+            await _teamsUsersRepository.AddTeamUser(entity.Id, userId, MembershipStatus.SuperAdmin);
+            
+            await _membershipService.InviteUsersToTeam(entity.Id, userId, new CreateInvitesDTO {Emails = dto.Emails}, sendInvites);
 
             var result = _mapper.Map<TeamModel, TeamDTO>(entity);
             return new Response<TeamDTO>
@@ -103,7 +102,7 @@ namespace Squadio.BLL.Services.Teams.Implementation
                 });
             }
 
-            if (teamUser.Status != UserStatus.SuperAdmin)
+            if (teamUser.Status != MembershipStatus.SuperAdmin)
             {
                 return new PermissionDeniedErrorResponse<TeamDTO>(new []
                 {
@@ -131,7 +130,7 @@ namespace Squadio.BLL.Services.Teams.Implementation
         public async Task<Response<TeamDTO>> Delete(Guid teamId, Guid userId)
         {
             var teamUser = await _teamsUsersRepository.GetTeamUser(teamId, userId);
-            if (teamUser == null || teamUser.Status != UserStatus.SuperAdmin)
+            if (teamUser == null || teamUser.Status != MembershipStatus.SuperAdmin)
             {
                 return new PermissionDeniedErrorResponse<TeamDTO>(new []
                 {
@@ -144,7 +143,7 @@ namespace Squadio.BLL.Services.Teams.Implementation
             }
 
             var companyUser = await _companiesUsersRepository.GetCompanyUser(teamUser.Team.CompanyId, userId);
-            if (companyUser == null || companyUser.Status != UserStatus.SuperAdmin)
+            if (companyUser == null || companyUser.Status != MembershipStatus.SuperAdmin)
             {
                 return new PermissionDeniedErrorResponse<TeamDTO>(new []
                 {
@@ -163,52 +162,5 @@ namespace Squadio.BLL.Services.Teams.Implementation
             };
         }
 
-        public async Task<Response> DeleteUserFromTeam(Guid teamId, Guid removeUserId, Guid currentUserId)
-        {
-            var currentTeamUser = await _teamsUsersRepository.GetTeamUser(teamId, currentUserId);
-
-            if (currentTeamUser == null || currentTeamUser?.Status != UserStatus.SuperAdmin)
-            {
-                return new PermissionDeniedErrorResponse(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Security.PermissionDenied,
-                        Message = ErrorMessages.Security.PermissionDenied
-                    }
-                }); 
-            }
-
-            return await DeleteUserFromTeam(teamId, removeUserId);
-        }
-
-        public async Task<Response> LeaveTeam(Guid teamId, Guid userId)
-        {
-            return await DeleteUserFromTeam(teamId, userId);
-        }
-
-        public async Task<Response> DeleteUserFromTeamsByCompanyId(Guid companyId, Guid removeUserId)
-        {
-            var teams = await _repository.GetTeams(new PageModel()
-            {
-                Page = 1,
-                PageSize = 1000
-            }, companyId);
-            
-            foreach (var team in teams.Items)
-            {
-                await DeleteUserFromTeam(team.Id, removeUserId);
-            }
-            
-            return new Response();
-        }
-        
-        private async Task<Response> DeleteUserFromTeam(Guid teamId, Guid removeUserId)
-        {
-            await _teamsUsersRepository.DeleteTeamUser(teamId, removeUserId);
-            await _projectsService.DeleteUserFromProjectsByTeamId(teamId, removeUserId);
-            
-            return new Response();
-        }
     }
 }

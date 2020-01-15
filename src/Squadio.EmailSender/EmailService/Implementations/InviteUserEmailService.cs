@@ -25,7 +25,7 @@ namespace Squadio.EmailSender.EmailService.Implementations
                 .Replace("{{InviteToTeamPageUrl}}", _options.Value.InviteToTeamPageUrl)
                 .Replace("{{AuthorName}}", model.AuthorName)
                 .Replace("{{EntityName}}", model.EntityName)
-                .Replace("{{EntityType}}", model.EntityType.ToString().ToLower())
+                .Replace("{{InviteEntityType}}", model.InviteEntityType.ToString().ToLower())
                 .Replace("{{Code}}", model.Code);
 
             return resource;

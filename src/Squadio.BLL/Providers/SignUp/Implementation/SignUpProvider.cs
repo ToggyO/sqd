@@ -77,7 +77,7 @@ namespace Squadio.BLL.Providers.SignUp.Implementation
                 });
             }
 
-            if (step.Status != UserStatus.Admin)
+            if (step.Status != MembershipStatus.Admin)
             {
                 return new PermissionDeniedErrorResponse<IEnumerable<string>>(new Error
                 {

@@ -17,6 +17,6 @@ namespace Squadio.Domain.Models.Invites
         public bool IsActivated { get; set; }
         public DateTime? ActivatedDate { get; set; }
         public Guid EntityId { get; set; }
-        public EntityType EntityType { get; set; }
+        public InviteEntityType InviteEntityType { get; set; }
     }
 }

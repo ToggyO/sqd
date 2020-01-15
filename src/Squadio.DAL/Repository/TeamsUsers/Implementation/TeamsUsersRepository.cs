@@ -21,7 +21,7 @@ namespace Squadio.DAL.Repository.TeamsUsers.Implementation
             , Guid? userId = null
             , Guid? companyId = null
             , Guid? teamId = null
-            , IEnumerable<UserStatus> statuses = null)
+            , IEnumerable<MembershipStatus> statuses = null)
         {
             IQueryable<TeamUserModel> query = _context.TeamsUsers
                 .Include(x => x.User).ThenInclude(x => x.Avatar)
@@ -79,13 +79,13 @@ namespace Squadio.DAL.Repository.TeamsUsers.Implementation
             return item;
         }
 
-        public async Task AddTeamUser(Guid teamId, Guid userId, UserStatus userStatus)
+        public async Task AddTeamUser(Guid teamId, Guid userId, MembershipStatus membershipStatus)
         {
             var item = new TeamUserModel
             {
                 TeamId = teamId,
                 UserId = userId,
-                Status = userStatus,
+                Status = membershipStatus,
                 CreatedDate = DateTime.UtcNow
             };
             _context.TeamsUsers.Add(item);
@@ -116,13 +116,13 @@ namespace Squadio.DAL.Repository.TeamsUsers.Implementation
             await _context.SaveChangesAsync();
         }
 
-        public async Task AddRangeTeamUser(Guid teamId, IEnumerable<Guid> userIds, UserStatus userStatus)
+        public async Task AddRangeTeamUser(Guid teamId, IEnumerable<Guid> userIds, MembershipStatus membershipStatus)
         {
             var items = userIds.Select(userId => new TeamUserModel
                 {
                     TeamId = teamId, 
                     UserId = userId, 
-                    Status = userStatus, 
+                    Status = membershipStatus, 
                     CreatedDate = DateTime.UtcNow
                 })
                 .ToList();
@@ -131,12 +131,12 @@ namespace Squadio.DAL.Repository.TeamsUsers.Implementation
             await _context.SaveChangesAsync();
         }
 
-        public async Task ChangeStatusTeamUser(Guid teamId, Guid userId, UserStatus newUserStatus)
+        public async Task ChangeStatusTeamUser(Guid teamId, Guid userId, MembershipStatus newMembershipStatus)
         {
             var item = await _context.TeamsUsers
                 .Where(x => x.TeamId == teamId && x.UserId == userId)
                 .FirstOrDefaultAsync();
-            item.Status = newUserStatus;
+            item.Status = newMembershipStatus;
             _context.TeamsUsers.Update(item);
             await _context.SaveChangesAsync();
         }

@@ -60,6 +60,8 @@ namespace Squadio.DAL
                     .HasDefaultValue(UIThemeType.Default);
                 item.Property(p => p.SignUpType)
                     .HasDefaultValue(SignUpType.Email);
+                item.Property(p => p.Status)
+                    .HasDefaultValue(UserStatus.Active);
             });
             modelBuilder.Entity<UserRegistrationStepModel>(item =>
             {
@@ -68,7 +70,7 @@ namespace Squadio.DAL
                     .IsUnique();
                 item.Property(p => p.Status)
                     .IsRequired()
-                    .HasDefaultValue(UserStatus.Admin);
+                    .HasDefaultValue(MembershipStatus.Admin);
                 item.HasOne(p => p.User)
                     .WithOne();
             });

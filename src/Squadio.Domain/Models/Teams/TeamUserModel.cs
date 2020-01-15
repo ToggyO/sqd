@@ -11,7 +11,7 @@ namespace Squadio.Domain.Models.Teams
         public TeamModel Team { get; set; }
         public Guid UserId { get; set; }
         public UserModel User { get; set; }
-        public UserStatus Status { get; set; }
+        public MembershipStatus Status { get; set; }
         public DateTime CreatedDate { get; set; }
     }
 }

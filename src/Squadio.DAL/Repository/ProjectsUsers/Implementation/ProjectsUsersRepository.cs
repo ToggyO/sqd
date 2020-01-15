@@ -23,7 +23,7 @@ namespace Squadio.DAL.Repository.ProjectsUsers.Implementation
             , Guid? companyId = null
             , Guid? teamId = null
             , Guid? projectId = null
-            , IEnumerable<UserStatus> statuses = null)
+            , IEnumerable<MembershipStatus> statuses = null)
         {
             IQueryable<ProjectUserModel> query = _context.ProjectsUsers
                     .Include(x => x.User).ThenInclude(x => x.Avatar)
@@ -94,13 +94,13 @@ namespace Squadio.DAL.Repository.ProjectsUsers.Implementation
             return item;
         }
 
-        public async Task AddProjectUser(Guid projectId, Guid userId, UserStatus userStatus)
+        public async Task AddProjectUser(Guid projectId, Guid userId, MembershipStatus membershipStatus)
         {
             var item = new ProjectUserModel
             {
                 ProjectId = projectId,
                 UserId = userId,
-                Status = userStatus,
+                Status = membershipStatus,
                 CreatedDate = DateTime.UtcNow
             };
             _context.ProjectsUsers.Add(item);
@@ -131,13 +131,13 @@ namespace Squadio.DAL.Repository.ProjectsUsers.Implementation
             await _context.SaveChangesAsync();
         }
 
-        public async Task AddRangeProjectUser(Guid projectId, IEnumerable<Guid> userIds, UserStatus userStatus)
+        public async Task AddRangeProjectUser(Guid projectId, IEnumerable<Guid> userIds, MembershipStatus membershipStatus)
         {
             var items = userIds.Select(userId => new ProjectUserModel
                 {
                     ProjectId = projectId, 
                     UserId = userId, 
-                    Status = userStatus, 
+                    Status = membershipStatus, 
                     CreatedDate = DateTime.UtcNow
                 })
                 .ToList();
@@ -146,12 +146,12 @@ namespace Squadio.DAL.Repository.ProjectsUsers.Implementation
             await _context.SaveChangesAsync();
         }
 
-        public async Task ChangeStatusProjectUser(Guid projectId, Guid userId, UserStatus newUserStatus)
+        public async Task ChangeStatusProjectUser(Guid projectId, Guid userId, MembershipStatus newMembershipStatus)
         {
             var item = await _context.ProjectsUsers
                 .Where(x => x.ProjectId == projectId && x.UserId == userId)
                 .FirstOrDefaultAsync();
-            item.Status = newUserStatus;
+            item.Status = newMembershipStatus;
             _context.ProjectsUsers.Update(item);
             await _context.SaveChangesAsync();
         }

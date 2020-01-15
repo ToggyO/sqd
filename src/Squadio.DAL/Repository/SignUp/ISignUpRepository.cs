@@ -12,6 +12,6 @@ namespace Squadio.DAL.Repository.SignUp
         /// <summary>
         /// If entity doesn't exist it will be created, else - updated
         /// </summary>
-        Task<UserRegistrationStepModel> SetRegistrationStep(Guid userId, RegistrationStep step, UserStatus? status = null);
+        Task<UserRegistrationStepModel> SetRegistrationStep(Guid userId, RegistrationStep step, MembershipStatus? status = null);
     }
 }

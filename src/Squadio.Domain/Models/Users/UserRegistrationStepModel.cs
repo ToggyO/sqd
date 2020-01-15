@@ -10,6 +10,6 @@ namespace Squadio.Domain.Models.Users
         public UserModel User { get; set; }
         public RegistrationStep Step { get; set; }
         public DateTime UpdatedDate { get; set; }
-        public UserStatus Status { get; set; }
+        public MembershipStatus Status { get; set; }
     }
 }

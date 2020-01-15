@@ -9,7 +9,7 @@ namespace Squadio.DTO.Users
         public int Status { get; set; }
         public string StatusName { get; set; }
         /// <summary>
-        /// When user added
+        /// When user added to entity
         /// </summary>
         public DateTime CreatedDate { get; set; }
     }

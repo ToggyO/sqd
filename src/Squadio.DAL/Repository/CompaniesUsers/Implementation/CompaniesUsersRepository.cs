@@ -22,7 +22,7 @@ namespace Squadio.DAL.Repository.CompaniesUsers.Implementation
         public async Task<PageModel<CompanyUserModel>> GetCompaniesUsers(PageModel model
             , Guid? userId = null
             , Guid? companyId = null
-            , IEnumerable<UserStatus> statuses = null)
+            , IEnumerable<MembershipStatus> statuses = null)
         {
             IQueryable<CompanyUserModel> query = _context.CompaniesUsers
                 .Include(x => x.User).ThenInclude(x => x.Avatar)
@@ -113,13 +113,13 @@ namespace Squadio.DAL.Repository.CompaniesUsers.Implementation
             return item;
         }
 
-        public async Task AddCompanyUser(Guid companyId, Guid userId, UserStatus userStatus)
+        public async Task AddCompanyUser(Guid companyId, Guid userId, MembershipStatus membershipStatus)
         {
             var item = new CompanyUserModel
             {
                 CompanyId = companyId,
                 UserId = userId,
-                Status = userStatus,
+                Status = membershipStatus,
                 CreatedDate = DateTime.UtcNow
             };
             _context.CompaniesUsers.Add(item);
@@ -132,6 +132,9 @@ namespace Squadio.DAL.Repository.CompaniesUsers.Implementation
                 .Where(x => x.CompanyId == companyId && x.UserId == userId)
                 .FirstOrDefaultAsync();
             _context.CompaniesUsers.Remove(item);
+            
+            //TODO :
+            
             await _context.SaveChangesAsync();
         }
 
@@ -150,13 +153,13 @@ namespace Squadio.DAL.Repository.CompaniesUsers.Implementation
             await _context.SaveChangesAsync();
         }
 
-        public async Task AddRangeCompanyUser(Guid companyId, IEnumerable<Guid> userIds, UserStatus userStatus)
+        public async Task AddRangeCompanyUser(Guid companyId, IEnumerable<Guid> userIds, MembershipStatus membershipStatus)
         {
             var items = userIds.Select(userId => new CompanyUserModel
                     {
                         CompanyId = companyId, 
                         UserId = userId, 
-                        Status = userStatus, 
+                        Status = membershipStatus, 
                         CreatedDate = DateTime.UtcNow
                     })
                 .ToList();
@@ -165,12 +168,12 @@ namespace Squadio.DAL.Repository.CompaniesUsers.Implementation
             await _context.SaveChangesAsync();
         }
 
-        public async Task ChangeStatusCompanyUser(Guid companyId, Guid userId, UserStatus newUserStatus)
+        public async Task ChangeStatusCompanyUser(Guid companyId, Guid userId, MembershipStatus newMembershipStatus)
         {
             var item = await _context.CompaniesUsers
                 .Where(x => x.CompanyId == companyId && x.UserId == userId)
                 .FirstOrDefaultAsync();
-            item.Status = newUserStatus;
+            item.Status = newMembershipStatus;
             _context.CompaniesUsers.Update(item);
             await _context.SaveChangesAsync();
         }

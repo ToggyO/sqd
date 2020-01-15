@@ -52,8 +52,9 @@ namespace Squadio.DAL.Repository.Invites.Implementation
         public async Task<IEnumerable<InviteModel>> GetInvites(
             Guid? entityId = null, 
             Guid? authorId = null, 
-            EntityType? entityType = null, 
-            bool? activated = null)
+            InviteEntityType? entityType = null, 
+            bool? activated = null,
+            bool? isSent = null)
         {
             var query = _context.Invites as IQueryable<InviteModel>;
             
@@ -69,12 +70,17 @@ namespace Squadio.DAL.Repository.Invites.Implementation
             
             if (entityType.HasValue)
             {
-                query = query.Where(x => x.EntityType == entityType);
+                query = query.Where(x => x.InviteEntityType == entityType);
             }
             
             if (activated.HasValue)
             {
                 query = query.Where(x => x.IsActivated == activated);
+            }
+            
+            if (isSent.HasValue)
+            {
+                query = query.Where(x => x.IsSent == isSent);
             }
             
             var items = await query

@@ -2,9 +2,8 @@
 {
     public enum UserStatus
     {
-        Member = 1,
-        Admin = 2,
-        SuperAdmin = 3,
-        Pending = 4
+        Active = 1,
+        Blocked = 2,
+        Pending = 3
     }
 }

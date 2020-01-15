@@ -16,14 +16,14 @@ namespace Squadio.DAL.Repository.ProjectsUsers
             , Guid? companyId = null
             , Guid? teamId = null
             , Guid? projectId = null
-            , IEnumerable<UserStatus> statuses = null);
+            , IEnumerable<MembershipStatus> statuses = null);
         Task<PageModel<ProjectUserModel>> GetProjectUsersByEmails(PageModel model, Guid projectId, IEnumerable<string> emails);
         Task<ProjectUserModel> GetProjectUser(Guid projectId, Guid userId);
         Task<ProjectUserModel> GetFullProjectUser(Guid projectId, Guid userId);
-        Task AddProjectUser(Guid projectId, Guid userId, UserStatus userStatus);
+        Task AddProjectUser(Guid projectId, Guid userId, MembershipStatus membershipStatus);
         Task DeleteProjectUser(Guid projectId, Guid userId);
         Task DeleteProjectUsers(Guid projectId, IEnumerable<string> emails);
-        Task AddRangeProjectUser(Guid projectId, IEnumerable<Guid> userIds, UserStatus userStatus);
-        Task ChangeStatusProjectUser(Guid projectId, Guid userId, UserStatus newUserStatus);
+        Task AddRangeProjectUser(Guid projectId, IEnumerable<Guid> userIds, MembershipStatus membershipStatus);
+        Task ChangeStatusProjectUser(Guid projectId, Guid userId, MembershipStatus newMembershipStatus);
     }
 }

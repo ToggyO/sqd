@@ -10,6 +10,7 @@ using Squadio.BLL.Providers.Projects;
 using Squadio.BLL.Providers.Teams;
 using Squadio.BLL.Services.Companies;
 using Squadio.BLL.Services.ConfirmEmail;
+using Squadio.BLL.Services.Invites;
 using Squadio.BLL.Services.Projects;
 using Squadio.BLL.Services.Rabbit;
 using Squadio.BLL.Services.Teams;
@@ -47,6 +48,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
         private readonly IProjectsService _projectsService;
         private readonly IProjectsProvider _projectsProvider;
         private readonly IConfirmEmailService _confirmEmailService;
+        private readonly IInvitesService _invitesService;
         private readonly IRabbitService _rabbitService;
         private readonly ILogger<SignUpService> _logger;
         private readonly IMapper _mapper;
@@ -63,6 +65,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             , IProjectsService projectsService
             , IProjectsProvider projectsProvider
             , IConfirmEmailService confirmEmailService
+            , IInvitesService invitesService
             , IRabbitService rabbitService
             , ILogger<SignUpService> logger
             , IMapper mapper
@@ -80,6 +83,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             _projectsService = projectsService;
             _projectsProvider = projectsProvider;
             _confirmEmailService = confirmEmailService;
+            _invitesService = invitesService;
             _rabbitService = rabbitService;
             _logger = logger;
             _mapper = mapper;
@@ -210,7 +214,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             {
                 Email = email,
                 Step = RegistrationStep.New,
-                Status = UserStatus.Admin,
+                MembershipStatus = MembershipStatus.Admin,
                 SignUpBy = SignUpType.Email
             };
 
@@ -287,7 +291,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 Email = infoFromGoogleToken.Email,
                 Name = infoFromGoogleToken.Name,
                 Step = RegistrationStep.EmailConfirmed,
-                Status = UserStatus.Admin,
+                MembershipStatus = MembershipStatus.Admin,
                 SignUpBy = SignUpType.Google
             };
 
@@ -372,9 +376,9 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             switch (step.Status)
             {
-                case UserStatus.Admin:
+                case MembershipStatus.Admin:
                     return await SignUpUsernameAdmin(id, updateDTO);
-                case UserStatus.Member:
+                case MembershipStatus.Member:
                     return await SignUpUsernameMember(id, updateDTO);
                 default:
                     return new BusinessConflictErrorResponse<SignUpStepDTO<UserDTO>>(new Error
@@ -394,7 +398,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 return stepValidate;
             }
 
-            if (step.Status != UserStatus.Admin)
+            if (step.Status != MembershipStatus.Admin)
             {
                 return new PermissionDeniedErrorResponse<SignUpStepDTO<CompanyDTO>>(new Error
                 {
@@ -430,7 +434,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 return stepValidate;
             }
 
-            if (step.Status != UserStatus.Admin)
+            if (step.Status != MembershipStatus.Admin)
             {
                 return new PermissionDeniedErrorResponse<SignUpStepDTO<TeamDTO>>(new Error
                 {
@@ -489,7 +493,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 return stepValidate;
             }
 
-            if (step.Status != UserStatus.Admin)
+            if (step.Status != MembershipStatus.Admin)
             {
                 return new PermissionDeniedErrorResponse<SignUpStepDTO<ProjectDTO>>(new Error
                 {
@@ -547,11 +551,15 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 return stepValidate;
             }
 
-            if (step.Status == UserStatus.Admin)
+            if (step.Status == MembershipStatus.Admin)
             {
                 var sendResult = await SendSignUpInvites(userId);
                 if (!sendResult.IsSuccess)
                     return sendResult as Response<SignUpStepDTO>;
+            }
+            else
+            {
+                await _invitesService.ActivateInvites(step.User.Email);
             }
 
             step = await _repository.SetRegistrationStep(userId, RegistrationStep.Done);
@@ -790,143 +798,20 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             var allInvites = (await _invitesRepository.GetInvites(
                 authorId: userId, 
-                activated: false)).ToList();
+                activated: false,
+                isSent: false)).ToList();
 
-            if (allInvites.Count == 0)
+            var emailsDistinct = allInvites.Select(x => x.Email).Distinct().ToList();
+
+            if (emailsDistinct.Count == 0)
                 return new Response();
 
-            List<string> usedEmails;
-            List<Guid> redundantInvitesIds = new List<Guid>();
-
-            var projectInvites = allInvites.Where(x => x.EntityType == EntityType.Project).ToList();
-            allInvites.RemoveAll(x => x.EntityType == EntityType.Project);
-            usedEmails = projectInvites.Select(x=>x.Email).Distinct().ToList();
-            redundantInvitesIds.AddRange(allInvites.Where(x => usedEmails.Any(y => y.ToUpper() == x.Email.ToUpper())).Select(x=>x.Id));
-            allInvites.RemoveAll(x => redundantInvitesIds.Any(y => y == x.Id));
-
-            foreach (var invite in projectInvites)
+            foreach (var email in emailsDistinct)
             {
-                await SendProjectInvite(
-                    invite,
-                    userProject.Project.Creator.Name,
-                    userProject.Project.Name,
-                    false);
-            }
-
-            var teamInvites = allInvites.Where(x => x.EntityType == EntityType.Team).ToList();
-            allInvites.RemoveAll(x => x.EntityType == EntityType.Team);
-            usedEmails = teamInvites.Select(x=>x.Email).Distinct().ToList();
-            redundantInvitesIds.AddRange(allInvites.Where(x => usedEmails.Any(y => y.ToUpper() == x.Email.ToUpper())).Select(x=>x.Id));
-            allInvites.RemoveAll(x => redundantInvitesIds.Any(y => y == x.Id));
-
-            foreach (var invite in teamInvites)
-            {
-                await SendTeamInvite(
-                    invite,
-                    userTeam.Team.Creator.Name,
-                    userTeam.Team.Name,
-                    false);
-            }
-
-            var companyInvites = allInvites.Where(x => x.EntityType == EntityType.Company).ToList();
-            allInvites.RemoveAll(x => x.EntityType == EntityType.Company);
-            usedEmails = companyInvites.Select(x=>x.Email).Distinct().ToList();
-            redundantInvitesIds.AddRange(allInvites.Where(x => usedEmails.Any(y => y.ToUpper() == x.Email.ToUpper())).Select(x=>x.Id));
-            allInvites.RemoveAll(x => redundantInvitesIds.Any(y => y == x.Id));
-
-            foreach (var invite in companyInvites)
-            {
-                await SendCompanyInvite(
-                    invite,
-                    userCompany.Company.Creator.Name,
-                    userCompany.Company.Name,
-                    false);
-            }
-
-            if (redundantInvitesIds.Count > 0)
-            {
-                await _invitesRepository.DeleteInvites(redundantInvitesIds);
-                _logger.LogInformation($"Removed {redundantInvitesIds.Count} redundant invites while user registered (userid: {userId})");
-            }
-
-            if (allInvites.Count > 0)
-            {
-                _logger.LogWarning($"Some invites not sent while user registered (userid: {userId})");
+                await _invitesService.SendInvite(email);
             }
 
             return new Response();
-        }
-        
-        private async Task SendCompanyInvite(InviteModel model, string authorName, string companyName, bool isAlreadyRegistered)
-        {
-            try
-            {
-                var invitedUser = await _usersRepository.GetByEmail(model.Email);
-
-                if (invitedUser == null /*|| invitedUser.SendEmails*/)
-                {
-                    await _rabbitService.Send(new InviteToCompanyEmailModel()
-                    {
-                        To = model.Email,
-                        AuthorName = authorName,
-                        Code = model.Code,
-                        CompanyName = companyName,
-                        IsAlreadyRegistered = isAlreadyRegistered
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"[{model.Email}][{model.Code}] : {ex.Message}");
-            }
-        }
-        
-        private async Task SendTeamInvite(InviteModel model, string authorName, string teamName, bool isAlreadyRegistered)
-        {
-            try
-            {
-                var invitedUser = await _usersRepository.GetByEmail(model.Email);
-
-                if (invitedUser == null /*|| invitedUser.SendEmails*/)
-                {
-                    await _rabbitService.Send(new InviteToTeamEmailModel()
-                    {
-                        To = model.Email,
-                        AuthorName = authorName,
-                        Code = model.Code,
-                        TeamName = teamName,
-                        IsAlreadyRegistered = isAlreadyRegistered
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"[{model.Email}][{model.Code}] : {ex.Message}");
-            }
-        }
-        
-        private async Task SendProjectInvite(InviteModel model, string authorName, string projectName, bool isAlreadyRegistered)
-        {
-            try
-            {
-                var invitedUser = await _usersRepository.GetByEmail(model.Email);
-
-                if (invitedUser == null /*|| invitedUser.SendEmails*/)
-                {
-                    await _rabbitService.Send(new InviteToProjectEmailModel()
-                    {
-                        To = model.Email,
-                        AuthorName = authorName,
-                        Code = model.Code,
-                        ProjectName = projectName,
-                        IsAlreadyRegistered = isAlreadyRegistered
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"[{model.Email}][{model.Code}] : {ex.Message}");
-            }
         }
     }
 }

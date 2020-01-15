@@ -29,6 +29,8 @@ using Squadio.BLL.Services.ConfirmEmail;
 using Squadio.BLL.Services.ConfirmEmail.Implementation;
 using Squadio.BLL.Services.Files;
 using Squadio.BLL.Services.Files.Implementation;
+using Squadio.BLL.Services.Invites;
+using Squadio.BLL.Services.Invites.Implementation;
 using Squadio.BLL.Services.Projects;
 using Squadio.BLL.Services.Projects.Implementation;
 using Squadio.BLL.Services.Rabbit;
@@ -71,17 +73,16 @@ namespace Squadio.BLL
             
             services.Add<ITokensService, TokensService>(serviceLifetime);
             
+            services.Add<IInvitesService, InvitesService>(serviceLifetime);
+            
             services.Add<ICompaniesProvider, CompaniesProvider>(serviceLifetime);
             services.Add<ICompaniesService, CompaniesService>(serviceLifetime);
-            services.Add<ICompanyInvitesService, CompanyInvitesService>(serviceLifetime);
             
             services.Add<ITeamsProvider, TeamsProvider>(serviceLifetime);
             services.Add<ITeamsService, TeamsService>(serviceLifetime);
-            services.Add<ITeamInvitesService, TeamInvitesService>(serviceLifetime);
             
             services.Add<IProjectsProvider, ProjectsProvider>(serviceLifetime);
             services.Add<IProjectsService, ProjectsService>(serviceLifetime);
-            services.Add<IProjectInvitesService, ProjectInvitesService>(serviceLifetime);
             
             services.Add<IAdminsProvider, AdminsProvider>(serviceLifetime);
             services.Add<IAdminsService, AdminsService>(serviceLifetime);
