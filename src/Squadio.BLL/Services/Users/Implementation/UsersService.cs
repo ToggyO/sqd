@@ -150,6 +150,13 @@ namespace Squadio.BLL.Services.Users.Implementation
             };
         }
 
+        public async Task<Response<UserDTO>> CreateUserWithPasswordRestore(UserCreateDTO dto, string code)
+        {
+            var user = await CreateUser(dto);
+            await _changePasswordRepository.AddRequest(user.Data.Id, code);
+            return user;
+        }
+
         public async Task<Response<UserDTO>> UpdateUser(Guid id, UserUpdateDTO dto)
         {
             var userEntity = await _repository.GetById(id);

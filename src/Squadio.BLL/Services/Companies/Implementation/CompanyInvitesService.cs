@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Mapper;
@@ -124,7 +124,7 @@ namespace Squadio.BLL.Services.Companies.Implementation
             var invite = await _repository.GetInviteByCode(code);
 
             if (invite == null
-                || invite?.Activated == true
+                || invite?.IsActivated == true
                 || invite?.Code.ToUpper() != code.ToUpper())
             {
                 return new SecurityErrorResponse(new[]
@@ -227,7 +227,7 @@ namespace Squadio.BLL.Services.Companies.Implementation
                 invite = new InviteModel
                 {
                     Email = email,
-                    Activated = false,
+                    IsActivated = false,
                     CreatedDate = DateTime.UtcNow,
                     Code = code,
                     EntityId = companyId,

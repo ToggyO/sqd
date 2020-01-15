@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Mapper;
 using Microsoft.Extensions.Logging;
 using Squadio.BLL.Providers.Codes;
+using Squadio.BLL.Providers.Users;
 using Squadio.BLL.Services.Rabbit;
 using Squadio.BLL.Services.Teams;
+using Squadio.BLL.Services.Users;
 using Squadio.Common.Models.Email;
 using Squadio.Common.Models.Errors;
+using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Companies;
 using Squadio.DAL.Repository.CompaniesUsers;
@@ -26,19 +30,59 @@ namespace Squadio.BLL.Services.Companies.Implementation
         private readonly ICompaniesRepository _repository;
         private readonly ICompaniesUsersRepository _companiesUsersRepository;
         private readonly ITeamsService _teamsService;
+        private readonly IUsersService _usersService;
+        private readonly IUsersProvider _usersProvider;
+        private readonly ICodeProvider _codeProvider;
         private readonly IMapper _mapper;
         private readonly ILogger<CompaniesService> _logger;
         public CompaniesService(ICompaniesRepository repository
             , ICompaniesUsersRepository companiesUsersRepository
             , ITeamsService teamsService
+            , IUsersService usersService
+            , IUsersProvider usersProvider
+            , ICodeProvider codeProvider
             , IMapper mapper
             , ILogger<CompaniesService> logger)
         {
             _repository = repository;
             _companiesUsersRepository = companiesUsersRepository;
             _teamsService = teamsService;
+            _usersService = usersService;
+            _usersProvider = usersProvider;
+            _codeProvider = codeProvider;
             _mapper = mapper;
             _logger = logger;
+        }
+
+        public async Task<Response> InviteUsers(Guid companyId, Guid authorId, CreateInvitesDTO dto)
+        {
+            var companyUsers = await _companiesUsersRepository.GetCompanyUsersByEmails(new PageModel {Page = 1, PageSize = 1000000}
+                , companyId
+                , dto.Emails);
+            
+            var companyUser = await _companiesUsersRepository.GetCompanyUser(companyId, authorId);
+            if (companyUser == null || companyUser?.Status == UserStatus.Member)
+            {
+                return new PermissionDeniedErrorResponse<IEnumerable<InviteDTO>>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.PermissionDenied,
+                        Message = ErrorMessages.Security.PermissionDenied,
+                    }
+                });
+            }
+            
+            var existedEmails = companyUsers.Items.Select(x => x.User.Email);
+            var notExistedEmails = dto.Emails.Except(existedEmails);
+            foreach (var email in notExistedEmails)
+            {
+                var createInviteResult = await CreateInviteToCompany(
+                    companyUser.CompanyId,
+                    email,
+                    authorId);
+            }
+            throw new NotImplementedException();
         }
 
         public async Task<Response<CompanyDTO>> Update(Guid companyId, Guid userId, CompanyUpdateDTO dto)
@@ -140,6 +184,55 @@ namespace Squadio.BLL.Services.Companies.Implementation
             {
                 Data = result
             };
+        }
+
+        private async Task<Tuple<InviteModel, bool>> CreateInviteToCompany(Guid companyId, string email, Guid authorId)
+        {
+            var code = _codeProvider.GenerateCodeAsGuid();
+            var isAlreadyRegistered = true;
+
+            var user = (await _usersProvider.GetByEmail(email)).Data;
+            if (user != null)
+            {
+                return new Tuple<InviteModel, bool>(null, true);
+            }
+
+            var createUserDTO = new UserCreateDTO()
+            {
+                Email = email,
+                Step = RegistrationStep.New,
+                Status = UserStatus.Member
+            };
+            user = (await _usersService.CreateUserWithPasswordRestore(createUserDTO, code)).Data;
+
+            var signUpStep = await _signUpRepository.GetRegistrationStepByUserId(user.Id);
+            if (signUpStep.Step == RegistrationStep.New)
+            {
+                isAlreadyRegistered = false;
+            }
+
+            var companyUser = await _companiesUsersRepository.GetCompanyUser(companyId, user.Id);
+            if (companyUser != null)
+            {
+                return null;
+            }
+
+            await _companiesUsersRepository.AddCompanyUser(companyId, user.Id, UserStatus.Pending);
+
+            var invite = new InviteModel
+            {
+                Email = email,
+                IsActivated = false,
+                CreatedDate = DateTime.UtcNow,
+                Code = code,
+                EntityId = companyId,
+                EntityType = EntityType.Company,
+                CreatorId = authorId
+            };
+
+            invite = await _repository.CreateInvite(invite);
+
+            return new Tuple<InviteModel, bool>(invite, isAlreadyRegistered);
         }
     }
 }

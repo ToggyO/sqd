@@ -91,7 +91,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             if (!inviteResponse.IsSuccess 
                 || inviteResponse.Data?.Code != dto.InviteCode 
-                || inviteResponse.Data?.Activated == true)
+                || inviteResponse.Data?.IsActivated == true)
             {
                 return new SecurityErrorResponse<UserDTO>(new []
                 {
@@ -161,7 +161,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             if (!inviteResponse.IsSuccess 
                 || inviteResponse.Data?.Code != dto.InviteCode 
-                || inviteResponse.Data?.Activated == true)
+                || inviteResponse.Data?.IsActivated == true)
             {
                 return new SecurityErrorResponse<UserDTO>(new []
                 {

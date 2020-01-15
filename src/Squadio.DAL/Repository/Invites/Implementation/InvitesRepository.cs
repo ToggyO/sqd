@@ -34,7 +34,7 @@ namespace Squadio.DAL.Repository.Invites.Implementation
         public async Task<InviteModel> ActivateInvite(Guid inviteId)
         {
             var item = await _context.Invites.FindAsync(inviteId);
-            item.Activated = true;
+            item.IsActivated = true;
             item.ActivatedDate = DateTime.UtcNow;
             _context.Update(item);
             await _context.SaveChangesAsync();
@@ -74,7 +74,7 @@ namespace Squadio.DAL.Repository.Invites.Implementation
             
             if (activated.HasValue)
             {
-                query = query.Where(x => x.Activated == activated);
+                query = query.Where(x => x.IsActivated == activated);
             }
             
             var items = await query
@@ -87,12 +87,12 @@ namespace Squadio.DAL.Repository.Invites.Implementation
         {
             var emailsUpper = emails.Select(s => s.ToUpper());
 
-            var query = _context.Invites.Where(x => x.EntityId == entityId && x.Activated == false);
+            var query = _context.Invites.Where(x => x.EntityId == entityId && x.IsActivated == false);
             query = query.Where(model => emailsUpper.Contains(model.Email.ToUpper()));
             
             await query.ForEachAsync(x =>
             {
-                x.Activated = true;
+                x.IsActivated = true;
                 x.ActivatedDate = DateTime.UtcNow;
             });
             _context.UpdateRange(query);

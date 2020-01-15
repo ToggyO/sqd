@@ -15,6 +15,7 @@ namespace Squadio.BLL.Services.Users
         Task<Response<UserDTO>> ResetPassword(string code, string password);
         Task<Response> ResetPasswordRequest(string email);
         Task<Response<UserDTO>> CreateUser(UserCreateDTO dto);
+        Task<Response<UserDTO>> CreateUserWithPasswordRestore(UserCreateDTO dto, string code);
         Task<Response<UserDTO>> UpdateUser(Guid id, UserUpdateDTO dto);
         Task<Response<UserDTO>> DeleteUser(Guid id);
         Task<Response> ChangeEmailRequest(Guid id, string newEmail);

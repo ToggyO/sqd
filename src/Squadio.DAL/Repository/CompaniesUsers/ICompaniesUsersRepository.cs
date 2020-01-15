@@ -15,6 +15,7 @@ namespace Squadio.DAL.Repository.CompaniesUsers
             , Guid? userId = null
             , Guid? companyId = null
             , IEnumerable<UserStatus> statuses = null);
+        Task<PageModel<CompanyUserModel>> GetCompanyUsersByEmails(PageModel model, Guid companyId, IEnumerable<string> emails);
         Task<CompanyUserModel> GetCompanyUser(Guid companyId, Guid userId);
         Task<int> GetCompanyUsersCount(Guid companyId);
         Task AddCompanyUser(Guid companyId, Guid userId, UserStatus userStatus);
