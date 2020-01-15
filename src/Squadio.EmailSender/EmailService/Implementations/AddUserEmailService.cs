@@ -6,32 +6,32 @@ using Squadio.EmailSender.Extensions;
 
 namespace Squadio.EmailSender.EmailService.Implementations
 {
-    public class AddedToCompanyNotificationEmailService: BaseEmailService<AddToCompanyEmailModel>
+    public class AddUserEmailService: BaseEmailService<AddUserEmailModel>
     {
         private readonly IOptions<StaticUrlsSettingsModel> _options;
         
-        public AddedToCompanyNotificationEmailService(IOptions<EmailSettingsModel> emailSettings
+        public AddUserEmailService(IOptions<EmailSettingsModel> emailSettings
             , IEmailSender emailSender
             , IOptions<StaticUrlsSettingsModel> options) : base(emailSettings, emailSender)
         {
             _options = options;
         }
 
-        protected override string GetHtmlTemplate(AddToCompanyEmailModel model)
+        protected override string GetHtmlTemplate(AddUserEmailModel model)
         {
             var resource = EmbeddedResources
                 .GetResource(
                     "Squadio.EmailSender.EmailService.Templates.AddedNotificationTemplate.html")
                 .Replace("{{AuthorName}}", model.AuthorName)
-                .Replace("{{EntityName}}", model.CompanyName)
-                .Replace("{{EntityType}}", "company");
+                .Replace("{{EntityName}}", "[name]")
+                .Replace("{{EntityType}}", "[type]");
 
             return resource;
         }
 
-        protected override string GetSubject(AddToCompanyEmailModel emailModel)
+        protected override string GetSubject(AddUserEmailModel emailModel)
         {
-            return $"{emailModel.AuthorName} added you to {emailModel.CompanyName} company";
+            return $"{emailModel.AuthorName} added you to [name] [type]";
         }
     }
 }
