@@ -10,7 +10,7 @@ namespace Squadio.API.Controllers.V01
     [Route("api/v{version:apiVersion}/versions")]
     public class VersionController : ControllerBase
     {
-        private const string Version = "0.7.2 b";
+        private const string Version = "0.7.3 b";
         private readonly ILogger<VersionController> _logger;
 
         public VersionController(ILogger<VersionController> logger)
