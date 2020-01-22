@@ -31,6 +31,10 @@ namespace Squadio.DTO.Users
                 UITheme = item.UITheme.ToString(),
                 SignUpBy = item.SignUpType.ToString()
             };
+            if (result.Name == null)
+            {
+                result.Name = "Username";
+            }
             if (item.Avatar != null)
             {
                 var viewModel = new ResourceImageViewModel(item.Avatar, _options.Value.ImageTemplate);
