@@ -55,7 +55,9 @@ namespace Squadio.API
                                 "http://localhost:5005",
                                 "https://squad.api.magora.work",
                                 "https://squad.magora.work",
-                                "https://squad.web.magora.work")
+                                "https://squad.web.magora.work",
+                                "http://semicon.magora.work",
+                                "https://semicon.magora.work")
                             .AllowAnyHeader()
                             .AllowAnyMethod();
                     });
