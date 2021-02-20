@@ -34,7 +34,7 @@ namespace Squadio.DAL.Repository.Invites.Implementation
         public async Task<InviteModel> ActivateInvite(Guid inviteId)
         {
             var item = await _context.Invites.FindAsync(inviteId);
-            item.Activated = true;
+            item.IsActivated = true;
             item.ActivatedDate = DateTime.UtcNow;
             _context.Update(item);
             await _context.SaveChangesAsync();
@@ -52,10 +52,13 @@ namespace Squadio.DAL.Repository.Invites.Implementation
         public async Task<IEnumerable<InviteModel>> GetInvites(
             Guid? entityId = null, 
             Guid? authorId = null, 
-            EntityType? entityType = null, 
-            bool? activated = null)
+            string email = null, 
+            InviteEntityType? entityType = null, 
+            bool? activated = null,
+            bool? isSent = null)
         {
-            var query = _context.Invites as IQueryable<InviteModel>;
+            var query = _context.Invites
+                .Include(x => x.Creator) as IQueryable<InviteModel>;
             
             if (entityId.HasValue)
             {
@@ -74,11 +77,20 @@ namespace Squadio.DAL.Repository.Invites.Implementation
             
             if (activated.HasValue)
             {
-                query = query.Where(x => x.Activated == activated);
+                query = query.Where(x => x.IsActivated == activated);
+            }
+            
+            if (isSent.HasValue)
+            {
+                query = query.Where(x => x.IsSent == isSent);
+            }
+            
+            if (!string.IsNullOrEmpty(email))
+            {
+                query = query.Where(x => x.Email.ToUpper() == email.ToUpper());
             }
             
             var items = await query
-                .OrderByDescending(x => x.CreatedDate)
                 .ToListAsync();
             return items;
         }
@@ -87,12 +99,12 @@ namespace Squadio.DAL.Repository.Invites.Implementation
         {
             var emailsUpper = emails.Select(s => s.ToUpper());
 
-            var query = _context.Invites.Where(x => x.EntityId == entityId && x.Activated == false);
+            var query = _context.Invites.Where(x => x.EntityId == entityId && x.IsActivated == false);
             query = query.Where(model => emailsUpper.Contains(model.Email.ToUpper()));
             
             await query.ForEachAsync(x =>
             {
-                x.Activated = true;
+                x.IsActivated = true;
                 x.ActivatedDate = DateTime.UtcNow;
             });
             _context.UpdateRange(query);

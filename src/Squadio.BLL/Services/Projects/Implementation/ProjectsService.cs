@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Mapper;
+using Squadio.BLL.Providers.Codes;
+using Squadio.BLL.Providers.Users;
 using Squadio.BLL.Services.Invites;
+using Squadio.BLL.Services.Membership;
+using Squadio.BLL.Services.Teams;
 using Squadio.Common.Models.Errors;
-using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.CompaniesUsers;
@@ -11,10 +16,8 @@ using Squadio.DAL.Repository.Projects;
 using Squadio.DAL.Repository.ProjectsUsers;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Projects;
-using Squadio.Domain.Models.Teams;
 using Squadio.DTO.Invites;
 using Squadio.DTO.Projects;
-using Squadio.DTO.Teams;
 
 namespace Squadio.BLL.Services.Projects.Implementation
 {
@@ -23,19 +26,19 @@ namespace Squadio.BLL.Services.Projects.Implementation
         private readonly IProjectsRepository _repository;
         private readonly IProjectsUsersRepository _projectsUsersRepository;
         private readonly ICompaniesUsersRepository _companiesUsersRepository;
-        private readonly IInvitesService _invitesService;
+        private readonly IMembershipService _membershipService;
         private readonly IMapper _mapper;
 
         public ProjectsService(IProjectsRepository repository
             , IProjectsUsersRepository projectsUsersRepository
             , ICompaniesUsersRepository companiesUsersRepository
-            , IInvitesService invitesService
+            , IMembershipService membershipService
             , IMapper mapper)
         {
             _repository = repository;
             _projectsUsersRepository = projectsUsersRepository;
             _companiesUsersRepository = companiesUsersRepository;
-            _invitesService = invitesService;
+            _membershipService = membershipService;
             _mapper = mapper;
         }
 
@@ -52,16 +55,9 @@ namespace Squadio.BLL.Services.Projects.Implementation
             
             entity = await _repository.Create(entity);
 
-            await _projectsUsersRepository.AddProjectUser(entity.Id, userId, UserStatus.SuperAdmin);
+            await _projectsUsersRepository.AddProjectUser(entity.Id, userId, MembershipStatus.SuperAdmin);
             
-            await _invitesService.InviteToProject(
-                entity.Id,
-                userId,
-                new CreateInvitesDTO
-                {
-                    Emails = dto.Emails
-                }, 
-                sendInvites);
+            await _membershipService.InviteUsersToProject(entity.Id, userId, new CreateInvitesDTO {Emails = dto.Emails}, sendInvites);
             
             var result = _mapper.Map<ProjectModel, ProjectDTO>(entity);
             return new Response<ProjectDTO>
@@ -103,7 +99,7 @@ namespace Squadio.BLL.Services.Projects.Implementation
                 });
             }
 
-            if (projectUser.Status != UserStatus.SuperAdmin)
+            if (projectUser.Status != MembershipStatus.SuperAdmin)
             {
                 return new PermissionDeniedErrorResponse<ProjectDTO>(new []
                 {
@@ -131,7 +127,7 @@ namespace Squadio.BLL.Services.Projects.Implementation
         public async Task<Response<ProjectDTO>> Delete(Guid projectId, Guid userId)
         {
             var projectUser = await _projectsUsersRepository.GetFullProjectUser(projectId, userId);
-            if (projectUser == null || projectUser.Status != UserStatus.SuperAdmin)
+            if (projectUser == null || projectUser.Status != MembershipStatus.SuperAdmin)
             {
                 return new PermissionDeniedErrorResponse<ProjectDTO>(new []
                 {
@@ -144,7 +140,7 @@ namespace Squadio.BLL.Services.Projects.Implementation
             }
 
             var companyUser = await _companiesUsersRepository.GetCompanyUser(projectUser.Project.Team.CompanyId, userId);
-            if (companyUser == null || companyUser.Status != UserStatus.SuperAdmin)
+            if (companyUser == null || companyUser.Status != MembershipStatus.SuperAdmin)
             {
                 return new PermissionDeniedErrorResponse<ProjectDTO>(new []
                 {
@@ -163,45 +159,5 @@ namespace Squadio.BLL.Services.Projects.Implementation
             };
         }
 
-        public async Task<Response> DeleteUserFromProject(Guid projectId, Guid removeUserId, Guid currentUserId)
-        {
-            var currentProjectUser = await _projectsUsersRepository.GetProjectUser(projectId, currentUserId);
-
-            if (currentProjectUser == null || currentProjectUser?.Status != UserStatus.SuperAdmin)
-            {
-                return new PermissionDeniedErrorResponse(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Security.PermissionDenied,
-                        Message = ErrorMessages.Security.PermissionDenied
-                    }
-                }); 
-            }
-
-            return await DeleteUserFromProject(projectId, removeUserId);
-        }
-
-        public async Task<Response> DeleteUserFromProjectsByTeamId(Guid teamId, Guid removeUserId)
-        {
-            var projects = await _repository.GetProjects(new PageModel()
-            {
-                Page = 1,
-                PageSize = 1000
-            }, teamId);
-            
-            foreach (var project in projects.Items)
-            {
-                await DeleteUserFromProject(project.Id, removeUserId);
-            }
-            
-            return new Response();
-        }
-
-        private async Task<Response> DeleteUserFromProject(Guid projectId, Guid removeUserId)
-        {
-            await _projectsUsersRepository.DeleteProjectUser(projectId, removeUserId);
-            return new Response();
-        }
     }
 }

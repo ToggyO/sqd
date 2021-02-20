@@ -135,12 +135,13 @@ namespace Squadio.BLL.Services.Users.Implementation
                 RoleId = RoleGuid.User,
                 Email = dto.Email,
                 CreatedDate = DateTime.UtcNow,
-                SignUpType = dto.SignUpBy
+                SignUpType = dto.SignUpBy,
+                Status = dto.UserStatus
             };
             
             entity = await _repository.Create(entity);
 
-            await _signUpRepository.SetRegistrationStep(entity.Id, dto.Step, dto.Status);
+            await _signUpRepository.SetRegistrationStep(entity.Id, dto.Step, dto.MembershipStatus);
             
             var result = _mapper.Map<UserModel, UserDTO>(entity);
             
@@ -148,6 +149,13 @@ namespace Squadio.BLL.Services.Users.Implementation
             {
                 Data = result
             };
+        }
+
+        public async Task<Response<UserDTO>> CreateUserWithPasswordRestore(UserCreateDTO dto, string code)
+        {
+            var user = await CreateUser(dto);
+            await _changePasswordRepository.AddRequest(user.Data.Id, code);
+            return user;
         }
 
         public async Task<Response<UserDTO>> UpdateUser(Guid id, UserUpdateDTO dto)

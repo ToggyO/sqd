@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Squadio.API.Handlers.Invites;
 using Squadio.API.Handlers.Teams;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
@@ -20,12 +19,10 @@ namespace Squadio.API.Controllers.V01
     public class TeamsController : ControllerBase
     {
         private readonly ITeamsHandler _handler;
-        private readonly IInvitesHandler _invitesHandler;
-        public TeamsController(ITeamsHandler handler
-            , IInvitesHandler invitesHandler)
+        
+        public TeamsController(ITeamsHandler handler)
         {
             _handler = handler;
-            _invitesHandler = invitesHandler;
         }
         
         /// <summary>
@@ -109,26 +106,7 @@ namespace Squadio.API.Controllers.V01
         public async Task<Response> CreateInvites([Required, FromRoute] Guid id
             , [Required, FromBody] CreateInvitesDTO dto)
         {
-            return await _invitesHandler.InviteToTeam(id, dto, User);
-        }
-        
-        /// <summary>
-        /// Cancel of invites to team
-        /// </summary>
-        [HttpPut("{id}/invite/cancel")]
-        public async Task<Response> CancelInvite([Required, FromRoute] Guid id
-            , [Required, FromBody] CancelInvitesDTO dto)
-        {
-            return await _invitesHandler.CancelInvite(id, dto, User, EntityType.Team);
-        }
-        
-        /// <summary>
-        /// Accept invite to team
-        /// </summary>
-        [HttpPost("invite/accept")]
-        public async Task<Response> AcceptInvite([Required, FromQuery] string code)
-        {
-            return await _invitesHandler.AcceptInvite(User, code, EntityType.Team);
+            return await _handler.InviteTeamUsers(id, dto, User);
         }
     }
 }

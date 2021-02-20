@@ -3,12 +3,14 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Squadio.BLL.Providers.Projects;
 using Squadio.BLL.Providers.WebSocket.Sidebar;
+using Squadio.BLL.Services.Membership;
 using Squadio.BLL.Services.Projects;
 using Squadio.Common.Enums;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.Common.WebSocket;
+using Squadio.DTO.Invites;
 using Squadio.DTO.Projects;
 using Squadio.DTO.Users;
 
@@ -18,14 +20,17 @@ namespace Squadio.API.Handlers.Projects.Implementation
     {
         private readonly IProjectsProvider _provider;
         private readonly IProjectsService _service;
+        private readonly IMembershipService _membershipService;
         private readonly ISidebarHubProvider _hubProvider;
 
         public ProjectsHandler(IProjectsProvider provider
             , IProjectsService service
+            , IMembershipService membershipService
             , ISidebarHubProvider hubProvider)
         {
             _provider = provider;
             _service = service;
+            _membershipService = membershipService;
             _hubProvider = hubProvider;
         }
 
@@ -70,7 +75,13 @@ namespace Squadio.API.Handlers.Projects.Implementation
 
         public async Task<Response> DeleteProjectUser(Guid projectId, Guid userId, ClaimsPrincipal claims)
         {
-            var result = await _service.DeleteUserFromProject(projectId, userId, claims.GetUserId());
+            var result = await _membershipService.DeleteUserFromProject(projectId, userId, claims.GetUserId());
+            return result;
+        }
+
+        public async Task<Response> InviteProjectUsers(Guid projectId, CreateInvitesDTO dto, ClaimsPrincipal claims)
+        {
+            var result = await _membershipService.InviteUsersToProject(projectId, claims.GetUserId(), dto);
             return result;
         }
 

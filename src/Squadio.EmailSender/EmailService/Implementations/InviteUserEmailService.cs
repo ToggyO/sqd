@@ -6,32 +6,32 @@ using Squadio.EmailSender.Extensions;
 
 namespace Squadio.EmailSender.EmailService.Implementations
 {
-    public class InviteToTeamEmailService: BaseEmailService<InviteToTeamEmailModel>
+    public class InviteUserEmailService: BaseEmailService<InviteUserEmailModel>
     {
         private readonly IOptions<StaticUrlsSettingsModel> _options;
         
-        public InviteToTeamEmailService(IOptions<EmailSettingsModel> emailSettings
+        public InviteUserEmailService(IOptions<EmailSettingsModel> emailSettings
             , IEmailSender emailSender
             , IOptions<StaticUrlsSettingsModel> options) : base(emailSettings, emailSender)
         {
             _options = options;
         }
 
-        protected override string GetHtmlTemplate(InviteToTeamEmailModel model)
+        protected override string GetHtmlTemplate(InviteUserEmailModel model)
         {
             var resource = EmbeddedResources
                 .GetResource(
-                    "Squadio.EmailSender.EmailService.Templates.InviteToTeamTemplate.html")
-                .Replace("{{InviteToTeamPageUrl}}", _options.Value.InviteToTeamPageUrl)
+                    "Squadio.EmailSender.EmailService.Templates.InviteUserTemplate.html")
+                .Replace("{{InviteUserPageUrl}}", _options.Value.InviteUserPageUrl)
                 .Replace("{{AuthorName}}", model.AuthorName)
-                .Replace("{{TeamName}}", model.TeamName)
-                .Replace("{{Code}}", model.Code)
-                .Replace("{{IsAlreadyRegistered}}", model.IsAlreadyRegistered.ToString().ToLower());
+                .Replace("{{EntityName}}", model.EntityName)
+                .Replace("{{EntityType}}", model.EntityType.ToString().ToLower())
+                .Replace("{{Code}}", model.Code);
 
             return resource;
         }
 
-        protected override string GetSubject(InviteToTeamEmailModel emailModel)
+        protected override string GetSubject(InviteUserEmailModel emailModel)
         {
             return $"{emailModel.AuthorName} invited you to Squad";
         }

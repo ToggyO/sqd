@@ -21,7 +21,7 @@ namespace Squadio.DAL.Repository.TeamsUsers.Implementation
             , Guid? userId = null
             , Guid? companyId = null
             , Guid? teamId = null
-            , IEnumerable<UserStatus> statuses = null)
+            , IEnumerable<MembershipStatus> statuses = null)
         {
             IQueryable<TeamUserModel> query = _context.TeamsUsers
                 .Include(x => x.User).ThenInclude(x => x.Avatar)
@@ -69,6 +69,43 @@ namespace Squadio.DAL.Repository.TeamsUsers.Implementation
             return result;
         }
 
+        public async Task<PageModel<TeamUserModel>> GetTeamUsersByEmails(PageModel model, Guid teamId, IEnumerable<string> emails)
+        {
+            
+            IQueryable<TeamUserModel> query = _context.TeamsUsers
+                .Include(x => x.User).ThenInclude(x => x.Avatar)
+                .Include(x => x.Team)
+                .Where(x => x.TeamId == teamId);
+            
+            if (emails != null)
+            {
+                var userEmails = emails.ToList();
+                if (userEmails?.Any() == true)
+                {
+                    query = query.Where(x => userEmails.Contains(x.User.Email));
+                }
+            }
+            
+            query = query.OrderBy(x => x.User.Email);
+            
+            var skip = (model.Page - 1) * model.PageSize;
+            var take = model.PageSize;
+
+            var total = await query.CountAsync();
+            var items = await query
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
+
+            return new PageModel<TeamUserModel>
+            {
+                Page = model.Page,
+                PageSize = model.PageSize,
+                Total = total,
+                Items = items
+            };
+        }
+
         public async Task<TeamUserModel> GetTeamUser(Guid teamId, Guid userId)
         {
             var item = await _context.TeamsUsers
@@ -79,13 +116,13 @@ namespace Squadio.DAL.Repository.TeamsUsers.Implementation
             return item;
         }
 
-        public async Task AddTeamUser(Guid teamId, Guid userId, UserStatus userStatus)
+        public async Task AddTeamUser(Guid teamId, Guid userId, MembershipStatus membershipStatus)
         {
             var item = new TeamUserModel
             {
                 TeamId = teamId,
                 UserId = userId,
-                Status = userStatus,
+                Status = membershipStatus,
                 CreatedDate = DateTime.UtcNow
             };
             _context.TeamsUsers.Add(item);
@@ -116,13 +153,13 @@ namespace Squadio.DAL.Repository.TeamsUsers.Implementation
             await _context.SaveChangesAsync();
         }
 
-        public async Task AddRangeTeamUser(Guid teamId, IEnumerable<Guid> userIds, UserStatus userStatus)
+        public async Task AddRangeTeamUser(Guid teamId, IEnumerable<Guid> userIds, MembershipStatus membershipStatus)
         {
             var items = userIds.Select(userId => new TeamUserModel
                 {
                     TeamId = teamId, 
                     UserId = userId, 
-                    Status = userStatus, 
+                    Status = membershipStatus, 
                     CreatedDate = DateTime.UtcNow
                 })
                 .ToList();
@@ -131,12 +168,12 @@ namespace Squadio.DAL.Repository.TeamsUsers.Implementation
             await _context.SaveChangesAsync();
         }
 
-        public async Task ChangeStatusTeamUser(Guid teamId, Guid userId, UserStatus newUserStatus)
+        public async Task ChangeStatusTeamUser(Guid teamId, Guid userId, MembershipStatus newMembershipStatus)
         {
             var item = await _context.TeamsUsers
                 .Where(x => x.TeamId == teamId && x.UserId == userId)
                 .FirstOrDefaultAsync();
-            item.Status = newUserStatus;
+            item.Status = newMembershipStatus;
             _context.TeamsUsers.Update(item);
             await _context.SaveChangesAsync();
         }

@@ -97,8 +97,8 @@ namespace Squadio.BLL.Providers.Admins.Implementation
                     companyId: company.Id,
                     statuses: new[]
                     {
-                        UserStatus.SuperAdmin, 
-                        UserStatus.Admin
+                        MembershipStatus.SuperAdmin, 
+                        MembershipStatus.Admin
                     });
                 var admins = page.Items;
                 resultDataItems.Add(new CompanyListDTO
@@ -137,8 +137,8 @@ namespace Squadio.BLL.Providers.Admins.Implementation
                 companyId: companyId,
                 statuses: new[]
                 {
-                    UserStatus.SuperAdmin,
-                    UserStatus.Admin
+                    MembershipStatus.SuperAdmin,
+                    MembershipStatus.Admin
                 });
             var admins = page.Items;
             companyDetailDTO.UsersCount = await _companiesUsersRepository.GetCompanyUsersCount(companyId);

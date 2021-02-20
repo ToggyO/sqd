@@ -33,7 +33,7 @@ namespace Squadio.DAL.Repository.SignUp.Implementation
             return item;
         }
 
-        public async Task<UserRegistrationStepModel> SetRegistrationStep(Guid userId, RegistrationStep step, UserStatus? status = null)
+        public async Task<UserRegistrationStepModel> SetRegistrationStep(Guid userId, RegistrationStep step, MembershipStatus? status = null)
         {
             var item = await _context.UsersRegistrationStep
                 .Where(x => x.UserId == userId)

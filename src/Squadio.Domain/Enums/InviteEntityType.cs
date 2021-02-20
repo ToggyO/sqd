@@ -1,6 +1,6 @@
 ﻿namespace Squadio.Domain.Enums
 {
-    public enum EntityType
+    public enum InviteEntityType
     {
         Company = 1,
         Team = 2,

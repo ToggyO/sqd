@@ -3,10 +3,12 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Squadio.BLL.Providers.Companies;
 using Squadio.BLL.Services.Companies;
+using Squadio.BLL.Services.Membership;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Companies;
+using Squadio.DTO.Invites;
 using Squadio.DTO.Users;
 
 namespace Squadio.API.Handlers.Companies.Implementation
@@ -15,12 +17,15 @@ namespace Squadio.API.Handlers.Companies.Implementation
     {
         private readonly ICompaniesProvider _provider;
         private readonly ICompaniesService _service;
+        private readonly IMembershipService _membershipService;
         
         public CompaniesHandler(ICompaniesProvider provider
-            , ICompaniesService service)
+            , ICompaniesService service
+            , IMembershipService membershipService)
         {
             _provider = provider;
             _service = service;
+            _membershipService = membershipService;
         }
 
         public async Task<Response<PageModel<CompanyDTO>>> GetCompanies(PageModel model)
@@ -55,7 +60,13 @@ namespace Squadio.API.Handlers.Companies.Implementation
 
         public async Task<Response> DeleteCompanyUser(Guid companyId, Guid userId, ClaimsPrincipal claims)
         {
-            var result = await _service.DeleteUserFromCompany(companyId, userId, claims.GetUserId());
+            var result = await _membershipService.DeleteUserFromCompany(companyId, userId, claims.GetUserId());
+            return result;
+        }
+
+        public async Task<Response> InviteCompanyUsers(Guid companyId, CreateInvitesDTO dto, ClaimsPrincipal claims)
+        {
+            var result = await _membershipService.InviteUsersToCompany(companyId, claims.GetUserId(), dto);
             return result;
         }
     }

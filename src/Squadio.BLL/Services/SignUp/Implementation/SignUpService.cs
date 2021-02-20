@@ -1,23 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Google.Apis.Auth;
 using Mapper;
+using Microsoft.Extensions.Logging;
 using Squadio.BLL.Providers.Companies;
-using Squadio.BLL.Providers.Invites;
+using Squadio.BLL.Providers.Projects;
 using Squadio.BLL.Providers.Teams;
 using Squadio.BLL.Services.Companies;
 using Squadio.BLL.Services.ConfirmEmail;
 using Squadio.BLL.Services.Invites;
 using Squadio.BLL.Services.Projects;
+using Squadio.BLL.Services.Rabbit;
 using Squadio.BLL.Services.Teams;
 using Squadio.BLL.Services.Users;
+using Squadio.Common.Models.Email;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
+using Squadio.DAL.Repository.Invites;
 using Squadio.DAL.Repository.SignUp;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Enums;
+using Squadio.Domain.Models.Invites;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Companies;
 using Squadio.DTO.Projects;
@@ -33,54 +39,63 @@ namespace Squadio.BLL.Services.SignUp.Implementation
         private readonly ISignUpRepository _repository;
         private readonly IUsersRepository _usersRepository;
         //private readonly IOptions<GoogleSettings> _googleSettings;
-        private readonly IInvitesProvider _invitesProvider;
-        private readonly IInvitesService _invitesService;
+        private readonly IInvitesRepository _invitesRepository;
         private readonly IUsersService _usersService;
         private readonly ICompaniesService _companiesService;
         private readonly ICompaniesProvider _companiesProvider;
         private readonly ITeamsService _teamsService;
         private readonly ITeamsProvider _teamsProvider;
         private readonly IProjectsService _projectsService;
+        private readonly IProjectsProvider _projectsProvider;
         private readonly IConfirmEmailService _confirmEmailService;
+        private readonly IInvitesService _invitesService;
+        private readonly IRabbitService _rabbitService;
+        private readonly ILogger<SignUpService> _logger;
         private readonly IMapper _mapper;
 
         public SignUpService(ISignUpRepository repository
             , IUsersRepository usersRepository
             //, IOptions<GoogleSettings> googleSettings
-            , IInvitesProvider invitesProvider
-            , IInvitesService invitesService
+            , IInvitesRepository invitesRepository
             , IUsersService usersService
             , ICompaniesService companiesService
             , ICompaniesProvider companiesProvider
             , ITeamsService teamsService
             , ITeamsProvider teamsProvider
             , IProjectsService projectsService
+            , IProjectsProvider projectsProvider
             , IConfirmEmailService confirmEmailService
+            , IInvitesService invitesService
+            , IRabbitService rabbitService
+            , ILogger<SignUpService> logger
             , IMapper mapper
         )
         {
             _repository = repository;
             _usersRepository = usersRepository;
             //_googleSettings = googleSettings;
-            _invitesProvider = invitesProvider;
-            _invitesService = invitesService;
+            _invitesRepository = invitesRepository;
             _usersService = usersService;
             _companiesService = companiesService;
             _companiesProvider = companiesProvider;
             _teamsService = teamsService;
             _teamsProvider = teamsProvider;
             _projectsService = projectsService;
+            _projectsProvider = projectsProvider;
             _confirmEmailService = confirmEmailService;
+            _invitesService = invitesService;
+            _rabbitService = rabbitService;
+            _logger = logger;
             _mapper = mapper;
         }
 
         public async Task<Response<UserDTO>> SignUpMemberEmail(SignUpMemberDTO dto)
         {
-            var inviteResponse = await _invitesProvider.GetInviteByCode(dto.InviteCode);
+            var inviteResponse = await GetInviteByCode(dto.InviteCode);
 
             if (!inviteResponse.IsSuccess 
                 || inviteResponse.Data?.Code != dto.InviteCode 
-                || inviteResponse.Data?.Activated == true)
+                || inviteResponse.Data?.IsActivated == true)
             {
                 return new SecurityErrorResponse<UserDTO>(new []
                 {
@@ -146,11 +161,11 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 });
             }
             
-            var inviteResponse = await _invitesProvider.GetInviteByCode(dto.InviteCode);
+            var inviteResponse = await GetInviteByCode(dto.InviteCode);
 
             if (!inviteResponse.IsSuccess 
                 || inviteResponse.Data?.Code != dto.InviteCode 
-                || inviteResponse.Data?.Activated == true)
+                || inviteResponse.Data?.IsActivated == true)
             {
                 return new SecurityErrorResponse<UserDTO>(new []
                 {
@@ -199,7 +214,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
             {
                 Email = email,
                 Step = RegistrationStep.New,
-                Status = UserStatus.Admin,
+                MembershipStatus = MembershipStatus.Admin,
                 SignUpBy = SignUpType.Email
             };
 
@@ -276,7 +291,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 Email = infoFromGoogleToken.Email,
                 Name = infoFromGoogleToken.Name,
                 Step = RegistrationStep.EmailConfirmed,
-                Status = UserStatus.Admin,
+                MembershipStatus = MembershipStatus.Admin,
                 SignUpBy = SignUpType.Google
             };
 
@@ -361,9 +376,9 @@ namespace Squadio.BLL.Services.SignUp.Implementation
 
             switch (step.Status)
             {
-                case UserStatus.Admin:
+                case MembershipStatus.Admin:
                     return await SignUpUsernameAdmin(id, updateDTO);
-                case UserStatus.Member:
+                case MembershipStatus.Member:
                     return await SignUpUsernameMember(id, updateDTO);
                 default:
                     return new BusinessConflictErrorResponse<SignUpStepDTO<UserDTO>>(new Error
@@ -383,7 +398,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 return stepValidate;
             }
 
-            if (step.Status != UserStatus.Admin)
+            if (step.Status != MembershipStatus.Admin)
             {
                 return new PermissionDeniedErrorResponse<SignUpStepDTO<CompanyDTO>>(new Error
                 {
@@ -419,7 +434,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 return stepValidate;
             }
 
-            if (step.Status != UserStatus.Admin)
+            if (step.Status != MembershipStatus.Admin)
             {
                 return new PermissionDeniedErrorResponse<SignUpStepDTO<TeamDTO>>(new Error
                 {
@@ -478,7 +493,7 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 return stepValidate;
             }
 
-            if (step.Status != UserStatus.Admin)
+            if (step.Status != MembershipStatus.Admin)
             {
                 return new PermissionDeniedErrorResponse<SignUpStepDTO<ProjectDTO>>(new Error
                 {
@@ -536,11 +551,15 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                 return stepValidate;
             }
 
-            if (step.Status == UserStatus.Admin)
+            if (step.Status == MembershipStatus.Admin)
             {
-                var sendResult = await _invitesService.SendSignUpInvites(userId);
+                var sendResult = await SendSignUpInvites(userId);
                 if (!sendResult.IsSuccess)
                     return sendResult as Response<SignUpStepDTO>;
+            }
+            else
+            {
+                await _invitesService.ActivateInvites(step.User.Email);
             }
 
             step = await _repository.SetRegistrationStep(userId, RegistrationStep.Done);
@@ -678,6 +697,121 @@ namespace Squadio.BLL.Services.SignUp.Implementation
                     RegistrationStep = _mapper.Map<UserRegistrationStepModel, UserRegistrationStepDTO>(result)
                 }
             };
+        }
+        
+        public async Task<Response<InviteModel>> GetInviteByCode(string code)
+        {
+            var item = await _invitesRepository.GetInviteByCode(code);
+            if (item == null)
+            {
+                return new SecurityErrorResponse<InviteModel>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound
+                    }
+                });
+            }
+
+            return new Response<InviteModel>
+            {
+                Data = item
+            };
+        }
+        
+        private async Task<Response> SendSignUpInvites(Guid userId)
+        {
+            var pageModel = new PageModel {Page = 1, PageSize = 1};
+            
+            var userCompany = (await _companiesProvider.GetUserCompanies(userId, pageModel))
+                .Data
+                .Items
+                .FirstOrDefault();
+
+            if (userCompany == null)
+            {
+                return new BusinessConflictErrorResponse(new[]
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound,
+                        Field = ErrorFields.Company.Id
+                    },
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound,
+                        Field = ErrorFields.User.Id
+                    }
+                });
+            }
+
+            var userTeam = (await _teamsProvider.GetUserTeams(userId, pageModel, userCompany.CompanyId))
+                .Data
+                .Items
+                .FirstOrDefault();
+
+            if (userTeam == null)
+            {
+                return new BusinessConflictErrorResponse(new[]
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound,
+                        Field = ErrorFields.Team.Id
+                    },
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound,
+                        Field = ErrorFields.User.Id
+                    }
+                });
+            }
+
+            var userProject = (await _projectsProvider.GetUserProjects(userId, pageModel, teamId: userTeam.TeamId))
+                .Data
+                .Items
+                .FirstOrDefault();
+
+            if (userProject == null)
+            {
+                return new BusinessConflictErrorResponse(new[]
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound,
+                        Field = ErrorFields.Project.Id
+                    },
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound,
+                        Field = ErrorFields.User.Id
+                    }
+                });
+            }
+
+            var allInvites = (await _invitesRepository.GetInvites(
+                authorId: userId, 
+                activated: false,
+                isSent: false)).ToList();
+
+            var emailsDistinct = allInvites.Select(x => x.Email).Distinct().ToList();
+
+            if (emailsDistinct.Count == 0)
+                return new Response();
+
+            foreach (var email in emailsDistinct)
+            {
+                await _invitesService.SendInvite(email);
+            }
+
+            return new Response();
         }
     }
 }

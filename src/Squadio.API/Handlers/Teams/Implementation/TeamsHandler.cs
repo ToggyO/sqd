@@ -2,10 +2,12 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Squadio.BLL.Providers.Teams;
+using Squadio.BLL.Services.Membership;
 using Squadio.BLL.Services.Teams;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
+using Squadio.DTO.Invites;
 using Squadio.DTO.Teams;
 using Squadio.DTO.Users;
 
@@ -15,11 +17,14 @@ namespace Squadio.API.Handlers.Teams.Implementation
     {
         private readonly ITeamsProvider _provider;
         private readonly ITeamsService _service;
+        private readonly IMembershipService _membershipService;
         public TeamsHandler(ITeamsProvider provider
-            , ITeamsService service)
+            , ITeamsService service
+            , IMembershipService membershipService)
         {
             _provider = provider;
             _service = service;
+            _membershipService = membershipService;
         }
 
         public async Task<Response<PageModel<UserWithRoleDTO>>> GetTeamUsers(Guid teamId, PageModel model)
@@ -60,13 +65,19 @@ namespace Squadio.API.Handlers.Teams.Implementation
 
         public async Task<Response> DeleteTeamUser(Guid teamId, Guid userId, ClaimsPrincipal claims)
         {
-            var result = await _service.DeleteUserFromTeam(teamId, userId, claims.GetUserId());
+            var result = await _membershipService.DeleteUserFromTeam(teamId, userId, claims.GetUserId());
             return result;
         }
 
         public async Task<Response> LeaveTeam(Guid teamId, ClaimsPrincipal claims)
         {
-            var result = await _service.LeaveTeam(teamId, claims.GetUserId());
+            var result = await _membershipService.DeleteUserFromTeam(teamId, claims.GetUserId(), claims.GetUserId(), false);
+            return result;
+        }
+
+        public async Task<Response> InviteTeamUsers(Guid teamId, CreateInvitesDTO dto, ClaimsPrincipal claims)
+        {
+            var result = await _membershipService.InviteUsersToTeam(teamId, claims.GetUserId(), dto);
             return result;
         }
     }

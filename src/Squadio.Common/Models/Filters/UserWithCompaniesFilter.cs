@@ -6,6 +6,6 @@ namespace Squadio.Common.Models.Filters
 {
     public class UserWithCompaniesFilter
     {
-        public UserStatus? Status { get; set; } = null;
+        public MembershipStatus? Status { get; set; } = null;
     }
 }

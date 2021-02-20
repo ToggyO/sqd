@@ -23,7 +23,7 @@ namespace Squadio.DAL.Repository.ProjectsUsers.Implementation
             , Guid? companyId = null
             , Guid? teamId = null
             , Guid? projectId = null
-            , IEnumerable<UserStatus> statuses = null)
+            , IEnumerable<MembershipStatus> statuses = null)
         {
             IQueryable<ProjectUserModel> query = _context.ProjectsUsers
                     .Include(x => x.User).ThenInclude(x => x.Avatar)
@@ -74,6 +74,43 @@ namespace Squadio.DAL.Repository.ProjectsUsers.Implementation
             return result;
         }
 
+        public async Task<PageModel<ProjectUserModel>> GetProjectUsersByEmails(PageModel model, Guid projectId, IEnumerable<string> emails)
+        {
+            
+            IQueryable<ProjectUserModel> query = _context.ProjectsUsers
+                .Include(x => x.User).ThenInclude(x => x.Avatar)
+                .Include(x => x.Project)
+                .Where(x => x.ProjectId == projectId);
+            
+            if (emails != null)
+            {
+                var userEmails = emails.ToList();
+                if (userEmails?.Any() == true)
+                {
+                    query = query.Where(x => userEmails.Contains(x.User.Email));
+                }
+            }
+            
+            query = query.OrderBy(x => x.User.Email);
+            
+            var skip = (model.Page - 1) * model.PageSize;
+            var take = model.PageSize;
+
+            var total = await query.CountAsync();
+            var items = await query
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
+
+            return new PageModel<ProjectUserModel>
+            {
+                Page = model.Page,
+                PageSize = model.PageSize,
+                Total = total,
+                Items = items
+            };
+        }
+
         public async Task<ProjectUserModel> GetProjectUser(Guid projectId, Guid userId)
         {
             var item = await _context.ProjectsUsers
@@ -94,13 +131,13 @@ namespace Squadio.DAL.Repository.ProjectsUsers.Implementation
             return item;
         }
 
-        public async Task AddProjectUser(Guid projectId, Guid userId, UserStatus userStatus)
+        public async Task AddProjectUser(Guid projectId, Guid userId, MembershipStatus membershipStatus)
         {
             var item = new ProjectUserModel
             {
                 ProjectId = projectId,
                 UserId = userId,
-                Status = userStatus,
+                Status = membershipStatus,
                 CreatedDate = DateTime.UtcNow
             };
             _context.ProjectsUsers.Add(item);
@@ -131,13 +168,13 @@ namespace Squadio.DAL.Repository.ProjectsUsers.Implementation
             await _context.SaveChangesAsync();
         }
 
-        public async Task AddRangeProjectUser(Guid projectId, IEnumerable<Guid> userIds, UserStatus userStatus)
+        public async Task AddRangeProjectUser(Guid projectId, IEnumerable<Guid> userIds, MembershipStatus membershipStatus)
         {
             var items = userIds.Select(userId => new ProjectUserModel
                 {
                     ProjectId = projectId, 
                     UserId = userId, 
-                    Status = userStatus, 
+                    Status = membershipStatus, 
                     CreatedDate = DateTime.UtcNow
                 })
                 .ToList();
@@ -146,12 +183,12 @@ namespace Squadio.DAL.Repository.ProjectsUsers.Implementation
             await _context.SaveChangesAsync();
         }
 
-        public async Task ChangeStatusProjectUser(Guid projectId, Guid userId, UserStatus newUserStatus)
+        public async Task ChangeStatusProjectUser(Guid projectId, Guid userId, MembershipStatus newMembershipStatus)
         {
             var item = await _context.ProjectsUsers
                 .Where(x => x.ProjectId == projectId && x.UserId == userId)
                 .FirstOrDefaultAsync();
-            item.Status = newUserStatus;
+            item.Status = newMembershipStatus;
             _context.ProjectsUsers.Update(item);
             await _context.SaveChangesAsync();
         }

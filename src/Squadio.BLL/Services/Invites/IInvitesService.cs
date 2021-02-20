@@ -1,19 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Squadio.Common.Models.Responses;
 using Squadio.Domain.Enums;
-using Squadio.DTO.Invites;
 
 namespace Squadio.BLL.Services.Invites
 {
     public interface IInvitesService
     {
-        Task<Response> InviteToCompany(Guid companyId, Guid authorId, CreateInvitesDTO dto, bool sendInvites = true);
-        Task<Response> InviteToTeam(Guid teamId, Guid authorId, CreateInvitesDTO dto, bool sendInvites = true);
-        Task<Response> InviteToProject(Guid projectId, Guid authorId, CreateInvitesDTO dto, bool sendInvites = true);
-        Task<Response> CancelInvite(Guid entityId, Guid authorId, CancelInvitesDTO dto, EntityType entityType);
-        Task<Response> AcceptInvite(Guid userId, string code, EntityType entityType);
-        Task<Response> SendSignUpInvites(Guid userId);
+        Task<Response> CreateInvite(string email, string code, Guid entityId, InviteEntityType inviteEntityType, Guid authorId);
+        Task<Response> ActivateInvites(string email);
+        Task<Response> SendInvite(string email);
     }
 }

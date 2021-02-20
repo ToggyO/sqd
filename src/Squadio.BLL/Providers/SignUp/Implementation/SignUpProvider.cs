@@ -4,35 +4,35 @@ using System.Linq;
 using System.Threading.Tasks;
 using Mapper;
 using Squadio.BLL.Providers.Companies;
-using Squadio.BLL.Providers.Invites;
 using Squadio.BLL.Providers.Teams;
 using Squadio.Common.Models.Errors;
-using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
+using Squadio.DAL.Repository.Invites;
 using Squadio.DAL.Repository.SignUp;
 using Squadio.Domain.Enums;
+using Squadio.Domain.Models.Invites;
 using Squadio.Domain.Models.Users;
+using Squadio.DTO.Invites;
 using Squadio.DTO.SignUp;
-using Squadio.DTO.Users;
 
 namespace Squadio.BLL.Providers.SignUp.Implementation
 {
     public class SignUpProvider : ISignUpProvider
     {
         private readonly ISignUpRepository _repository;
-        private readonly IInvitesProvider _invitesProvider;
+        private readonly IInvitesRepository _invitesRepository;
         private readonly ICompaniesProvider _companiesProvider;
         private readonly ITeamsProvider _teamsProvider;
         private readonly IMapper _mapper;
         public SignUpProvider(ISignUpRepository repository
-            , IInvitesProvider invitesProvider
+            , IInvitesRepository invitesRepository
             , ICompaniesProvider companiesProvider
             , ITeamsProvider teamsProvider
             , IMapper mapper)
         {
             _repository = repository;
-            _invitesProvider = invitesProvider;
+            _invitesRepository = invitesRepository;
             _companiesProvider = companiesProvider;
             _teamsProvider = teamsProvider;
             _mapper = mapper;
@@ -77,7 +77,7 @@ namespace Squadio.BLL.Providers.SignUp.Implementation
                 });
             }
 
-            if (step.Status != UserStatus.Admin)
+            if (step.Status != MembershipStatus.Admin)
             {
                 return new PermissionDeniedErrorResponse<IEnumerable<string>>(new Error
                 {
@@ -118,10 +118,21 @@ namespace Squadio.BLL.Providers.SignUp.Implementation
                 });
             }
             
-            var inviteResponse = await _invitesProvider.GetInvitesByEntityId(team.Id);
+            var inviteResponse = await GetInvitesByEntityId(team.Id);
             return new Response<IEnumerable<string>>
             {
                 Data = inviteResponse.Data.Select(x => x.Email).Distinct()
+            };
+        }
+        
+        private async Task<Response<IEnumerable<InviteDTO>>> GetInvitesByEntityId(Guid entityId, bool? activated = null)
+        {
+            var invites = await _invitesRepository.GetInvites(
+                entityId: entityId, 
+                activated: activated);
+            return new Response<IEnumerable<InviteDTO>>
+            {
+                Data = invites.Select(x => _mapper.Map<InviteModel, InviteDTO>(x))
             };
         }
     }

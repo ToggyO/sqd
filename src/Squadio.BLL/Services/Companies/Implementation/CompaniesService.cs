@@ -1,14 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Mapper;
+using Microsoft.Extensions.Logging;
+using Squadio.BLL.Providers.Codes;
+using Squadio.BLL.Providers.Users;
+using Squadio.BLL.Services.Invites;
+using Squadio.BLL.Services.Membership;
+using Squadio.BLL.Services.Rabbit;
 using Squadio.BLL.Services.Teams;
+using Squadio.BLL.Services.Users;
+using Squadio.Common.Models.Email;
 using Squadio.Common.Models.Errors;
+using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Companies;
 using Squadio.DAL.Repository.CompaniesUsers;
+using Squadio.DAL.Repository.Invites;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Companies;
+using Squadio.Domain.Models.Invites;
 using Squadio.DTO.Companies;
+using Squadio.DTO.Invites;
+using Squadio.DTO.Users;
 
 namespace Squadio.BLL.Services.Companies.Implementation
 {
@@ -16,17 +31,20 @@ namespace Squadio.BLL.Services.Companies.Implementation
     {
         private readonly ICompaniesRepository _repository;
         private readonly ICompaniesUsersRepository _companiesUsersRepository;
-        private readonly ITeamsService _teamsService;
+        private readonly IMembershipService _membershipService;
         private readonly IMapper _mapper;
+        private readonly ILogger<CompaniesService> _logger;
         public CompaniesService(ICompaniesRepository repository
             , ICompaniesUsersRepository companiesUsersRepository
-            , ITeamsService teamsService
-            , IMapper mapper)
+            , IMembershipService membershipService
+            , IMapper mapper
+            , ILogger<CompaniesService> logger)
         {
             _repository = repository;
             _companiesUsersRepository = companiesUsersRepository;
-            _teamsService = teamsService;
+            _membershipService = membershipService;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<Response<CompanyDTO>> Update(Guid companyId, Guid userId, CompanyUpdateDTO dto)
@@ -46,7 +64,7 @@ namespace Squadio.BLL.Services.Companies.Implementation
                 });
             }
 
-            if (companyUser.Status != UserStatus.SuperAdmin)
+            if (companyUser.Status != MembershipStatus.SuperAdmin)
             {
                 return new PermissionDeniedErrorResponse<CompanyDTO>(new []
                 {
@@ -86,28 +104,6 @@ namespace Squadio.BLL.Services.Companies.Implementation
             };
         }
 
-        public async Task<Response> DeleteUserFromCompany(Guid companyId, Guid removeUserId, Guid currentUserId)
-        {
-            var currentCompanyUser = await _companiesUsersRepository.GetCompanyUser(companyId, currentUserId);
-
-            if (currentCompanyUser == null || currentCompanyUser?.Status != UserStatus.SuperAdmin)
-            {
-                return new PermissionDeniedErrorResponse(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Security.PermissionDenied,
-                        Message = ErrorMessages.Security.PermissionDenied
-                    }
-                }); 
-            }
-
-            await _companiesUsersRepository.DeleteCompanyUser(companyId, removeUserId);
-            await _teamsService.DeleteUserFromTeamsByCompanyId(companyId, removeUserId);
-            
-            return new Response();
-        }
-
         public async Task<Response<CompanyDTO>> Create(Guid userId, CompanyCreateDTO dto)
         {
             var entityCompany = new CompanyModel
@@ -120,7 +116,7 @@ namespace Squadio.BLL.Services.Companies.Implementation
             
             entityCompany = await _repository.Create(entityCompany);
 
-            await _companiesUsersRepository.AddCompanyUser(entityCompany.Id, userId, UserStatus.SuperAdmin);
+            await _companiesUsersRepository.AddCompanyUser(entityCompany.Id, userId, MembershipStatus.SuperAdmin);
             
             var result = _mapper.Map<CompanyModel, CompanyDTO>(entityCompany);
             

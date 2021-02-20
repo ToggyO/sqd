@@ -9,8 +9,6 @@ using Squadio.BLL.Providers.Codes;
 using Squadio.BLL.Providers.Codes.Implementation;
 using Squadio.BLL.Providers.Companies;
 using Squadio.BLL.Providers.Companies.Implementation;
-using Squadio.BLL.Providers.Invites;
-using Squadio.BLL.Providers.Invites.Implementation;
 using Squadio.BLL.Providers.Projects;
 using Squadio.BLL.Providers.Projects.Implementation;
 using Squadio.BLL.Providers.Resources;
@@ -33,6 +31,8 @@ using Squadio.BLL.Services.Files;
 using Squadio.BLL.Services.Files.Implementation;
 using Squadio.BLL.Services.Invites;
 using Squadio.BLL.Services.Invites.Implementation;
+using Squadio.BLL.Services.Membership;
+using Squadio.BLL.Services.Membership.Implementation;
 using Squadio.BLL.Services.Projects;
 using Squadio.BLL.Services.Projects.Implementation;
 using Squadio.BLL.Services.Rabbit;
@@ -60,7 +60,7 @@ namespace Squadio.BLL
             DAL.DependencyInjectionModule.Load(services);
             DTO.DependencyInjectionModule.Load(services);
 
-            LoadEmailServices(services);
+            LoadRabbitServices(services);
             
             services.AddTransient<IPasswordService, PasswordService>();
             
@@ -75,6 +75,10 @@ namespace Squadio.BLL
             
             services.Add<ITokensService, TokensService>(serviceLifetime);
             
+            services.Add<IInvitesService, InvitesService>(serviceLifetime);
+            
+            services.Add<IMembershipService, MembershipService>(serviceLifetime);
+            
             services.Add<ICompaniesProvider, CompaniesProvider>(serviceLifetime);
             services.Add<ICompaniesService, CompaniesService>(serviceLifetime);
             
@@ -83,9 +87,6 @@ namespace Squadio.BLL
             
             services.Add<IProjectsProvider, ProjectsProvider>(serviceLifetime);
             services.Add<IProjectsService, ProjectsService>(serviceLifetime);
-            
-            services.Add<IInvitesProvider, InvitesProvider>(serviceLifetime);
-            services.Add<IInvitesService, InvitesService>(serviceLifetime);
             
             services.Add<IAdminsProvider, AdminsProvider>(serviceLifetime);
             services.Add<IAdminsService, AdminsService>(serviceLifetime);
@@ -101,7 +102,7 @@ namespace Squadio.BLL
             services.AddMapper();
         }
         
-        private static void LoadEmailServices(IServiceCollection services)
+        private static void LoadRabbitServices(IServiceCollection services)
         {
             services.AddScoped<IRabbitPublisher, RabbitPublisher>();
             services.AddScoped<IRabbitService, RabbitService>();

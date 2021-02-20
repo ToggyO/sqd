@@ -19,7 +19,7 @@ namespace Squadio.Domain.Models.Users
         public RoleModel Role { get; set; }
         public UIThemeType UITheme { get; set; }
         public SignUpType SignUpType { get; set; }
-        
+        public UserStatus Status { get; set; }
         public Guid? AvatarId { get; set; }
         public ResourceModel Avatar { get; set; }
     }

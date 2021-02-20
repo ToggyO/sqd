@@ -2,9 +2,9 @@
 {
     public enum EntityType
     {
-        User,
-        Company,
-        Team,
-        Project
+        Company = 1,
+        Team = 2,
+        Project = 3,
+        User = 4
     }
 }
