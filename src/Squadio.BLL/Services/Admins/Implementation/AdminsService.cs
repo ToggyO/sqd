@@ -54,7 +54,7 @@ namespace Squadio.BLL.Services.Admins.Implementation
         public async Task<Response<UserDTO>> ResetPassword(string code, string password)
         {
             var userPasswordRequest = await _changePasswordRepository.GetRequestByCode(code);
-            if (userPasswordRequest == null || userPasswordRequest?.IsActivated == true)
+            if (userPasswordRequest == null || userPasswordRequest?.IsDeleted == true)
             {
                 return new BusinessConflictErrorResponse<UserDTO>(new []
                 {

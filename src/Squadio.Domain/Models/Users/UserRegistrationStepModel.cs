@@ -3,13 +3,11 @@ using Squadio.Domain.Enums;
 
 namespace Squadio.Domain.Models.Users
 {
-    public class UserRegistrationStepModel
+    public class UserRegistrationStepModel : BaseModel
     {
-        public Guid Id { get; set; }
         public Guid UserId { get; set; }
         public UserModel User { get; set; }
         public RegistrationStep Step { get; set; }
-        public DateTime UpdatedDate { get; set; }
         public MembershipStatus Status { get; set; }
     }
 }

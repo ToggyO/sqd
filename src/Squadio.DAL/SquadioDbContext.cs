@@ -192,7 +192,7 @@ namespace Squadio.DAL
                     .WithMany()
                     .OnDelete(DeleteBehavior.Cascade);
                 item.Property(x => x.IsWithResolution)
-                    .HasDefaultValue(true);
+                    .IsRequired();
             });
         }
     }

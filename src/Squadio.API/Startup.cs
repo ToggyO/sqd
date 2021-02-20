@@ -89,6 +89,8 @@ namespace Squadio.API
                 DB_NAME = Configuration.GetSection("DB_NAME").Value,
                 DB_PASSWORD = Configuration.GetSection("DB_PASSWORD").Value
             };
+            
+            Console.WriteLine($"Connection string: {dbSettings?.PostgresConnectionString}");
 
             services.Configure<GoogleSettings>(Configuration.GetSection("GoogleOAuth"));
             services.Configure<RabbitConnectionModel>(Configuration.GetSection("RabbitConnection"));

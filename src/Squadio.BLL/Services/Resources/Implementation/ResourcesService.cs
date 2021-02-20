@@ -114,7 +114,7 @@ namespace Squadio.BLL.Services.Resources.Implementation
                 Group = group,
                 FileName = fileName,
                 ContentType = dto.ContentType,
-                CreateDate = DateTime.UtcNow,
+                CreatedDate = DateTime.UtcNow,
                 IsWithResolution = false
             };
 
@@ -137,7 +137,7 @@ namespace Squadio.BLL.Services.Resources.Implementation
                 Group = group,
                 FileName = fileName,
                 ContentType = dto.ContentType,
-                CreateDate = DateTime.UtcNow,
+                CreatedDate = DateTime.UtcNow,
                 IsWithResolution = true
             };
 

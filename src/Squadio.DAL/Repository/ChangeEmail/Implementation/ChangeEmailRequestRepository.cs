@@ -21,7 +21,7 @@ namespace Squadio.DAL.Repository.ChangeEmail.Implementation
                 UserId = userId,
                 Code = code,
                 CreatedDate = DateTime.UtcNow,
-                IsActivated = false,
+                IsDeleted = false,
                 NewEmail = newEmail
             };
             await _context.UserChangeEmailRequests.AddAsync(newRequest);
@@ -61,12 +61,12 @@ namespace Squadio.DAL.Repository.ChangeEmail.Implementation
         {
             var items = _context.UserChangeEmailRequests
                 .Where(x => x.UserId == userId
-                            && !x.IsActivated);
+                            && !x.IsDeleted);
             
             await items.ForEachAsync(x =>
             {
-                x.ActivatedDate = DateTime.UtcNow;
-                x.IsActivated = true;
+                x.UpdatedDate = DateTime.UtcNow;
+                x.IsDeleted = true;
             });
             
             _context.UserChangeEmailRequests.UpdateRange(items);

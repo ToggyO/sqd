@@ -20,7 +20,7 @@ namespace Squadio.DAL.Repository.ChangePassword.Implementation
                 .Include(x => x.User)
                 .OrderByDescending(x => x.CreatedDate)
                 .Where(x => x.Code.ToUpper() == code.ToUpper() &&
-                            x.IsActivated == false)
+                            x.IsDeleted == false)
                 .FirstOrDefaultAsync();
             return item;
         }
@@ -40,7 +40,7 @@ namespace Squadio.DAL.Repository.ChangePassword.Implementation
                 UserId = userId,
                 Code = code,
                 CreatedDate = DateTime.UtcNow,
-                IsActivated = false
+                IsDeleted = false
             };
             await _context.UserRestorePasswordRequests.AddAsync(newRequest);
             await _context.SaveChangesAsync();
@@ -51,12 +51,12 @@ namespace Squadio.DAL.Repository.ChangePassword.Implementation
         {
             var items = _context.UserRestorePasswordRequests
                 .Where(x => x.UserId == userId 
-                            && x.IsActivated == false);
+                            && x.IsDeleted == false);
             
             await items.ForEachAsync(x =>
             {
-                x.ActivatedDate = DateTime.UtcNow;
-                x.IsActivated = true;
+                x.UpdatedDate = DateTime.UtcNow;
+                x.IsDeleted = true;
             });
             
             _context.UserRestorePasswordRequests.UpdateRange(items);

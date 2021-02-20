@@ -19,8 +19,8 @@ namespace Squadio.DTO.Users.Settings
             var result = new UserConfirmEmailRequestDTO
             {
                 Id = item.Id,
-                IsActivated = item.IsActivated,
-                ActivatedDate = item.ActivatedDate,
+                IsActivated = item.IsDeleted,
+                ActivatedDate = item.UpdatedDate,
                 Code = item.Code,
                 CreatedDate = item.CreatedDate,
                 UserId = item.UserId

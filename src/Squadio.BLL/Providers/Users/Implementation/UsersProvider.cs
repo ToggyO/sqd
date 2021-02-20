@@ -94,7 +94,7 @@ namespace Squadio.BLL.Providers.Users.Implementation
             // TODO: Check lifetime of request if needed
             
             if (userPasswordRequest == null 
-                || userPasswordRequest?.IsActivated == true)
+                || userPasswordRequest?.IsDeleted == true)
             {
                 return new BusinessConflictErrorResponse(new []
                 {

@@ -34,8 +34,8 @@ namespace Squadio.DAL.Repository.Invites.Implementation
         public async Task<InviteModel> ActivateInvite(Guid inviteId)
         {
             var item = await _context.Invites.FindAsync(inviteId);
-            item.IsActivated = true;
-            item.ActivatedDate = DateTime.UtcNow;
+            item.IsDeleted = true;
+            item.UpdatedDate = DateTime.UtcNow;
             _context.Update(item);
             await _context.SaveChangesAsync();
             return item;
@@ -77,7 +77,7 @@ namespace Squadio.DAL.Repository.Invites.Implementation
             
             if (activated.HasValue)
             {
-                query = query.Where(x => x.IsActivated == activated);
+                query = query.Where(x => x.IsDeleted == activated);
             }
             
             if (isSent.HasValue)
@@ -99,13 +99,13 @@ namespace Squadio.DAL.Repository.Invites.Implementation
         {
             var emailsUpper = emails.Select(s => s.ToUpper());
 
-            var query = _context.Invites.Where(x => x.EntityId == entityId && x.IsActivated == false);
+            var query = _context.Invites.Where(x => x.EntityId == entityId && x.IsDeleted == false);
             query = query.Where(model => emailsUpper.Contains(model.Email.ToUpper()));
             
             await query.ForEachAsync(x =>
             {
-                x.IsActivated = true;
-                x.ActivatedDate = DateTime.UtcNow;
+                x.IsDeleted = true;
+                x.UpdatedDate = DateTime.UtcNow;
             });
             _context.UpdateRange(query);
             await _context.SaveChangesAsync();

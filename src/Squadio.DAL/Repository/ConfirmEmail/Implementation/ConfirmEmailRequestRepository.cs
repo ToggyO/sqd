@@ -21,7 +21,7 @@ namespace Squadio.DAL.Repository.ConfirmEmail.Implementation
                 UserId = userId,
                 Code = code,
                 CreatedDate = DateTime.UtcNow,
-                IsActivated = false
+                IsDeleted = false
             };
             await _context.UserConfirmEmailRequests.AddAsync(newRequest);
             await _context.SaveChangesAsync();
@@ -60,12 +60,12 @@ namespace Squadio.DAL.Repository.ConfirmEmail.Implementation
         {
             var items = _context.UserConfirmEmailRequests
                 .Where(x => x.UserId == userId
-                            && !x.IsActivated);
+                            && !x.IsDeleted);
             
             await items.ForEachAsync(x =>
             {
-                x.ActivatedDate = DateTime.UtcNow;
-                x.IsActivated = true;
+                x.UpdatedDate = DateTime.UtcNow;
+                x.IsDeleted = true;
             });
             
             _context.UserConfirmEmailRequests.UpdateRange(items);

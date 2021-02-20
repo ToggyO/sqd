@@ -50,7 +50,7 @@ namespace Squadio.BLL.Services.Invites.Implementation
             var invite = new InviteModel
             {
                 Email = email,
-                IsActivated = false,
+                IsDeleted = false,
                 IsSent = false,
                 CreatedDate = DateTime.UtcNow,
                 Code = code,

@@ -69,7 +69,7 @@ namespace Squadio.BLL.Services.Users.Implementation
         public async Task<Response<UserDTO>> ResetPassword(string code, string password)
         {
             var userPasswordRequest = await _changePasswordRepository.GetRequestByCode(code);
-            if (userPasswordRequest == null || userPasswordRequest?.IsActivated == true)
+            if (userPasswordRequest == null || userPasswordRequest?.IsDeleted == true)
             {
                 return new BusinessConflictErrorResponse<UserDTO>(new []
                 {
@@ -235,7 +235,7 @@ namespace Squadio.BLL.Services.Users.Implementation
             var user = await _repository.GetById(id);
             var request = await _changeEmailRepository.GetRequest(user.Id, code);
 
-            if (request == null || request?.IsActivated == true)
+            if (request == null || request?.IsDeleted == true)
             {
                 return new PermissionDeniedErrorResponse<UserDTO>(new []
                 {
