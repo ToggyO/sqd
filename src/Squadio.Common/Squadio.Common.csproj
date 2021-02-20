@@ -17,9 +17,6 @@
     <Compile Update="Models\Responses\CustomResponses.cs">
       <DependentUpon>Response.cs</DependentUpon>
     </Compile>
-    <Compile Update="Enums\EntityTypeMapper.cs">
-      <DependentUpon>EntityType.cs</DependentUpon>
-    </Compile>
   </ItemGroup>
 
   <ItemGroup>

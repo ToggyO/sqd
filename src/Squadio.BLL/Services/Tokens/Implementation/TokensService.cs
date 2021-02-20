@@ -1,26 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Security;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Google.Apis.Auth;
 using Magora.Passwords;
 using Mapper;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Squadio.BLL.Factories;
 using Squadio.Common.Enums;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
-using Squadio.Common.Settings;
-using Squadio.DAL.Repository.SignUp;
 using Squadio.DAL.Repository.Users;
-using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Auth;
-using Squadio.DTO.SignUp;
 using Squadio.DTO.Users;  
 
 namespace Squadio.BLL.Services.Tokens.Implementation
@@ -29,16 +21,13 @@ namespace Squadio.BLL.Services.Tokens.Implementation
     {
         private readonly IUsersRepository _usersRepository;
         private readonly IPasswordService _passwordService;
-        private readonly ISignUpRepository _signUpRepository;
         private readonly IMapper _mapper;
         private readonly ITokensFactory _tokenFactory;
 
         private readonly ILogger<TokensService> _logger;
-        //private readonly IOptions<GoogleSettings> _googleSettings;
 
         public TokensService(IUsersRepository usersRepository
             , IPasswordService passwordService
-            , ISignUpRepository signUpRepository
             , IMapper mapper
             , ITokensFactory tokenFactory
             , ILogger<TokensService> logger
@@ -47,7 +36,6 @@ namespace Squadio.BLL.Services.Tokens.Implementation
         {
             _usersRepository = usersRepository;
             _passwordService = passwordService;
-            _signUpRepository = signUpRepository;
             _mapper = mapper;
             _tokenFactory = tokenFactory;
             _logger = logger;
@@ -113,13 +101,10 @@ namespace Squadio.BLL.Services.Tokens.Implementation
 
             var tokenDTO = await _tokenFactory.CreateToken(user);
             var userDTO = _mapper.Map<UserModel, UserDTO>(user);
-            var step = await _signUpRepository.GetRegistrationStepByUserId(user.Id);
-            var stepDTO = _mapper.Map<UserRegistrationStepModel, UserRegistrationStepDTO>(step);
 
             var result = new AuthInfoDTO
             {
                 User = userDTO,
-                RegistrationStep = stepDTO,
                 Token = tokenDTO
             };
 
@@ -232,19 +217,10 @@ namespace Squadio.BLL.Services.Tokens.Implementation
             
             var tokenDTO = await _tokenFactory.CreateToken(user);
             var userDTO = _mapper.Map<UserModel, UserDTO>(user);
-            var step = await _signUpRepository.GetRegistrationStepByUserId(user.Id);
-
-            if (step.Step == RegistrationStep.New)
-            {
-                step = await _signUpRepository.SetRegistrationStep(user.Id, RegistrationStep.EmailConfirmed);
-            }
-            
-            var stepDTO = _mapper.Map<UserRegistrationStepModel, UserRegistrationStepDTO>(step);
 
             var result = new AuthInfoDTO
             {
                 User = userDTO,
-                RegistrationStep = stepDTO,
                 Token = tokenDTO
             };
             

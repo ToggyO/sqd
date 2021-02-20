@@ -1,8 +1,0 @@
-﻿namespace Squadio.DTO.Teams
-{
-    public class TeamUpdateDTO
-    {
-        public string Name { get; set; }
-        public string ColorHex { get; set; }
-    }
-}

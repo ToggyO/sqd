@@ -1,8 +1,7 @@
 using System;
-using System.IO;
-using System.Reflection;
+using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -14,23 +13,21 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.AspNetCore.Mvc.Versioning;
-using Serilog;
 using Squadio.DAL;
 using Squadio.API.Extensions;
 using Squadio.API.Filters;
-using Squadio.BLL.Services.WebSocket;
+using Squadio.BLL.Mapping;
 using Squadio.Common.Models.Rabbit;
 using Squadio.Common.Settings;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace Squadio.API
 {
     public class Startup
     {
         private const string MyAllowSquadioOrigins = "_myAllowSquadioOrigins";
-        private readonly IConfiguration Configuration;
+        private readonly IConfiguration _configuration;
 
         public Startup(IWebHostEnvironment env)
         {
@@ -40,30 +37,23 @@ namespace Squadio.API
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true)
                 .AddEnvironmentVariables();
 
-            Configuration = builder.Build();
+            _configuration = builder.Build();
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
+            ConfigureBaseServices(services, ServiceLifetime.Scoped);
             services.AddCors(options =>
             {
                 options.AddPolicy(MyAllowSquadioOrigins,
                     builder =>
                     {
                         builder.WithOrigins(
-                                "http://localhost:3010",
-                                "http://localhost:5005",
-                                "https://squad.api.magora.work",
-                                "https://squad.magora.work",
-                                "https://squad.web.magora.work",
-                                "http://semicon.magora.work",
-                                "https://semicon.magora.work")
+                                "http://localhost:5010")
                             .AllowAnyHeader()
                             .AllowAnyMethod();
                     });
             });
-
-            services.AddSignalR();
 
             services.AddMvcCore(options =>
                 {
@@ -71,42 +61,14 @@ namespace Squadio.API
                     options.Filters.Add(typeof(StatusCodeFilter));
                 })
                 .AddApiExplorer()
-                .AddFluentValidation(configuration =>
-                    configuration.RegisterValidatorsFromAssemblyContaining<DTO.DependencyInjectionModule>());
-            
-
-            var apiSettings = Configuration.GetSection("AppSettings:APISettings").Get<ApiSettings>();
-
-            services.AddMemoryCache();
-
-            services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
-
-            var dbSettings = new DbSettings
-            {
-                DB_HOST = Configuration.GetSection("DB_HOST").Value,
-                DB_PORT = Configuration.GetSection("DB_PORT").Value,
-                DB_USER = Configuration.GetSection("DB_USER").Value,
-                DB_NAME = Configuration.GetSection("DB_NAME").Value,
-                DB_PASSWORD = Configuration.GetSection("DB_PASSWORD").Value
-            };
-            
-            Console.WriteLine($"Connection string: {dbSettings?.PostgresConnectionString}");
-
-            services.Configure<GoogleSettings>(Configuration.GetSection("GoogleOAuth"));
-            services.Configure<RabbitConnectionModel>(Configuration.GetSection("RabbitConnection"));
-            services.Configure<ApiSettings>(Configuration.GetSection("AppSettings:APISettings"));
-            services.Configure<FileTemplateUrlModel>(Configuration.GetSection("FileTemplateUrl"));
-            services.Configure<FileRootDirectoryModel>(Configuration.GetSection("FileRootDirectory"));
-            services.Configure<CropSizesModel>(Configuration.GetSection("CropSizes"));
-
-            services.AddSerilog(dbSettings);
-
-            services.AddDbContext<SquadioDbContext>(builder =>
-                builder
-                    .EnableSensitiveDataLogging()
-                    .UseNpgsql(dbSettings.PostgresConnectionString,
-                        optionsBuilder =>
-                            optionsBuilder.MigrationsAssembly(typeof(SquadioDbContext).Assembly.FullName)));
+                .AddFluentValidation(options =>
+                {
+                    options.RegisterValidatorsFromAssemblyContaining<DTO.DependencyInjectionModule>();
+                })
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                });
 
             services.AddVersionedApiExplorer(o => o.GroupNameFormat = "'v'VVV");
             services.AddApiVersioning(o =>
@@ -115,41 +77,11 @@ namespace Squadio.API
                 o.AssumeDefaultVersionWhenUnspecified = true;
                 o.DefaultApiVersion = new ApiVersion(0, 0, "unversioned");
             });
-
-            services.AddSwaggerGen(options =>
-            {
-                var provider = services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
-                foreach (var description in provider.ApiVersionDescriptions) 
-                    options.SwaggerDoc(description.GroupName, new OpenApiInfo { Title = "Squad.io API", Version = description.ApiVersion.ToString() });
-
-                //options.SwaggerDoc("v1", new OpenApiInfo { Title = "Squad.io API", Version = "v1" });
-                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    In = ParameterLocation.Header,
-                    Name = "Authorization",
-                    Description = "Please insert JWT with Bearer into field",
-                    Type = SecuritySchemeType.ApiKey
-                });
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
-                        },
-                        new string[0] 
-                    }
-                });
-                options.DescribeAllEnumsAsStrings();
-                options.OperationFilter<SwaggerRemoveVersionParameters>();
-                options.DocumentFilter<SwaggerSetVersionInPaths>();
             
-                // Set the comments path for the Swagger JSON and UI.
-                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                options.IncludeXmlComments(xmlPath);
-            });
+            services.AddSwagger();
 
+            services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
+            var apiSettings = _configuration.GetSection("APISettings").Get<ApiSettings>();
             services.AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -157,9 +89,6 @@ namespace Squadio.API
                 })
                 .AddJwtBearer(options =>
                 {
-                    //options.RequireHttpsMetadata = true;
-                    
-
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ClockSkew = TimeSpan.Zero,
@@ -176,26 +105,45 @@ namespace Squadio.API
                         // To allow return custom response for expired token
                         ValidateLifetime = false
                     };
-                    options.Events = new JwtBearerEvents
-                    {
-                        OnMessageReceived = context =>
-                        {
-                            var accessToken = context.Request.Query["access_token"];
-                            var path = context.HttpContext.Request.Path;
-                            
-                            if (!string.IsNullOrEmpty(accessToken) 
-                                && path.StartsWithSegments("/api/ws"))
-                            {
-                                context.Token = accessToken;
-                            }
-                            return Task.CompletedTask;
-                        }
-                    };
                 });
             
             services.AddAuthorization();
+        }
+        
+        public void ConfigureBaseServices(IServiceCollection services, ServiceLifetime lifetime)
+        {
+            services.Configure<ApiSettings>(_configuration.GetSection("APISettings"));
+            services.Configure<GoogleSettings>(_configuration.GetSection("GoogleOAuth"));
+            services.Configure<RabbitConnectionModel>(_configuration.GetSection("RabbitConnection"));
+            services.Configure<FileTemplateUrlModel>(_configuration.GetSection("FileTemplateUrl"));
+            services.Configure<FileRootDirectoryModel>(_configuration.GetSection("FileRootDirectory"));
+            services.Configure<CropSizesModel>(_configuration.GetSection("CropSizes"));
+            
+            var dbSettings = new DbSettings
+            {
+                DB_HOST = _configuration.GetSection("DB_HOST").Value,
+                DB_PORT = _configuration.GetSection("DB_PORT").Value,
+                DB_USER = _configuration.GetSection("DB_USER").Value,
+                DB_NAME = _configuration.GetSection("DB_NAME").Value,
+                DB_PASSWORD = _configuration.GetSection("DB_PASSWORD").Value
+            };
+            
+            Console.WriteLine($"Connection string: {dbSettings?.PostgresConnectionString}");
 
-            DependencyInjectionModule.Load(services);
+            services.AddSerilog(dbSettings);
+
+            services.AddDbContext<SquadioDbContext>(builder =>
+                builder
+                    .EnableSensitiveDataLogging()
+                    .UseNpgsql(dbSettings.PostgresConnectionString,
+                        optionsBuilder =>
+                            optionsBuilder.MigrationsAssembly(typeof(SquadioDbContext).Assembly.FullName)));
+
+            DependencyInjectionModule.Load(services, lifetime);
+
+            services.AddSingleton(MappingConfig.GetMapper());
+
+            services.AddMemoryCache();
         }
 
         public void Configure(IApplicationBuilder app
@@ -206,56 +154,33 @@ namespace Squadio.API
         {
             hostLifetime.SerilogRegisterCloseAndFlush();
             
-            logger.LogInformation("Enter Configure");
+            logger.LogInformation("Startup.Configure: Start");
             if (!env.IsProduction())
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseHsts();
-                app.UseHttpsRedirection();
-            }
             
-            logger.LogInformation("Routing");
+            app.UseHttpsRedirection();
+            app.UseCors(MyAllowSquadioOrigins);
             app.UseRouting();
-
-            logger.LogInformation("Auth");
             app.UseAuthentication();
             app.UseAuthorization();
-            
-            logger.LogInformation("Middleware");
             app.UseMiddleware(typeof(ExceptionMiddleware));
-
-            logger.LogInformation("Cors");
-            app.UseCors(MyAllowSquadioOrigins);
-            
-            logger.LogInformation("Static files");
+            app.UseDefaultFiles();
             app.UseStaticFiles();
-
-            logger.LogInformation("Swagger");
+            
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
-                foreach (var description in apiVersionProvider.ApiVersionDescriptions)
-                {
-                    options.SwaggerEndpoint($"{description.GroupName}/swagger.json"
-                        , description.GroupName.ToUpperInvariant());
-                }
-                //options.SwaggerEndpoint("/swagger/v1/swagger.json", "Squad.io API V1");
+                for (var i = apiVersionProvider.ApiVersionDescriptions.Count() - 1; i >= 0; i--)
+                    options.SwaggerEndpoint($"{apiVersionProvider.ApiVersionDescriptions[i].GroupName}/swagger.json"
+                        , apiVersionProvider.ApiVersionDescriptions[i].GroupName.ToUpperInvariant());
+                options.DocExpansion(DocExpansion.None);
             });
 
-            logger.LogInformation("EnsureMigrationOfContext");
             app.EnsureMigrationOfContext<SquadioDbContext>();
-
-            logger.LogInformation("Endpoints");
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-                endpoints.MapHub<ChatHubService>("api/ws/chat");
-                endpoints.MapHub<CommonHubService>("api/ws");
-            });
-            logger.LogInformation("Exit Configure");
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            logger.LogInformation("Startup.Configure: Finish");
         }
     }
 }

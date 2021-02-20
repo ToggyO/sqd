@@ -10,7 +10,6 @@ using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.ChangeEmail;
 using Squadio.DAL.Repository.ChangePassword;
-using Squadio.DAL.Repository.SignUp;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Users;
@@ -23,7 +22,6 @@ namespace Squadio.BLL.Services.Users.Implementation
     public class UsersService : IUsersService
     {
         private readonly IUsersRepository _repository;
-        private readonly ISignUpRepository _signUpRepository;
         private readonly ICodeProvider _codeProvider;
         private readonly IChangePasswordRequestRepository _changePasswordRepository;
         private readonly IChangeEmailRequestRepository _changeEmailRepository;
@@ -32,7 +30,6 @@ namespace Squadio.BLL.Services.Users.Implementation
         private readonly IMapper _mapper;
         private readonly IResourcesService _resourcesService;
         public UsersService(IUsersRepository repository
-            , ISignUpRepository signUpRepository
             , ICodeProvider codeProvider
             , IChangePasswordRequestRepository changePasswordRepository
             , IChangeEmailRequestRepository changeEmailRepository
@@ -42,7 +39,6 @@ namespace Squadio.BLL.Services.Users.Implementation
             , IResourcesService resourcesService)
         {
             _repository = repository;
-            _signUpRepository = signUpRepository;
             _codeProvider = codeProvider;
             _changePasswordRepository = changePasswordRepository;
             _changeEmailRepository = changeEmailRepository;
@@ -140,8 +136,6 @@ namespace Squadio.BLL.Services.Users.Implementation
             };
             
             entity = await _repository.Create(entity);
-
-            await _signUpRepository.SetRegistrationStep(entity.Id, dto.Step, dto.MembershipStatus);
             
             var result = _mapper.Map<UserModel, UserDTO>(entity);
             

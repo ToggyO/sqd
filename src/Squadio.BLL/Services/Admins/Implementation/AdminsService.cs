@@ -2,14 +2,11 @@
 using System.Threading.Tasks;
 using Magora.Passwords;
 using Mapper;
-using Squadio.BLL.Providers.Codes;
 using Squadio.BLL.Services.Rabbit;
 using Squadio.Common.Models.Email;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
-using Squadio.DAL.Repository.ChangeEmail;
 using Squadio.DAL.Repository.ChangePassword;
-using Squadio.DAL.Repository.SignUp;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Users;

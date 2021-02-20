@@ -15,8 +15,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Squadio.Common", "Squadio.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Squadio.DTO", "Squadio.DTO\Squadio.DTO.csproj", "{0B27767D-3203-4791-A7E1-B48889CDF605}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Squadio.EmailSender", "Squadio.EmailSender\Squadio.EmailSender.csproj", "{063A30F4-E8F4-4473-8BFA-A100D8DABC9C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,10 +45,6 @@ Global
 		{0B27767D-3203-4791-A7E1-B48889CDF605}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B27767D-3203-4791-A7E1-B48889CDF605}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B27767D-3203-4791-A7E1-B48889CDF605}.Release|Any CPU.Build.0 = Release|Any CPU
-		{063A30F4-E8F4-4473-8BFA-A100D8DABC9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{063A30F4-E8F4-4473-8BFA-A100D8DABC9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{063A30F4-E8F4-4473-8BFA-A100D8DABC9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{063A30F4-E8F4-4473-8BFA-A100D8DABC9C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -10,7 +10,6 @@ using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.Common.Models.Sorts;
 using Squadio.DTO.Auth;
-using Squadio.DTO.Companies;
 using Squadio.DTO.Users;
 using Squadio.DTO.Users.Settings;
 
@@ -30,24 +29,9 @@ namespace Squadio.API.Handlers.Admins.Implementation
             _service = service;
             _tokensService = tokensService;
         }
-        public async Task<Response<PageModel<UserWithCompaniesDTO>>> GetUsersPage(PageModel model, string search, UserWithCompaniesFilter filter)
+        public async Task<Response<PageModel<UserDTO>>> GetUsersPage(PageModel model, string search)
         {
-            var result = await _provider.GetUsersPage(model, search, filter);
-            return result;
-        }
-
-        public async Task<Response<PageModel<CompanyListDTO>>> GetCompaniesPage(PageModel model
-            , CompanyAdminFilter filter
-            , SortCompaniesModel sort
-            , string search)
-        {
-            var result = await _provider.GetCompaniesPage(model, filter, sort, search);
-            return result;
-        }
-
-        public async Task<Response<CompanyDetailDTO>> GetCompanyDetail(Guid companyId)
-        {
-            var result = await _provider.GetCompanyDetail(companyId);
+            var result = await _provider.GetUsersPage(model, search);
             return result;
         }
 

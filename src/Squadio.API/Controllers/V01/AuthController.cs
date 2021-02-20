@@ -36,14 +36,5 @@ namespace Squadio.API.Controllers.V01
         {
             return await _handler.RefreshToken(request.RefreshToken);
         }
-        
-        /// <summary>
-        /// Create token using google tokenId (if user does not exist - creates it)
-        /// </summary>
-        [HttpPost("token/google")]
-        public async Task<Response<AuthInfoDTO>> GoogleAuthenticate([Required] GoogleTokenDTO request)
-        {
-            return await _handler.GoogleAuthenticate(request.Token);
-        }
     }
 }

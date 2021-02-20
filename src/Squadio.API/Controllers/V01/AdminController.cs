@@ -1,16 +1,12 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Squadio.API.Filters;
 using Squadio.API.Handlers.Admins;
 using Squadio.Common.Enums;
-using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
-using Squadio.Common.Models.Sorts;
-using Squadio.DTO.Companies;
 using Squadio.DTO.Users;
 using Squadio.DTO.Users.Settings;
 
@@ -34,34 +30,10 @@ namespace Squadio.API.Controllers.V01
         /// </summary>
         [HttpGet("users")]
         [PermissionFilter(Area.Admin)]
-        public async Task<Response<PageModel<UserWithCompaniesDTO>>> GetUsersPage([FromQuery] PageModel model
-            , [FromQuery] UserWithCompaniesFilter filter
+        public async Task<Response<PageModel<UserDTO>>> GetUsersPage([FromQuery] PageModel model
             , [FromQuery] string search)
         {
-            return await _handler.GetUsersPage(model, search, filter);
-        }
-        
-        /// <summary>
-        /// Get companies with pagination
-        /// </summary>
-        [HttpGet("companies")]
-        [PermissionFilter(Area.Admin)]
-        public async Task<Response<PageModel<CompanyListDTO>>> GetCompaniesPage([FromQuery] PageModel model
-            , [FromQuery] CompanyAdminFilter filter
-            , [FromQuery] SortCompaniesModel sort
-            , [FromQuery] string search)
-        {
-            return await _handler.GetCompaniesPage(model, filter, sort, search);
-        }
-        
-        /// <summary>
-        /// Get company details
-        /// </summary>
-        [HttpGet("companies/{id}")]
-        [PermissionFilter(Area.Admin)]
-        public async Task<Response<CompanyDetailDTO>> GetCompanyDetail([FromRoute] Guid id)
-        {
-            return await _handler.GetCompanyDetail(id);
+            return await _handler.GetUsersPage(model, search);
         }
         
         /// <summary>

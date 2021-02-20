@@ -138,7 +138,7 @@ namespace Squadio.BLL.Services.Files.Implementation
             using (var fileStream = File.Create(path))
             {
                 stream.Seek(0, SeekOrigin.Begin);
-                stream.CopyTo(fileStream);
+                await stream.CopyToAsync(fileStream);
             }
         }
 

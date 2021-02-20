@@ -12,13 +12,9 @@ namespace Squadio.API
             CreateHostBuilder(args).Build().Run();
         }
 
-        /// <summary>
-        /// CreateWebHostBuilder
-        /// </summary>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public static IHostBuilder CreateHostBuilder(string[] args) => 
-            Host.CreateDefaultBuilder(args)
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            return Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
@@ -28,5 +24,6 @@ namespace Squadio.API
                         x.AddSerilog(); 
                     });
                 });
+        }
     }
 }
