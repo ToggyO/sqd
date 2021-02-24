@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -18,8 +19,14 @@ using Squadio.DAL;
 using Squadio.API.Extensions;
 using Squadio.API.Filters;
 using Squadio.BLL.Mapping;
+using Squadio.BLL.Providers.Users;
+using Squadio.BLL.Services.Admins;
+using Squadio.BLL.Services.Users;
 using Squadio.Common.Models.Rabbit;
 using Squadio.Common.Settings;
+using Squadio.DTO.SignUp;
+using Squadio.DTO.Users;
+using Squadio.DTO.Users.Settings;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace Squadio.API
@@ -150,6 +157,7 @@ namespace Squadio.API
             , IWebHostEnvironment env
             , IHostApplicationLifetime hostLifetime
             , IApiVersionDescriptionProvider apiVersionProvider
+            , IServiceProvider services
             , ILogger<Startup> logger)
         {
             hostLifetime.SerilogRegisterCloseAndFlush();
@@ -180,7 +188,31 @@ namespace Squadio.API
 
             app.EnsureMigrationOfContext<SquadioDbContext>();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            
+            CreateAdmin(services, logger).Wait();
             logger.LogInformation("Startup.Configure: Finish");
+        }
+
+        private async Task CreateAdmin(IServiceProvider serviceProvider, ILogger<Startup> logger)
+        {
+            var adminService = serviceProvider.GetRequiredService<IAdminsService>();
+            var usersProvider = serviceProvider.GetRequiredService<IUsersProvider>();
+            var adminSettings = _configuration.GetSection("DefaultAdminModel").Get<SignUpSimpleDTO>();
+            var user = await usersProvider.GetByEmail(adminSettings.Email);
+            if (user.Data == null)
+            {
+                try
+                {
+                    await adminService.CreateAdmin(
+                        adminSettings.Email, 
+                        adminSettings.Name, 
+                        adminSettings.Password);
+                }
+                catch (Exception e)
+                {
+                    logger.LogError(e, "Can't create admin user");
+                }
+            }
         }
     }
 }

@@ -8,7 +8,8 @@ namespace Squadio.BLL.Providers.Admins
 {
     public interface IAdminsProvider
     {
-        Task<Response<PageModel<UserDTO>>> GetUsersPage(PageModel model, string search);
-        Task<Response<UserDTO>> GetUserDetail(Guid userId);
+        Task<Response<PageModel<UserDTO>>> GetUsersPage(PageModel model);
+        Task<Response<UserDetailDTO>> GetUserDetail(Guid userId);
+        Task<Response<UserDetailDTO>> GetUserDetail(string email);
     }
 }

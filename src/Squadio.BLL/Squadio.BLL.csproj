@@ -18,7 +18,6 @@
     <PackageReference Include="Google.Apis.Auth" Version="1.41.1" />
     <PackageReference Include="Magora.Passwords" Version="0.1.0-alpha02" />
     <PackageReference Include="MailKit" Version="2.3.1.6" />
-    <PackageReference Include="Mapper" Version="0.1.1" />
     <PackageReference Include="MimeKit" Version="2.3.1" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0007" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.5.0" />

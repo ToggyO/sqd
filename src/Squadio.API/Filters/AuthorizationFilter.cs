@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Squadio.BLL.Factories;
 using Squadio.Common.Enums;
+using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
 
 namespace Squadio.API.Filters
@@ -66,12 +67,20 @@ namespace Squadio.API.Filters
             switch (tokenStatus)
             {
                 case TokenStatus.Expired:
-                    return new AccessTokenExpiredErrorResponse();
+                    return new SecurityErrorResponse(new Error
+                    {
+                        Code = ErrorCodes.Security.AccessTokenExpired,
+                        Message = ErrorMessages.Security.AccessTokenExpired
+                    });
                 case TokenStatus.Invalid:
-                    return new AccessTokenInvalidErrorResponse();
+                    return new SecurityErrorResponse(new Error
+                    {
+                        Code = ErrorCodes.Security.AccessTokenInvalid,
+                        Message = ErrorMessages.Security.AccessTokenInvalid
+                    });
             }
 
-            return new AccessTokenInvalidErrorResponse();
+            return new SecurityErrorResponse();
         }
 
         /// <summary>

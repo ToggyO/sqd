@@ -22,6 +22,5 @@ namespace Squadio.BLL.Services.Users
         Task<Response<UserDTO>> SetEmail(Guid id, string code);
         Task<Response<UserDTO>> SaveNewAvatar(Guid userId, Guid resourceId);
         Task<Response<UserDTO>> DeleteAvatar(Guid userId);
-        Task<Response<UserDTO>> SaveUITheme(Guid userId, UIThemeType themeType);
     }
 }

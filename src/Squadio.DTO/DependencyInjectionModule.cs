@@ -1,5 +1,4 @@
-﻿using Mapper;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace Squadio.DTO
 {
@@ -7,7 +6,6 @@ namespace Squadio.DTO
     {
         public static void Load(IServiceCollection services)
         {
-            services.AddMapper<DependencyInjectionModule>();
         }
     }
 }

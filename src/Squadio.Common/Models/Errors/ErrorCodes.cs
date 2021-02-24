@@ -8,6 +8,7 @@ namespace Squadio.Common.Models.Errors
 
         public static class Business
         {
+            public const string BusinessConflict = "bus.undefined_business_conflict";
             public const string EmailExists = "bus.email_already_exists";
             public const string InvalidEmail = "bus.invalid_email";
             public const string UserDoesNotExists = "bus.user_does_not_exists";
@@ -35,7 +36,6 @@ namespace Squadio.Common.Models.Errors
         public static class Security
         {
             public const string Unauthorized = "security_error";
-            public const string PermissionDenied = "permission_error";
             public const string Forbidden = "forbidden";
             public const string FieldAccessToken = "accessToken";
             public const string AuthDataInvalid = "sec.auth_data_invalid";

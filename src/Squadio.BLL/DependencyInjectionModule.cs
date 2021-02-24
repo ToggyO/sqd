@@ -1,20 +1,19 @@
 ﻿using Magora.Passwords;
-using Mapper;
 using Microsoft.Extensions.DependencyInjection;
 using Squadio.BLL.Factories;
 using Squadio.BLL.Factories.Implementation;
 using Squadio.BLL.Providers.Admins;
-using Squadio.BLL.Providers.Admins.Implementation;
+using Squadio.BLL.Providers.Admins.Implementations;
 using Squadio.BLL.Providers.Codes;
 using Squadio.BLL.Providers.Codes.Implementation;
 using Squadio.BLL.Providers.Resources;
 using Squadio.BLL.Providers.Resources.Implementation;
 using Squadio.BLL.Providers.Users;
-using Squadio.BLL.Providers.Users.Implementation;
+using Squadio.BLL.Providers.Users.Implementations;
 using Squadio.BLL.Services.Admins;
-using Squadio.BLL.Services.Admins.Implementation;
+using Squadio.BLL.Services.Admins.Implementations;
 using Squadio.BLL.Services.ConfirmEmail;
-using Squadio.BLL.Services.ConfirmEmail.Implementation;
+using Squadio.BLL.Services.ConfirmEmail.Implementations;
 using Squadio.BLL.Services.Files;
 using Squadio.BLL.Services.Files.Implementation;
 using Squadio.BLL.Services.Rabbit;
@@ -22,11 +21,13 @@ using Squadio.BLL.Services.Rabbit.Implementations;
 using Squadio.BLL.Services.Rabbit.Publisher;
 using Squadio.BLL.Services.Rabbit.Publisher.Implementation;
 using Squadio.BLL.Services.Resources;
-using Squadio.BLL.Services.Resources.Implementation;
+using Squadio.BLL.Services.Resources.Implementations;
+using Squadio.BLL.Services.SignUp;
+using Squadio.BLL.Services.SignUp.Implementations;
 using Squadio.BLL.Services.Tokens;
-using Squadio.BLL.Services.Tokens.Implementation;
+using Squadio.BLL.Services.Tokens.Implementations;
 using Squadio.BLL.Services.Users;
-using Squadio.BLL.Services.Users.Implementation;
+using Squadio.BLL.Services.Users.Implementations;
 using Squadio.Common.Extensions;
 
 namespace Squadio.BLL
@@ -49,6 +50,7 @@ namespace Squadio.BLL
             services.Add<IUsersService, UsersService>(serviceLifetime);
             
             services.Add<ITokensService, TokensService>(serviceLifetime);
+            services.Add<ISignUpService, SignUpService>(serviceLifetime);
             
             services.Add<IAdminsProvider, AdminsProvider>(serviceLifetime);
             services.Add<IAdminsService, AdminsService>(serviceLifetime);
@@ -58,7 +60,6 @@ namespace Squadio.BLL
             services.Add<IResourcesService, ResourcesService>(serviceLifetime);
             
             services.Add<ITokensFactory, TokensFactory>(serviceLifetime);
-            services.AddMapper();
         }
         
         private static void LoadRabbitServices(IServiceCollection services)

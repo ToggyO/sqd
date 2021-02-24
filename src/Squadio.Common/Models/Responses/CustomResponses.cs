@@ -8,14 +8,18 @@ namespace Squadio.Common.Models.Responses
     {
         public BusinessConflictErrorResponse(IEnumerable<Error> errors)
         {
-            Code = ErrorCodes.Global.BusinessConflict;
-            Message = ErrorMessages.Global.BusinessConflict;
+            Code = ErrorCodes.Business.BusinessConflict;
+            Message = ErrorMessages.Business.BusinessConflict;
             HttpStatusCode = HttpStatusCode.Conflict;
 
             Errors = errors;
         }
 
         public BusinessConflictErrorResponse(Error error) : this(new[] {error})
+        {
+        }
+
+        public BusinessConflictErrorResponse() : this(new List<Error>())
         {
         }
     }
@@ -24,8 +28,8 @@ namespace Squadio.Common.Models.Responses
     {
         public BusinessConflictErrorResponse(IEnumerable<Error> errors)
         {
-            Code = ErrorCodes.Global.BusinessConflict;
-            Message = ErrorMessages.Global.BusinessConflict;
+            Code = ErrorCodes.Business.BusinessConflict;
+            Message = ErrorMessages.Business.BusinessConflict;
             HttpStatusCode = HttpStatusCode.Conflict;
 
             Errors = errors;
@@ -34,36 +38,48 @@ namespace Squadio.Common.Models.Responses
         public BusinessConflictErrorResponse(Error error) : this(new[] {error})
         {
         }
+
+        public BusinessConflictErrorResponse() : this(new List<Error>())
+        {
+        }
     }
 
-    public class PermissionDeniedErrorResponse<T> : ErrorResponse<T> where T : class
+    public class ForbiddenErrorResponse<T> : ErrorResponse<T> where T : class
     {
-        public PermissionDeniedErrorResponse(IEnumerable<Error> errors)
+        public ForbiddenErrorResponse(IEnumerable<Error> errors)
         {
-            Code = ErrorCodes.Security.PermissionDenied;
-            Message = ErrorMessages.Security.PermissionDenied;
+            Code = ErrorCodes.Security.Forbidden;
+            Message = ErrorMessages.Security.Forbidden;
             HttpStatusCode = HttpStatusCode.Forbidden;
 
             Errors = errors;
         }
 
-        public PermissionDeniedErrorResponse(Error error) : this(new[] {error})
+        public ForbiddenErrorResponse(Error error) : this(new[] {error})
+        {
+        }
+
+        public ForbiddenErrorResponse() : this(new List<Error>())
         {
         }
     }
 
-    public class PermissionDeniedErrorResponse : ErrorResponse
+    public class ForbiddenErrorResponse : ErrorResponse
     {
-        public PermissionDeniedErrorResponse(IEnumerable<Error> errors)
+        public ForbiddenErrorResponse(IEnumerable<Error> errors)
         {
-            Code = ErrorCodes.Security.PermissionDenied;
-            Message = ErrorMessages.Security.PermissionDenied;
+            Code = ErrorCodes.Security.Forbidden;
+            Message = ErrorMessages.Security.Forbidden;
             HttpStatusCode = HttpStatusCode.Forbidden;
 
             Errors = errors;
         }
 
-        public PermissionDeniedErrorResponse(Error error) : this(new[] {error})
+        public ForbiddenErrorResponse(Error error) : this(new[] {error})
+        {
+        }
+
+        public ForbiddenErrorResponse() : this(new List<Error>())
         {
         }
     }
@@ -82,6 +98,10 @@ namespace Squadio.Common.Models.Responses
         public SecurityErrorResponse(Error error) : this(new[] {error})
         {
         }
+
+        public SecurityErrorResponse() : this(new List<Error>())
+        {
+        }
     }
 
     public class SecurityErrorResponse : ErrorResponse
@@ -96,6 +116,10 @@ namespace Squadio.Common.Models.Responses
         }
 
         public SecurityErrorResponse(Error error) : this(new[] {error})
+        {
+        }
+
+        public SecurityErrorResponse() : this(new List<Error>())
         {
         }
     }
@@ -117,80 +141,80 @@ namespace Squadio.Common.Models.Responses
         {
         }
     }
-    
-    public class AccessTokenInvalidErrorResponse : ErrorResponse
-    {
-        public AccessTokenInvalidErrorResponse()
-        {
-            Code = ErrorCodes.Security.Unauthorized;
-            Message = ErrorMessages.Security.Unauthorized;
-            HttpStatusCode = HttpStatusCode.Unauthorized;
 
-            Errors = new []
-            {
-                new Error
-                {
-                    Code = ErrorCodes.Security.AccessTokenInvalid,
-                    Message = ErrorMessages.Security.AccessTokenInvalid
-                }, 
-            };
-        }
-    }
-    
-    public class AccessTokenExpiredErrorResponse : ErrorResponse
-    {
-        public AccessTokenExpiredErrorResponse()
-        {
-            Code = ErrorCodes.Security.Unauthorized;
-            Message = ErrorMessages.Security.Unauthorized;
-            HttpStatusCode = HttpStatusCode.Unauthorized;
-
-            Errors = new []
-            {
-                new Error
-                {
-                    Code = ErrorCodes.Security.AccessTokenExpired,
-                    Message = ErrorMessages.Security.AccessTokenExpired
-                }, 
-            };
-        }
-    }
-    
-    public class RefreshTokenInvalidErrorResponse : ErrorResponse
-    {
-        public RefreshTokenInvalidErrorResponse()
-        {
-            Code = ErrorCodes.Security.Unauthorized;
-            Message = ErrorMessages.Security.Unauthorized;
-            HttpStatusCode = HttpStatusCode.Unauthorized;
-
-            Errors = new []
-            {
-                new Error
-                {
-                    Code = ErrorCodes.Security.RefreshTokenInvalid,
-                    Message = ErrorMessages.Security.RefreshTokenInvalid
-                }, 
-            };
-        }
-    }
-    
-    public class RefreshTokenExpiredErrorResponse : ErrorResponse
-    {
-        public RefreshTokenExpiredErrorResponse()
-        {
-            Code = ErrorCodes.Security.Unauthorized;
-            Message = ErrorMessages.Security.Unauthorized;
-            HttpStatusCode = HttpStatusCode.Unauthorized;
-
-            Errors = new []
-            {
-                new Error
-                {
-                    Code = ErrorCodes.Security.RefreshTokenExpired,
-                    Message = ErrorMessages.Security.RefreshTokenExpired
-                }, 
-            };
-        }
-    }
+    // public class AccessTokenInvalidErrorResponse : ErrorResponse
+    // {
+    //     public AccessTokenInvalidErrorResponse()
+    //     {
+    //         Code = ErrorCodes.Security.Unauthorized;
+    //         Message = ErrorMessages.Security.Unauthorized;
+    //         HttpStatusCode = HttpStatusCode.Unauthorized;
+    //
+    //         Errors = new[]
+    //         {
+    //             new Error
+    //             {
+    //                 Code = ErrorCodes.Security.AccessTokenInvalid,
+    //                 Message = ErrorMessages.Security.AccessTokenInvalid
+    //             }
+    //         };
+    //     }
+    // }
+    //
+    // public class AccessTokenExpiredErrorResponse : ErrorResponse
+    // {
+    //     public AccessTokenExpiredErrorResponse()
+    //     {
+    //         Code = ErrorCodes.Security.Unauthorized;
+    //         Message = ErrorMessages.Security.Unauthorized;
+    //         HttpStatusCode = HttpStatusCode.Unauthorized;
+    //
+    //         Errors = new[]
+    //         {
+    //             new Error
+    //             {
+    //                 Code = ErrorCodes.Security.AccessTokenExpired,
+    //                 Message = ErrorMessages.Security.AccessTokenExpired
+    //             }
+    //         };
+    //     }
+    // }
+    //
+    // public class RefreshTokenInvalidErrorResponse : ErrorResponse
+    // {
+    //     public RefreshTokenInvalidErrorResponse()
+    //     {
+    //         Code = ErrorCodes.Security.Unauthorized;
+    //         Message = ErrorMessages.Security.Unauthorized;
+    //         HttpStatusCode = HttpStatusCode.Unauthorized;
+    //
+    //         Errors = new[]
+    //         {
+    //             new Error
+    //             {
+    //                 Code = ErrorCodes.Security.RefreshTokenInvalid,
+    //                 Message = ErrorMessages.Security.RefreshTokenInvalid
+    //             }
+    //         };
+    //     }
+    // }
+    //
+    // public class RefreshTokenExpiredErrorResponse : ErrorResponse
+    // {
+    //     public RefreshTokenExpiredErrorResponse()
+    //     {
+    //         Code = ErrorCodes.Security.Unauthorized;
+    //         Message = ErrorMessages.Security.Unauthorized;
+    //         HttpStatusCode = HttpStatusCode.Unauthorized;
+    //
+    //         Errors = new[]
+    //         {
+    //             new Error
+    //             {
+    //                 Code = ErrorCodes.Security.RefreshTokenExpired,
+    //                 Message = ErrorMessages.Security.RefreshTokenExpired
+    //             }
+    //         };
+    //     }
+    // }
 }

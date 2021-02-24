@@ -9,5 +9,6 @@ namespace Squadio.BLL.Services.Admins
         Task<Response<UserDTO>> SetPassword(string email, string password);
         Task<Response<UserDTO>> ResetPassword(string code, string password);
         Task<Response> ResetPasswordRequest(string email);
+        Task<Response> CreateAdmin(string email, string name, string password);
     }
 }

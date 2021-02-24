@@ -40,17 +40,9 @@ namespace Squadio.DAL
                 item.HasOne(x => x.Avatar)
                     .WithOne()
                     .OnDelete(DeleteBehavior.SetNull);
-                item.Property(x => x.RoleId)
-                    .HasDefaultValue(RoleGuid.User);
                 item.HasOne(p => p.Role)
                     .WithMany()
                     .OnDelete(DeleteBehavior.Restrict);
-                item.Property(p => p.UITheme)
-                    .HasDefaultValue(UIThemeType.Default);
-                item.Property(p => p.SignUpType)
-                    .HasDefaultValue(SignUpType.Email);
-                item.Property(p => p.Status)
-                    .HasDefaultValue(UserStatus.Active);
             });
             
             modelBuilder.Entity<UserRestorePasswordRequestModel>(item =>

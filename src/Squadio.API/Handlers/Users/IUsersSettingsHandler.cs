@@ -22,6 +22,5 @@ namespace Squadio.API.Handlers.Users
         Task<Response<UserDTO>> SaveNewAvatar(FormImageCreateDTO dto, ClaimsPrincipal claims);
         Task<Response<UserDTO>> SaveNewAvatar(ByteImageCreateDTO dto, ClaimsPrincipal claims);
         Task<Response<UserDTO>> DeleteAvatar(ClaimsPrincipal claims);
-        Task<Response<UserDTO>> SaveUITheme(UIThemeType themeType, ClaimsPrincipal claims);
     }
 }

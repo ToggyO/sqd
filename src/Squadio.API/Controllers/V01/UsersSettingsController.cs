@@ -127,14 +127,5 @@ namespace Squadio.API.Controllers.V01
         {
             return await _handler.DeleteAvatar(User);
         }
-        
-        /// <summary>
-        /// Set email from for current user
-        /// </summary>
-        [HttpPut("ui-theme/{themeType}")]
-        public async Task<Response<UserDTO>> SaveUITheme([FromRoute] UIThemeType themeType)
-        {
-            return await _handler.SaveUITheme(themeType, User);
-        }
     }
 }

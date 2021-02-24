@@ -11,6 +11,7 @@
 
         public static class Business
         {
+            public const string BusinessConflict = "Undefined business conflict";
             public const string InvalidEmail = "Email is invalid";
             public const string EmailExists = "This email is already registered. Sign in or use different email to register";
             public const string UserDoesNotExists = "User does not exists";
@@ -29,7 +30,7 @@
         public static class Security
         {
             public const string Unauthorized = "Unauthorized";
-            public const string PermissionDenied = "Permission denied";
+            public const string Forbidden = "Forbidden";
             public const string AuthDataInvalid = "Auth data invalid";
             public const string TokenInvalid = "Token invalid";
             public const string AccessTokenInvalid = "Access token invalid";
