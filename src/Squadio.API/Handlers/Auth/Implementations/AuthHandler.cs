@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Squadio.BLL.Services.Tokens;
 using Squadio.Common.Models.Responses;
-using Squadio.DTO.Auth;
+using Squadio.DTO.Models.Auth;
 
-namespace Squadio.API.Handlers.Auth.Implementation
+namespace Squadio.API.Handlers.Auth.Implementations
 {
     public class AuthHandler : IAuthHandler
     {

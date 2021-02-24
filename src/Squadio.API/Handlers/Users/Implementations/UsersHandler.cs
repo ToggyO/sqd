@@ -6,9 +6,9 @@ using Squadio.BLL.Services.Users;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
-using Squadio.DTO.Users;
+using Squadio.DTO.Models.Users;
 
-namespace Squadio.API.Handlers.Users.Implementation
+namespace Squadio.API.Handlers.Users.Implementations
 {
     public class UsersHandler : IUsersHandler
     {

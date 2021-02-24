@@ -16,15 +16,6 @@
       <Compile Update="Invites\InviteModelMapper.cs">
         <DependentUpon>InviteDTO.cs</DependentUpon>
       </Compile>
-      <Compile Update="SignUp\SignUpMemberDTO.Validator.cs">
-        <DependentUpon>SignUpMemberDTO.cs</DependentUpon>
-      </Compile>
-      <Compile Update="SignUp\SignUpDTO.Validator.cs">
-        <DependentUpon>SignUpDTO.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Users\UserEmailDTO.Validator.cs">
-        <DependentUpon>UserEmailDTO.cs</DependentUpon>
-      </Compile>
       <Compile Update="Teams\TeamUserModelMapper.cs">
         <DependentUpon>TeamWithUserRoleDTO.cs</DependentUpon>
       </Compile>
@@ -34,26 +25,41 @@
       <Compile Update="Teams\TeamUpdateDTO.Validator.cs">
         <DependentUpon>TeamUpdateDTO.cs</DependentUpon>
       </Compile>
-      <Compile Update="Resources\FormFileCreateDTO.cs">
+      <Compile Update="Auth\CredentialsDTO.Validator.cs">
+        <DependentUpon>CredentialsDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\Auth\CredentialsDTO.Validator.cs">
+        <DependentUpon>CredentialsDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\Resources\ByteFileCreateDTO.cs">
         <DependentUpon>FileCreateDTO.cs</DependentUpon>
       </Compile>
-      <Compile Update="Resources\ByteFileCreateDTO.cs">
+      <Compile Update="Models\Resources\ByteImageCreateDTO.cs">
+        <DependentUpon>ImageCreateDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\Resources\FormFileCreateDTO.cs">
         <DependentUpon>FileCreateDTO.cs</DependentUpon>
       </Compile>
-      <Compile Update="Resources\FormImageCreateDTO.cs">
+      <Compile Update="Models\Resources\FormImageCreateDTO.cs">
         <DependentUpon>ImageCreateDTO.cs</DependentUpon>
       </Compile>
-      <Compile Update="Resources\ByteImageCreateDTO.cs">
-        <DependentUpon>ImageCreateDTO.cs</DependentUpon>
+      <Compile Update="Models\SignUp\SignUpDTO.Validator.cs">
+        <DependentUpon>SignUpDTO.cs</DependentUpon>
       </Compile>
-      <Compile Update="Users\Settings\UserUpdateDTO.Validator.cs">
-        <DependentUpon>UserUpdateDTO.cs</DependentUpon>
+      <Compile Update="Models\SignUp\SignUpMemberDTO.Validator.cs">
+        <DependentUpon>SignUpMemberDTO.cs</DependentUpon>
       </Compile>
-      <Compile Update="Users\Settings\UserSetPasswordDTO.Validator.cs">
+      <Compile Update="Models\Users\Settings\UserSendNewChangeEmailRequestDTO.Validator.cs">
+        <DependentUpon>UserSendNewChangeEmailRequestDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\Users\Settings\UserSetPasswordDTO.Validator.cs">
         <DependentUpon>UserSetPasswordDTO.cs</DependentUpon>
       </Compile>
-      <Compile Update="Users\Settings\UserSendNewChangeEmailRequestDTO.Validator.cs">
-        <DependentUpon>UserSendNewChangeEmailRequestDTO.cs</DependentUpon>
+      <Compile Update="Models\Users\Settings\UserUpdateDTO.Validator.cs">
+        <DependentUpon>UserUpdateDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\Users\UserEmailDTO.Validator.cs">
+        <DependentUpon>UserEmailDTO.cs</DependentUpon>
       </Compile>
     </ItemGroup>
 

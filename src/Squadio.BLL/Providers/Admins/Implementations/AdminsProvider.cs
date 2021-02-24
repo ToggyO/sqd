@@ -6,7 +6,7 @@ using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Models.Users;
-using Squadio.DTO.Users;
+using Squadio.DTO.Models.Users;
 
 namespace Squadio.BLL.Providers.Admins.Implementations
 {

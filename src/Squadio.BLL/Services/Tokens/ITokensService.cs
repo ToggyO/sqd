@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Squadio.Common.Models.Responses;
-using Squadio.DTO.Auth;
+using Squadio.DTO.Models.Auth;
 
 namespace Squadio.BLL.Services.Tokens
 {

@@ -1,6 +1,6 @@
 ﻿﻿using System.Threading.Tasks;
  using Squadio.Common.Models.Responses;
- using Squadio.DTO.SignUp;
+ using Squadio.DTO.Models.SignUp;
 
  namespace Squadio.BLL.Services.SignUp
 {

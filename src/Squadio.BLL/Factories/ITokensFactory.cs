@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Squadio.Common.Enums;
 using Squadio.Domain.Models.Users;
-using Squadio.DTO.Auth;
+using Squadio.DTO.Models.Auth;
 
 namespace Squadio.BLL.Factories
 {

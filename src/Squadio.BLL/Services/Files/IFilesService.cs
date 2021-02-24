@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
-using Squadio.DTO.Resources;
 
 namespace Squadio.BLL.Services.Files
 {

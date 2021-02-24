@@ -14,6 +14,8 @@ using Squadio.BLL.Services.ConfirmEmail;
 using Squadio.BLL.Services.ConfirmEmail.Implementations;
 using Squadio.BLL.Services.Files;
 using Squadio.BLL.Services.Files.Implementations;
+using Squadio.BLL.Services.Notifications.Emails;
+using Squadio.BLL.Services.Notifications.Emails.Implementations;
 using Squadio.BLL.Services.Resources;
 using Squadio.BLL.Services.Resources.Implementations;
 using Squadio.BLL.Services.SignUp;
@@ -36,6 +38,7 @@ namespace Squadio.BLL
             services.AddTransient<IPasswordService, PasswordService>();
             
             services.Add<IConfirmEmailService, ConfirmEmailService>(serviceLifetime);
+            services.Add<IEmailNotificationsService, EmailNotificationsService>(serviceLifetime);
             
             services.Add<IUsersProvider, UsersProvider>(serviceLifetime);
             services.Add<IUsersService, UsersService>(serviceLifetime);

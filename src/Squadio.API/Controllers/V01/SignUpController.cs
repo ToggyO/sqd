@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Squadio.API.Handlers.SignUp;
 using Squadio.Common.Models.Responses;
-using Squadio.DTO.SignUp;
+using Squadio.DTO.Models.SignUp;
 
 namespace Squadio.API.Controllers.V01
 {

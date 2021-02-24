@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Squadio.Common.Models.Responses;
-using Squadio.Domain.Models.Users;
-using Squadio.DTO.Users;
-using Squadio.DTO.Users.Settings;
+using Squadio.DTO.Models.Users.Settings;
 
 namespace Squadio.BLL.Services.ConfirmEmail
 {

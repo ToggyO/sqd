@@ -9,12 +9,12 @@ using Squadio.BLL.Services.Users;
 using Squadio.Common.Enums;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Responses;
-using Squadio.DTO.Auth;
-using Squadio.DTO.Resources;
-using Squadio.DTO.Users;
-using Squadio.DTO.Users.Settings;
+using Squadio.DTO.Models.Auth;
+using Squadio.DTO.Models.Resources;
+using Squadio.DTO.Models.Users;
+using Squadio.DTO.Models.Users.Settings;
 
-namespace Squadio.API.Handlers.Users.Implementation
+namespace Squadio.API.Handlers.Users.Implementations
 {
     public class UsersSettingsHandler : IUsersSettingsHandler
     {

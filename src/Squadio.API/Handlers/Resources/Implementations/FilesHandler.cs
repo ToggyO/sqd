@@ -9,7 +9,7 @@ using Squadio.BLL.Providers.Resources;
 using Squadio.BLL.Services.Files.Implementations;
 using Squadio.Common.Settings;
 
-namespace Squadio.API.Handlers.Resources.Implementation
+namespace Squadio.API.Handlers.Resources.Implementations
 {
     public class FilesHandler : IFilesHandler
     {

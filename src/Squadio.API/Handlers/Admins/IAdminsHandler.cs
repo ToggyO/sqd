@@ -3,9 +3,9 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
-using Squadio.DTO.Auth;
-using Squadio.DTO.Users;
-using Squadio.DTO.Users.Settings;
+using Squadio.DTO.Models.Auth;
+using Squadio.DTO.Models.Users;
+using Squadio.DTO.Models.Users.Settings;
 
 namespace Squadio.API.Handlers.Admins
 {

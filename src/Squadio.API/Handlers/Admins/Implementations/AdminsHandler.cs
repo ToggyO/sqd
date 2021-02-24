@@ -9,9 +9,9 @@ using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.Domain.Enums;
-using Squadio.DTO.Auth;
-using Squadio.DTO.Users;
-using Squadio.DTO.Users.Settings;
+using Squadio.DTO.Models.Auth;
+using Squadio.DTO.Models.Users;
+using Squadio.DTO.Models.Users.Settings;
 
 namespace Squadio.API.Handlers.Admins.Implementations
 {
@@ -71,19 +71,19 @@ namespace Squadio.API.Handlers.Admins.Implementations
             var user = await _provider.GetUserDetail(request.Email);
             if (user.Data == null)
             {
-                return new BusinessConflictErrorResponse<AuthInfoDTO>
+                return new SecurityErrorResponse<AuthInfoDTO>()
                 {
-                    Code = ErrorCodes.Common.NotFound,
-                    Message = ErrorMessages.Common.NotFound,
+                    Code = ErrorCodes.Security.AuthDataInvalid,
+                    Message = ErrorMessages.Security.AuthDataInvalid,
                 };
             }
 
             if (user.Data.RoleId != RoleGuid.Admin)
             {
-                return new BusinessConflictErrorResponse<AuthInfoDTO>
+                return new SecurityErrorResponse<AuthInfoDTO>()
                 {
-                    Code = ErrorCodes.Common.NotFound,
-                    Message = ErrorMessages.Common.NotFound,
+                    Code = ErrorCodes.Security.AuthDataInvalid,
+                    Message = ErrorMessages.Security.AuthDataInvalid,
                 };
             }
             var result = await _tokensService.Authenticate(request);

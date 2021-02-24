@@ -12,7 +12,7 @@ using Squadio.Common.Models.Responses;
 using Squadio.Common.Settings;
 using Squadio.DAL.Repository.Resources;
 using Squadio.Domain.Models.Resources;
-using Squadio.DTO.Resources;
+using Squadio.DTO.Models.Resources;
 
 namespace Squadio.BLL.Services.Resources.Implementations
 {

@@ -6,7 +6,7 @@ using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.ConfirmEmail;
 using Squadio.Domain.Models.Users;
-using Squadio.DTO.Users.Settings;
+using Squadio.DTO.Models.Users.Settings;
 
 namespace Squadio.BLL.Services.ConfirmEmail.Implementations
 {

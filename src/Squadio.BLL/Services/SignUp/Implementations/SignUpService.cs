@@ -4,8 +4,8 @@ using Microsoft.Extensions.Logging;
 using Squadio.BLL.Providers.Users;
 using Squadio.BLL.Services.Users;
 using Squadio.Common.Models.Responses;
-using Squadio.DTO.SignUp;
-using Squadio.DTO.Users;
+using Squadio.DTO.Models.SignUp;
+using Squadio.DTO.Models.Users;
 
 namespace Squadio.BLL.Services.SignUp.Implementations
 {

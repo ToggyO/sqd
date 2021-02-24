@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Squadio.Common.Enums;
 using Squadio.Common.Models.Responses;
-using Squadio.DTO.Resources;
+using Squadio.DTO.Models.Resources;
 
 namespace Squadio.BLL.Services.Resources
 {

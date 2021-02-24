@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
-using Squadio.DTO.Users;
+using Squadio.DTO.Models.Users;
 
 namespace Squadio.BLL.Providers.Admins
 {

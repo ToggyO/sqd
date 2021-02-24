@@ -3,13 +3,13 @@ using Squadio.API.Filters;
 using Squadio.API.Handlers.Admins;
 using Squadio.API.Handlers.Admins.Implementations;
 using Squadio.API.Handlers.Auth;
-using Squadio.API.Handlers.Auth.Implementation;
+using Squadio.API.Handlers.Auth.Implementations;
 using Squadio.API.Handlers.Resources;
-using Squadio.API.Handlers.Resources.Implementation;
+using Squadio.API.Handlers.Resources.Implementations;
 using Squadio.API.Handlers.SignUp;
 using Squadio.API.Handlers.SignUp.Implementations;
 using Squadio.API.Handlers.Users;
-using Squadio.API.Handlers.Users.Implementation;
+using Squadio.API.Handlers.Users.Implementations;
 using Squadio.Common.Extensions;
 
 namespace Squadio.API

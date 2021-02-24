@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Squadio.API.Handlers.Auth;
 using Squadio.Common.Models.Responses;
-using Squadio.DTO.Auth;
+using Squadio.DTO.Models.Auth;
 
 namespace Squadio.API.Controllers.V01
 {
@@ -22,7 +22,7 @@ namespace Squadio.API.Controllers.V01
         /// <summary>
         /// Create token using email and password
         /// </summary>
-        [HttpPost("token")]
+        [HttpPost]
         public async Task<Response<AuthInfoDTO>> Authenticate([Required] CredentialsDTO request)
         {
             return await _handler.Authenticate(request);
@@ -31,7 +31,7 @@ namespace Squadio.API.Controllers.V01
         /// <summary>
         /// Create token using refresh token
         /// </summary>
-        [HttpPut("token")]
+        [HttpPut]
         public async Task<ActionResult<Response<TokenDTO>>> RefreshToken([Required] RefreshTokenDTO request)
         {
             return await _handler.RefreshToken(request.RefreshToken);

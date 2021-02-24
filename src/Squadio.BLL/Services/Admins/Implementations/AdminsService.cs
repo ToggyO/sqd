@@ -8,7 +8,7 @@ using Squadio.DAL.Repository.ChangePassword;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Users;
-using Squadio.DTO.Users;
+using Squadio.DTO.Models.Users;
 
 namespace Squadio.BLL.Services.Admins.Implementations
 {

@@ -22,7 +22,7 @@ using Squadio.BLL.Mapping;
 using Squadio.BLL.Providers.Users;
 using Squadio.BLL.Services.Admins;
 using Squadio.Common.Settings;
-using Squadio.DTO.SignUp;
+using Squadio.DTO.Models.SignUp;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace Squadio.API
@@ -118,6 +118,7 @@ namespace Squadio.API
             services.Configure<ApiSettings>(_configuration.GetSection("APISettings"));
             services.Configure<GoogleSettings>(_configuration.GetSection("GoogleOAuth"));
             services.Configure<FileRootDirectorySettings>(_configuration.GetSection("FileRootDirectory"));
+            services.Configure<SmtpSettings>(_configuration.GetSection("SmtpSettings"));
             var cropSizes = _configuration.GetSection("CropSizes:SizesStr").Get<string>();
             CropSizesSettings.SetSizes(cropSizes);
             var fileTemplate = _configuration.GetSection("FileTemplateUrl:FileTemplate").Get<string>();

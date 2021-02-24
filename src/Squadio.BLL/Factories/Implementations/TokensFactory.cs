@@ -10,7 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using Squadio.Common.Enums;
 using Squadio.Common.Settings;
 using Squadio.Domain.Models.Users;
-using Squadio.DTO.Auth;
+using Squadio.DTO.Models.Auth;
 
 namespace Squadio.BLL.Factories.Implementations
 {
