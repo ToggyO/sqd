@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Squadio.Domain.Models.Users;
 
-namespace Squadio.DAL.Repository.ChangeEmail.Implementation
+namespace Squadio.DAL.Repository.ChangeEmail.Implementations
 {
     public class ChangeEmailRequestRepository : IChangeEmailRequestRepository
     {
@@ -33,6 +33,7 @@ namespace Squadio.DAL.Repository.ChangeEmail.Implementation
         {
             var item = await _context.UserChangeEmailRequests
                 .Where(x => x.Code == code && x.UserId == userId)
+                .Where(x => !x.IsDeleted)
                 .OrderByDescending(x => x.CreatedDate)
                 .FirstOrDefaultAsync();
             return item;
@@ -43,6 +44,7 @@ namespace Squadio.DAL.Repository.ChangeEmail.Implementation
             var item = await _context.UserChangeEmailRequests
                 .Include(x => x.User)
                 .Where(x => x.Code == code && x.User.Email.ToUpper() == email.ToUpper())
+                .Where(x => !x.IsDeleted)
                 .OrderByDescending(x => x.CreatedDate)
                 .FirstOrDefaultAsync();
             return item;
@@ -52,6 +54,7 @@ namespace Squadio.DAL.Repository.ChangeEmail.Implementation
         {
             var user = await _context.Users
                 .Where(x=>x.Email.ToUpper() == userEmail.ToUpper())
+                .Where(x => !x.IsDeleted)
                 .FirstOrDefaultAsync();
             
             await ActivateAllRequestsForUser(user.Id);

@@ -1,4 +1,5 @@
 ﻿using System;
+using Squadio.Common.Settings;
 using Squadio.Domain.Models.Resources;
 
 namespace Squadio.Common.Models.Resources
@@ -6,21 +7,21 @@ namespace Squadio.Common.Models.Resources
     public class ResourceViewModel
     {
         public Guid Id { get; set; }
-        private string _group;
+        protected string _group;
         public string Group
         {
             get => _group;
             set { _group = value; SetUrls(); }
         }
         
-        private string _filename;
+        protected string _filename;
         public string Filename
         {
             get => _filename;
             set { _filename = value; SetUrls(); }
         }
 
-        private string _templateUrl;
+        protected string _templateUrl;
         /// <summary>
         /// Template for URLs to Files with all allowed variables
         /// <para>Example: https://127.0.0.1/api/files/{Group}/{Filename}</para>
@@ -30,18 +31,17 @@ namespace Squadio.Common.Models.Resources
             get => _templateUrl;
             set { _templateUrl = value; SetTemplate(_templateUrl); }
         }
-        private const string _defaultTemplateUrl = "http://localhost:5005/api/files/{Group}/{Filename}";
 
         public ResourceViewModel()
         {
-            SetTemplate(null);
+            SetTemplate(PathTemplates.FilePathTemplate);
         }
 
         /// <summary>
         /// Constructor with setting URLs by specified template
         /// <para>Example: https://127.0.0.1/api/files/{Group}/{Filename}</para>
         /// </summary>
-        public ResourceViewModel(ResourceModel resource, string templateUrl = null)
+        public ResourceViewModel(ResourceModel resource)
         {
             if (resource != null)
             {
@@ -49,10 +49,10 @@ namespace Squadio.Common.Models.Resources
                 _group = resource.Group;
                 _filename = resource.FileName;
             }
-            SetTemplate(templateUrl);
+            SetTemplate(PathTemplates.FilePathTemplate);
         }
 
-        public string OriginalUrl { get; private set; }
+        public string OriginalUrl { get; protected set; }
 
         /// <summary>
         /// Set URLs by specified template
@@ -60,27 +60,19 @@ namespace Squadio.Common.Models.Resources
         /// </summary>
         public void SetTemplate(string templateUrl)
         {
-            _templateUrl = string.IsNullOrEmpty(templateUrl) 
-                ? _defaultTemplateUrl
-                : templateUrl;
+            _templateUrl = templateUrl;
             SetUrls();
         }
 
-        private void SetUrls()
+        protected void SetUrls()
         {
-            if (_templateUrl == null)
-            {
-                _templateUrl = _defaultTemplateUrl;
-            }
+            if(_templateUrl == null)
+                return;
+            
             if (_group != null && _filename != null)
             {
                 var templateGroup = _templateUrl.Replace("{Group}", _group);
                 OriginalUrl = templateGroup.Replace("{Filename}", _filename);
-            }
-            else
-            {
-                if (_templateUrl == _defaultTemplateUrl)
-                    _templateUrl = null;
             }
         }
     }

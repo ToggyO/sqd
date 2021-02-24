@@ -21,29 +21,23 @@ namespace Squadio.BLL.Services.Resources.Implementations
         private readonly IResourcesRepository _repository;
         private readonly IFilesService _filesService;
         private readonly IMapper _mapper;
-        private readonly IOptions<FileTemplateUrlModel> _options;
-        private readonly IOptions<CropSizesModel> _sizeOptions;
         private readonly ILogger<ResourcesService> _logger;
 
         public ResourcesService(IResourcesRepository repository
             , IFilesService filesService
             , IMapper mapper
-            , IOptions<FileTemplateUrlModel> options
-            , IOptions<CropSizesModel> sizeOptions
             , ILogger<ResourcesService> logger)
         {
             _repository = repository;
             _filesService = filesService;
             _mapper = mapper;
-            _options = options;
-            _sizeOptions = sizeOptions;
             _logger = logger;
         }
 
         public async Task<Response<ResourceDTO>> CreateFileResource(Guid userId, FileGroup @group, FileCreateDTO dto)
         {
             var resource = await CreateFileResource(userId, group.ToString().ToLower(), dto);
-            var viewModel = new ResourceViewModel(resource, _options.Value.FileTemplate);
+            var viewModel = new ResourceViewModel(resource);
             var result = _mapper.Map<ResourceViewModel, ResourceDTO>(viewModel);
             return new Response<ResourceDTO>
             {
@@ -54,7 +48,7 @@ namespace Squadio.BLL.Services.Resources.Implementations
         public async Task<Response<ResourceImageDTO>> CreateImageResource(Guid userId, FileGroup @group, ImageCreateDTO dto)
         {
             var resource = await CreateImageResource(userId, group.ToString().ToLower(), dto);
-            var viewModel = new ResourceImageViewModel(resource, _options.Value.ImageTemplate);
+            var viewModel = new ResourceImageViewModel(resource);
             var result = _mapper.Map<ResourceImageViewModel, ResourceImageDTO>(viewModel);
             return new Response<ResourceImageDTO>
             {
@@ -142,12 +136,10 @@ namespace Squadio.BLL.Services.Resources.Implementations
             var resource = await _repository.Create(resourceEntity);
             
             await _filesService.UploadImageFile(group, "original", fileName, dto.Stream);
-            
-            var sizes = _sizeOptions.Value.Sizes;
 
             var baseImage = ImageResizer.GetBaseImage(dto.Stream);
 
-            foreach (var size in sizes)
+            foreach (var size in CropSizesSettings.Sizes)
             {
                 var image = ImageResizer.GetResizedImage(baseImage, size, dto.ContentType);
                 await _filesService.UploadImageFile(group, size.ToString(), fileName, image);

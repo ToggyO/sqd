@@ -1,15 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Squadio.DAL.Repository.Users;
-using Squadio.DAL.Repository.Users.Implementation;
 using Squadio.Common.Extensions;
 using Squadio.DAL.Repository.ChangeEmail;
-using Squadio.DAL.Repository.ChangeEmail.Implementation;
+using Squadio.DAL.Repository.ChangeEmail.Implementations;
 using Squadio.DAL.Repository.ChangePassword;
-using Squadio.DAL.Repository.ChangePassword.Implementation;
+using Squadio.DAL.Repository.ChangePassword.Implementations;
 using Squadio.DAL.Repository.ConfirmEmail;
-using Squadio.DAL.Repository.ConfirmEmail.Implementation;
+using Squadio.DAL.Repository.ConfirmEmail.Implementations;
 using Squadio.DAL.Repository.Resources;
-using Squadio.DAL.Repository.Resources.Implementation;
+using Squadio.DAL.Repository.Resources.Implementations;
+using Squadio.DAL.Repository.Users.Implementations;
 
 namespace Squadio.DAL
 {

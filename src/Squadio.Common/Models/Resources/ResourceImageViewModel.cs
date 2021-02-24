@@ -1,47 +1,22 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Squadio.Common.Settings;
 using Squadio.Domain.Models.Resources;
 
 namespace Squadio.Common.Models.Resources
 {
-    public class ResourceImageViewModel
+    public class ResourceImageViewModel : ResourceViewModel
     {
-        public Guid Id { get; set; }
-        private string _group;
-        public string Group
-        {
-            get => _group;
-            set { _group = value; SetUrls(); }
-        }
-        
-        private string _filename;
-        public string Filename
-        {
-            get => _filename;
-            set { _filename = value; SetUrls(); }
-        }
-
-        private string _templateUrl;
-        /// <summary>
-        /// Template for URLs to Files with all allowed variables
-        /// <para>Example: https://127.0.0.1/api/files/{Group}/{Resolution}/{Filename}</para>
-        /// </summary>
-        public string TemplateUrl
-        {
-            get => _templateUrl;
-            set { _templateUrl = value; SetTemplate(_templateUrl); }
-        }
-        private const string _defaultTemplateUrl = "http://localhost:5005/api/files/{Group}/{Resolution}/{Filename}";
-
         public ResourceImageViewModel()
         {
-            SetTemplate(null);
+            SetTemplate(PathTemplates.ImagePathTemplate);
         }
 
         /// <summary>
         /// Constructor with setting URLs by specified template
         /// <para>Example: https://127.0.0.1/api/files/{Group}/{Resolution}/{Filename}</para>
         /// </summary>
-        public ResourceImageViewModel(ResourceModel resource, string templateUrl = null)
+        public ResourceImageViewModel(ResourceModel resource)
         {
             if (resource != null)
             {
@@ -49,50 +24,35 @@ namespace Squadio.Common.Models.Resources
                 _group = resource.Group;
                 _filename = resource.FileName;
             }
-            SetTemplate(templateUrl);
+            SetTemplate(PathTemplates.ImagePathTemplate);
         }
-
-        public string OriginalUrl { get; private set; }
-        public string Url140 { get; private set; }
-        public string Url360 { get; private set; }
-        public string Url480 { get; private set; }
-        public string Url720 { get; private set; }
-        public string Url1080 { get; private set; }
+        public IDictionary<string, string> FormatUrls { get; private set; }
 
         /// <summary>
         /// Set URLs by specified template
         /// <para>Example: https://127.0.0.1/api/files/{Group}/{Resolution}/{Filename}</para>
         /// </summary>
-        public void SetTemplate(string templateUrl)
+        public new void SetTemplate(string templateUrl)
         {
-            _templateUrl = string.IsNullOrEmpty(templateUrl) 
-                ? _defaultTemplateUrl
-                : templateUrl;
+            _templateUrl = templateUrl;
             SetUrls();
         }
 
-        private void SetUrls()
+        private new void SetUrls()
         {
-            if (_templateUrl == null)
-            {
-                _templateUrl = _defaultTemplateUrl;
-            }
+            if(_templateUrl == null)
+                return;
+            
             if (_group != null && _filename != null)
             {
                 var templateGroup = _templateUrl.Replace("{Group}", _group);
                 var templateFileName = templateGroup.Replace("{Filename}", _filename);
 
                 OriginalUrl = templateFileName.Replace("{Resolution}", "original");
-                Url140 = templateFileName.Replace("{Resolution}", "140");
-                Url360 = templateFileName.Replace("{Resolution}", "360");
-                Url480 = templateFileName.Replace("{Resolution}", "480");
-                Url720 = templateFileName.Replace("{Resolution}", "720");
-                Url1080 = templateFileName.Replace("{Resolution}", "1080");
-            }
-            else
-            {
-                if (_templateUrl == _defaultTemplateUrl)
-                    _templateUrl = null;
+                FormatUrls = CropSizesSettings.Sizes
+                    .ToDictionary(
+                        size => size.ToString(), 
+                        size => templateFileName.Replace("{Resolution}", size.ToString()));;
             }
         }
     }

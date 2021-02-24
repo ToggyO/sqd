@@ -21,12 +21,8 @@ using Squadio.API.Filters;
 using Squadio.BLL.Mapping;
 using Squadio.BLL.Providers.Users;
 using Squadio.BLL.Services.Admins;
-using Squadio.BLL.Services.Users;
-using Squadio.Common.Models.Rabbit;
 using Squadio.Common.Settings;
 using Squadio.DTO.SignUp;
-using Squadio.DTO.Users;
-using Squadio.DTO.Users.Settings;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace Squadio.API
@@ -121,11 +117,14 @@ namespace Squadio.API
         {
             services.Configure<ApiSettings>(_configuration.GetSection("APISettings"));
             services.Configure<GoogleSettings>(_configuration.GetSection("GoogleOAuth"));
-            services.Configure<RabbitConnectionModel>(_configuration.GetSection("RabbitConnection"));
-            services.Configure<FileTemplateUrlModel>(_configuration.GetSection("FileTemplateUrl"));
-            services.Configure<FileRootDirectoryModel>(_configuration.GetSection("FileRootDirectory"));
-            services.Configure<CropSizesModel>(_configuration.GetSection("CropSizes"));
-            
+            services.Configure<FileRootDirectorySettings>(_configuration.GetSection("FileRootDirectory"));
+            var cropSizes = _configuration.GetSection("CropSizes:SizesStr").Get<string>();
+            CropSizesSettings.SetSizes(cropSizes);
+            var fileTemplate = _configuration.GetSection("FileTemplateUrl:FileTemplate").Get<string>();
+            var imageTemplate = _configuration.GetSection("FileTemplateUrl:ImageTemplate").Get<string>();
+            PathTemplates.SetFilePathTemplate(fileTemplate);
+            PathTemplates.SetImagePathTemplate(imageTemplate);
+
             var dbSettings = new DbSettings
             {
                 DB_HOST = _configuration.GetSection("DB_HOST").Value,

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Squadio.BLL.Providers.Resources;
-using Squadio.BLL.Services.Files.Implementation;
+using Squadio.BLL.Services.Files.Implementations;
 using Squadio.Common.Settings;
 
 namespace Squadio.API.Handlers.Resources.Implementation
@@ -14,12 +14,12 @@ namespace Squadio.API.Handlers.Resources.Implementation
     public class FilesHandler : IFilesHandler
     {
         private readonly IResourcesProvider _resourceProvider;
-        private readonly IOptions<FileRootDirectoryModel> _options;
+        private readonly IOptions<FileRootDirectorySettings> _options;
         private readonly ILogger<FilesService> _logger;
         
 
         public FilesHandler(IResourcesProvider resourceProvider
-            , IOptions<FileRootDirectoryModel> options
+            , IOptions<FileRootDirectorySettings> options
             , ILogger<FilesService> logger)
         {
             _resourceProvider = resourceProvider;

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Squadio.Domain.Models.Users;
 
-namespace Squadio.DAL.Repository.ChangePassword.Implementation
+namespace Squadio.DAL.Repository.ChangePassword.Implementations
 {
     public class ChangePasswordRequestRepository : IChangePasswordRequestRepository
     {
@@ -20,7 +20,7 @@ namespace Squadio.DAL.Repository.ChangePassword.Implementation
                 .Include(x => x.User)
                 .OrderByDescending(x => x.CreatedDate)
                 .Where(x => x.Code.ToUpper() == code.ToUpper() &&
-                            x.IsDeleted == false)
+                            !x.IsDeleted)
                 .FirstOrDefaultAsync();
             return item;
         }
@@ -28,6 +28,7 @@ namespace Squadio.DAL.Repository.ChangePassword.Implementation
         public async Task<UserRestorePasswordRequestModel> GetRequest(Guid id)
         {
             var item = await _context.UserRestorePasswordRequests
+                .Where(x => !x.IsDeleted)
                 .Include(x => x.User)
                 .FirstOrDefaultAsync(x => x.Id == id);
             return item;
@@ -51,7 +52,7 @@ namespace Squadio.DAL.Repository.ChangePassword.Implementation
         {
             var items = _context.UserRestorePasswordRequests
                 .Where(x => x.UserId == userId 
-                            && x.IsDeleted == false);
+                            && !x.IsDeleted);
             
             await items.ForEachAsync(x =>
             {

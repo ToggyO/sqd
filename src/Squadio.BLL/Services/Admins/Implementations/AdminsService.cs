@@ -2,8 +2,6 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using Magora.Passwords;
-using Squadio.BLL.Services.Rabbit;
-using Squadio.Common.Models.Email;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.ChangePassword;
@@ -19,19 +17,16 @@ namespace Squadio.BLL.Services.Admins.Implementations
         private readonly IChangePasswordRequestRepository _changePasswordRepository;
         private readonly IMapper _mapper;
         private readonly IPasswordService _passwordService;
-        private readonly IRabbitService _rabbitService;
         private readonly IUsersRepository _repository;
 
         public AdminsService(IUsersRepository repository
             , IChangePasswordRequestRepository changePasswordRepository
-            , IRabbitService rabbitService
             , IPasswordService passwordService
             , IMapper mapper
         )
         {
             _repository = repository;
             _changePasswordRepository = changePasswordRepository;
-            _rabbitService = rabbitService;
             _passwordService = passwordService;
             _mapper = mapper;
         }
@@ -97,12 +92,6 @@ namespace Squadio.BLL.Services.Admins.Implementations
             await _changePasswordRepository.ActivateAllRequestsForUser(user.Id);
 
             await _changePasswordRepository.AddRequest(user.Id, code);
-
-            await _rabbitService.Send(new PasswordRestoreAdminEmailModel
-            {
-                Code = code,
-                To = email
-            });
 
             return new Response();
         }

@@ -12,7 +12,7 @@ using Squadio.Common.Settings;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Auth;
 
-namespace Squadio.BLL.Factories.Implementation
+namespace Squadio.BLL.Factories.Implementations
 {
     public class TokensFactory : ITokensFactory
     {
@@ -118,7 +118,6 @@ namespace Squadio.BLL.Factories.Implementation
                 expires: exp,
                 claims: new[]
                 {
-                    new Claim(Common.Extensions.ClaimTypes.TokenId, Guid.NewGuid().ToString("N")),
                     new Claim(Common.Extensions.ClaimTypes.UserId, user.Id.ToString("N")),
                     new Claim(Common.Extensions.ClaimTypes.RoleId, user.RoleId.ToString("N")),
                 });

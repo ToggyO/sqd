@@ -6,21 +6,18 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Squadio.Common.Settings;
 
-namespace Squadio.BLL.Services.Files.Implementation
+namespace Squadio.BLL.Services.Files.Implementations
 {
     public class FilesService : IFilesService
     {
         private readonly ILogger<FilesService> _logger;
-        private readonly IOptions<FileRootDirectoryModel> _options;
-        private readonly IOptions<CropSizesModel> _sizeOptions;
+        private readonly IOptions<FileRootDirectorySettings> _options;
         
         public FilesService(ILogger<FilesService> logger
-            , IOptions<FileRootDirectoryModel> options
-            , IOptions<CropSizesModel> sizeOptions)
+            , IOptions<FileRootDirectorySettings> options)
         {
             _logger = logger;
             _options = options;
-            _sizeOptions = sizeOptions;
         }
 
         public async Task UploadImageFile(string group, string resolution, string filename, Stream stream)
@@ -31,8 +28,7 @@ namespace Squadio.BLL.Services.Files.Implementation
 
         public async Task DeleteImageFile(string group, string filename)
         {
-            var sizes = _sizeOptions.Value.Sizes;
-            foreach (var size in sizes)
+            foreach (var size in CropSizesSettings.Sizes)
             {
                 var path = GenerateImagePath(group, size.ToString(), filename);
                 await DeleteFileSystem(path);

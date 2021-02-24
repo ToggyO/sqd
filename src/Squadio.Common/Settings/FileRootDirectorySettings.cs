@@ -1,6 +1,6 @@
 ﻿namespace Squadio.Common.Settings
 {
-    public class FileRootDirectoryModel
+    public class FileRootDirectorySettings
     {
         public string Path { get; set; }
     }

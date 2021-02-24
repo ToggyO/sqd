@@ -1,24 +1,19 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Resources;
 using Squadio.Common.Models.Responses;
-using Squadio.Common.Settings;
 using Squadio.DAL.Repository.Resources;
 using Squadio.Domain.Models.Resources;
 
-namespace Squadio.BLL.Providers.Resources.Implementation
+namespace Squadio.BLL.Providers.Resources.Implementations
 {
     public class ResourcesProvider : IResourcesProvider
     {
         private readonly IResourcesRepository _repository;
-        private readonly IOptions<FileTemplateUrlModel> _options;
 
-        public ResourcesProvider(IResourcesRepository repository
-            , IOptions<FileTemplateUrlModel> options)
+        public ResourcesProvider(IResourcesRepository repository)
         {
             _repository = repository;
-            _options = options;
         }
 
         public async Task<Response<ResourceViewModel>> GetViewModelByFileName(string filename)
@@ -28,7 +23,7 @@ namespace Squadio.BLL.Providers.Resources.Implementation
             {
                 return ErrorResponse.MapResponse<ResourceViewModel, ResourceModel>(resourceResponse);
             }
-            var viewModel = new ResourceViewModel(resourceResponse.Data, _options.Value.FileTemplate);
+            var viewModel = new ResourceViewModel(resourceResponse.Data);
             return new Response<ResourceViewModel>
             {
                 Data = viewModel
@@ -42,7 +37,7 @@ namespace Squadio.BLL.Providers.Resources.Implementation
             {
                 return ErrorResponse.MapResponse<ResourceImageViewModel, ResourceModel>(resourceResponse);
             }
-            var viewModel = new ResourceImageViewModel(resourceResponse.Data, _options.Value.ImageTemplate);
+            var viewModel = new ResourceImageViewModel(resourceResponse.Data);
             return new Response<ResourceImageViewModel>
             {
                 Data = viewModel

@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Squadio.Common.Models.Pages;
-using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Users;
 
-namespace Squadio.DAL.Repository.Users.Implementation
+namespace Squadio.DAL.Repository.Users.Implementations
 {
     public class UsersRepository : IUsersRepository
     {
@@ -28,14 +26,14 @@ namespace Squadio.DAL.Repository.Users.Implementation
         public async Task<UserModel> Delete(Guid id)
         {
             var entity = await _context.Users.FindAsync(id);
-            _context.Remove(entity);
-            await _context.SaveChangesAsync();
-            return entity;
+            entity.IsDeleted = true;
+            return await Update(entity);
         }
 
         public async Task<UserModel> GetById(Guid id)
         {
             var entity = await _context.Users
+                .Where(x => !x.IsDeleted)
                 .Include(x => x.Role)
                 .Include(x => x.Avatar)
                 .FirstOrDefaultAsync(x => x.Id == id);
@@ -53,6 +51,7 @@ namespace Squadio.DAL.Repository.Users.Implementation
         {
             var total = await _context.Users.CountAsync();
             var items = await _context.Users
+                .Where(x => !x.IsDeleted)
                 .Include(x => x.Role)
                 .Include(x => x.Avatar)
                 .Skip((model.Page - 1) * model.PageSize)
@@ -73,6 +72,7 @@ namespace Squadio.DAL.Repository.Users.Implementation
             if (email == null) return null;
             
             var entity = await _context.Users
+                .Where(x => !x.IsDeleted)
                 .Include(x => x.Role)
                 .Include(x => x.Avatar)
                 .FirstOrDefaultAsync(x => x.Email.ToUpper() == email.ToUpper());

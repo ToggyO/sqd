@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace Squadio.BLL.Providers.Codes.Implementation
+namespace Squadio.Common.Helpers
 {
-    public class CodeProvider : ICodeProvider
+    public static class CodeHelper
     {
-        public string GenerateNumberCode(int length = 6)
+        public static string GenerateNumberCode(int length = 6)
         {
             var generator = new Random();
             
@@ -18,7 +18,7 @@ namespace Squadio.BLL.Providers.Codes.Implementation
             return result;
         }
         
-        public string GenerateCodeAsGuid(int partsCount = 1)
+        public static string GenerateCodeAsGuid(int partsCount = 1)
         {
             var result = "";
             

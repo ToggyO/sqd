@@ -1,13 +1,11 @@
 ﻿using Magora.Passwords;
 using Microsoft.Extensions.DependencyInjection;
 using Squadio.BLL.Factories;
-using Squadio.BLL.Factories.Implementation;
+using Squadio.BLL.Factories.Implementations;
 using Squadio.BLL.Providers.Admins;
 using Squadio.BLL.Providers.Admins.Implementations;
-using Squadio.BLL.Providers.Codes;
-using Squadio.BLL.Providers.Codes.Implementation;
 using Squadio.BLL.Providers.Resources;
-using Squadio.BLL.Providers.Resources.Implementation;
+using Squadio.BLL.Providers.Resources.Implementations;
 using Squadio.BLL.Providers.Users;
 using Squadio.BLL.Providers.Users.Implementations;
 using Squadio.BLL.Services.Admins;
@@ -15,11 +13,7 @@ using Squadio.BLL.Services.Admins.Implementations;
 using Squadio.BLL.Services.ConfirmEmail;
 using Squadio.BLL.Services.ConfirmEmail.Implementations;
 using Squadio.BLL.Services.Files;
-using Squadio.BLL.Services.Files.Implementation;
-using Squadio.BLL.Services.Rabbit;
-using Squadio.BLL.Services.Rabbit.Implementations;
-using Squadio.BLL.Services.Rabbit.Publisher;
-using Squadio.BLL.Services.Rabbit.Publisher.Implementation;
+using Squadio.BLL.Services.Files.Implementations;
 using Squadio.BLL.Services.Resources;
 using Squadio.BLL.Services.Resources.Implementations;
 using Squadio.BLL.Services.SignUp;
@@ -38,12 +32,9 @@ namespace Squadio.BLL
         {
             DAL.DependencyInjectionModule.Load(services);
             DTO.DependencyInjectionModule.Load(services);
-
-            LoadRabbitServices(services);
             
             services.AddTransient<IPasswordService, PasswordService>();
             
-            services.Add<ICodeProvider, CodeProvider>(serviceLifetime);
             services.Add<IConfirmEmailService, ConfirmEmailService>(serviceLifetime);
             
             services.Add<IUsersProvider, UsersProvider>(serviceLifetime);
@@ -60,12 +51,6 @@ namespace Squadio.BLL
             services.Add<IResourcesService, ResourcesService>(serviceLifetime);
             
             services.Add<ITokensFactory, TokensFactory>(serviceLifetime);
-        }
-        
-        private static void LoadRabbitServices(IServiceCollection services)
-        {
-            services.AddScoped<IRabbitPublisher, RabbitPublisher>();
-            services.AddScoped<IRabbitService, RabbitService>();
         }
     }
 }

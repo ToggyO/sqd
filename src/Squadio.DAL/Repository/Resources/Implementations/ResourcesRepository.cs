@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Squadio.Domain.Models.Resources;
 
-namespace Squadio.DAL.Repository.Resources.Implementation
+namespace Squadio.DAL.Repository.Resources.Implementations
 {
     public class ResourcesRepository : IResourcesRepository
     {
@@ -27,16 +27,23 @@ namespace Squadio.DAL.Repository.Resources.Implementation
             var result = await _context.Resources
                 .Include(x => x.User)
                 .Where(x => x.Id == id)
+                .Where(x => !x.IsDeleted)
                 .FirstOrDefaultAsync();
             return result;
         }
 
         public async Task<ResourceModel> Delete(Guid id)
         {
-            var result = await _context.Resources.FindAsync(id);
-            _context.Resources.Remove(result);
+            var entity = await _context.Resources.FindAsync(id);
+            entity.IsDeleted = true;
+            return await Update(entity);
+        }
+
+        public async Task<ResourceModel> Update(ResourceModel entity)
+        {
+            _context.Update(entity);
             await _context.SaveChangesAsync();
-            return result;
+            return entity;
         }
 
         public async Task<ResourceModel> GetByFilename(string filename)
