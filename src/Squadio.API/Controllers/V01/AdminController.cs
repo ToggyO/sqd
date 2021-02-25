@@ -40,9 +40,9 @@ namespace Squadio.API.Controllers.V01
         /// Get users with pagination
         /// </summary>
         [HttpGet("users")]
-        public async Task<Response<PageModel<UserDTO>>> GetUsersPage([FromQuery] PageModel model)
+        public async Task<Response<PageModel<UserDTO>>> GetUsersPage([FromQuery] PageModel model, [FromBody] UserAdminFilterDTO filter)
         {
-            return await _handler.GetUsersPage(model);
+            return await _handler.GetUsersPage(model, filter);
         }
         
         /// <summary>

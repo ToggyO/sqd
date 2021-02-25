@@ -2,7 +2,10 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
+using Squadio.DAL.Extensions;
+using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Users;
 
 namespace Squadio.DAL.Repository.Users.Implementations
@@ -47,16 +50,39 @@ namespace Squadio.DAL.Repository.Users.Implementations
             return entity;
         }
 
-        public async Task<PageModel<UserModel>> GetPage(PageModel model)
+        public async Task<PageModel<UserModel>> GetPage(PageModel model, UserFilterModel filter = null)
         {
-            var total = await _context.Users.CountAsync();
-            var items = await _context.Users
-                .Where(x => !x.IsDeleted)
+            var query = _context.Users
                 .Include(x => x.Role)
                 .Include(x => x.Avatar)
-                .Skip((model.Page - 1) * model.PageSize)
-                .Take(model.PageSize)
+                .AsQueryable();
+
+            if (filter != null)
+            {
+                //TODO: Filter
+
+                if (filter.UserStatus != null)
+                {
+                    query = query.Where(x => x.Status == filter.UserStatus.Value);
+                }
+
+                if (filter.IncludeDeleted != true)
+                {
+                    query = query.Where(x => !x.IsDeleted);
+                }
+
+                if (filter.IncludeAdmin != true)
+                {
+                    query = query.Where(x => x.RoleId != RoleGuid.Admin);
+                }
+            }
+            
+            var total = await query.CountAsync();
+            
+            var items = await query
+                .GetPage(model)
                 .ToListAsync();
+            
             var result = new PageModel<UserModel>
             {
                 Page = model.Page,

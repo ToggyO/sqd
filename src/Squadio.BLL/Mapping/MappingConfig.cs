@@ -7,6 +7,7 @@ namespace Squadio.BLL.Mapping
     {
         private static readonly MapperConfiguration Config = new MapperConfiguration(cfg =>
         {
+            cfg.AddProfile<FilterMapperProfile>();
             cfg.AddProfile<PageMapperProfile>();
             cfg.AddProfile<UserMapperProfile>();
         });

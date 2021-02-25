@@ -11,7 +11,7 @@ namespace Squadio.API.Handlers.Admins
 {
     public interface IAdminsHandler
     {
-        Task<Response<PageModel<UserDTO>>> GetUsersPage(PageModel model);
+        Task<Response<PageModel<UserDTO>>> GetUsersPage(PageModel model, UserAdminFilterDTO filter);
         Task<Response> ChangePassword(UserSetPasswordDTO dto, ClaimsPrincipal claims);
         Task<Response> ResetPasswordRequest(string email);
         Task<Response> ResetPassword(UserResetPasswordDTO dto);

@@ -29,9 +29,9 @@ namespace Squadio.API.Handlers.Admins.Implementations
             _service = service;
             _tokensService = tokensService;
         }
-        public async Task<Response<PageModel<UserDTO>>> GetUsersPage(PageModel model)
+        public async Task<Response<PageModel<UserDTO>>> GetUsersPage(PageModel model, UserAdminFilterDTO filter)
         {
-            var result = await _provider.GetUsersPage(model);
+            var result = await _provider.GetUsersPage(model, filter);
             return result;
         }
 

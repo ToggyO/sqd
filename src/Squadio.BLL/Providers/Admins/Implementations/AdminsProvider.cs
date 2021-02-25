@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using Squadio.Common.Models.Errors;
+using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Users;
@@ -22,11 +23,16 @@ namespace Squadio.BLL.Providers.Admins.Implementations
             _mapper = mapper;
         }
         
-        public async Task<Response<PageModel<UserDTO>>> GetUsersPage(PageModel model)
+        public async Task<Response<PageModel<UserDTO>>> GetUsersPage(PageModel model, UserAdminFilterDTO filter)
         {
-            var usersPage = await _repository.GetPage(model);
+            var mappedFilter = _mapper.Map<UserFilterModel>(filter);
+            var usersPage = await _repository.GetPage(model, mappedFilter);
 
-            throw new NotImplementedException();
+            var mapped = _mapper.Map<PageModel<UserDTO>>(usersPage);
+            return new Response<PageModel<UserDTO>>
+            {
+                Data = mapped
+            };
         }
 
         public async Task<Response<UserDetailDTO>> GetUserDetail(Guid userId)
