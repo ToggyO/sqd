@@ -37,6 +37,16 @@ namespace Squadio.API.Controllers.V01
         }
         
         /// <summary>
+        /// Refresh access token using refresh token 
+        /// </summary>
+        [HttpPut("sign-in")]
+        [AllowAnonymous]
+        public async Task<Response> SignIn([FromBody] RefreshTokenDTO dto)
+        {
+            return await _handler.RefreshToken(dto.RefreshToken);
+        }
+        
+        /// <summary>
         /// Get users with pagination
         /// </summary>
         [HttpGet("users")]

@@ -2,6 +2,6 @@
 {
     public class UserFilterDTO
     {
-        
+        public string Search { get; set; }
     }
 }

@@ -16,5 +16,6 @@ namespace Squadio.API.Handlers.Admins
         Task<Response> ResetPasswordRequest(string email);
         Task<Response> ResetPassword(UserResetPasswordDTO dto);
         Task<Response<AuthInfoDTO>> Authenticate(CredentialsDTO request);
+        Task<Response<TokenDTO>> RefreshToken(string refreshToken);
     }
 }

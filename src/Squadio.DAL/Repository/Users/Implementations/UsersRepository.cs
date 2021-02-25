@@ -61,6 +61,13 @@ namespace Squadio.DAL.Repository.Users.Implementations
             {
                 //TODO: Filter
 
+                if (!string.IsNullOrEmpty(filter.Search))
+                {
+                    query = query.Where(x => 
+                        x.Name.ToUpper().Contains(filter.Search.ToUpper())
+                        || x.Email.ToUpper().Contains(filter.Search.ToUpper()));
+                }
+
                 if (filter.UserStatus != null)
                 {
                     query = query.Where(x => x.Status == filter.UserStatus.Value);

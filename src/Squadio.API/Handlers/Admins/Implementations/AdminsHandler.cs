@@ -89,5 +89,11 @@ namespace Squadio.API.Handlers.Admins.Implementations
             var result = await _tokensService.Authenticate(request);
             return result;
         }
+
+        public async Task<Response<TokenDTO>> RefreshToken(string refreshToken)
+        {
+            var result = await _tokensService.RefreshToken(refreshToken);
+            return result;
+        }
     }
 }

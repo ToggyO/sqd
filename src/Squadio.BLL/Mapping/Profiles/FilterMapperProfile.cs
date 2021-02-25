@@ -11,11 +11,13 @@ namespace Squadio.BLL.Mapping.Profiles
         {
             CreateMap<UserFilterDTO, UserFilterModel>().ConvertUsing(x => new UserFilterModel
             {
+                Search = x.Search,
                 IncludeAdmin = false,
                 IncludeDeleted = false
             });
             CreateMap<UserAdminFilterDTO, UserFilterModel>().ConvertUsing(x => new UserFilterModel
             {
+                Search = x.Search,
                 UserStatus = x.UserStatus,
                 IncludeAdmin = x.IncludeAdmin,
                 IncludeDeleted = x.IncludeDeleted
