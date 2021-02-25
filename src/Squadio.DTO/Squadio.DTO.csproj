@@ -49,9 +49,6 @@
       <Compile Update="Models\SignUp\SignUpMemberDTO.Validator.cs">
         <DependentUpon>SignUpMemberDTO.cs</DependentUpon>
       </Compile>
-      <Compile Update="Models\Users\Settings\UserSendNewChangeEmailRequestDTO.Validator.cs">
-        <DependentUpon>UserSendNewChangeEmailRequestDTO.cs</DependentUpon>
-      </Compile>
       <Compile Update="Models\Users\Settings\UserSetPasswordDTO.Validator.cs">
         <DependentUpon>UserSetPasswordDTO.cs</DependentUpon>
       </Compile>
@@ -60,6 +57,12 @@
       </Compile>
       <Compile Update="Models\Users\UserEmailDTO.Validator.cs">
         <DependentUpon>UserEmailDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\Users\Settings\UserResetPasswordDTO.Validator.cs">
+        <DependentUpon>UserResetPasswordDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\Users\Settings\UserSendNewChangeEmailRequestDTO.Validator.cs">
+        <DependentUpon>UserSendNewChangeEmailRequestDTO.cs</DependentUpon>
       </Compile>
     </ItemGroup>
 

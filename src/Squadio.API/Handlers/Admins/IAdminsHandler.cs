@@ -14,7 +14,7 @@ namespace Squadio.API.Handlers.Admins
         Task<Response<PageModel<UserDTO>>> GetUsersPage(PageModel model);
         Task<Response> ChangePassword(UserSetPasswordDTO dto, ClaimsPrincipal claims);
         Task<Response> ResetPasswordRequest(string email);
-        Task<Response<UserDTO>> ResetPassword(UserResetPasswordDTO dto);
+        Task<Response> ResetPassword(UserResetPasswordDTO dto);
         Task<Response<AuthInfoDTO>> Authenticate(CredentialsDTO request);
     }
 }

@@ -72,7 +72,7 @@ namespace Squadio.BLL.Services.Notifications.Emails.Implementations
         {
             _mailMessage.IsBodyHtml = html;
             _mailMessage.Body = templateId != null 
-                ? File.ReadAllText($"../EmailTemplates/{templateId}.html", Encoding.UTF8) 
+                ? File.ReadAllText($"../Squadio.BLL/Services/Notifications/Emails/EmailTemplates/{templateId}.html", Encoding.UTF8) 
                 : body;
 
             if(args != null)

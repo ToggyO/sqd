@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -14,24 +15,24 @@ namespace Squadio.BLL.Services.Notifications.Emails.Implementations
     public class EmailNotificationsService : IEmailNotificationsService
     {
         private readonly SmtpSettings _smtpCredentials;
+        private readonly StaticUrls _urls;
         private readonly ILogger<EmailNotificationsService> _logger;
 
         public EmailNotificationsService(IOptions<SmtpSettings> emailCredentials
+            , IOptions<StaticUrls> urls
             , ILogger<EmailNotificationsService> logger)
         {
             _smtpCredentials = emailCredentials.Value;
+            _urls = urls.Value;
             _logger = logger;
         }
 
         public async Task<Response> SendEmail(MailNotificationModel message)
         {
-            if (message != null)
-            {
-                message.FromEmail = _smtpCredentials.Email;
-                message.FromName = _smtpCredentials.FromName;
-            }
             try
             {
+                message.FromEmail = _smtpCredentials.Email;
+                message.FromName ??= _smtpCredentials.FromName;
                 using (var client = new SmtpClient(_smtpCredentials.Server, _smtpCredentials.Port)
                 {
                     UseDefaultCredentials = false,
@@ -45,14 +46,50 @@ namespace Squadio.BLL.Services.Notifications.Emails.Implementations
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Can't send email");
+                _logger.LogError(e, "Can't send emails");
                 return new ErrorResponse
                 {
                     Message = e.Message
                 };
             }
             
+            _logger.LogInformation("Emails send success");
             return new Response();
+        }
+
+        public async Task<Response> SendEmail(EmailMessageDTO message)
+        {
+            var mailNotificationModel = new MailNotificationModel
+            {
+                Body = message.Body,
+                Html = message.Html,
+                Subject = message.Subject,
+                Args = message.Args,
+                TemplateId = message.TemplateId,
+                ToAddresses = message.ToEmails,
+                FromName = message.FromName
+            };
+
+            return await SendEmail(mailNotificationModel);
+        }
+
+        public async Task<Response> SendResetPasswordEmail(string email, string code)
+        {
+            var args = new Dictionary<string, string>
+            {
+                {"{{Code}}", code},
+                {"{{ResetAdminPasswordUrl}}",_urls.ResetAdminPasswordUrl}
+            };
+            var mailNotificationModel = new MailNotificationModel
+            {
+                Html = true,
+                Subject = "Reset password",
+                Args = args,
+                TemplateId = TemplateId.ResetPassword,
+                ToAddresses = new []{email},
+            };
+
+            return await SendEmail(mailNotificationModel);
         }
     }
 }

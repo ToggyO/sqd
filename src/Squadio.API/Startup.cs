@@ -116,6 +116,7 @@ namespace Squadio.API
         public void ConfigureBaseServices(IServiceCollection services, ServiceLifetime lifetime)
         {
             services.Configure<ApiSettings>(_configuration.GetSection("APISettings"));
+            services.Configure<StaticUrls>(_configuration.GetSection("StaticUrls"));
             services.Configure<GoogleSettings>(_configuration.GetSection("GoogleOAuth"));
             services.Configure<FileRootDirectorySettings>(_configuration.GetSection("FileRootDirectory"));
             services.Configure<SmtpSettings>(_configuration.GetSection("SmtpSettings"));

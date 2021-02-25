@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Squadio.API.Filters;
 using Squadio.API.Handlers.Admins;
-using Squadio.BLL.Services.Notifications.Emails;
 using Squadio.Common.Enums;
-using Squadio.Common.Models.Emails;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Models.Auth;
@@ -22,31 +20,10 @@ namespace Squadio.API.Controllers.V01
     public class AdminController : ControllerBase
     {
         private readonly IAdminsHandler _handler;
-        private readonly IEmailNotificationsService _email;
         
-        public AdminController(IAdminsHandler handler
-            , IEmailNotificationsService email)
+        public AdminController(IAdminsHandler handler)
         {
             _handler = handler;
-            _email = email;
-        }
-        
-        /// <summary>
-        /// Create token using email and password 
-        /// </summary>
-        [HttpPost("test")]
-        [AllowAnonymous]
-        public async Task<Response> test()
-        {
-            var dto = new MailNotificationModel
-            {
-                ToAddresses = new []{"Karpov@magora-systems.com"},
-                TemplateId = "TestTemplate",
-                Html = true,
-                Subject = "aaa",
-                Body = "bbbbody"
-            };
-            return await _email.SendEmail(dto);
         }
         
         /// <summary>
@@ -75,6 +52,26 @@ namespace Squadio.API.Controllers.V01
         public async Task<Response> ChangePassword([FromBody] UserSetPasswordDTO dto)
         {
             return await _handler.ChangePassword(dto, User);
+        }
+        
+        /// <summary>
+        /// Send link to email for restore password
+        /// </summary>
+        [HttpPost("password/reset/request")]
+        [AllowAnonymous]
+        public async Task<Response> ResetPasswordRequest([FromBody] UserEmailDTO dto)
+        {
+            return await _handler.ResetPasswordRequest(dto.Email);
+        }
+        
+        /// <summary>
+        /// Set new password, using code from email
+        /// </summary>
+        [HttpPut("password/reset")]
+        [AllowAnonymous]
+        public async Task<Response> ResetPassword([FromBody] UserResetPasswordDTO dto)
+        {
+            return await _handler.ResetPassword(dto);
         }
     }
 }

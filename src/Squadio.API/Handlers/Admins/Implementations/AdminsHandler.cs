@@ -60,7 +60,7 @@ namespace Squadio.API.Handlers.Admins.Implementations
             return result;
         }
 
-        public async Task<Response<UserDTO>> ResetPassword(UserResetPasswordDTO dto)
+        public async Task<Response> ResetPassword(UserResetPasswordDTO dto)
         {
             var result = await _service.ResetPassword(dto.Code, dto.Password);
             return result;
