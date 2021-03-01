@@ -2,14 +2,13 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Squadio.BLL.Services.Files;
 using Squadio.BLL.Services.ImageResizeTools;
 using Squadio.Common.Enums;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Resources;
 using Squadio.Common.Models.Responses;
-using Squadio.Common.Settings;
+using Squadio.Common.Settings.Static;
 using Squadio.DAL.Repository.Resources;
 using Squadio.Domain.Models.Resources;
 using Squadio.DTO.Models.Resources;

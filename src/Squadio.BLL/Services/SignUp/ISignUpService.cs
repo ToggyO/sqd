@@ -6,6 +6,6 @@
 {
     public interface ISignUpService
     {
-        Task<Response> SignUp(SignUpSimpleDTO dto);
+        Task<Response> SimpleSignUp(SignUpSimpleDTO dto);
     }
 }

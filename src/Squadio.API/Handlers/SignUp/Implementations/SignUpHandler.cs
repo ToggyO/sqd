@@ -15,7 +15,7 @@ namespace Squadio.API.Handlers.SignUp.Implementations
         
         public async Task<Response> SignUp(SignUpSimpleDTO dto)
         {
-            return await _service.SignUp(dto);
+            return await _service.SimpleSignUp(dto);
         }
     }
 }

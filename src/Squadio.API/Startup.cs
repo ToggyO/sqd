@@ -22,6 +22,7 @@ using Squadio.BLL.Mapping;
 using Squadio.BLL.Providers.Users;
 using Squadio.BLL.Services.Admins;
 using Squadio.Common.Settings;
+using Squadio.Common.Settings.Static;
 using Squadio.DTO.Models.SignUp;
 using Swashbuckle.AspNetCore.SwaggerUI;
 

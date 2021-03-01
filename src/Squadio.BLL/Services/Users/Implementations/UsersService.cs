@@ -116,7 +116,8 @@ namespace Squadio.BLL.Services.Users.Implementations
                 RoleId = RoleGuid.User,
                 Email = dto.Email,
                 CreatedDate = DateTime.UtcNow,
-                Status = dto.UserStatus
+                SignUpType = dto.SignUpBy,
+                Status = dto.UserStatus,
             };
             
             entity = await _repository.Create(entity);

@@ -26,7 +26,7 @@ namespace Squadio.BLL.Services.SignUp.Implementations
             _mapper = mapper;
             _logger = logger;
         }
-        public async Task<Response> SignUp(SignUpSimpleDTO dto)
+        public async Task<Response> SimpleSignUp(SignUpSimpleDTO dto)
         {
             var createDto = _mapper.Map<UserCreateDTO>(dto);
             await _usersService.CreateUser(createDto);

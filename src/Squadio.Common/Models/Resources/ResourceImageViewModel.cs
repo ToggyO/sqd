@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Squadio.Common.Settings;
+using Squadio.Common.Settings.Static;
 using Squadio.Domain.Models.Resources;
 
 namespace Squadio.Common.Models.Resources

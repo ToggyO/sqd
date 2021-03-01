@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Squadio.Common.Settings
+﻿namespace Squadio.Common.Settings.Static
 {
     public static class CropSizesSettings
     {

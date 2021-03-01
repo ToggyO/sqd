@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Squadio.Common.Settings;
+using Squadio.Common.Settings.Static;
 
 namespace Squadio.BLL.Services.Files.Implementations
 {

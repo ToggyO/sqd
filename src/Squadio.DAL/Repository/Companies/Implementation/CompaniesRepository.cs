@@ -50,6 +50,35 @@ namespace Squadio.DAL.Repository.Companies.Implementation
             return entity;
         }
 
+        public async Task<PageModel<CompanyModel>> GetCompanies(PageModel pageModel, string search = null)
+        {
+            IQueryable<CompanyModel> query = _context.Companies;
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                var searchUpper = search.ToUpper();
+
+                query = query.Where(x => x.Name.ToUpper().Contains(searchUpper));
+            }
+
+            var skip = (pageModel.Page - 1) * pageModel.PageSize;
+            var take = pageModel.PageSize;
+
+            var total = await query.CountAsync();
+            var items = await query
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
+
+            return new PageModel<CompanyModel>
+            {
+                Page = pageModel.Page,
+                PageSize = pageModel.PageSize,
+                Total = total,
+                Items = items
+            };
+        }
+
         // public async Task<PageModel<CompanyModel>> GetCompanies(PageModel pageModel
         //     , CompanyAdminFilter filter = null
         //     , SortCompaniesModel sort = null
