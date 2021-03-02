@@ -10,7 +10,6 @@ using Squadio.DAL.Repository.TeamsUsers;
 using Squadio.Domain.Models.Teams;
 using Squadio.DTO.Models.Teams;
 using Squadio.DTO.Models.Users;
-using Squadio.DTO.Teams;
 
 namespace Squadio.BLL.Providers.Teams.Implementations
 {

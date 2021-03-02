@@ -8,5 +8,5 @@ export DB_PASSWORD='postgres';
 export ASPNETCORE_ENVIRONMENT='Development';
 
 cd ./Squadio.DAL/
-dotnet ef --startup-project ../Squadio.API/ migrations add --context SquadioDbContext InitMigration
+dotnet ef --startup-project ../Squadio.API/ migrations add --context SquadioDbContext RecoverOldSource
 cd ..

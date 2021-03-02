@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Squadio.DTO.Invites
+namespace Squadio.DTO.Models.Invites
 {
     public class InviteDTO
     {

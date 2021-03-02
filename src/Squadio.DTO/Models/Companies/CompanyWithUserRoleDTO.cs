@@ -1,7 +1,6 @@
 ﻿using System;
-using Squadio.DTO.Models.Companies;
 
-namespace Squadio.DTO.Companies
+namespace Squadio.DTO.Models.Companies
 {
     public class CompanyWithUserRoleDTO
     {

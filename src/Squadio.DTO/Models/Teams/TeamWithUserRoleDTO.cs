@@ -1,7 +1,6 @@
 ﻿using System;
-using Squadio.DTO.Models.Teams;
 
-namespace Squadio.DTO.Teams
+namespace Squadio.DTO.Models.Teams
 {
     public class TeamWithUserRoleDTO
     {

@@ -13,8 +13,8 @@ using Squadio.DAL.Repository.SignUp;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Invites;
 using Squadio.Domain.Models.Users;
-using Squadio.DTO.Invites;
-using Squadio.DTO.SignUp;
+using Squadio.DTO.Models.Invites;
+using Squadio.DTO.Models.SignUp;
 
 namespace Squadio.BLL.Providers.SignUp.Implementations
 {

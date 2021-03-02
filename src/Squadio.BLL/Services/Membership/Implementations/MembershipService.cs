@@ -17,7 +17,7 @@ using Squadio.DAL.Repository.ProjectsUsers;
 using Squadio.DAL.Repository.Teams;
 using Squadio.DAL.Repository.TeamsUsers;
 using Squadio.Domain.Enums;
-using Squadio.DTO.Invites;
+using Squadio.DTO.Models.Invites;
 using Squadio.DTO.Models.Users;
 
 namespace Squadio.BLL.Services.Membership.Implementations

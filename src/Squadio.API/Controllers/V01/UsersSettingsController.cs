@@ -35,23 +35,33 @@ namespace Squadio.API.Controllers.V01
             return await _handler.UpdateCurrentUser(dto, User);
         }
         
-        /// <summary>
-        /// Check the password restore code for validity
-        /// </summary>
-        [HttpGet("password/validate")]
-        [AllowAnonymous]
-        public async Task<Response> ValidateCode([FromQuery, Required] string code)
-        {
-            return await _handler.ValidateCode(code);
-        }
+        // /// <summary>
+        // /// Check the password restore code for validity
+        // /// </summary>
+        // [HttpGet("password/validate")]
+        // [AllowAnonymous]
+        // public async Task<Response> ValidateCode([FromQuery, Required] string code)
+        // {
+        //     return await _handler.ValidateCode(code);
+        // }
         
         /// <summary>
         /// Set new password 
         /// </summary>
-        [HttpPut("password/set")]
+        [HttpPut("password/change")]
         public async Task<Response> SetPassword([FromBody] UserSetPasswordDTO dto)
         {
             return await _handler.SetPassword(dto, User);
+        }
+        
+        /// <summary>
+        /// Send link to email for restore password
+        /// </summary>
+        [HttpPost("password/reset/request")]
+        [AllowAnonymous]
+        public async Task<Response> ResetPasswordRequest([FromBody, Required] UserEmailDTO dto)
+        {
+            return await _handler.ResetPasswordRequest(dto.Email);
         }
         
         /// <summary>
@@ -65,13 +75,21 @@ namespace Squadio.API.Controllers.V01
         }
         
         /// <summary>
-        /// Send link to email for restore password
+        /// Send email for confirm new mailbox
         /// </summary>
-        [HttpPost("password/request")]
-        [AllowAnonymous]
-        public async Task<Response> ResetPasswordRequest([FromBody, Required] UserEmailDTO dto)
+        [HttpPost("email/set/request")]
+        public async Task<Response<SimpleTokenDTO>> ChangeEmailRequest([FromBody, Required] UserChangeEmailRequestDTO dto)
         {
-            return await _handler.ResetPasswordRequest(dto.Email);
+            return await _handler.ChangeEmailRequest(dto, User);
+        }
+        
+        /// <summary>
+        /// Send new email for confirm new mailbox
+        /// </summary>
+        [HttpPost("email/set/request/resend")]
+        public async Task<Response> SendNewChangeEmailRequest([FromBody, Required] UserSendNewChangeEmailRequestDTO dto)
+        {
+            return await _handler.SendNewChangeEmailRequest(dto, User);
         }
         
         /// <summary>
@@ -81,24 +99,6 @@ namespace Squadio.API.Controllers.V01
         public async Task<Response<UserDTO>> SetEmail([FromBody] UserSetEmailDTO dto)
         {
             return await _handler.SetEmail(dto, User);
-        }
-        
-        /// <summary>
-        /// Send email for confirm new mailbox
-        /// </summary>
-        [HttpPost("email/request")]
-        public async Task<Response<SimpleTokenDTO>> ChangeEmailRequest([FromBody, Required] UserChangeEmailRequestDTO dto)
-        {
-            return await _handler.ChangeEmailRequest(dto, User);
-        }
-        
-        /// <summary>
-        /// Send new email for confirm new mailbox
-        /// </summary>
-        [HttpPost("email/send-new-request")]
-        public async Task<Response> SendNewChangeEmailRequest([FromBody, Required] UserSendNewChangeEmailRequestDTO dto)
-        {
-            return await _handler.SendNewChangeEmailRequest(dto, User);
         }
         
         /// <summary>
@@ -127,5 +127,14 @@ namespace Squadio.API.Controllers.V01
         {
             return await _handler.DeleteAvatar(User);
         }
+        
+        // /// <summary>
+        // /// Set email from for current user
+        // /// </summary>
+        // [HttpPut("ui-theme/{themeType}")]
+        // public async Task<Response<UserDTO>> SaveUITheme([FromRoute] UIThemeType themeType)
+        // {
+        //     return await _handler.SaveUITheme(themeType, User);
+        // }
     }
 }

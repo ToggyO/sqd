@@ -1,4 +1,4 @@
-﻿namespace Squadio.DTO.Companies
+﻿namespace Squadio.DTO.Models.Companies
 {
     public class CompanyCreateDTO
     {

@@ -1,7 +1,6 @@
 ﻿using System;
-using Squadio.DTO.Models.Projects;
 
-namespace Squadio.DTO.Projects
+namespace Squadio.DTO.Models.Projects
 {
     public class ProjectWithUserRoleDTO
     {

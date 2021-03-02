@@ -9,7 +9,6 @@ using Squadio.DAL.Repository.Companies;
 using Squadio.DAL.Repository.CompaniesUsers;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Companies;
-using Squadio.DTO.Companies;
 using Squadio.DTO.Models.Companies;
 
 namespace Squadio.BLL.Services.Companies.Implementations

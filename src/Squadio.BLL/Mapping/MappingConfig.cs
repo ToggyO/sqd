@@ -10,6 +10,12 @@ namespace Squadio.BLL.Mapping
             cfg.AddProfile<FilterMapperProfile>();
             cfg.AddProfile<PageMapperProfile>();
             cfg.AddProfile<UserMapperProfile>();
+            cfg.AddProfile<SignUpMapperProfile>();
+            cfg.AddProfile<CompanyMapperProfile>();
+            cfg.AddProfile<TeamMapperProfile>();
+            cfg.AddProfile<ProjectMapperProfile>();
+            cfg.AddProfile<InviteMapperProfile>();
+            cfg.AddProfile<ResourceMapperProfile>();
         });
 
         public static IMapper GetMapper()

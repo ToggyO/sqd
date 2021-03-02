@@ -4,6 +4,7 @@ using Squadio.Domain.Models.Users;
 using Squadio.DTO.Models.Resources;
 using Squadio.DTO.Models.SignUp;
 using Squadio.DTO.Models.Users;
+using Squadio.DTO.Models.Users.Settings;
 
 namespace Squadio.BLL.Mapping.Profiles
 {
@@ -19,13 +20,7 @@ namespace Squadio.BLL.Mapping.Profiles
                 .ForMember(
                     item => item.Avatar,
                     map => map.MapFrom(src => (ResourceImageDTO) null));
-            CreateMap<SignUpSimpleDTO, UserCreateDTO>().ConvertUsing(x => new UserCreateDTO
-            {
-                Email = x.Email,
-                Name = x.Name,
-                UserStatus = UserStatus.Active,
-                SignUpBy = SignUpType.Email
-            });
+            CreateMap<UserConfirmEmailRequestModel, UserConfirmEmailRequestDTO>();
         }
     }
 }

@@ -9,9 +9,8 @@ using Squadio.DAL.Repository.Teams;
 using Squadio.DAL.Repository.TeamsUsers;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Teams;
-using Squadio.DTO.Invites;
+using Squadio.DTO.Models.Invites;
 using Squadio.DTO.Models.Teams;
-using Squadio.DTO.Teams;
 
 namespace Squadio.BLL.Services.Teams.Implementations
 {

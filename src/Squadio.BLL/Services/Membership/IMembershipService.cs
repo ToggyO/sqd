@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Squadio.Common.Models.Responses;
-using Squadio.DTO.Invites;
+using Squadio.DTO.Models.Invites;
 
 namespace Squadio.BLL.Services.Membership
 {

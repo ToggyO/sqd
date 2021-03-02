@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using Squadio.Common.Models.Errors;
 
-namespace Squadio.DTO.Projects
+namespace Squadio.DTO.Models.Projects
 {
     public class ProjectUpdateDTOValidator: AbstractValidator<ProjectUpdateDTO>
     {

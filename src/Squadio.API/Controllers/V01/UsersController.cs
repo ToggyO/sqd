@@ -18,19 +18,17 @@ namespace Squadio.API.Controllers.V01
     public class UsersController : ControllerBase
     {
         private readonly IUsersHandler _handler;
-        private readonly IUsersSettingsHandler _settingsHandler;
 
-        public UsersController(IUsersHandler handler
-            , IUsersSettingsHandler settingsHandler)
+        public UsersController(IUsersHandler handler)
         {
             _handler = handler;
-            _settingsHandler = settingsHandler;
         }
         
         /// <summary>
         /// Get users with pagination (for development purposes)
         /// </summary>
         [HttpGet]
+        [Obsolete]
         [AllowAnonymous]
         public async Task<Response<PageModel<UserDTO>>> GetPage([FromQuery] PageModel model)
         {
@@ -41,20 +39,21 @@ namespace Squadio.API.Controllers.V01
         /// Delete user by id (for development purposes)
         /// </summary>
         [HttpDelete("{id}")]
+        [Obsolete]
         [AllowAnonymous]
         public async Task<Response<UserDTO>> DeleteUser([Required, FromRoute] Guid id)
         {
             return await _handler.DeleteUser(id);
         }
         
-        /// <summary>
-        /// Get user by id
-        /// </summary>
-        [HttpGet("{id}")]
-        public async Task<Response<UserDTO>> GetById([Required, FromRoute] Guid id)
-        {
-            return await _handler.GetById(id);
-        }
+        // /// <summary>
+        // /// Get user by id
+        // /// </summary>
+        // [HttpGet("{id}")]
+        // public async Task<Response<UserDTO>> GetById([Required, FromRoute] Guid id)
+        // {
+        //     return await _handler.GetById(id);
+        // }
         
         /// <summary>
         /// Get current user

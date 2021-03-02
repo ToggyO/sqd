@@ -12,6 +12,24 @@
             public const string Password = "password";
         }
 
+        public static class Company
+        {
+            public const string Id = "id";
+            public const string Name = "name";
+        }
+
+        public static class Team
+        {
+            public const string Id = "id";
+            public const string Name = "name";
+        }
+
+
+        public static class Project
+        {
+            public const string Id = "id";
+            public const string Name = "name";
+        }
 
         public static class Resource
         {

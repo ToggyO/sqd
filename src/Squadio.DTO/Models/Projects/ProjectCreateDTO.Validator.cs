@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Squadio.Common.Models.Errors;
+using Squadio.DTO.Models.Projects;
 
 namespace Squadio.DTO.Projects
 {

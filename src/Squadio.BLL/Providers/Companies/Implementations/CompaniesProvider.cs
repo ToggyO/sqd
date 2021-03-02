@@ -8,7 +8,6 @@ using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Companies;
 using Squadio.DAL.Repository.CompaniesUsers;
 using Squadio.Domain.Models.Companies;
-using Squadio.DTO.Companies;
 using Squadio.DTO.Models.Companies;
 using Squadio.DTO.Models.Users;
 

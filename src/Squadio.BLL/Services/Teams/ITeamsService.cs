@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Models.Teams;
-using Squadio.DTO.Teams;
 
 namespace Squadio.BLL.Services.Teams
 {

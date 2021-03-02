@@ -64,6 +64,21 @@
       <Compile Update="Models\Users\Settings\UserSendNewChangeEmailRequestDTO.Validator.cs">
         <DependentUpon>UserSendNewChangeEmailRequestDTO.cs</DependentUpon>
       </Compile>
+      <Compile Update="Models\Teams\TeamCreateDTO.Validator.cs">
+        <DependentUpon>TeamCreateDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\Teams\TeamUpdateDTO.Validator.cs">
+        <DependentUpon>TeamUpdateDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\Projects\ProjectCreateDTO.Validator.cs">
+        <DependentUpon>ProjectCreateDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\Projects\ProjectUpdateDTO.Validator.cs">
+        <DependentUpon>ProjectUpdateDTO.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Models\Users\Settings\UserChangeEmailRequestDTO.Validator.cs">
+        <DependentUpon>UserChangeEmailRequestDTO.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

@@ -1,4 +1,4 @@
-﻿namespace Squadio.DTO.Projects
+﻿namespace Squadio.DTO.Models.Projects
 {
     public class ProjectUpdateDTO
     {

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Squadio.DTO.Companies;
+using Squadio.DTO.Models.Companies;
 
 namespace Squadio.DTO.Models.Users
 {

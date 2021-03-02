@@ -4,7 +4,6 @@ using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DTO.Models.Teams;
 using Squadio.DTO.Models.Users;
-using Squadio.DTO.Teams;
 
 namespace Squadio.BLL.Providers.Teams
 {

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Squadio.Common.Models.Responses;
-using Squadio.DTO.Companies;
-using Squadio.DTO.Invites;
 using Squadio.DTO.Models.Companies;
 
 namespace Squadio.BLL.Services.Companies

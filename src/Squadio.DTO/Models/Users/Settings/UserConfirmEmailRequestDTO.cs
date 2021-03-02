@@ -9,7 +9,7 @@ namespace Squadio.DTO.Models.Users.Settings
         public UserDTO User { get; set; }
         public DateTime CreatedDate { get; set; }
         public string Code { get; set; }
-        public bool IsActivated { get; set; }
-        public DateTime? ActivatedDate { get; set; }
+        public DateTime? UpdatedDate { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

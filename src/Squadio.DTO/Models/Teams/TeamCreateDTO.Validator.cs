@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using Squadio.Common.Models.Errors;
 
-namespace Squadio.DTO.Teams
+namespace Squadio.DTO.Models.Teams
 {
     public class TeamCreateDTOValidator: AbstractValidator<TeamCreateDTO>
     {

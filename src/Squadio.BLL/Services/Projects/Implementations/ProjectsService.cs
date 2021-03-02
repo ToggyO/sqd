@@ -9,7 +9,7 @@ using Squadio.DAL.Repository.Projects;
 using Squadio.DAL.Repository.ProjectsUsers;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Projects;
-using Squadio.DTO.Invites;
+using Squadio.DTO.Models.Invites;
 using Squadio.DTO.Models.Projects;
 using Squadio.DTO.Projects;
 
