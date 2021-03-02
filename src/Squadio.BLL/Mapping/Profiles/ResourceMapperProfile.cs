@@ -31,10 +31,41 @@ namespace Squadio.BLL.Mapping.Profiles
                     return mapped;
                 }));
             
-            CreateMap<ResourceImageViewModel, ResourceImageDTO>()
+            
+            CreateMap<ResourceImageViewModel, ResourceImageDTO>();
+            CreateMap<ResourceViewModel, ResourceDTO>();
+            
+            CreateMap<ResourceModel, ResourceImageViewModel>()
                 .ForMember(
-                    item => item.ResourceId,
-                    map => map.MapFrom(src => src.Id));
+                    item => item,
+                    map => map.MapFrom(src => new ResourceImageViewModel(src)));
+            CreateMap<ResourceModel, ResourceViewModel>()
+                .ForMember(
+                    item => item,
+                    map => map.MapFrom(src => new ResourceViewModel(src)));
+            
+            //TODO: Think about how to map correctly
+            CreateMap<ResourceModel, ResourceImageDTO>().ConvertUsing((from, to) =>
+            {
+                var viewModel = new ResourceImageViewModel(from);
+                return new ResourceImageDTO
+                {
+                    FormatUrls = viewModel.FormatUrls,
+                    OriginalUrl = viewModel.OriginalUrl,
+                    ResourceId = viewModel.ResourceId
+                };
+            });
+            
+            //TODO: Think about how to map correctly
+            CreateMap<ResourceModel, ResourceDTO>().ConvertUsing((from, to) =>
+            {
+                var viewModel = new ResourceViewModel(from);
+                return new ResourceDTO
+                {
+                    OriginalUrl = viewModel.OriginalUrl,
+                    ResourceId = viewModel.ResourceId
+                };
+            });
         }
     }
 }

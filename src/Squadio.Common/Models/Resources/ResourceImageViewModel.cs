@@ -21,7 +21,7 @@ namespace Squadio.Common.Models.Resources
         {
             if (resource != null)
             {
-                Id = resource.Id;
+                ResourceId = resource.Id;
                 _group = resource.Group;
                 _filename = resource.FileName;
             }

@@ -12,14 +12,8 @@ namespace Squadio.BLL.Mapping.Profiles
     {
         public UserMapperProfile()
         {
-            CreateMap<UserModel, UserDTO>()
-                .ForMember(
-                    item => item.Avatar,
-                    map => map.MapFrom(src => (ResourceImageDTO) null));
-            CreateMap<UserModel, UserDetailDTO>()
-                .ForMember(
-                    item => item.Avatar,
-                    map => map.MapFrom(src => (ResourceImageDTO) null));
+            CreateMap<UserModel, UserDTO>();
+            CreateMap<UserModel, UserDetailDTO>();
             CreateMap<UserConfirmEmailRequestModel, UserConfirmEmailRequestDTO>();
         }
     }

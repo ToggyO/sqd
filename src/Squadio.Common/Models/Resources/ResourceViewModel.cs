@@ -7,7 +7,7 @@ namespace Squadio.Common.Models.Resources
 {
     public class ResourceViewModel
     {
-        public Guid Id { get; set; }
+        public Guid ResourceId { get; set; }
         protected string _group;
         public string Group
         {
@@ -46,7 +46,7 @@ namespace Squadio.Common.Models.Resources
         {
             if (resource != null)
             {
-                Id = resource.Id;
+                ResourceId = resource.Id;
                 _group = resource.Group;
                 _filename = resource.FileName;
             }
