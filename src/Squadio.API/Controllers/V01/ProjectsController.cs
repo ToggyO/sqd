@@ -13,9 +13,11 @@ using Squadio.DTO.Projects;
 namespace Squadio.API.Controllers.V01
 {
     [ApiController]
-    //[AuthorizationFilter]
     [ApiVersion("0.1")]
     [Route("api/v{version:apiVersion}/projects")]
+    //TODO: auth filter
+    //[ServiceFilter(typeof(AuthorizationFilter))]
+    // [ServiceFilter(typeof(UserStatusFilter))]
     public class ProjectsController : ControllerBase
     {
         private readonly IProjectsHandler _handler;

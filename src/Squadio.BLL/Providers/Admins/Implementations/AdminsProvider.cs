@@ -9,6 +9,7 @@ using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.CompaniesUsers;
 using Squadio.DAL.Repository.Users;
+using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Models.Companies;
 using Squadio.DTO.Models.Users;
@@ -52,18 +53,35 @@ namespace Squadio.BLL.Providers.Admins.Implementations
             };
         }
 
+        public async Task<Response> SetUserStatus(Guid userId, UserStatus status)
+        {
+            var userEntity = await _repository.GetById(userId);
+            
+            if (userEntity == null)
+            {
+                return new NotFoundErrorResponse();
+            }
+            
+            if (userEntity.RoleId == RoleGuid.Admin)
+            {
+                return new ForbiddenErrorResponse();
+            }
+            
+            if(userEntity.Status == status)
+                return new Response();
+
+            userEntity.Status = status;
+            await _repository.Update(userEntity);
+            return new Response();
+        }
+
         public async Task<Response<UserDetailDTO>> GetUserDetail(Guid userId)
         {
             var userEntity = await _repository.GetById(userId);
             
             if (userEntity == null)
             {
-                return new BusinessConflictErrorResponse<UserDetailDTO>(new Error
-                {
-                    Code = ErrorCodes.Common.NotFound,
-                    Message = ErrorCodes.Common.NotFound,
-                    Field = ErrorFields.User.Id
-                });
+                return new NotFoundErrorResponse<UserDetailDTO>();
             }
             
             var result = _mapper.Map<UserModel, UserDetailDTO>(userEntity);
@@ -79,12 +97,7 @@ namespace Squadio.BLL.Providers.Admins.Implementations
             
             if (userEntity == null)
             {
-                return new BusinessConflictErrorResponse<UserDetailDTO>(new Error
-                {
-                    Code = ErrorCodes.Common.NotFound,
-                    Message = ErrorCodes.Common.NotFound,
-                    Field = ErrorFields.User.Id
-                });
+                return new NotFoundErrorResponse<UserDetailDTO>();
             }
             
             var result = _mapper.Map<UserModel, UserDetailDTO>(userEntity);

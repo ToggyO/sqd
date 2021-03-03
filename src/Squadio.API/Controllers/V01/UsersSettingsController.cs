@@ -14,9 +14,10 @@ using Squadio.DTO.Models.Users.Settings;
 namespace Squadio.API.Controllers.V01
 {
     [ApiController]
-    [AuthorizationFilter]
     [ApiVersion("0.1")]
     [Route("api/v{version:apiVersion}/users/settings")]
+    [ServiceFilter(typeof(AuthorizationFilter))]
+    [ServiceFilter(typeof(UserStatusFilter))]
     public class UsersSettingsController : ControllerBase
     {
         private readonly IUsersSettingsHandler _handler;

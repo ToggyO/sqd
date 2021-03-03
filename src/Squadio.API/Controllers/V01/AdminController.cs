@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Squadio.API.Filters;
@@ -13,10 +14,11 @@ using Squadio.DTO.Models.Users.Settings;
 namespace Squadio.API.Controllers.V01
 {
     [ApiController]
-    [AuthorizationFilter]
     [ApiVersion("0.1")]
     [Route("api/v{version:apiVersion}/admin")]
     [PermissionFilter(Area.Admin)]
+    [ServiceFilter(typeof(AuthorizationFilter))]
+    [ServiceFilter(typeof(UserStatusFilter))]
     public class AdminController : ControllerBase
     {
         private readonly IAdminsHandler _handler;
@@ -53,6 +55,24 @@ namespace Squadio.API.Controllers.V01
         public async Task<Response<PageModel<UserWithCompaniesDTO>>> GetUsersPage([FromQuery] PageModel model, [FromBody] UserFilterAdminDTO filter)
         {
             return await _handler.GetUsersPage(model, filter);
+        }
+        
+        /// <summary>
+        /// Block specified user
+        /// </summary>
+        [HttpPut("users/{userId}/block")]
+        public async Task<Response> BlockUser([FromRoute] Guid userId)
+        {
+            return await _handler.BlockUser(userId);
+        }
+        
+        /// <summary>
+        /// Block specified user
+        /// </summary>
+        [HttpPut("users/{userId}/unblock")]
+        public async Task<Response> UnblockUser([FromRoute] Guid userId)
+        {
+            return await _handler.UnblockUser(userId);
         }
         
         /// <summary>

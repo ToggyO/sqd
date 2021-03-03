@@ -31,6 +31,7 @@
         {
             public const string Unauthorized = "Unauthorized";
             public const string Forbidden = "Forbidden";
+            public const string UserBlocked = "User is blocked";
             public const string AuthDataInvalid = "Auth data invalid";
             public const string TokenInvalid = "Token invalid";
             public const string AccessTokenInvalid = "Access token invalid";

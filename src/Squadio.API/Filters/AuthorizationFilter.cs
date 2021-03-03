@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Squadio.BLL.Factories;
 using Squadio.Common.Enums;
 using Squadio.Common.Models.Errors;
@@ -16,19 +15,18 @@ namespace Squadio.API.Filters
 {
     public class AuthorizationFilter: AuthorizeAttribute, IAsyncAuthorizationFilter
     {
-        private ITokensFactory _service;
-        
-        /// <inheritdoc />
-        public AuthorizationFilter()
-        {
-            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme;
-        }
+        private readonly ITokensFactory _tokenService;
+        private readonly ILogger<AuthorizationFilter> _logger;
 
-        /// <inheritdoc />
+        public AuthorizationFilter(ITokensFactory tokenService
+            , ILogger<AuthorizationFilter> logger)
+        {
+            _tokenService = tokenService;
+            _logger = logger;
+        }
+        
         public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
-            _service = (ITokensFactory) context.HttpContext.RequestServices.GetRequiredService(typeof(ITokensFactory));
-            
             if (context.ActionDescriptor is ControllerActionDescriptor descriptor)
             {
                 var attributes = descriptor.MethodInfo.CustomAttributes;
@@ -39,12 +37,11 @@ namespace Squadio.API.Filters
             }
 
             string authHeader = context.HttpContext.Request.Headers["Authorization"];
-            TokenStatus tokenStatus = TokenStatus.Invalid;
+            var tokenStatus = TokenStatus.Invalid;
 
             if (!string.IsNullOrEmpty(authHeader))
             {
                 var token = GetCleanToken(authHeader);
-
                 tokenStatus = await ValidateToken(token);
 
                 if (tokenStatus == TokenStatus.Valid)
@@ -52,7 +49,6 @@ namespace Squadio.API.Filters
                     return;
                 }
             }
-
             var error = GetErrorByTokenStatus(tokenStatus);
 
             context.Result = new ObjectResult(error)
@@ -101,7 +97,7 @@ namespace Squadio.API.Filters
         /// <returns></returns>
         private async Task<TokenStatus> ValidateToken(string token)
         {
-            return await Task.Run(() => _service.ValidateToken(token, out _));
+            return await Task.Run(() => _tokenService.ValidateToken(token, out _));
         }
     }
 }

@@ -17,6 +17,7 @@ using Squadio.API.Handlers.Teams.Implementations;
 using Squadio.API.Handlers.Users;
 using Squadio.API.Handlers.Users.Implementations;
 using Squadio.Common.Extensions;
+using Squadio.Domain.Enums;
 
 namespace Squadio.API
 {
@@ -37,6 +38,7 @@ namespace Squadio.API
             services.Add<IProjectsHandler, ProjectsHandler>(serviceLifetime);
             
             services.Add<AuthorizationFilter>(serviceLifetime);
+            services.Add<UserStatusFilter>(serviceLifetime);
         }
     }
 }

@@ -35,6 +35,18 @@ namespace Squadio.API.Handlers.Admins.Implementations
             return result;
         }
 
+        public async Task<Response> BlockUser(Guid userId)
+        {
+            var result = await _provider.SetUserStatus(userId, UserStatus.Blocked);
+            return result;
+        }
+
+        public async Task<Response> UnblockUser(Guid userId)
+        {
+            var result = await _provider.SetUserStatus(userId, UserStatus.Active);
+            return result;
+        }
+
         public async Task<Response> ChangePassword(UserSetPasswordDTO dto, ClaimsPrincipal claims)
         {
             var userResponse = await _provider.GetUserDetail(claims.GetUserId());

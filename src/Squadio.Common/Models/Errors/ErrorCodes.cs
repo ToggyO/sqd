@@ -37,6 +37,7 @@ namespace Squadio.Common.Models.Errors
         {
             public const string Unauthorized = "security_error";
             public const string Forbidden = "forbidden";
+            public const string UserBlocked = "sec.user_blocked";
             public const string FieldAccessToken = "accessToken";
             public const string AuthDataInvalid = "sec.auth_data_invalid";
             public const string TokenInvalid = "sec.token_invalid";

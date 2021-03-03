@@ -20,6 +20,7 @@ namespace Squadio.DAL.Repository.Users.Implementations
 
         public async Task<UserModel> Create(UserModel entity)
         {
+            entity.CreatedDate = DateTime.Now;
             var user = await _context.Users.AddAsync(entity);
             await _context.SaveChangesAsync();
             var result = user.Entity;
@@ -29,6 +30,7 @@ namespace Squadio.DAL.Repository.Users.Implementations
         public async Task<UserModel> Delete(Guid id)
         {
             var entity = await _context.Users.FindAsync(id);
+            entity.UpdatedDate = DateTime.Now;
             entity.IsDeleted = true;
             return await Update(entity);
         }
@@ -45,6 +47,7 @@ namespace Squadio.DAL.Repository.Users.Implementations
 
         public async Task<UserModel> Update(UserModel entity)
         {
+            entity.UpdatedDate = DateTime.Now;
             _context.Update(entity);
             await _context.SaveChangesAsync();
             return entity;
@@ -115,6 +118,7 @@ namespace Squadio.DAL.Repository.Users.Implementations
             var item = await _context.Users.FindAsync(userId);
             item.Hash = hash;
             item.Salt = salt;
+            item.UpdatedDate = DateTime.Now;
             _context.Update(item);
             await _context.SaveChangesAsync();
         }

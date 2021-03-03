@@ -44,6 +44,46 @@ namespace Squadio.Common.Models.Responses
         }
     }
 
+    public class NotFoundErrorResponse : ErrorResponse
+    {
+        public NotFoundErrorResponse(IEnumerable<Error> errors)
+        {
+            Code = ErrorCodes.Common.NotFound;
+            Message = ErrorMessages.Common.NotFound;
+            HttpStatusCode = HttpStatusCode.NotFound;
+
+            Errors = errors;
+        }
+
+        public NotFoundErrorResponse(Error error) : this(new[] {error})
+        {
+        }
+
+        public NotFoundErrorResponse() : this(new List<Error>())
+        {
+        }
+    }
+
+    public class NotFoundErrorResponse<T> : ErrorResponse<T> where T : class
+    {
+        public NotFoundErrorResponse(IEnumerable<Error> errors)
+        {
+            Code = ErrorCodes.Common.NotFound;
+            Message = ErrorMessages.Common.NotFound;
+            HttpStatusCode = HttpStatusCode.NotFound;
+
+            Errors = errors;
+        }
+
+        public NotFoundErrorResponse(Error error) : this(new[] {error})
+        {
+        }
+
+        public NotFoundErrorResponse() : this(new List<Error>())
+        {
+        }
+    }
+
     public class ForbiddenErrorResponse<T> : ErrorResponse<T> where T : class
     {
         public ForbiddenErrorResponse(IEnumerable<Error> errors)

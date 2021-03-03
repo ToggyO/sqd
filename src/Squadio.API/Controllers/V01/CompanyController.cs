@@ -12,9 +12,11 @@ using Squadio.DTO.Models.Users;
 namespace Squadio.API.Controllers.V01
 {
     [ApiController]
-    //[AuthorizationFilter]
     [ApiVersion("0.1")]
     [Route("api/v{version:apiVersion}/company")]
+    //TODO: auth filter
+    //[ServiceFilter(typeof(AuthorizationFilter))]
+    // [ServiceFilter(typeof(UserStatusFilter))]
     public class CompanyController : ControllerBase
     {
         private readonly ICompaniesHandler _handler;

@@ -12,9 +12,10 @@ using Squadio.DTO.Models.Users;
 namespace Squadio.API.Controllers.V01
 {
     [ApiController]
-    [AuthorizationFilter]
     [ApiVersion("0.1")]
     [Route("api/v{version:apiVersion}/users")]
+    [ServiceFilter(typeof(AuthorizationFilter))]
+    [ServiceFilter(typeof(UserStatusFilter))]
     public class UsersController : ControllerBase
     {
         private readonly IUsersHandler _handler;

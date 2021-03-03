@@ -12,9 +12,11 @@ using Squadio.DTO.Models.Users;
 namespace Squadio.API.Controllers.V01
 {
     [ApiController]
-    //[AuthorizationFilter]
     [ApiVersion("0.1")]
     [Route("api/v{version:apiVersion}/teams")]
+    //TODO: auth filter
+    //[ServiceFilter(typeof(AuthorizationFilter))]
+    // [ServiceFilter(typeof(UserStatusFilter))]
     public class TeamsController : ControllerBase
     {
         private readonly ITeamsHandler _handler;
