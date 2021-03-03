@@ -50,15 +50,27 @@ namespace Squadio.DAL.Repository.Companies.Implementation
             return entity;
         }
 
-        public async Task<PageModel<CompanyModel>> GetCompanies(PageModel pageModel, string search = null)
+        public async Task<PageModel<CompanyModel>> GetCompanies(PageModel pageModel, CompanyFilterModel filter = null)
         {
-            IQueryable<CompanyModel> query = _context.Companies;
+            var query = _context.Companies
+                .Include(x => x.Creator)
+                .AsQueryable();
 
-            if (!string.IsNullOrEmpty(search))
+            if (filter != null)
             {
-                var searchUpper = search.ToUpper();
-
-                query = query.Where(x => x.Name.ToUpper().Contains(searchUpper));
+                if (!string.IsNullOrEmpty(filter.Search))
+                {
+                    var searchUpper = filter.Search.ToUpper();
+                    query = query.Where(x => x.Name.ToUpper().Contains(searchUpper));
+                }
+                if (filter.CreateFrom.HasValue)
+                {
+                    query = query.Where(x => x.CreatedDate >= filter.CreateFrom);
+                }
+                if (filter.CreateTo.HasValue)
+                {
+                    query = query.Where(x => x.CreatedDate <= filter.CreateTo);
+                }
             }
 
             var skip = (pageModel.Page - 1) * pageModel.PageSize;

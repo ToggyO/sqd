@@ -1,8 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Squadio.Common.Models.Responses;
-using Squadio.DTO.Models.Users;
 
-namespace Squadio.BLL.Services.Admins
+namespace Squadio.BLL.Services.Admin
 {
     public interface IAdminsService
     {

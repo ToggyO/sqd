@@ -1,4 +1,5 @@
 ﻿using System;
+using Squadio.Domain.Enums;
 
 namespace Squadio.DTO.Models.Users
 {
@@ -6,8 +7,7 @@ namespace Squadio.DTO.Models.Users
     {
         public Guid UserId { get; set; }
         public UserDTO User { get; set; }
-        public int Status { get; set; }
-        public string StatusName { get; set; }
+        public MembershipStatus MembershipStatus { get; set; }
         /// <summary>
         /// When user added to entity
         /// </summary>

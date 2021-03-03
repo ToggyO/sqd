@@ -12,6 +12,6 @@ namespace Squadio.DAL.Repository.Companies
     public interface ICompaniesRepository : IBaseRepository<CompanyModel>
     {
         // Task<PageModel<CompanyModel>> GetCompanies(PageModel pageModel, CompanyAdminFilter filter = null, SortCompaniesModel sort = null, string search = null);
-        Task<PageModel<CompanyModel>> GetCompanies(PageModel pageModel, string search = null);
+        Task<PageModel<CompanyModel>> GetCompanies(PageModel pageModel, CompanyFilterModel filter = null);
     }
 }

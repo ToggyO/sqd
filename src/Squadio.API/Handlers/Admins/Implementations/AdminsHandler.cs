@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Squadio.BLL.Providers.Admins;
-using Squadio.BLL.Services.Admins;
+using Squadio.BLL.Providers.Admin;
+using Squadio.BLL.Services.Admin;
 using Squadio.BLL.Services.Tokens;
 using Squadio.Common.Extensions;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
 using Squadio.Domain.Enums;
+using Squadio.DTO.Models.Admin;
 using Squadio.DTO.Models.Auth;
 using Squadio.DTO.Models.Users;
 using Squadio.DTO.Models.Users.Settings;
@@ -35,7 +36,7 @@ namespace Squadio.API.Handlers.Admins.Implementations
             return result;
         }
 
-        public async Task<Response<UserDetailDTO>> GetUserDetail(Guid userId)
+        public async Task<Response<UserDetailAdminDTO>> GetUserDetail(Guid userId)
         {
             var result = await _provider.GetUserDetail(userId);
             return result;
@@ -111,6 +112,18 @@ namespace Squadio.API.Handlers.Admins.Implementations
         public async Task<Response<TokenDTO>> RefreshToken(string refreshToken)
         {
             var result = await _tokensService.RefreshToken(refreshToken);
+            return result;
+        }
+
+        public async Task<Response<PageModel<CompanyDetailAdminDTO>>> GetCompanyPage(PageModel model, CompanyFilterAdminDTO filter)
+        {
+            var result = await _provider.GetCompanyPage(model, filter);
+            return result;
+        }
+
+        public async Task<Response<CompanyDetailAdminDTO>> GetCompanyDetail(Guid companyId)
+        {
+            var result = await _provider.GetCompanyDetail(companyId);
             return result;
         }
     }

@@ -20,7 +20,7 @@ using Squadio.API.Extensions;
 using Squadio.API.Filters;
 using Squadio.BLL.Mapping;
 using Squadio.BLL.Providers.Users;
-using Squadio.BLL.Services.Admins;
+using Squadio.BLL.Services.Admin;
 using Squadio.Common.Settings;
 using Squadio.Common.Settings.Static;
 using Squadio.DTO.Models.SignUp;

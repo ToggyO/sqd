@@ -20,6 +20,7 @@ namespace Squadio.DAL.Repository.CompaniesUsers
         Task<CompanyUserModel> AddCompanyUser(Guid companyId, Guid userId, MembershipStatus membershipStatus);
         Task DeleteCompanyUser(Guid companyId, Guid userId);
         Task<IEnumerable<CompanyUserModel>> GetCompaniesByUsers(IEnumerable<Guid> userIds);
+        Task<IEnumerable<CompanyUserModel>> GetUsersByCompanies(IEnumerable<Guid> companyIds);
         // Task<int> GetCompanyUsersCount(Guid companyId);
         // Task DeleteCompanyUsers(Guid companyId, IEnumerable<string> emails);
         // Task AddRangeCompanyUser(Guid companyId, IEnumerable<Guid> userIds, MembershipStatus membershipStatus);

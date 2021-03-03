@@ -1,9 +1,10 @@
 ﻿using System;
 using Squadio.Domain.Enums;
+using Squadio.DTO.Models.Users;
 
-namespace Squadio.DTO.Models.Users
+namespace Squadio.DTO.Models.Admin
 {
-    public class UserDetailDTO : UserDTO
+    public class UserDetailAdminDTO : UserDTO
     {
         public Guid RoleId { get; set; }
         public string RoleName { get; set; }

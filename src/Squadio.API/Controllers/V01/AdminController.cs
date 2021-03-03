@@ -7,6 +7,7 @@ using Squadio.API.Handlers.Admins;
 using Squadio.Common.Enums;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
+using Squadio.DTO.Models.Admin;
 using Squadio.DTO.Models.Auth;
 using Squadio.DTO.Models.Users;
 using Squadio.DTO.Models.Users.Settings;
@@ -61,7 +62,7 @@ namespace Squadio.API.Controllers.V01
         /// Get details of specified user
         /// </summary>
         [HttpGet("users/{userId}/detail")]
-        public async Task<Response<UserDetailDTO>> GetUserDetail([FromRoute] Guid userId)
+        public async Task<Response<UserDetailAdminDTO>> GetUserDetail([FromRoute] Guid userId)
         {
             return await _handler.GetUserDetail(userId);
         }
@@ -76,12 +77,30 @@ namespace Squadio.API.Controllers.V01
         }
         
         /// <summary>
-        /// Block specified user
+        /// Unblock specified user
         /// </summary>
         [HttpPut("users/{userId}/unblock")]
         public async Task<Response> UnblockUser([FromRoute] Guid userId)
         {
             return await _handler.UnblockUser(userId);
+        }
+        
+        /// <summary>
+        /// Get companies with pagination
+        /// </summary>
+        [HttpGet("companies")]
+        public async Task<Response<PageModel<CompanyDetailAdminDTO>>> GetCompaniesPage([FromQuery] PageModel model, [FromBody] CompanyFilterAdminDTO filter)
+        {
+            return await _handler.GetCompanyPage(model, filter);
+        }
+        
+        /// <summary>
+        /// Get details of specified company
+        /// </summary>
+        [HttpGet("companies/{companyId}/detail")]
+        public async Task<Response<CompanyDetailAdminDTO>> GetCompaniesDetail([FromRoute] Guid companyId)
+        {
+            return await _handler.GetCompanyDetail(companyId);
         }
         
         /// <summary>

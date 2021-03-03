@@ -1,6 +1,7 @@
 ﻿using Squadio.Domain.Enums;
+using Squadio.DTO.Models.Users;
 
-namespace Squadio.DTO.Models.Users
+namespace Squadio.DTO.Models.Admin
 {
     public class UserFilterAdminDTO : UserFilterDTO
     {

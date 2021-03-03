@@ -145,6 +145,15 @@ namespace Squadio.DAL.Repository.CompaniesUsers.Implementation
             return items;
         }
 
+        public async Task<IEnumerable<CompanyUserModel>> GetUsersByCompanies(IEnumerable<Guid> companyIds)
+        {
+            var items = await _context.CompaniesUsers
+                .Include(x => x.User)
+                .Where(x => companyIds.Contains(x.CompanyId))
+                .ToListAsync();
+            return items;
+        }
+
         public async Task DeleteCompanyUsers(Guid companyId, IEnumerable<string> emails)
         {
             var emailsUpper = emails.Select(s => s.ToUpper());

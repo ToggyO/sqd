@@ -9,6 +9,7 @@ namespace Squadio.DTO.Models.Companies
         public string Name { get; set; }
         public string Address { get; set; }
         public DateTime CreatedDate { get; set; }
+        public Guid CreatorId { get; set; }
         public UserDTO Creator { get; set; }
     }
 }
