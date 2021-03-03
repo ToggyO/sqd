@@ -58,6 +58,15 @@ namespace Squadio.API.Controllers.V01
         }
         
         /// <summary>
+        /// Get details of specified user
+        /// </summary>
+        [HttpGet("users/{userId}/detail")]
+        public async Task<Response<UserDetailDTO>> GetUserDetail([FromRoute] Guid userId)
+        {
+            return await _handler.GetUserDetail(userId);
+        }
+        
+        /// <summary>
         /// Block specified user
         /// </summary>
         [HttpPut("users/{userId}/block")]

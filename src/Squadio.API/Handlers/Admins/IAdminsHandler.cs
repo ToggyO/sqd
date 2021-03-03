@@ -12,6 +12,7 @@ namespace Squadio.API.Handlers.Admins
     public interface IAdminsHandler
     {
         Task<Response<PageModel<UserWithCompaniesDTO>>> GetUsersPage(PageModel model, UserFilterAdminDTO filter);
+        Task<Response<UserDetailDTO>> GetUserDetail(Guid userId);
         Task<Response> BlockUser(Guid userId);
         Task<Response> UnblockUser(Guid userId);
         Task<Response> ChangePassword(UserSetPasswordDTO dto, ClaimsPrincipal claims);

@@ -77,7 +77,7 @@ namespace Squadio.BLL.Providers.Admins.Implementations
 
         public async Task<Response<UserDetailDTO>> GetUserDetail(Guid userId)
         {
-            var userEntity = await _repository.GetById(userId);
+            var userEntity = await _repository.GetDetail(userId);
             
             if (userEntity == null)
             {
@@ -93,7 +93,7 @@ namespace Squadio.BLL.Providers.Admins.Implementations
 
         public async Task<Response<UserDetailDTO>> GetUserDetail(string email)
         {
-            var userEntity = await _repository.GetByEmail(email);
+            var userEntity = await _repository.GetDetail(email);
             
             if (userEntity == null)
             {

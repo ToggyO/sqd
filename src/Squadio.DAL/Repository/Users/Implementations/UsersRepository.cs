@@ -113,6 +113,26 @@ namespace Squadio.DAL.Repository.Users.Implementations
             return entity;
         }
 
+        public async Task<UserModel> GetDetail(Guid id)
+        {
+            var entity = await _context.Users
+                .Include(x => x.Role)
+                .Include(x => x.Avatar)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            return entity;
+        }
+
+        public async Task<UserModel> GetDetail(string email)
+        {
+            if (email == null) return null;
+            
+            var entity = await _context.Users
+                .Include(x => x.Role)
+                .Include(x => x.Avatar)
+                .FirstOrDefaultAsync(x => x.Email.ToUpper() == email.ToUpper());
+            return entity;
+        }
+
         public async Task SavePassword(Guid userId, string hash, string salt)
         {
             var item = await _context.Users.FindAsync(userId);

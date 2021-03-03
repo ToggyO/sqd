@@ -35,6 +35,12 @@ namespace Squadio.API.Handlers.Admins.Implementations
             return result;
         }
 
+        public async Task<Response<UserDetailDTO>> GetUserDetail(Guid userId)
+        {
+            var result = await _provider.GetUserDetail(userId);
+            return result;
+        }
+
         public async Task<Response> BlockUser(Guid userId)
         {
             var result = await _provider.SetUserStatus(userId, UserStatus.Blocked);

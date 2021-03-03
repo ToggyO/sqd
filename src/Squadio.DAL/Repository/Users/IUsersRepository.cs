@@ -10,6 +10,8 @@ namespace Squadio.DAL.Repository.Users
     {
         Task<PageModel<UserModel>> GetPage(PageModel model, UserFilterModel filter = null);
         Task<UserModel> GetByEmail(string email);
+        Task<UserModel> GetDetail(Guid id);
+        Task<UserModel> GetDetail(string email);
         Task SavePassword(Guid userId, string hash, string salt);
     }
 }
