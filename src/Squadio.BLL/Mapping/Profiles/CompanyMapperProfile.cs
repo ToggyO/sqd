@@ -17,11 +17,11 @@ namespace Squadio.BLL.Mapping.Profiles
             CreateMap<CompanyModel, CompanyDTO>();
             CreateMap<CompanyUserModel, CompanyWithUserRoleDTO>()
                 .ForMember(
-                    item => item.Status,
-                    map => map.MapFrom(src => (int) src.Status))
+                    item => item.MembershipStatus,
+                    map => map.MapFrom(src => src.Status))
                 .ForMember(
-                    item => item.StatusName,
-                    map => map.MapFrom(src => src.Status.ToString()));
+                    item => item.CompanyName,
+                    map => map.MapFrom(src => src.Company.Name));
         }
     }
 }

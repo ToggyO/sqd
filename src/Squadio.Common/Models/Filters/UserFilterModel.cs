@@ -1,4 +1,4 @@
-﻿using Squadio.Domain.Enums;
+﻿﻿using Squadio.Domain.Enums;
 
 namespace Squadio.Common.Models.Filters
 {

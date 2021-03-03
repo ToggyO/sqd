@@ -35,18 +35,26 @@ namespace Squadio.BLL.Mapping.Profiles
             CreateMap<ResourceImageViewModel, ResourceImageDTO>();
             CreateMap<ResourceViewModel, ResourceDTO>();
             
-            CreateMap<ResourceModel, ResourceImageViewModel>()
-                .ForMember(
-                    item => item,
-                    map => map.MapFrom(src => new ResourceImageViewModel(src)));
-            CreateMap<ResourceModel, ResourceViewModel>()
-                .ForMember(
-                    item => item,
-                    map => map.MapFrom(src => new ResourceViewModel(src)));
+            CreateMap<ResourceModel, ResourceImageViewModel>().ConvertUsing((from, to) =>
+                {
+                    if (from == null)
+                        return null;
+                    var mapped = new ResourceImageViewModel(from);
+                    return mapped;
+                });
+            CreateMap<ResourceModel, ResourceViewModel>().ConvertUsing((from, to) =>
+            {
+                if (from == null)
+                    return null;
+                var mapped = new ResourceViewModel(from);
+                return mapped;
+            });
             
             //TODO: Think about how to map correctly
             CreateMap<ResourceModel, ResourceImageDTO>().ConvertUsing((from, to) =>
             {
+                if (from == null)
+                    return null;
                 var viewModel = new ResourceImageViewModel(from);
                 return new ResourceImageDTO
                 {
@@ -59,6 +67,8 @@ namespace Squadio.BLL.Mapping.Profiles
             //TODO: Think about how to map correctly
             CreateMap<ResourceModel, ResourceDTO>().ConvertUsing((from, to) =>
             {
+                if (from == null)
+                    return null;
                 var viewModel = new ResourceViewModel(from);
                 return new ResourceDTO
                 {

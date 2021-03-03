@@ -15,7 +15,7 @@ namespace Squadio.BLL.Mapping.Profiles
                 IncludeAdmin = false,
                 IncludeDeleted = false
             });
-            CreateMap<UserAdminFilterDTO, UserFilterModel>().ConvertUsing(x => new UserFilterModel
+            CreateMap<UserFilterAdminDTO, UserFilterModel>().ConvertUsing(x => new UserFilterModel
             {
                 Search = x.Search,
                 UserStatus = x.UserStatus,

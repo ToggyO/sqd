@@ -59,8 +59,6 @@ namespace Squadio.DAL.Repository.Users.Implementations
 
             if (filter != null)
             {
-                //TODO: Filter
-
                 if (!string.IsNullOrEmpty(filter.Search))
                 {
                     query = query.Where(x => 

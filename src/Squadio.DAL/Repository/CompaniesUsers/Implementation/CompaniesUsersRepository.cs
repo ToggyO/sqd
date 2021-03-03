@@ -113,7 +113,7 @@ namespace Squadio.DAL.Repository.CompaniesUsers.Implementation
             return item;
         }
 
-        public async Task AddCompanyUser(Guid companyId, Guid userId, MembershipStatus membershipStatus)
+        public async Task<CompanyUserModel> AddCompanyUser(Guid companyId, Guid userId, MembershipStatus membershipStatus)
         {
             var item = new CompanyUserModel
             {
@@ -122,8 +122,9 @@ namespace Squadio.DAL.Repository.CompaniesUsers.Implementation
                 Status = membershipStatus,
                 CreatedDate = DateTime.UtcNow
             };
-            _context.CompaniesUsers.Add(item);
+            var entry = await _context.CompaniesUsers.AddAsync(item);
             await _context.SaveChangesAsync();
+            return entry.Entity;
         }
 
         public async Task DeleteCompanyUser(Guid companyId, Guid userId)
@@ -133,6 +134,15 @@ namespace Squadio.DAL.Repository.CompaniesUsers.Implementation
                 .FirstOrDefaultAsync();
             _context.CompaniesUsers.Remove(item);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<CompanyUserModel>> GetCompaniesByUsers(IEnumerable<Guid> userIds)
+        {
+            var items = await _context.CompaniesUsers
+                .Include(x => x.Company)
+                .Where(x => userIds.Contains(x.UserId))
+                .ToListAsync();
+            return items;
         }
 
         public async Task DeleteCompanyUsers(Guid companyId, IEnumerable<string> emails)

@@ -29,7 +29,7 @@ namespace Squadio.API.Handlers.Admins.Implementations
             _service = service;
             _tokensService = tokensService;
         }
-        public async Task<Response<PageModel<UserDTO>>> GetUsersPage(PageModel model, UserAdminFilterDTO filter)
+        public async Task<Response<PageModel<UserWithCompaniesDTO>>> GetUsersPage(PageModel model, UserFilterAdminDTO filter)
         {
             var result = await _provider.GetUsersPage(model, filter);
             return result;
