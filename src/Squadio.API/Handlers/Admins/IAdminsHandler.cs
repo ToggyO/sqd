@@ -23,5 +23,6 @@ namespace Squadio.API.Handlers.Admins
         Task<Response<TokenDTO>> RefreshToken(string refreshToken);
         Task<Response<PageModel<CompanyDetailAdminDTO>>> GetCompanyPage(PageModel model, CompanyFilterAdminDTO filter);
         Task<Response<CompanyDetailAdminDTO>> GetCompanyDetail(Guid companyId);
+        Task<Response<PageModel<UserWithRoleDTO>>> GetCompanyUsersPage(PageModel model, Guid companyId);
     }
 }

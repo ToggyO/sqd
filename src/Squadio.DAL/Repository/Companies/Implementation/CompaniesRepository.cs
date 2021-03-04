@@ -7,6 +7,7 @@ using Squadio.Common.Enums.Sorts;
 using Squadio.Common.Models.Filters;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Sorts;
+using Squadio.DAL.Extensions;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Companies;
 
@@ -63,23 +64,20 @@ namespace Squadio.DAL.Repository.Companies.Implementation
                     var searchUpper = filter.Search.ToUpper();
                     query = query.Where(x => x.Name.ToUpper().Contains(searchUpper));
                 }
-                if (filter.CreateFrom.HasValue)
+                if (filter.CreatedFrom.HasValue)
                 {
-                    query = query.Where(x => x.CreatedDate >= filter.CreateFrom);
+                    query = query.Where(x => x.CreatedDate >= filter.CreatedFrom);
                 }
-                if (filter.CreateTo.HasValue)
+                if (filter.CreatedTo.HasValue)
                 {
-                    query = query.Where(x => x.CreatedDate <= filter.CreateTo);
+                    query = query.Where(x => x.CreatedDate <= filter.CreatedTo);
                 }
             }
 
-            var skip = (pageModel.Page - 1) * pageModel.PageSize;
-            var take = pageModel.PageSize;
-
             var total = await query.CountAsync();
             var items = await query
-                .Skip(skip)
-                .Take(take)
+                .OrderBy(x => x.Name)
+                .GetPage(pageModel)
                 .ToListAsync();
 
             return new PageModel<CompanyModel>
@@ -89,6 +87,15 @@ namespace Squadio.DAL.Repository.Companies.Implementation
                 Total = total,
                 Items = items
             };
+        }
+
+        public async Task<CompanyModel> GetDetail(Guid companyId)
+        {
+            var entity = await _context.Companies
+                .Include(x => x.Creator).ThenInclude(x => x.Avatar)
+                .Include(x => x.Creator).ThenInclude(x => x.Role)
+                .FirstOrDefaultAsync(x => x.Id == companyId);
+            return entity;
         }
 
         // public async Task<PageModel<CompanyModel>> GetCompanies(PageModel pageModel

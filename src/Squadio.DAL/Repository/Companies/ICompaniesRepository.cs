@@ -13,5 +13,6 @@ namespace Squadio.DAL.Repository.Companies
     {
         // Task<PageModel<CompanyModel>> GetCompanies(PageModel pageModel, CompanyAdminFilter filter = null, SortCompaniesModel sort = null, string search = null);
         Task<PageModel<CompanyModel>> GetCompanies(PageModel pageModel, CompanyFilterModel filter = null);
+        Task<CompanyModel> GetDetail(Guid companyId);
     }
 }

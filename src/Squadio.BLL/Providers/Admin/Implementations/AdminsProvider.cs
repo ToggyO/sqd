@@ -136,7 +136,42 @@ namespace Squadio.BLL.Providers.Admin.Implementations
 
         public async Task<Response<CompanyDetailAdminDTO>> GetCompanyDetail(Guid companyId)
         {
-            throw new NotImplementedException();
+            var companiesEntity = await _companiesRepository.GetDetail(companyId);
+
+            if (companiesEntity == null)
+            {
+                return new NotFoundErrorResponse<CompanyDetailAdminDTO>();
+            }
+            
+            var companyDto = _mapper.Map<CompanyDetailAdminDTO>(companiesEntity);
+            
+            var usersCompaniesEntityList = (await _companiesUsersRepository.GetUsersByCompanies(new []{companyDto.Id})).ToList();
+
+            companyDto.UsersCount = usersCompaniesEntityList.Count(x => x.User.Status != UserStatus.Active);
+            companyDto.Admins = _mapper.Map<IEnumerable<UserWithRoleDTO>>(usersCompaniesEntityList.Where(x => x.Status != MembershipStatus.Member));
+
+            return new Response<CompanyDetailAdminDTO>
+            {
+                Data = companyDto
+            };
+        }
+
+        public async Task<Response<PageModel<UserWithRoleDTO>>> GetCompanyUsersPage(PageModel model, Guid companyId)
+        {
+            var companiesEntity = await _companiesRepository.GetDetail(companyId);
+
+            if (companiesEntity == null)
+            {
+                return new NotFoundErrorResponse<PageModel<UserWithRoleDTO>>();
+            }
+            
+            var usersCompaniesEntityPage = await _companiesUsersRepository.GetCompaniesUsers(model, companyId: companyId);
+            var mapped = _mapper.Map<PageModel<UserWithRoleDTO>>(usersCompaniesEntityPage);
+
+            return new Response<PageModel<UserWithRoleDTO>>
+            {
+                Data = mapped
+            };
         }
     }
 }

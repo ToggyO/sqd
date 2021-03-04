@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Squadio.Common.Models.Pages;
+using Squadio.DAL.Extensions;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Companies;
 using Squadio.Domain.Models.Users;
@@ -47,15 +48,13 @@ namespace Squadio.DAL.Repository.CompaniesUsers.Implementation
                 }
             }
 
-            query = query.OrderByDescending(x => x.CreatedDate);
-            
-            var skip = (model.Page - 1) * model.PageSize;
-            var take = model.PageSize;
+            query = query
+                .OrderByDescending(x => x.Status)
+                .ThenByDescending(x => x.CreatedDate);
 
             var total = await query.CountAsync();
             var items = await query
-                .Skip(skip)
-                .Take(take)
+                .GetPage(model)
                 .ToListAsync();
 
             return new PageModel<CompanyUserModel>
@@ -84,14 +83,10 @@ namespace Squadio.DAL.Repository.CompaniesUsers.Implementation
             }
             
             query = query.OrderBy(x => x.User.Email);
-            
-            var skip = (model.Page - 1) * model.PageSize;
-            var take = model.PageSize;
 
             var total = await query.CountAsync();
             var items = await query
-                .Skip(skip)
-                .Take(take)
+                .GetPage(model)
                 .ToListAsync();
 
             return new PageModel<CompanyUserModel>

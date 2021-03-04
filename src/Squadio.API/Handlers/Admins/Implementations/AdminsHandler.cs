@@ -126,5 +126,11 @@ namespace Squadio.API.Handlers.Admins.Implementations
             var result = await _provider.GetCompanyDetail(companyId);
             return result;
         }
+
+        public async Task<Response<PageModel<UserWithRoleDTO>>> GetCompanyUsersPage(PageModel model, Guid companyId)
+        {
+            var result = await _provider.GetCompanyUsersPage(model, companyId);
+            return result;
+        }
     }
 }

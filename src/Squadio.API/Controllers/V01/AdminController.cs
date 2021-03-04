@@ -104,6 +104,15 @@ namespace Squadio.API.Controllers.V01
         }
         
         /// <summary>
+        /// Get users page of specified company
+        /// </summary>
+        [HttpGet("companies/{companyId}/users")]
+        public async Task<Response<PageModel<UserWithRoleDTO>>> GetCompaniesUsersPage([FromQuery] PageModel model, [FromRoute] Guid companyId)
+        {
+            return await _handler.GetCompanyUsersPage(model, companyId);
+        }
+        
+        /// <summary>
         /// Set new password 
         /// </summary>
         [HttpPut("password/change")]

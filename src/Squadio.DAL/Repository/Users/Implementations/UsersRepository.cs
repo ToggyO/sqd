@@ -86,8 +86,9 @@ namespace Squadio.DAL.Repository.Users.Implementations
             }
             
             var total = await query.CountAsync();
-            
+
             var items = await query
+                .OrderBy(x => x.Name)
                 .GetPage(model)
                 .ToListAsync();
             
