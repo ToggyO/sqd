@@ -24,5 +24,7 @@ namespace Squadio.API.Handlers.Admins
         Task<Response<PageModel<CompanyDetailAdminDTO>>> GetCompanyPage(PageModel model, CompanyFilterAdminDTO filter);
         Task<Response<CompanyDetailAdminDTO>> GetCompanyDetail(Guid companyId);
         Task<Response<PageModel<UserWithRoleDTO>>> GetCompanyUsersPage(PageModel model, Guid companyId);
+        Task<Response> BlockCompany(Guid companyId);
+        Task<Response> UnblockCompany(Guid companyId);
     }
 }

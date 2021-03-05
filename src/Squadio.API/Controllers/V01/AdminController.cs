@@ -113,6 +113,24 @@ namespace Squadio.API.Controllers.V01
         }
         
         /// <summary>
+        /// Block specified company
+        /// </summary>
+        [HttpPut("companies/{companyId}/block")]
+        public async Task<Response> BlockCompany([FromRoute] Guid companyId)
+        {
+            return await _handler.BlockCompany(companyId);
+        }
+        
+        /// <summary>
+        /// Unblock specified company
+        /// </summary>
+        [HttpPut("companies/{companyId}/unblock")]
+        public async Task<Response> UnblockCompany([FromRoute] Guid companyId)
+        {
+            return await _handler.UnblockCompany(companyId);
+        }
+        
+        /// <summary>
         /// Set new password 
         /// </summary>
         [HttpPut("password/change")]

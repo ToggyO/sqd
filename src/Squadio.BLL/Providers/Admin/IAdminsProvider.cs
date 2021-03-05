@@ -12,7 +12,6 @@ namespace Squadio.BLL.Providers.Admin
     public interface IAdminsProvider
     {
         Task<Response<PageModel<UserWithCompaniesDTO>>> GetUsersPage(PageModel model, UserFilterAdminDTO filter);
-        Task<Response> SetUserStatus(Guid userId, UserStatus status);
         Task<Response<UserDetailAdminDTO>> GetUserDetail(Guid userId);
         Task<Response<UserDetailAdminDTO>> GetUserDetail(string email);
         Task<Response<PageModel<CompanyDetailAdminDTO>>> GetCompanyPage(PageModel model, CompanyFilterAdminDTO filter);

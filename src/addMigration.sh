@@ -7,6 +7,8 @@ export DB_USER='postgres';
 export DB_PASSWORD='postgres';
 export ASPNETCORE_ENVIRONMENT='Development';
 
+echo Try to add ---$1--- migration
+
 cd ./Squadio.DAL/
-dotnet ef --startup-project ../Squadio.API/ migrations add --context SquadioDbContext RecoverOldSource
+dotnet ef --startup-project ../Squadio.API/ migrations add --context SquadioDbContext $1
 cd ..

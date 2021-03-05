@@ -57,28 +57,6 @@ namespace Squadio.BLL.Providers.Admin.Implementations
             };
         }
 
-        public async Task<Response> SetUserStatus(Guid userId, UserStatus status)
-        {
-            var userEntity = await _usersRepository.GetById(userId);
-            
-            if (userEntity == null)
-            {
-                return new NotFoundErrorResponse();
-            }
-            
-            if (userEntity.RoleId == RoleGuid.Admin)
-            {
-                return new ForbiddenErrorResponse();
-            }
-            
-            if(userEntity.Status == status)
-                return new Response();
-
-            userEntity.Status = status;
-            await _usersRepository.Update(userEntity);
-            return new Response();
-        }
-
         public async Task<Response<UserDetailAdminDTO>> GetUserDetail(Guid userId)
         {
             var userEntity = await _usersRepository.GetDetail(userId);

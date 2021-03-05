@@ -44,13 +44,13 @@ namespace Squadio.API.Handlers.Admins.Implementations
 
         public async Task<Response> BlockUser(Guid userId)
         {
-            var result = await _provider.SetUserStatus(userId, UserStatus.Blocked);
+            var result = await _service.SetUserStatus(userId, UserStatus.Blocked);
             return result;
         }
 
         public async Task<Response> UnblockUser(Guid userId)
         {
-            var result = await _provider.SetUserStatus(userId, UserStatus.Active);
+            var result = await _service.SetUserStatus(userId, UserStatus.Active);
             return result;
         }
 
@@ -130,6 +130,18 @@ namespace Squadio.API.Handlers.Admins.Implementations
         public async Task<Response<PageModel<UserWithRoleDTO>>> GetCompanyUsersPage(PageModel model, Guid companyId)
         {
             var result = await _provider.GetCompanyUsersPage(model, companyId);
+            return result;
+        }
+
+        public async Task<Response> BlockCompany(Guid companyId)
+        {
+            var result = await _service.SetCompanyStatus(companyId, CompanyStatus.Blocked);
+            return result;
+        }
+
+        public async Task<Response> UnblockCompany(Guid companyId)
+        {
+            var result = await _service.SetCompanyStatus(companyId, CompanyStatus.Active);
             return result;
         }
     }

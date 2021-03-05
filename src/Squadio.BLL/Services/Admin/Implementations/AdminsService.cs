@@ -6,6 +6,7 @@ using Squadio.BLL.Services.Notifications.Emails;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.ChangePassword;
+using Squadio.DAL.Repository.Companies;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Users;
@@ -15,32 +16,35 @@ namespace Squadio.BLL.Services.Admin.Implementations
 {
     public class AdminsService : IAdminsService
     {
-        private readonly IUsersRepository _repository;
+        private readonly IUsersRepository _usersRepository;
         private readonly IChangePasswordRequestRepository _changePasswordRepository;
         private readonly IPasswordService _passwordService;
         private readonly IEmailNotificationsService _emailNotificationsService;
+        private readonly ICompaniesRepository _companiesRepository;
         private readonly IMapper _mapper;
 
-        public AdminsService(IUsersRepository repository
+        public AdminsService(IUsersRepository usersRepository
             , IChangePasswordRequestRepository changePasswordRepository
             , IPasswordService passwordService
             , IEmailNotificationsService emailNotificationsService
+            , ICompaniesRepository companiesRepository
             , IMapper mapper
         )
         {
-            _repository = repository;
+            _usersRepository = usersRepository;
             _changePasswordRepository = changePasswordRepository;
             _passwordService = passwordService;
             _emailNotificationsService = emailNotificationsService;
+            _companiesRepository = companiesRepository;
             _mapper = mapper;
         }
 
         public async Task<Response> SetPassword(string email, string password)
         {
-            var user = await _repository.GetByEmail(email);
+            var user = await _usersRepository.GetByEmail(email);
 
             var passwordModel = await _passwordService.CreatePassword(password);
-            await _repository.SavePassword(user.Id, passwordModel.Hash, passwordModel.Salt);
+            await _usersRepository.SavePassword(user.Id, passwordModel.Hash, passwordModel.Salt);
 
             var userDTO = _mapper.Map<UserModel, UserDTO>(user);
             return new Response<UserDTO>
@@ -68,7 +72,7 @@ namespace Squadio.BLL.Services.Admin.Implementations
             }
 
             var passwordModel = await _passwordService.CreatePassword(password);
-            await _repository.SavePassword(userPasswordRequest.UserId, passwordModel.Hash, passwordModel.Salt);
+            await _usersRepository.SavePassword(userPasswordRequest.UserId, passwordModel.Hash, passwordModel.Salt);
 
             await _changePasswordRepository.ActivateAllRequestsForUser(userPasswordRequest.UserId);
             return new Response();
@@ -76,7 +80,7 @@ namespace Squadio.BLL.Services.Admin.Implementations
 
         public async Task<Response> ResetPasswordRequest(string email)
         {
-            var user = await _repository.GetByEmail(email);
+            var user = await _usersRepository.GetByEmail(email);
             if (user == null)
             {
                 return new Response();
@@ -122,8 +126,47 @@ namespace Squadio.BLL.Services.Admin.Implementations
                 Salt = passwordModel.Salt
             };
 
-            await _repository.Create(entity);
+            await _usersRepository.Create(entity);
             
+            return new Response();
+        }
+
+        public async Task<Response> SetUserStatus(Guid userId, UserStatus status)
+        {
+            var userEntity = await _usersRepository.GetById(userId);
+            
+            if (userEntity == null)
+            {
+                return new NotFoundErrorResponse();
+            }
+            
+            if (userEntity.RoleId == RoleGuid.Admin)
+            {
+                return new ForbiddenErrorResponse();
+            }
+            
+            if(userEntity.Status == status)
+                return new Response();
+
+            userEntity.Status = status;
+            await _usersRepository.Update(userEntity);
+            return new Response();
+        }
+
+        public async Task<Response> SetCompanyStatus(Guid companyId, CompanyStatus status)
+        {
+            var companyEntity = await _companiesRepository.GetById(companyId);
+            
+            if (companyEntity == null)
+            {
+                return new NotFoundErrorResponse();
+            }
+            
+            if(companyEntity.Status == status)
+                return new Response();
+
+            companyEntity.Status = status;
+            await _companiesRepository.Update(companyEntity);
             return new Response();
         }
     }
