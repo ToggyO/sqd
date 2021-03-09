@@ -73,9 +73,9 @@ namespace Squadio.API.Handlers.Users.Implementations
             var result = new Response();
             return result;
         }
-        public async Task<Response<UserDTO>> ResetPassword(UserResetPasswordDTO dto)
+        public async Task<Response<UserDTO>> ResetPasswordConfirm(UserResetPasswordDTO dto)
         {
-            var result = await _service.ResetPassword(dto.Code, dto.Password);
+            var result = await _service.ResetPasswordConfirm(dto.Code, dto.Password);
             return result;
         }
 
@@ -114,9 +114,9 @@ namespace Squadio.API.Handlers.Users.Implementations
             return result;
         }
 
-        public async Task<Response<UserDTO>> SetEmail(UserSetEmailDTO dto, ClaimsPrincipal claims)
+        public async Task<Response<UserDTO>> ChangeEmailConfirm(UserSetEmailDTO dto, ClaimsPrincipal claims)
         {
-            var result = await _service.SetEmail(claims.GetUserId(), dto.Code);
+            var result = await _service.ChangeEmailConfirm(claims.GetUserId(), dto.Code);
             return result;
         }
 

@@ -53,7 +53,7 @@ namespace Squadio.BLL.Services.Users.Implementations
             };
         }
 
-        public async Task<Response<UserDTO>> ResetPassword(string code, string password)
+        public async Task<Response<UserDTO>> ResetPasswordConfirm(string code, string password)
         {
             var userPasswordRequest = await _changePasswordRepository.GetRequestByCode(code);
             if (userPasswordRequest == null || userPasswordRequest?.IsDeleted == true)
@@ -196,14 +196,14 @@ namespace Squadio.BLL.Services.Users.Implementations
 
             await _changeEmailRepository.ActivateAllRequestsForUser(user.Id);
 
-            var code = CodeHelper.GenerateNumberCode();
+            var code = CodeHelper.GenerateCodeAsGuid();
 
             await _changeEmailRepository.AddRequest(user.Id, code, newEmail);
 
             return new Response();
         }
 
-        public async Task<Response<UserDTO>> SetEmail(Guid id, string code)
+        public async Task<Response<UserDTO>> ChangeEmailConfirm(Guid id, string code)
         {
             var user = await _repository.GetById(id);
             var request = await _changeEmailRepository.GetRequest(user.Id, code);

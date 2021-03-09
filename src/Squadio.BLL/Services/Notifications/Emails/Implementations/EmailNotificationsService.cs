@@ -29,6 +29,7 @@ namespace Squadio.BLL.Services.Notifications.Emails.Implementations
 
         public async Task<Response> SendEmail(MailNotificationModel message)
         {
+            //TODO: maybe change implementation of sending email
             try
             {
                 message.FromEmail = _smtpCredentials.Email;
@@ -86,6 +87,25 @@ namespace Squadio.BLL.Services.Notifications.Emails.Implementations
                 Subject = "Reset password",
                 Args = args,
                 TemplateId = TemplateId.ResetPassword,
+                ToAddresses = new []{email},
+            };
+
+            return await SendEmail(mailNotificationModel);
+        }
+
+        public async Task<Response> SendConfirmNewMailboxEmail(string email, string code)
+        {
+            var args = new Dictionary<string, string>
+            {
+                {"{{Code}}", code},
+                {"{{ConfirmAdminNewMailboxUrl}}",_urls.ConfirmAdminNewMailboxUrl}
+            };
+            var mailNotificationModel = new MailNotificationModel
+            {
+                Html = true,
+                Subject = "Confirm email",
+                Args = args,
+                TemplateId = TemplateId.ConfirmAdminNewMailbox,
                 ToAddresses = new []{email},
             };
 

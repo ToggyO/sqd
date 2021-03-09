@@ -6,5 +6,6 @@
         public string ResetAdminPasswordUrl { get; set; }
         public string ResetPasswordAdminUrl { get; set; }
         public string InviteUserPageUrl { get; set; }
+        public string ConfirmAdminNewMailboxUrl { get; set; }
     }
 }

@@ -3,8 +3,10 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Magora.Passwords;
 using Squadio.BLL.Services.Notifications.Emails;
+using Squadio.Common.Helpers;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
+using Squadio.DAL.Repository.ChangeEmail;
 using Squadio.DAL.Repository.ChangePassword;
 using Squadio.DAL.Repository.Companies;
 using Squadio.DAL.Repository.Users;
@@ -21,6 +23,7 @@ namespace Squadio.BLL.Services.Admin.Implementations
         private readonly IPasswordService _passwordService;
         private readonly IEmailNotificationsService _emailNotificationsService;
         private readonly ICompaniesRepository _companiesRepository;
+        private readonly IChangeEmailRequestRepository _changeEmailRepository;
         private readonly IMapper _mapper;
 
         public AdminsService(IUsersRepository usersRepository
@@ -28,6 +31,7 @@ namespace Squadio.BLL.Services.Admin.Implementations
             , IPasswordService passwordService
             , IEmailNotificationsService emailNotificationsService
             , ICompaniesRepository companiesRepository
+            , IChangeEmailRequestRepository changeEmailRepository
             , IMapper mapper
         )
         {
@@ -36,6 +40,7 @@ namespace Squadio.BLL.Services.Admin.Implementations
             _passwordService = passwordService;
             _emailNotificationsService = emailNotificationsService;
             _companiesRepository = companiesRepository;
+            _changeEmailRepository = changeEmailRepository;
             _mapper = mapper;
         }
 
@@ -84,21 +89,11 @@ namespace Squadio.BLL.Services.Admin.Implementations
             if (user == null)
             {
                 return new Response();
-                // return new BusinessConflictErrorResponse(new[]
-                // {
-                //     new Error
-                //     {
-                //         Code = ErrorCodes.Business.UserDoesNotExists,
-                //         Message = ErrorMessages.Business.UserDoesNotExists,
-                //         Field = ErrorFields.User.Email
-                //     }
-                // });
             }
 
             if (user.RoleId != RoleGuid.Admin)
             {
                 return new Response();
-                // return new ForbiddenErrorResponse();
             }
 
             var code = Guid.NewGuid().ToString("N");
@@ -108,6 +103,76 @@ namespace Squadio.BLL.Services.Admin.Implementations
             await _changePasswordRepository.AddRequest(user.Id, code);
 
             return await _emailNotificationsService.SendResetPasswordEmail(user.Email, code);
+        }
+
+        public async Task<Response> ChangeEmailRequest(Guid id, string newEmail)
+        {
+            var user = await _usersRepository.GetById(id);
+
+            var checkEmail = await _usersRepository.GetByEmail(newEmail);
+            if (checkEmail != null)
+            {
+                return new BusinessConflictErrorResponse(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Business.EmailExists,
+                        Message = ErrorCodes.Business.EmailExists
+                    }
+                });
+            }
+
+            await _changeEmailRepository.ActivateAllRequestsForUser(user.Id);
+
+            var code = CodeHelper.GenerateCodeAsGuid();
+
+            await _changeEmailRepository.AddRequest(user.Id, code, newEmail);
+
+            return await _emailNotificationsService.SendConfirmNewMailboxEmail(newEmail, code);
+        }
+
+        public async Task<Response<UserDTO>> ChangeEmailConfirm(Guid id, string code)
+        {
+            var user = await _usersRepository.GetById(id);
+            var request = await _changeEmailRepository.GetRequest(user.Id, code);
+
+            if (request == null || request?.IsDeleted == true)
+            {
+                return new ForbiddenErrorResponse<UserDTO>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.ConfirmationCodeInvalid,
+                        Message = ErrorMessages.Security.ConfirmationCodeInvalid
+                    }
+                });
+            }
+
+            var checkEmail = await _usersRepository.GetByEmail(request.NewEmail);
+            if (checkEmail != null)
+            {
+                return new BusinessConflictErrorResponse<UserDTO>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Business.EmailExists,
+                        Message = ErrorCodes.Business.EmailExists
+                    }
+                });
+            }
+            
+            // TODO: Check lifetime of request if needed
+
+            await _changeEmailRepository.ActivateAllRequestsForUser(user.Id);
+
+            user.Email = request.NewEmail;
+
+            user = await _usersRepository.Update(user);
+
+            return new Response<UserDTO>
+            {
+                Data = _mapper.Map<UserModel, UserDTO>(user)
+            };
         }
 
         public async Task<Response> CreateAdmin(string email, string name, string password)

@@ -12,15 +12,17 @@ namespace Squadio.API.Handlers.Admins
 {
     public interface IAdminsHandler
     {
+        Task<Response<AuthInfoDTO>> Authenticate(CredentialsDTO request);
+        Task<Response<TokenDTO>> RefreshToken(string refreshToken);
+        Task<Response> ChangePassword(UserSetPasswordDTO dto, ClaimsPrincipal claims);
+        Task<Response> ResetPasswordRequest(string email);
+        Task<Response> ResetPasswordConfirm(UserResetPasswordDTO dto);
+        Task<Response> ChangeEmailRequest(UserChangeEmailRequestDTO dto, ClaimsPrincipal claims);
+        Task<Response<UserDTO>> ChangeEmailConfirm(string code, ClaimsPrincipal claims);
         Task<Response<PageModel<UserWithCompaniesDTO>>> GetUsersPage(PageModel model, UserFilterAdminDTO filter);
         Task<Response<UserDetailAdminDTO>> GetUserDetail(Guid userId);
         Task<Response> BlockUser(Guid userId);
         Task<Response> UnblockUser(Guid userId);
-        Task<Response> ChangePassword(UserSetPasswordDTO dto, ClaimsPrincipal claims);
-        Task<Response> ResetPasswordRequest(string email);
-        Task<Response> ResetPassword(UserResetPasswordDTO dto);
-        Task<Response<AuthInfoDTO>> Authenticate(CredentialsDTO request);
-        Task<Response<TokenDTO>> RefreshToken(string refreshToken);
         Task<Response<PageModel<CompanyDetailAdminDTO>>> GetCompanyPage(PageModel model, CompanyFilterAdminDTO filter);
         Task<Response<CompanyDetailAdminDTO>> GetCompanyDetail(Guid companyId);
         Task<Response<PageModel<UserWithRoleDTO>>> GetCompanyUsersPage(PageModel model, Guid companyId);

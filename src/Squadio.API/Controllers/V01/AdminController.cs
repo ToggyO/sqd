@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -152,11 +153,29 @@ namespace Squadio.API.Controllers.V01
         /// <summary>
         /// Set new password, using code from email
         /// </summary>
-        [HttpPut("password/reset")]
+        [HttpPut("password/reset/confirm")]
         [AllowAnonymous]
         public async Task<Response> ResetPassword([FromBody] UserResetPasswordDTO dto)
         {
-            return await _handler.ResetPassword(dto);
+            return await _handler.ResetPasswordConfirm(dto);
+        }
+        
+        /// <summary>
+        /// Send email for confirm new mailbox
+        /// </summary>
+        [HttpPost("email/set/request")]
+        public async Task<Response> ChangeEmailRequest([FromBody, Required] UserChangeEmailRequestDTO dto)
+        {
+            return await _handler.ChangeEmailRequest(dto, User);
+        }
+        
+        /// <summary>
+        /// Set email from for current admin
+        /// </summary>
+        [HttpPut("email/set/confirm")]
+        public async Task<Response<UserDTO>> SetEmail([FromBody] UserSetEmailDTO dto)
+        {
+            return await _handler.ChangeEmailConfirm(dto?.Code, User);
         }
     }
 }

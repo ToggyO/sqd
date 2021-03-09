@@ -124,7 +124,7 @@ namespace Squadio.BLL.Services.SignUp.Implementations
                 };
             }
 
-            var resetPasswordResponse = await _usersService.ResetPassword(dto.InviteCode, dto.Password);
+            var resetPasswordResponse = await _usersService.ResetPasswordConfirm(dto.InviteCode, dto.Password);
 
             if (!resetPasswordResponse.IsSuccess)
             {

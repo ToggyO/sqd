@@ -30,60 +30,6 @@ namespace Squadio.API.Handlers.Admins.Implementations
             _service = service;
             _tokensService = tokensService;
         }
-        public async Task<Response<PageModel<UserWithCompaniesDTO>>> GetUsersPage(PageModel model, UserFilterAdminDTO filter)
-        {
-            var result = await _provider.GetUsersPage(model, filter);
-            return result;
-        }
-
-        public async Task<Response<UserDetailAdminDTO>> GetUserDetail(Guid userId)
-        {
-            var result = await _provider.GetUserDetail(userId);
-            return result;
-        }
-
-        public async Task<Response> BlockUser(Guid userId)
-        {
-            var result = await _service.SetUserStatus(userId, UserStatus.Blocked);
-            return result;
-        }
-
-        public async Task<Response> UnblockUser(Guid userId)
-        {
-            var result = await _service.SetUserStatus(userId, UserStatus.Active);
-            return result;
-        }
-
-        public async Task<Response> ChangePassword(UserSetPasswordDTO dto, ClaimsPrincipal claims)
-        {
-            var userResponse = await _provider.GetUserDetail(claims.GetUserId());
-            if (!userResponse.IsSuccess)
-                return userResponse;
-            
-            var oldPasswordCorrectResponse = await _tokensService.Authenticate(new CredentialsDTO
-            {
-                Email = userResponse.Data.Email,
-                Password = dto.OldPassword
-            });
-
-            if (!oldPasswordCorrectResponse.IsSuccess)
-                return oldPasswordCorrectResponse;
-
-            return await _service.SetPassword(userResponse.Data.Email, dto.Password);
-        }
-
-        public async Task<Response> ResetPasswordRequest(string email)
-        {
-            await _service.ResetPasswordRequest(email);
-            var result = new Response();
-            return result;
-        }
-
-        public async Task<Response> ResetPassword(UserResetPasswordDTO dto)
-        {
-            var result = await _service.ResetPassword(dto.Code, dto.Password);
-            return result;
-        }
 
         public async Task<Response<AuthInfoDTO>> Authenticate(CredentialsDTO request)
         {
@@ -112,6 +58,104 @@ namespace Squadio.API.Handlers.Admins.Implementations
         public async Task<Response<TokenDTO>> RefreshToken(string refreshToken)
         {
             var result = await _tokensService.RefreshToken(refreshToken);
+            return result;
+        }
+
+        public async Task<Response> ChangePassword(UserSetPasswordDTO dto, ClaimsPrincipal claims)
+        {
+            var userResponse = await _provider.GetUserDetail(claims.GetUserId());
+            if (!userResponse.IsSuccess)
+                return userResponse;
+            
+            var oldPasswordCorrectResponse = await _tokensService.Authenticate(new CredentialsDTO
+            {
+                Email = userResponse.Data.Email,
+                Password = dto.OldPassword
+            });
+
+            if (!oldPasswordCorrectResponse.IsSuccess)
+                return oldPasswordCorrectResponse;
+
+            return await _service.SetPassword(userResponse.Data.Email, dto.Password);
+        }
+
+        public async Task<Response> ResetPasswordRequest(string email)
+        {
+            await _service.ResetPasswordRequest(email);
+            var result = new Response();
+            return result;
+        }
+
+        public async Task<Response> ResetPasswordConfirm(UserResetPasswordDTO dto)
+        {
+            var result = await _service.ResetPassword(dto.Code, dto.Password);
+            return result;
+        }
+
+        public async Task<Response> ChangeEmailRequest(UserChangeEmailRequestDTO dto, ClaimsPrincipal claims)
+        {
+            var user = await _provider.GetUserDetail(claims.GetUserId());
+            if (user.Data == null)
+            {
+                return new ForbiddenErrorResponse();
+            }
+
+            if (user.Data.RoleId != RoleGuid.Admin)
+            {
+                return new ForbiddenErrorResponse();
+            }
+            
+            var oldPasswordCorrectResponse = await _tokensService.Authenticate(new CredentialsDTO
+            {
+                Email = user.Data.Email,
+                Password = dto.Password
+            });
+
+            if (!oldPasswordCorrectResponse.IsSuccess)
+                return oldPasswordCorrectResponse;
+            
+            var sendConfirmationResponse = await _service.ChangeEmailRequest(user.Data.Id, dto.NewEmail);
+            return sendConfirmationResponse;
+        }
+
+        public async Task<Response<UserDTO>> ChangeEmailConfirm(string code, ClaimsPrincipal claims)
+        {
+            var user = await _provider.GetUserDetail(claims.GetUserId());
+            if (user.Data == null)
+            {
+                return new ForbiddenErrorResponse<UserDTO>();
+            }
+
+            if (user.Data.RoleId != RoleGuid.Admin)
+            {
+                return new ForbiddenErrorResponse<UserDTO>();
+            }
+            
+            var result = await _service.ChangeEmailConfirm(user.Data.Id, code);
+            return result;
+        }
+
+        public async Task<Response<PageModel<UserWithCompaniesDTO>>> GetUsersPage(PageModel model, UserFilterAdminDTO filter)
+        {
+            var result = await _provider.GetUsersPage(model, filter);
+            return result;
+        }
+
+        public async Task<Response<UserDetailAdminDTO>> GetUserDetail(Guid userId)
+        {
+            var result = await _provider.GetUserDetail(userId);
+            return result;
+        }
+
+        public async Task<Response> BlockUser(Guid userId)
+        {
+            var result = await _service.SetUserStatus(userId, UserStatus.Blocked);
+            return result;
+        }
+
+        public async Task<Response> UnblockUser(Guid userId)
+        {
+            var result = await _service.SetUserStatus(userId, UserStatus.Active);
             return result;
         }
 

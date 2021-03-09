@@ -68,11 +68,11 @@ namespace Squadio.API.Controllers.V01
         /// <summary>
         /// Set new password, using code from email
         /// </summary>
-        [HttpPut("password/reset")]
+        [HttpPut("password/reset/confirm")]
         [AllowAnonymous]
         public async Task<Response<UserDTO>> ResetPassword([FromBody] UserResetPasswordDTO dto)
         {
-            return await _handler.ResetPassword(dto);
+            return await _handler.ResetPasswordConfirm(dto);
         }
         
         /// <summary>
@@ -96,10 +96,10 @@ namespace Squadio.API.Controllers.V01
         /// <summary>
         /// Set email from for current user
         /// </summary>
-        [HttpPut("email/set")]
+        [HttpPut("email/set/confirm")]
         public async Task<Response<UserDTO>> SetEmail([FromBody] UserSetEmailDTO dto)
         {
-            return await _handler.SetEmail(dto, User);
+            return await _handler.ChangeEmailConfirm(dto, User);
         }
         
         /// <summary>
