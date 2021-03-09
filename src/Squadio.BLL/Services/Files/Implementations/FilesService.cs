@@ -12,10 +12,10 @@ namespace Squadio.BLL.Services.Files.Implementations
     public class FilesService : IFilesService
     {
         private readonly ILogger<FilesService> _logger;
-        private readonly IOptions<FileRootDirectorySettings> _options;
+        private readonly IOptions<FileDirectoryPathSettings> _options;
         
         public FilesService(ILogger<FilesService> logger
-            , IOptions<FileRootDirectorySettings> options)
+            , IOptions<FileDirectoryPathSettings> options)
         {
             _logger = logger;
             _options = options;
@@ -52,7 +52,7 @@ namespace Squadio.BLL.Services.Files.Implementations
 
         private string GenerateFilePath(string group, string filename)
         {
-            var path = _options.Value.Path;
+            var path = _options.Value.FileRootPath;
 
             if (string.IsNullOrEmpty(path))
             {
@@ -89,7 +89,7 @@ namespace Squadio.BLL.Services.Files.Implementations
 
         private string GenerateImagePath(string group, string resolution, string filename)
         {
-            var path = _options.Value.Path;
+            var path = _options.Value.FileRootPath;
 
             if (string.IsNullOrEmpty(path))
             {

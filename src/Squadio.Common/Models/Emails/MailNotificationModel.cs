@@ -37,8 +37,8 @@ namespace Squadio.Common.Models.Emails
         /// <summary>Headers of letter</summary>
         public IDictionary<string, string> Meta { get; set; }
 
-        /// <summary>Name of template markup</summary>
-        public string TemplateId { get; set; }
+        /// <summary>Full path to template (including filename)</summary>
+        public string TemplatePath { get; set; }
 
         /// <summary>
         /// Arguments for setting values in a template message (in Body)

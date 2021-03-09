@@ -14,12 +14,12 @@ namespace Squadio.API.Handlers.Resources.Implementations
     public class FilesHandler : IFilesHandler
     {
         private readonly IResourcesProvider _resourceProvider;
-        private readonly IOptions<FileRootDirectorySettings> _options;
+        private readonly IOptions<FileDirectoryPathSettings> _options;
         private readonly ILogger<FilesService> _logger;
         
 
         public FilesHandler(IResourcesProvider resourceProvider
-            , IOptions<FileRootDirectorySettings> options
+            , IOptions<FileDirectoryPathSettings> options
             , ILogger<FilesService> logger)
         {
             _resourceProvider = resourceProvider;
@@ -52,7 +52,7 @@ namespace Squadio.API.Handlers.Resources.Implementations
 
         private string GetFilePath(string group, string filename, string resolution = null)
         {
-            var path = _options.Value.Path;
+            var path = _options.Value.FileRootPath;
             
             if(!Directory.Exists(path))
             {

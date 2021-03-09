@@ -119,7 +119,7 @@ namespace Squadio.API
             services.Configure<ApiSettings>(_configuration.GetSection("APISettings"));
             services.Configure<StaticUrls>(_configuration.GetSection("StaticUrls"));
             services.Configure<GoogleSettings>(_configuration.GetSection("GoogleOAuth"));
-            services.Configure<FileRootDirectorySettings>(_configuration.GetSection("FileRootDirectory"));
+            services.Configure<FileDirectoryPathSettings>(_configuration.GetSection("FileDirectoryPath"));
             services.Configure<SmtpSettings>(_configuration.GetSection("SmtpSettings"));
             var cropSizes = _configuration.GetSection("CropSizes:SizesStr").Get<string>();
             CropSizesSettings.SetSizes(cropSizes);

@@ -16,18 +16,79 @@ namespace Squadio.BLL.Services.Notifications.Emails.Implementations
     {
         private readonly SmtpSettings _smtpCredentials;
         private readonly StaticUrls _urls;
+        private readonly FileDirectoryPathSettings _fileDirectoryPath;
         private readonly ILogger<EmailNotificationsService> _logger;
 
         public EmailNotificationsService(IOptions<SmtpSettings> emailCredentials
             , IOptions<StaticUrls> urls
+            , IOptions<FileDirectoryPathSettings> fileDirectoryPath
             , ILogger<EmailNotificationsService> logger)
         {
             _smtpCredentials = emailCredentials.Value;
             _urls = urls.Value;
+            _fileDirectoryPath = fileDirectoryPath.Value;
             _logger = logger;
         }
 
-        public async Task<Response> SendEmail(MailNotificationModel message)
+        public async Task<Response> SendEmail(EmailMessageDTO message)
+        {
+            var templatePath = $"{_fileDirectoryPath.EmailTemplatePath}/{message.TemplateId}.html";
+            
+            var mailNotificationModel = new MailNotificationModel
+            {
+                Body = message.Body,
+                Html = message.Html,
+                Subject = message.Subject,
+                Args = message.Args,
+                TemplatePath = message.TemplateId != null 
+                    ? $"{_fileDirectoryPath.EmailTemplatePath}/{message.TemplateId}.html" 
+                    : null,
+                ToAddresses = message.ToEmails,
+                FromName = message.FromName
+            };
+
+            return await SendEmail(mailNotificationModel);
+        }
+
+        public async Task<Response> SendResetPasswordEmail(string email, string code)
+        {
+            var args = new Dictionary<string, string>
+            {
+                {"{{Code}}", code},
+                {"{{ResetAdminPasswordUrl}}",_urls.ResetAdminPasswordUrl}
+            };
+            var mailNotificationModel = new EmailMessageDTO
+            {
+                Html = true,
+                Subject = "Reset password",
+                Args = args,
+                TemplateId = TemplateId.ResetPassword,
+                ToEmails = new []{email},
+            };
+
+            return await SendEmail(mailNotificationModel);
+        }
+
+        public async Task<Response> SendConfirmNewMailboxEmail(string email, string code)
+        {
+            var args = new Dictionary<string, string>
+            {
+                {"{{Code}}", code},
+                {"{{ConfirmAdminNewMailboxUrl}}",_urls.ConfirmAdminNewMailboxUrl}
+            };
+            var mailNotificationModel = new EmailMessageDTO
+            {
+                Html = true,
+                Subject = "Confirm email",
+                Args = args,
+                TemplateId = TemplateId.ConfirmAdminNewMailbox,
+                ToEmails = new []{email},
+            };
+
+            return await SendEmail(mailNotificationModel);
+        }
+
+        private async Task<Response> SendEmail(MailNotificationModel message)
         {
             //TODO: maybe change implementation of sending email
             try
@@ -56,60 +117,6 @@ namespace Squadio.BLL.Services.Notifications.Emails.Implementations
             
             _logger.LogInformation("Emails send success");
             return new Response();
-        }
-
-        public async Task<Response> SendEmail(EmailMessageDTO message)
-        {
-            var mailNotificationModel = new MailNotificationModel
-            {
-                Body = message.Body,
-                Html = message.Html,
-                Subject = message.Subject,
-                Args = message.Args,
-                TemplateId = message.TemplateId,
-                ToAddresses = message.ToEmails,
-                FromName = message.FromName
-            };
-
-            return await SendEmail(mailNotificationModel);
-        }
-
-        public async Task<Response> SendResetPasswordEmail(string email, string code)
-        {
-            var args = new Dictionary<string, string>
-            {
-                {"{{Code}}", code},
-                {"{{ResetAdminPasswordUrl}}",_urls.ResetAdminPasswordUrl}
-            };
-            var mailNotificationModel = new MailNotificationModel
-            {
-                Html = true,
-                Subject = "Reset password",
-                Args = args,
-                TemplateId = TemplateId.ResetPassword,
-                ToAddresses = new []{email},
-            };
-
-            return await SendEmail(mailNotificationModel);
-        }
-
-        public async Task<Response> SendConfirmNewMailboxEmail(string email, string code)
-        {
-            var args = new Dictionary<string, string>
-            {
-                {"{{Code}}", code},
-                {"{{ConfirmAdminNewMailboxUrl}}",_urls.ConfirmAdminNewMailboxUrl}
-            };
-            var mailNotificationModel = new MailNotificationModel
-            {
-                Html = true,
-                Subject = "Confirm email",
-                Args = args,
-                TemplateId = TemplateId.ConfirmAdminNewMailbox,
-                ToAddresses = new []{email},
-            };
-
-            return await SendEmail(mailNotificationModel);
         }
     }
 }

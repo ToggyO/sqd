@@ -26,7 +26,7 @@ namespace Squadio.BLL.Services.Notifications.Emails.Implementations
                 .SetBccAddresses(notificationModel.BccAddresses)
                 .SetCcAddresses(notificationModel.CcAddresses)
                 .SetFromName(notificationModel.FromEmail, notificationModel.FromName)
-                .SetBody(notificationModel.Body, notificationModel.Html, notificationModel.Args, notificationModel.TemplateId)
+                .SetBody(notificationModel.Body, notificationModel.Html, notificationModel.Args, notificationModel.TemplatePath)
                 .SetFileAttachment(notificationModel.Attachments);
         }
 
@@ -68,11 +68,11 @@ namespace Squadio.BLL.Services.Notifications.Emails.Implementations
             return this;
         }
 
-        public EmailMessagePrototype SetBody(string body, bool html = false, IDictionary<string, string> args = null, string templateId = null)
+        public EmailMessagePrototype SetBody(string body, bool html = false, IDictionary<string, string> args = null, string templatePath = null)
         {
             _mailMessage.IsBodyHtml = html;
-            _mailMessage.Body = templateId != null 
-                ? File.ReadAllText($"../Squadio.BLL/Services/Notifications/Emails/EmailTemplates/{templateId}.html", Encoding.UTF8) 
+            _mailMessage.Body = templatePath != null 
+                ? File.ReadAllText(templatePath, Encoding.UTF8) 
                 : body;
 
             if(args != null)
