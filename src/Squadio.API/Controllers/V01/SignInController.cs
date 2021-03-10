@@ -9,7 +9,7 @@ namespace Squadio.API.Controllers.V01
 {
     [ApiController]
     [ApiVersion("0.1")]
-    [Route("api/v{version:apiVersion}/sign-in")]
+    [Route("v{version:apiVersion}/sign-in")]
     public class SignInController : ControllerBase
     {
         private readonly IAuthHandler _handler;

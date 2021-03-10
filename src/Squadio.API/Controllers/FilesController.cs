@@ -6,7 +6,7 @@ using Squadio.API.Handlers.Resources;
 namespace Squadio.API.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Route("api/files")]
+    [Route("files")]
     public class FilesController: Controller
     {
         private readonly IFilesHandler _handler;

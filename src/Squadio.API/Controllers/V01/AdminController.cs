@@ -17,7 +17,7 @@ namespace Squadio.API.Controllers.V01
 {
     [ApiController]
     [ApiVersion("0.1")]
-    [Route("api/v{version:apiVersion}/admin")]
+    [Route("v{version:apiVersion}/admin")]
     [PermissionFilter(Area.Admin)]
     [ServiceFilter(typeof(AuthorizationFilter))]
     [ServiceFilter(typeof(UserStatusFilter))]

@@ -13,7 +13,7 @@ namespace Squadio.API.Controllers.V01
 {
     [ApiController]
     [ApiVersion("0.1")]
-    [Route("api/v{version:apiVersion}/teams")]
+    [Route("v{version:apiVersion}/teams")]
     //TODO: auth filter
     //[ServiceFilter(typeof(AuthorizationFilter))]
     // [ServiceFilter(typeof(UserStatusFilter))]

@@ -19,7 +19,7 @@ namespace Squadio.API.Controllers.V01
 {
     [ApiController]
     [ApiVersion("0.1")]
-    [Route("api/v{version:apiVersion}/sign-up")]
+    [Route("v{version:apiVersion}/sign-up")]
     public class SignUpController : ControllerBase
     {
         private readonly ISignUpHandler _handler;

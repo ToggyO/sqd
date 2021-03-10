@@ -14,7 +14,7 @@ namespace Squadio.API.Controllers.V01
 {
     [ApiController]
     [ApiVersion("0.1")]
-    [Route("api/v{version:apiVersion}/projects")]
+    [Route("v{version:apiVersion}/projects")]
     //TODO: auth filter
     //[ServiceFilter(typeof(AuthorizationFilter))]
     // [ServiceFilter(typeof(UserStatusFilter))]

@@ -15,7 +15,7 @@ namespace Squadio.API.Controllers.V01
 {
     [ApiController]
     [ApiVersion("0.1")]
-    [Route("api/v{version:apiVersion}/users/settings")]
+    [Route("v{version:apiVersion}/users/settings")]
     [ServiceFilter(typeof(AuthorizationFilter))]
     [ServiceFilter(typeof(UserStatusFilter))]
     public class UsersSettingsController : ControllerBase
