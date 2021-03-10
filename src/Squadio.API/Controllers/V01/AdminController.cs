@@ -54,7 +54,7 @@ namespace Squadio.API.Controllers.V01
         /// Get users with pagination
         /// </summary>
         [HttpGet("users")]
-        public async Task<Response<PageModel<UserWithCompaniesDTO>>> GetUsersPage([FromQuery] PageModel model, [FromBody] UserFilterAdminDTO filter)
+        public async Task<Response<PageModel<UserWithCompaniesDTO>>> GetUsersPage([FromQuery] PageModel model, [FromQuery] UserFilterAdminDTO filter)
         {
             return await _handler.GetUsersPage(model, filter);
         }
@@ -90,7 +90,7 @@ namespace Squadio.API.Controllers.V01
         /// Get companies with pagination
         /// </summary>
         [HttpGet("companies")]
-        public async Task<Response<PageModel<CompanyDetailAdminDTO>>> GetCompaniesPage([FromQuery] PageModel model, [FromBody] CompanyFilterAdminDTO filter)
+        public async Task<Response<PageModel<CompanyDetailAdminDTO>>> GetCompaniesPage([FromQuery] PageModel model, [FromQuery] CompanyFilterAdminDTO filter)
         {
             return await _handler.GetCompanyPage(model, filter);
         }
