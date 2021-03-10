@@ -42,6 +42,7 @@ namespace Squadio.API
                 .AddEnvironmentVariables();
 
             _configuration = builder.Build();
+            Console.WriteLine($"Environment: {_configuration.GetSection("ASPNETCORE_ENVIRONMENT").Value}");
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -121,6 +122,7 @@ namespace Squadio.API
             services.Configure<GoogleSettings>(_configuration.GetSection("GoogleOAuth"));
             services.Configure<FileDirectoryPathSettings>(_configuration.GetSection("FileDirectoryPath"));
             services.Configure<SmtpSettings>(_configuration.GetSection("SmtpSettings"));
+            var pathSettings = _configuration.GetSection("FileDirectoryPath").Get<FileDirectoryPathSettings>();
             var cropSizes = _configuration.GetSection("CropSizes:SizesStr").Get<string>();
             CropSizesSettings.SetSizes(cropSizes);
             var fileTemplate = _configuration.GetSection("FileTemplateUrl:FileTemplate").Get<string>();
@@ -138,6 +140,10 @@ namespace Squadio.API
             };
             
             Console.WriteLine($"Connection string: {dbSettings?.PostgresConnectionString}");
+            Console.WriteLine($"File path: {pathSettings?.FileRootPath}");
+            Console.WriteLine($"Email templates: {pathSettings?.EmailTemplatePath}");
+            Console.WriteLine($"Image path template: {imageTemplate}");
+
 
             services.AddSerilog(dbSettings);
 
