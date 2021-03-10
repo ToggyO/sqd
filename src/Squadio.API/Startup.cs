@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.OpenApi.Models;
 using Squadio.DAL;
 using Squadio.API.Extensions;
 using Squadio.API.Filters;
@@ -188,7 +189,21 @@ namespace Squadio.API
             app.UseDefaultFiles();
             app.UseStaticFiles();
             
-            app.UseSwagger();
+            if (!env.IsDevelopment())
+            {
+                app.UseSwagger(options =>
+                {
+                    options.RouteTemplate = "swagger/{documentName}/swagger.json";
+                    options.PreSerializeFilters.Add((swaggerDoc, httpReq) => swaggerDoc.Servers = new System.Collections.Generic.List<OpenApiServer>
+                    {
+                        new OpenApiServer { Url = $"https://squad.magora.team/api" }
+                    });
+                });
+            }
+            else
+            {
+                app.UseSwagger();
+            }
             app.UseSwaggerUI(options =>
             {
                 for (var i = apiVersionProvider.ApiVersionDescriptions.Count() - 1; i >= 0; i--)
