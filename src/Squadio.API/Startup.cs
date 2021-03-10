@@ -54,7 +54,10 @@ namespace Squadio.API
                     builder =>
                     {
                         builder.WithOrigins(
-                                "http://localhost:5010")
+                                "http://localhost:5010",
+                                "http://localhost:3010",
+                                "https://squad.magora.team",
+                                "http://10.10.30.151")
                             .AllowAnyHeader()
                             .AllowAnyMethod();
                     });
