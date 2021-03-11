@@ -66,6 +66,40 @@ namespace Squadio.DAL.Repository.CompaniesUsers.Implementation
             };
         }
 
+        public async Task<IEnumerable<CompanyUserModel>> GetCompanyUsersByEmails(Guid companyId, IEnumerable<string> emails)
+        {
+            IQueryable<CompanyUserModel> query = _context.CompaniesUsers
+                .Include(x => x.User).ThenInclude(x => x.Avatar)
+                .Include(x => x.Company)
+                .Where(x => x.CompanyId == companyId);
+            
+            if (emails != null)
+            {
+                var userEmails = emails.ToList();
+                if (userEmails?.Any() == true)
+                {
+                    query = query.Where(x => userEmails.Contains(x.User.Email));
+                }
+            }
+
+            var items = await query
+                .ToListAsync();
+
+            return items;
+        }
+
+        public async Task<CompanyUserModel> GetCompanyUserByEmail(Guid companyId, string email)
+        {
+            if (string.IsNullOrEmpty(email))
+                return null;
+            IQueryable<CompanyUserModel> query = _context.CompaniesUsers
+                .Include(x => x.User).ThenInclude(x => x.Avatar)
+                .Include(x => x.Company)
+                .Where(x => x.CompanyId == companyId);
+
+            return await query.FirstOrDefaultAsync(x=>x.User.Email.ToUpper() == email.ToUpper());
+        }
+
         public async Task<PageModel<CompanyUserModel>> GetCompanyUsersByEmails(PageModel model, Guid companyId, IEnumerable<string> emails)
         {
             IQueryable<CompanyUserModel> query = _context.CompaniesUsers

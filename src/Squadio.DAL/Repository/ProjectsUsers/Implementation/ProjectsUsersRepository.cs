@@ -74,6 +74,19 @@ namespace Squadio.DAL.Repository.ProjectsUsers.Implementation
             return result;
         }
 
+        public async Task<ProjectUserModel> GetProjectUserByEmail(Guid projectId, string email)
+        {
+            if (string.IsNullOrEmpty(email))
+                return null;
+
+            var query = _context.ProjectsUsers
+                .Include(x => x.User).ThenInclude(x => x.Avatar)
+                .Include(x => x.Project).ThenInclude(x => x.Team).ThenInclude(x => x.Company)
+                .Where(x => x.ProjectId == projectId);
+
+            return await query.FirstOrDefaultAsync(x=>x.User.Email.ToUpper() == email.ToUpper());
+        }
+
         public async Task<PageModel<ProjectUserModel>> GetProjectUsersByEmails(PageModel model, Guid projectId, IEnumerable<string> emails)
         {
             

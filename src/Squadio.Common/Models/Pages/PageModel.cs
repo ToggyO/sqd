@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Squadio.Common.Models.Pages
 {
@@ -9,6 +10,11 @@ namespace Squadio.Common.Models.Pages
         /// </summary>
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 10;
+
+        public static PageModel Max()
+        {
+            return new PageModel{Page = 1, PageSize = Int32.MaxValue};
+        }
     }
     
     public class PageModel<T> : PageModel

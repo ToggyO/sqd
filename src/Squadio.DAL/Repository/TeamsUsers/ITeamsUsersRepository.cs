@@ -15,7 +15,8 @@ namespace Squadio.DAL.Repository.TeamsUsers
             , Guid? companyId = null
             , Guid? teamId = null
             , IEnumerable<MembershipStatus> statuses = null);
-        Task<PageModel<TeamUserModel>> GetTeamUsersByEmails(PageModel model, Guid teamId, IEnumerable<string> emails);
+        // Task<PageModel<TeamUserModel>> GetTeamUsersByEmails(PageModel model, Guid teamId, IEnumerable<string> emails);
+        Task<TeamUserModel> GetTeamUserByEmails(Guid teamId, string email);
         Task<TeamUserModel> GetTeamUser(Guid teamId, Guid userId);
         Task AddTeamUser(Guid teamId, Guid userId, MembershipStatus membershipStatus);
         Task DeleteTeamUser(Guid teamId, Guid userId);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using AutoMapper;
+using Squadio.BLL.Services.Notifications.Emails;
 using Squadio.Common.Helpers;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Responses;
@@ -13,23 +14,27 @@ namespace Squadio.BLL.Services.ConfirmEmail.Implementations
     public class ConfirmEmailService : IConfirmEmailService
     {
         private readonly IConfirmEmailRequestRepository _repository;
+        private readonly IEmailNotificationsService _emailNotificationsService;
         private readonly IMapper _mapper;
 
         public ConfirmEmailService(IConfirmEmailRequestRepository repository
+            , IEmailNotificationsService emailNotificationsService
             , IMapper mapper)
         {
             _repository = repository;
+            _emailNotificationsService = emailNotificationsService;
             _mapper = mapper;
         }
 
         public async Task<Response<UserConfirmEmailRequestDTO>> AddRequest(Guid userId, string email)
         {
             await _repository.ActivateAllRequestsForUser(userId);
-
             
             var code = CodeHelper.GenerateNumberCode();
             
             var entity = await _repository.AddRequest(userId, code);
+
+            await _emailNotificationsService.SendConfirmNewMailboxEmail(email, code);
             
             return new Response<UserConfirmEmailRequestDTO>
             {

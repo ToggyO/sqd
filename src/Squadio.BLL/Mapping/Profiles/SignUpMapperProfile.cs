@@ -21,10 +21,8 @@ namespace Squadio.BLL.Mapping.Profiles
             });
             CreateMap<UserRegistrationStepModel, UserRegistrationStepDTO>().ConvertUsing(x => new UserRegistrationStepDTO
             {
-                Step = (int) x.Step,
-                StepName = x.Step.ToString(),
-                Status = (int) x.Status,
-                StatusName = x.Status.ToString()
+                Step = x.Step,
+                MembershipStatus = x.Status,
             });
             CreateMap<UserRegistrationStepModel, SignUpStepDTO>()
                 .ForMember(

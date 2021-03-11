@@ -213,7 +213,7 @@ namespace Squadio.BLL.Services.SignUp.Implementations
             {
                 Email = email,
                 Step = RegistrationStep.New,
-                MembershipStatus = MembershipStatus.Admin,
+                MembershipStatus = MembershipStatus.SuperAdmin,
                 SignUpBy = SignUpType.Email
             };
 
@@ -292,7 +292,7 @@ namespace Squadio.BLL.Services.SignUp.Implementations
                 Email = infoFromGoogleToken.Email,
                 Name = infoFromGoogleToken.Name,
                 Step = RegistrationStep.EmailConfirmed,
-                MembershipStatus = MembershipStatus.Admin,
+                MembershipStatus = MembershipStatus.SuperAdmin,
                 SignUpBy = SignUpType.Google
             };
 
@@ -552,7 +552,7 @@ namespace Squadio.BLL.Services.SignUp.Implementations
                 return stepValidate;
             }
 
-            if (step.Status == MembershipStatus.Admin)
+            if (step.Status == MembershipStatus.SuperAdmin)
             {
                 var sendResult = await SendSignUpInvites(userId);
                 if (!sendResult.IsSuccess)
@@ -702,23 +702,24 @@ namespace Squadio.BLL.Services.SignUp.Implementations
         
         public async Task<Response<InviteModel>> GetInviteByCode(string code)
         {
-            var item = await _invitesRepository.GetInviteByCode(code);
-            if (item == null)
-            {
-                return new SecurityErrorResponse<InviteModel>(new []
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Common.NotFound,
-                        Message = ErrorMessages.Common.NotFound
-                    }
-                });
-            }
-
-            return new Response<InviteModel>
-            {
-                Data = item
-            };
+            // var item = await _invitesRepository.GetInviteByCode(code);
+            // if (item == null)
+            // {
+            //     return new SecurityErrorResponse<InviteModel>(new []
+            //     {
+            //         new Error
+            //         {
+            //             Code = ErrorCodes.Common.NotFound,
+            //             Message = ErrorMessages.Common.NotFound
+            //         }
+            //     });
+            // }
+            //
+            // return new Response<InviteModel>
+            // {
+            //     Data = item
+            // };
+            throw new NotImplementedException();
         }
         
         private async Task<Response> SendSignUpInvites(Guid userId)
@@ -797,22 +798,23 @@ namespace Squadio.BLL.Services.SignUp.Implementations
                 });
             }
 
-            var allInvites = (await _invitesRepository.GetInvites(
-                authorId: userId, 
-                activated: false,
-                isSent: false)).ToList();
-
-            var emailsDistinct = allInvites.Select(x => x.Email).Distinct().ToList();
-
-            if (emailsDistinct.Count == 0)
-                return new Response();
-
-            foreach (var email in emailsDistinct)
-            {
-                await _invitesService.SendInvite(email);
-            }
-
-            return new Response();
+            throw new NotImplementedException();
+            // var allInvites = (await _invitesRepository.GetInvites(
+            //     authorId: userId, 
+            //     activated: false,
+            //     isSent: false)).ToList();
+            //
+            // var emailsDistinct = allInvites.Select(x => x.Email).Distinct().ToList();
+            //
+            // if (emailsDistinct.Count == 0)
+            //     return new Response();
+            //
+            // foreach (var email in emailsDistinct)
+            // {
+            //     await _invitesService.SendInvite(email);
+            // }
+            //
+            // return new Response();
         }
     }
 }

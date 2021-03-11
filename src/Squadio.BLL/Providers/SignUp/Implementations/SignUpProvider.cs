@@ -127,13 +127,14 @@ namespace Squadio.BLL.Providers.SignUp.Implementations
         
         private async Task<Response<IEnumerable<InviteDTO>>> GetInvitesByEntityId(Guid entityId, bool? activated = null)
         {
-            var invites = await _invitesRepository.GetInvites(
-                entityId: entityId, 
-                activated: activated);
-            return new Response<IEnumerable<InviteDTO>>
-            {
-                Data = invites.Select(x => _mapper.Map<InviteModel, InviteDTO>(x))
-            };
+            // var invites = await _invitesRepository.GetInvites(
+            //     entityId: entityId, 
+            //     activated: activated);
+            // return new Response<IEnumerable<InviteDTO>>
+            // {
+            //     Data = invites.Select(x => _mapper.Map<InviteModel, InviteDTO>(x))
+            // };
+            throw new NotImplementedException();
         }
     }
 }

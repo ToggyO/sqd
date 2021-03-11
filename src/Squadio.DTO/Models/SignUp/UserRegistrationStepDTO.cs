@@ -1,10 +1,10 @@
-﻿namespace Squadio.DTO.Models.SignUp
+﻿using Squadio.Domain.Enums;
+
+namespace Squadio.DTO.Models.SignUp
 {
     public class UserRegistrationStepDTO
     {
-        public string StepName { get; set; }
-        public int Step { get; set; }
-        public string StatusName { get; set; }
-        public int Status { get; set; }
+        public RegistrationStep Step { get; set; }
+        public MembershipStatus MembershipStatus { get; set; }
     }
 }

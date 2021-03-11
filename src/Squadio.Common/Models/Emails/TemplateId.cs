@@ -4,6 +4,7 @@
     {
         public static string ResetAdminPassword = "ResetAdminPasswordTemplate";
         public static string ConfirmAdminNewMailbox = "ConfirmAdminNewMailboxTemplate";
+        public static string ConfirmNewMailbox = "ConfirmNewMailboxTemplate";
         public static string ResetPassword = "ResetPasswordTemplate";
     }
 }
