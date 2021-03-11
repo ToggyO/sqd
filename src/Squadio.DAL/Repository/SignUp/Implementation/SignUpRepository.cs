@@ -43,7 +43,7 @@ namespace Squadio.DAL.Repository.SignUp.Implementation
 
             if (item == null)
             {
-                item = new UserRegistrationStepModel { UserId = userId };
+                item = new UserRegistrationStepModel { UserId = userId, CreatedDate = DateTime.Now};
                 stepExisted = false;
             }
 
