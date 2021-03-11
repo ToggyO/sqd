@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using Magora.Passwords;
+using Squadio.BLL.Services.Notifications.Emails;
 using Squadio.BLL.Services.Resources;
 using Squadio.Common.Helpers;
 using Squadio.Common.Models.Errors;
@@ -24,12 +25,14 @@ namespace Squadio.BLL.Services.Users.Implementations
         private readonly IPasswordService _passwordService;
         private readonly IMapper _mapper;
         private readonly IResourcesService _resourcesService;
+        private readonly IEmailNotificationsService _emailNotificationsService;
         public UsersService(IUsersRepository repository
             , IChangePasswordRequestRepository changePasswordRepository
             , IChangeEmailRequestRepository changeEmailRepository
             , IPasswordService passwordService
             , IMapper mapper
-            , IResourcesService resourcesService)
+            , IResourcesService resourcesService
+            , IEmailNotificationsService emailNotificationsService)
         {
             _repository = repository;
             _changePasswordRepository = changePasswordRepository;
@@ -37,6 +40,7 @@ namespace Squadio.BLL.Services.Users.Implementations
             _passwordService = passwordService;
             _mapper = mapper;
             _resourcesService = resourcesService;
+            _emailNotificationsService = emailNotificationsService;
         }
 
         public async Task<Response<UserDTO>> SetPassword(string email, string password)
@@ -98,14 +102,13 @@ namespace Squadio.BLL.Services.Users.Implementations
                 });
             }
 
-            var code = Guid.NewGuid().ToString("N");
-
+            var code = CodeHelper.GenerateCodeAsGuid();
             
             await _changePasswordRepository.ActivateAllRequestsForUser(user.Id);
             
             await _changePasswordRepository.AddRequest(user.Id, code);
-            
-            return new Response();
+
+            return await _emailNotificationsService.SendResetPasswordEmail(user.Email, code);
         }
 
         public async Task<Response<UserDTO>> CreateUser(UserCreateDTO dto)
@@ -299,6 +302,9 @@ namespace Squadio.BLL.Services.Users.Implementations
             {
                 var deleteResult = await _resourcesService.DeleteResource(avatar.Id);
             }
+
+            userEntity.AvatarId = null;
+            userEntity = await _repository.Update(userEntity);
             
             var result = _mapper.Map<UserModel, UserDTO>(userEntity);
             return new Response<UserDTO>

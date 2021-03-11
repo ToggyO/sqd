@@ -96,13 +96,13 @@ namespace Squadio.BLL.Services.Admin.Implementations
                 return new Response();
             }
 
-            var code = Guid.NewGuid().ToString("N");
+            var code = CodeHelper.GenerateNumberCode(3);
 
             await _changePasswordRepository.ActivateAllRequestsForUser(user.Id);
 
             await _changePasswordRepository.AddRequest(user.Id, code);
 
-            return await _emailNotificationsService.SendResetPasswordEmail(user.Email, code);
+            return await _emailNotificationsService.SendResetAdminPasswordEmail(user.Email, code);
         }
 
         public async Task<Response> ChangeEmailRequest(Guid id, string newEmail)
@@ -128,7 +128,7 @@ namespace Squadio.BLL.Services.Admin.Implementations
 
             await _changeEmailRepository.AddRequest(user.Id, code, newEmail);
 
-            return await _emailNotificationsService.SendConfirmNewMailboxEmail(newEmail, code);
+            return await _emailNotificationsService.SendConfirmNewAdminMailboxEmail(newEmail, code);
         }
 
         public async Task<Response<UserDTO>> ChangeEmailConfirm(Guid id, string code)

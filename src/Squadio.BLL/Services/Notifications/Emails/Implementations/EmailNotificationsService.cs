@@ -50,7 +50,7 @@ namespace Squadio.BLL.Services.Notifications.Emails.Implementations
             return await SendEmail(mailNotificationModel);
         }
 
-        public async Task<Response> SendResetPasswordEmail(string email, string code)
+        public async Task<Response> SendResetAdminPasswordEmail(string email, string code)
         {
             var args = new Dictionary<string, string>
             {
@@ -62,14 +62,14 @@ namespace Squadio.BLL.Services.Notifications.Emails.Implementations
                 Html = true,
                 Subject = "Reset password",
                 Args = args,
-                TemplateId = TemplateId.ResetPassword,
+                TemplateId = TemplateId.ResetAdminPassword,
                 ToEmails = new []{email},
             };
 
             return await SendEmail(mailNotificationModel);
         }
 
-        public async Task<Response> SendConfirmNewMailboxEmail(string email, string code)
+        public async Task<Response> SendConfirmNewAdminMailboxEmail(string newEmail, string code)
         {
             var args = new Dictionary<string, string>
             {
@@ -82,6 +82,25 @@ namespace Squadio.BLL.Services.Notifications.Emails.Implementations
                 Subject = "Confirm email",
                 Args = args,
                 TemplateId = TemplateId.ConfirmAdminNewMailbox,
+                ToEmails = new []{newEmail},
+            };
+
+            return await SendEmail(mailNotificationModel);
+        }
+
+        public async Task<Response> SendResetPasswordEmail(string email, string code)
+        {
+            var args = new Dictionary<string, string>
+            {
+                {"{{Code}}", code},
+                {"{{ResetPasswordUrl}}",_urls.ResetPasswordUrl}
+            };
+            var mailNotificationModel = new EmailMessageDTO
+            {
+                Html = true,
+                Subject = "Reset password",
+                Args = args,
+                TemplateId = TemplateId.ResetPassword,
                 ToEmails = new []{email},
             };
 
