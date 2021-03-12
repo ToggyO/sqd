@@ -114,13 +114,12 @@ namespace Squadio.BLL.Services.Notifications.Emails.Implementations
             {
                 message.FromEmail = _smtpCredentials.Email;
                 message.FromName ??= _smtpCredentials.FromName;
-                using (var client = new SmtpClient(_smtpCredentials.Server, _smtpCredentials.Port)
+                using (var client = new SmtpClient(_smtpCredentials.Server, _smtpCredentials.Port))
                 {
-                    UseDefaultCredentials = false,
-                    EnableSsl = _smtpCredentials.UseSsl,
-                    Credentials = new NetworkCredential(_smtpCredentials.Email, _smtpCredentials.Password)
-                })
-                {
+                    client.UseDefaultCredentials = false;
+                    client.Credentials = new NetworkCredential(_smtpCredentials.Email, _smtpCredentials.Password);
+                    client.EnableSsl = _smtpCredentials.UseSsl;
+                    
                     using var emailMessage = EmailMessagePrototype.CreateNewEmailFromTemplate(message);
                     await client.SendMailAsync(emailMessage.GetMessage());
                 }
