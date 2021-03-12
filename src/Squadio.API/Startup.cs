@@ -58,6 +58,8 @@ namespace Squadio.API
                                 "http://localhost:5010",
                                 "http://localhost:3010",
                                 "https://squad.magora.team",
+                                "https://admin.squad.magora.team",
+                                "https://api.squad.magora.team",
                                 "http://10.10.30.151")
                             .AllowAnyHeader()
                             .AllowAnyMethod();
