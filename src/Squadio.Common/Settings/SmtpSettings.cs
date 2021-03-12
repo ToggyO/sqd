@@ -8,5 +8,6 @@
         public string Password { get; set; }
         public bool UseSsl { get; set; }
         public string FromName { get; set; }
+        public string SendGridApiKey { get; set; }
     }
 }

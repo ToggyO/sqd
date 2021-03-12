@@ -4,11 +4,14 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Squadio.Common.Models.Responses;
 using Squadio.Common.Settings;
 using Squadio.DTO.Models.Notifications;
 using System.Net.Mail;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 using Squadio.Common.Models.Emails;
+using Squadio.Common.Models.Responses;
+using Response = Squadio.Common.Models.Responses.Response;
 
 namespace Squadio.BLL.Services.Notifications.Emails.Implementations
 {
@@ -107,33 +110,78 @@ namespace Squadio.BLL.Services.Notifications.Emails.Implementations
             return await SendEmail(mailNotificationModel);
         }
 
-        private async Task<Response> SendEmail(MailNotificationModel message)
+        // private async Task<Response> SendEmail(MailNotificationModel message)
+        // {
+        //     //TODO: maybe change implementation of sending email
+        //     try
+        //     {
+        //         message.FromEmail = _smtpCredentials.Email;
+        //         message.FromName ??= _smtpCredentials.FromName;
+        //         using (var client = new SmtpClient(_smtpCredentials.Server, _smtpCredentials.Port))
+        //         {
+        //             client.UseDefaultCredentials = false;
+        //             client.Credentials = new NetworkCredential(_smtpCredentials.Email, _smtpCredentials.Password);
+        //             client.EnableSsl = _smtpCredentials.UseSsl;
+        //             using var emailMessage = EmailMessagePrototype.CreateNewEmailFromTemplate(message);
+        //             await client.SendMailAsync(emailMessage.GetMessage());
+        //         }
+        //     }
+        //     catch (Exception e)
+        //     {
+        //         _logger.LogError(e, "Can't send emails");
+        //         return new ErrorResponse
+        //         {
+        //             Message = e.Message
+        //         };
+        //     }
+        //     
+        //     _logger.LogInformation("Emails send success");
+        //     return new Response();
+        // }
+
+        private async Task<Response> SendEmail(MailNotificationModel baseMessage)
         {
-            //TODO: maybe change implementation of sending email
             try
             {
-                message.FromEmail = _smtpCredentials.Email;
-                message.FromName ??= _smtpCredentials.FromName;
-                using (var client = new SmtpClient(_smtpCredentials.Server, _smtpCredentials.Port))
+                var apiKey = _smtpCredentials.SendGridApiKey;
+                var client = new SendGridClient(apiKey);
+
+                baseMessage.FromEmail = _smtpCredentials.Email;
+                baseMessage.FromName ??= _smtpCredentials.FromName;
+                using var emailMessage = EmailMessagePrototype.CreateNewEmailFromTemplate(baseMessage);
+                var message = emailMessage.GetMessage();
+
+                var messageSendGrid = new SendGridMessage
                 {
-                    client.UseDefaultCredentials = false;
-                    client.Credentials = new NetworkCredential(_smtpCredentials.Email, _smtpCredentials.Password);
-                    client.EnableSsl = _smtpCredentials.UseSsl;
-                    
-                    using var emailMessage = EmailMessagePrototype.CreateNewEmailFromTemplate(message);
-                    await client.SendMailAsync(emailMessage.GetMessage());
+                    From = new EmailAddress(_smtpCredentials.Email, _smtpCredentials.FromName),
+                    HtmlContent = message.Body,
+                    PlainTextContent = message.Body,
+                    Subject = message.Subject,
+                    TemplateId = null
+                };
+
+                foreach (var address in message.To)
+                {
+                    messageSendGrid.AddTo(address.Address);
                 }
+
+                var response = await client.SendEmailAsync(messageSendGrid);
+                _logger.LogInformation($"Email sending status: {response.StatusCode}");
+
+                var rawResponse = await response.Body.ReadAsStringAsync();
+                _logger.LogInformation($"SendGridResponse: {rawResponse}");
+
+                if(response.StatusCode != HttpStatusCode.Accepted)
+                    throw new Exception(rawResponse);
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Can't send emails");
+                _logger.LogError(e, "Can't send emails using SendGrid");
                 return new ErrorResponse
                 {
                     Message = e.Message
                 };
             }
-            
-            _logger.LogInformation("Emails send success");
             return new Response();
         }
     }
