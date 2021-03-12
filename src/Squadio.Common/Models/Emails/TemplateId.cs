@@ -6,5 +6,6 @@
         public static string ConfirmAdminNewMailbox = "ConfirmAdminNewMailboxTemplate";
         public static string ConfirmNewMailbox = "ConfirmNewMailboxTemplate";
         public static string ResetPassword = "ResetPasswordTemplate";
+        public static string InviteUser = "InviteUserTemplate";
     }
 }

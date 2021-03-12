@@ -110,6 +110,47 @@ namespace Squadio.BLL.Services.Notifications.Emails.Implementations
             return await SendEmail(mailNotificationModel);
         }
 
+        public async Task<Response> SendConfirmNewMailboxEmail(string newEmail, string code)
+        {
+            var args = new Dictionary<string, string>
+            {
+                {"{{Code}}", code},
+                {"{{ConfirmNewMailboxUrl}}",_urls.ConfirmNewMailboxUrl}
+            };
+            var mailNotificationModel = new EmailMessageDTO
+            {
+                Html = true,
+                Subject = "Confirm email",
+                Args = args,
+                TemplateId = TemplateId.ConfirmNewMailbox,
+                ToEmails = new []{newEmail},
+            };
+
+            return await SendEmail(mailNotificationModel);
+        }
+
+        public async Task<Response> SendInviteEmail(string email, string authorName, string entityName, string entityType, string code)
+        {
+            var args = new Dictionary<string, string>
+            {
+                {"{{Code}}", code},
+                {"{{InviteUserPageUrl}}", _urls.InviteUserPageUrl},
+                {"{{AuthorName}}", authorName},
+                {"{{EntityName}}", entityName},
+                {"{{EntityType}}", entityType}
+            };
+            var mailNotificationModel = new EmailMessageDTO
+            {
+                Html = true,
+                Subject = "Invite to squad.io",
+                Args = args,
+                TemplateId = TemplateId.InviteUser,
+                ToEmails = new []{email},
+            };
+
+            return await SendEmail(mailNotificationModel);
+        }
+
         // private async Task<Response> SendEmail(MailNotificationModel message)
         // {
         //     //TODO: maybe change implementation of sending email

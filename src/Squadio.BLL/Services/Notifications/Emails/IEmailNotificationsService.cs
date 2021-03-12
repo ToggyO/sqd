@@ -12,5 +12,6 @@ namespace Squadio.BLL.Services.Notifications.Emails
         Task<Response> SendConfirmNewAdminMailboxEmail(string newEmail, string code);
         Task<Response> SendResetPasswordEmail(string email, string code);
         Task<Response> SendConfirmNewMailboxEmail(string newEmail, string code);
+        Task<Response> SendInviteEmail(string email, string authorName, string entityName, string entityType, string code);
     }
 }

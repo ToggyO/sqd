@@ -25,6 +25,7 @@ using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Invites;
 using Squadio.Domain.Models.Users;
 using Squadio.DTO.Models.Companies;
+using Squadio.DTO.Models.Invites;
 using Squadio.DTO.Models.Projects;
 using Squadio.DTO.Models.SignUp;
 using Squadio.DTO.Models.Teams;
@@ -38,14 +39,13 @@ namespace Squadio.BLL.Services.SignUp.Implementations
     {
         private readonly ISignUpRepository _repository;
         private readonly IUsersRepository _usersRepository;
-        private readonly IInvitesRepository _invitesRepository;
+        // private readonly IInvitesRepository _invitesRepository;
         private readonly IUsersService _usersService;
         private readonly ICompaniesService _companiesService;
         private readonly ICompaniesProvider _companiesProvider;
         private readonly ITeamsService _teamsService;
         private readonly ITeamsProvider _teamsProvider;
         private readonly IProjectsService _projectsService;
-        private readonly IProjectsProvider _projectsProvider;
         private readonly IConfirmEmailService _confirmEmailService;
         private readonly IInvitesService _invitesService;
         private readonly IMembershipService _membershipService;
@@ -54,14 +54,12 @@ namespace Squadio.BLL.Services.SignUp.Implementations
 
         public SignUpService(ISignUpRepository repository
             , IUsersRepository usersRepository
-            , IInvitesRepository invitesRepository
             , IUsersService usersService
             , ICompaniesService companiesService
             , ICompaniesProvider companiesProvider
             , ITeamsService teamsService
             , ITeamsProvider teamsProvider
             , IProjectsService projectsService
-            , IProjectsProvider projectsProvider
             , IConfirmEmailService confirmEmailService
             , IInvitesService invitesService
             , IMembershipService membershipService
@@ -70,14 +68,12 @@ namespace Squadio.BLL.Services.SignUp.Implementations
         {
             _repository = repository;
             _usersRepository = usersRepository;
-            _invitesRepository = invitesRepository;
             _usersService = usersService;
             _companiesService = companiesService;
             _companiesProvider = companiesProvider;
             _teamsService = teamsService;
             _teamsProvider = teamsProvider;
             _projectsService = projectsService;
-            _projectsProvider = projectsProvider;
             _confirmEmailService = confirmEmailService;
             _invitesService = invitesService;
             _membershipService = membershipService;
@@ -134,7 +130,7 @@ namespace Squadio.BLL.Services.SignUp.Implementations
 
             await _membershipService.ApplyInvite(userDto.Id, invite.EntityId, invite.EntityType);
 
-            await _invitesRepository.ActivateInvites(invite.EntityId, userDto.Email);
+            await _invitesService.ActivateInvite(userDto.Email, invite.EntityId);
 
             return new Response<UserDTO>
             {
@@ -202,7 +198,7 @@ namespace Squadio.BLL.Services.SignUp.Implementations
 
             await _membershipService.ApplyInvite(userDto.Id, invite.EntityId, invite.EntityType);
 
-            await _invitesRepository.ActivateInvites(invite.EntityId, userDto.Email);
+            await _invitesService.ActivateInvite(userDto.Email, invite.EntityId);
             
             return new Response();
         }
@@ -391,6 +387,7 @@ namespace Squadio.BLL.Services.SignUp.Implementations
 
             switch (step.Status)
             {
+                case MembershipStatus.SuperAdmin:
                 case MembershipStatus.Admin:
                     return await SignUpUsernameAdmin(id, updateDTO);
                 case MembershipStatus.Member:
@@ -413,7 +410,7 @@ namespace Squadio.BLL.Services.SignUp.Implementations
                 return stepValidate;
             }
 
-            if (step.Status != MembershipStatus.Admin)
+            if (step.Status == MembershipStatus.Member)
             {
                 return new ForbiddenErrorResponse<SignUpStepDTO<CompanyDTO>>(new Error
                 {
@@ -449,7 +446,7 @@ namespace Squadio.BLL.Services.SignUp.Implementations
                 return stepValidate;
             }
 
-            if (step.Status != MembershipStatus.Admin)
+            if (step.Status == MembershipStatus.Member)
             {
                 return new ForbiddenErrorResponse<SignUpStepDTO<TeamDTO>>(new Error
                 {
@@ -508,7 +505,7 @@ namespace Squadio.BLL.Services.SignUp.Implementations
                 return stepValidate;
             }
 
-            if (step.Status != MembershipStatus.Admin)
+            if (step.Status == MembershipStatus.Member)
             {
                 return new ForbiddenErrorResponse<SignUpStepDTO<ProjectDTO>>(new Error
                 {
@@ -710,12 +707,12 @@ namespace Squadio.BLL.Services.SignUp.Implementations
             };
         }
         
-        public async Task<Response<InviteModel>> GetInviteByCode(string code)
+        public async Task<Response<InviteDTO>> GetInviteByCode(string code)
         {
-            var item = await _invitesRepository.GetInviteByCode(code);
-            if (item == null)
+            var response = await _invitesService.GetInviteByCode(code);
+            if (response == null)
             {
-                return new SecurityErrorResponse<InviteModel>(new []
+                return new SecurityErrorResponse<InviteDTO>(new []
                 {
                     new Error
                     {
@@ -724,90 +721,13 @@ namespace Squadio.BLL.Services.SignUp.Implementations
                     }
                 });
             }
-            
-            return new Response<InviteModel>
-            {
-                Data = item
-            };
+
+            return response;
         }
         
         private async Task<Response> SendSignUpInvites(Guid userId)
         {
-            var pageModel = new PageModel {Page = 1, PageSize = 1};
-            
-            var userCompany = (await _companiesProvider.GetUserCompanies(userId, pageModel))
-                .Data
-                .Items
-                .FirstOrDefault();
-
-            if (userCompany == null)
-            {
-                return new BusinessConflictErrorResponse(new[]
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Common.NotFound,
-                        Message = ErrorMessages.Common.NotFound,
-                        Field = ErrorFields.Company.Id
-                    },
-                    new Error
-                    {
-                        Code = ErrorCodes.Common.NotFound,
-                        Message = ErrorMessages.Common.NotFound,
-                        Field = ErrorFields.User.Id
-                    }
-                });
-            }
-
-            var userTeam = (await _teamsProvider.GetUserTeams(userId, pageModel, userCompany.CompanyId))
-                .Data
-                .Items
-                .FirstOrDefault();
-
-            if (userTeam == null)
-            {
-                return new BusinessConflictErrorResponse(new[]
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Common.NotFound,
-                        Message = ErrorMessages.Common.NotFound,
-                        Field = ErrorFields.Team.Id
-                    },
-                    new Error
-                    {
-                        Code = ErrorCodes.Common.NotFound,
-                        Message = ErrorMessages.Common.NotFound,
-                        Field = ErrorFields.User.Id
-                    }
-                });
-            }
-
-            var userProject = (await _projectsProvider.GetUserProjects(userId, pageModel, teamId: userTeam.TeamId))
-                .Data
-                .Items
-                .FirstOrDefault();
-
-            if (userProject == null)
-            {
-                return new BusinessConflictErrorResponse(new[]
-                {
-                    new Error
-                    {
-                        Code = ErrorCodes.Common.NotFound,
-                        Message = ErrorMessages.Common.NotFound,
-                        Field = ErrorFields.Project.Id
-                    },
-                    new Error
-                    {
-                        Code = ErrorCodes.Common.NotFound,
-                        Message = ErrorMessages.Common.NotFound,
-                        Field = ErrorFields.User.Id
-                    }
-                });
-            }
-
-            var allInvites = (await _invitesRepository.GetInvites(authorId: userId)).ToList();
+            var allInvites = (await _invitesService.GetInvites(authorId: userId)).Data.ToList();
             
             var emailsDistinct = allInvites.Select(x => x.Email).Distinct().ToList();
             
@@ -817,7 +737,7 @@ namespace Squadio.BLL.Services.SignUp.Implementations
             foreach (var email in emailsDistinct)
             {
                 var emailInvites = allInvites
-                    .Where(x => String.Equals(x.Email, email, StringComparison.CurrentCultureIgnoreCase))
+                    .Where(x => string.Equals(x.Email, email, StringComparison.CurrentCultureIgnoreCase))
                     .OrderByDescending(x=>x.EntityType)
                     .ToList();
                 var mainInvite = emailInvites.FirstOrDefault();

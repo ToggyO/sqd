@@ -96,7 +96,7 @@ namespace Squadio.BLL.Services.Admin.Implementations
                 return new Response();
             }
 
-            var code = CodeHelper.GenerateNumberCode(3);
+            var code = CodeHelper.GenerateCodeAsGuid(3);
 
             await _changePasswordRepository.ActivateAllRequestsForUser(user.Id);
 

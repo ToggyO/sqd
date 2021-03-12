@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Squadio.BLL.Providers.Companies;
 using Squadio.BLL.Providers.Teams;
+using Squadio.BLL.Services.Invites;
 using Squadio.Common.Models.Errors;
 using Squadio.Common.Models.Pages;
 using Squadio.Common.Models.Responses;
@@ -21,18 +22,21 @@ namespace Squadio.BLL.Providers.SignUp.Implementations
     public class SignUpProvider : ISignUpProvider
     {
         private readonly ISignUpRepository _repository;
-        private readonly IInvitesRepository _invitesRepository;
+        // private readonly IInvitesRepository _invitesRepository;
+        private readonly IInvitesService _invitesService;
         private readonly ICompaniesProvider _companiesProvider;
         private readonly ITeamsProvider _teamsProvider;
         private readonly IMapper _mapper;
         public SignUpProvider(ISignUpRepository repository
-            , IInvitesRepository invitesRepository
+            // , IInvitesRepository invitesRepository
+            , IInvitesService invitesService
             , ICompaniesProvider companiesProvider
             , ITeamsProvider teamsProvider
             , IMapper mapper)
         {
             _repository = repository;
-            _invitesRepository = invitesRepository;
+            // _invitesRepository = invitesRepository;
+            _invitesService = invitesService;
             _companiesProvider = companiesProvider;
             _teamsProvider = teamsProvider;
             _mapper = mapper;
@@ -77,7 +81,7 @@ namespace Squadio.BLL.Providers.SignUp.Implementations
                 });
             }
 
-            if (step.Status != MembershipStatus.Admin)
+            if (step.Status == MembershipStatus.Member)
             {
                 return new ForbiddenErrorResponse<IEnumerable<string>>(new Error
                 {
@@ -127,13 +131,10 @@ namespace Squadio.BLL.Providers.SignUp.Implementations
         
         private async Task<Response<IEnumerable<InviteSimpleDTO>>> GetInvitesByEntityId(Guid entityId, InviteEntityType entityType)
         {
-            var invites = await _invitesRepository.GetInvites(
-                entityId: entityId, 
-                entityType: entityType);
-            var mapped = _mapper.Map<IEnumerable<InviteSimpleDTO>>(invites);
+            var invites = await _invitesService.GetInvites(null, entityId, entityType);
             return new Response<IEnumerable<InviteSimpleDTO>>
             {
-                Data = mapped
+                Data = invites.Data
             };
         }
     }
