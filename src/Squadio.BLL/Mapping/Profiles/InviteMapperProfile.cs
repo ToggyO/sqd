@@ -18,6 +18,7 @@ namespace Squadio.BLL.Mapping.Profiles
     {
         public InviteMapperProfile()
         {
+            CreateMap<InviteModel, InviteSimpleDTO>();
             CreateMap<InviteModel, InviteDTO>();
         }
     }

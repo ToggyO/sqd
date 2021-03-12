@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -84,7 +85,7 @@ namespace Squadio.BLL.Services.Membership.Implementations
                     throw new ArgumentOutOfRangeException(nameof(entityType), entityType, null);
             }
 
-            await _invitesService.RemoveInvites(user.Data.Email, entityId, entityType);
+            await _invitesService.RemoveInvite(user.Data.Email, entityId, entityType);
             return new Response();
         }
 
@@ -115,7 +116,30 @@ namespace Squadio.BLL.Services.Membership.Implementations
                 await _projectsUsersRepository.AddProjectUser(projectId, userId, membershipStatus);
             return new Response();
         }
-        
+
+        public async Task<Response> InviteUsers(Guid entityId, InviteEntityType entityType, Guid authorId, IEnumerable<string> emails, bool sendMails = true)
+        {
+            var distinctEmails = emails.Distinct().ToList();
+
+            var existedUsersEmails = await GetExistedUsersInEntity(entityId, entityType, distinctEmails);
+            var notExistedEmails = distinctEmails.Except(existedUsersEmails).ToList();
+            var existedInvites = await _invitesService.GetInvites(notExistedEmails, entityId, entityType);
+
+            notExistedEmails = notExistedEmails.Except(existedInvites.Data.Select(x => x.Email)).ToList();
+
+            foreach (var email in notExistedEmails)
+            {
+                await _invitesService.CreateInvite(email, entityId, entityType, authorId);
+
+                if (sendMails)
+                {
+                    await _invitesService.SendInvite(email, entityId, entityType);
+                }
+            }
+
+            return new Response();
+        }
+
         public async Task<Response> DeleteUserFromCompany(Guid companyId, Guid removeUserId, Guid currentUserId)
         {
             var currentCompanyUser = await _companiesUsersRepository.GetCompanyUser(companyId, currentUserId);
@@ -204,275 +228,30 @@ namespace Squadio.BLL.Services.Membership.Implementations
             return new Response();
         }
 
-        //TODO: think how optimize invites. Now here many access to DB!
-        //TODO: add sending notification about adding user
+        private async Task<IEnumerable<string>> GetExistedUsersInEntity(Guid entityId, InviteEntityType entityType, IEnumerable<string> emails)
+        {
+            List<string> result;
+            
+            switch (entityType)
+            {
+                case InviteEntityType.Company:
+                    var companyUsers = await _companiesUsersRepository.GetCompanyUsersByEmails(entityId, emails);
+                    result = companyUsers.Select(x => x.User.Email).ToList();
+                    break;
+                case InviteEntityType.Team:
+                    var teamUsers = await _teamsUsersRepository.GetTeamUsersByEmails(entityId, emails);
+                    result = teamUsers.Select(x => x.User.Email).ToList();
+                    break;
+                case InviteEntityType.Project:
+                    var projectUsers = await _projectsUsersRepository.GetProjectUsersByEmails(entityId, emails);
+                    result = projectUsers.Select(x => x.User.Email).ToList();
+                    break;
+                default:
+                    result = new List<string>();
+                    break;
+            }
 
-        // public async Task<Response> InviteUsersToCompany(Guid companyId, Guid authorId, CreateInvitesDTO dto, bool sendMails = true)
-        // {
-        //     var company = await _companiesRepository.GetById(companyId);
-        //     
-        //     var distinctEmails = dto.Emails.Distinct().ToList();
-        //     
-        //     var requestedUser = await _companiesUsersRepository.GetCompanyUser(companyId, authorId);
-        //
-        //     if (requestedUser == null)
-        //     {
-        //         return new ErrorResponse();
-        //     }
-        //     
-        //     var companyUsers = await _companiesUsersRepository.GetCompanyUsersByEmails(companyId, distinctEmails);
-        //     
-        //     var existedEmails = companyUsers.Select(x => x.User.Email).ToList();
-        //     var notExistedEmails = distinctEmails.Except(existedEmails).ToList();
-        //     
-        //     foreach (var email in notExistedEmails)
-        //     {
-        //         var code = CodeHelper.GenerateCodeAsGuid();
-        //         
-        //         var user = (await _usersProvider.GetByEmail(email)).Data;
-        //         if (user == null)
-        //         {
-        //             var createUserDTO = new UserCreateDTO()
-        //             {
-        //                 Email = email,
-        //                 Step = RegistrationStep.New,
-        //                 MembershipStatus = MembershipStatus.Member,
-        //                 UserStatus = UserStatus.Pending
-        //             };
-        //             user = (await _usersService.CreateUserWithPasswordRestore(createUserDTO, code)).Data;
-        //         }
-        //
-        //         await _companiesUsersRepository.AddCompanyUser(companyId, user.Id, MembershipStatus.Member);
-        //
-        //         if (user.Status == UserStatus.Pending)
-        //         {
-        //             await _invitesService.CreateInvite(email, code, companyId, InviteEntityType.Company, authorId);
-        //         }
-        //         else if (sendMails)
-        //         {
-        //             //TODO: some way to send invite
-        //             // await _rabbitService.Send(new AddUserEmailModel
-        //             // {
-        //             //     To = email,
-        //             //     AuthorName = requestedUser.User.Name,
-        //             //     EntityName = company.Name,
-        //             //     EntityType = EntityType.Company
-        //             // });
-        //         }
-        //
-        //         if (sendMails)
-        //         {
-        //             await _invitesService.SendInvite(email);
-        //         }
-        //     }
-        //     
-        //     return new Response();
-        // }
-        // public async Task<Response> InviteUsersToTeam(Guid teamId, Guid authorId, CreateInvitesDTO dto, bool sendMails = true)
-        // {
-        //     var team = await _teamsRepository.GetById(teamId);
-        //     var companyId = team.CompanyId;
-        //     
-        //     await InviteUsersToCompany(companyId, authorId, dto, false);
-        //     var distincted = dto.Emails.Distinct().ToList();
-        //     
-        //     var requestedUser = await _companiesUsersRepository.GetCompanyUser(companyId, authorId);
-        //     
-        //     var teamUsers = await _teamsUsersRepository.GetTeamUsersByEmails(new PageModel {Page = 1, PageSize = 1000000}
-        //         , teamId
-        //         , distincted);
-        //     
-        //     var existedEmails = teamUsers.Items.Select(x => x.User.Email).ToList();
-        //     var notExistedEmails = distincted.Except(existedEmails).ToList();
-        //     
-        //     foreach (var email in notExistedEmails)
-        //     {
-        //         var code = CodeHelper.GenerateCodeAsGuid();
-        //         
-        //         var user = (await _usersProvider.GetByEmail(email)).Data;
-        //
-        //         await _teamsUsersRepository.AddTeamUser(teamId, user.Id, MembershipStatus.Member);
-        //         
-        //         if (user.Status == UserStatus.Pending)
-        //         {
-        //             await _invitesService.CreateInvite(email, code, teamId, InviteEntityType.Team, authorId);
-        //         }
-        //         else if (sendMails)
-        //         {
-        //             //TODO: some way to send invite
-        //             // await _rabbitService.Send(new AddUserEmailModel
-        //             // {
-        //             //     To = email,
-        //             //     AuthorName = requestedUser.User.Name,
-        //             //     EntityName = team.Name,
-        //             //     EntityType = EntityType.Team
-        //             // });
-        //         }
-        //
-        //         if (sendMails)
-        //         {
-        //             await _invitesService.SendInvite(email);
-        //         }
-        //     }
-        //     
-        //     return new Response();
-        // }
-        //
-        // public async Task<Response> InviteUsersToProject(Guid projectId, Guid authorId, CreateInvitesDTO dto, bool sendMails = true)
-        // {
-        //     var project = await _projectsRepository.GetById(projectId);
-        //     var teamId = project.TeamId;
-        //     var companyId = project.Team.CompanyId;
-        //     
-        //     await InviteUsersToTeam(teamId, authorId, dto, false);
-        //     var distincted = dto.Emails.Distinct().ToList();
-        //     
-        //     var requestedUser = await _companiesUsersRepository.GetCompanyUser(companyId, authorId);
-        //     
-        //     var teamUsers = await _projectsUsersRepository.GetProjectUsersByEmails(new PageModel {Page = 1, PageSize = 1000000}
-        //         , teamId
-        //         , distincted);
-        //     
-        //     var existedEmails = teamUsers.Items.Select(x => x.User.Email).ToList();
-        //     var notExistedEmails = distincted.Except(existedEmails).ToList();
-        //     
-        //     foreach (var email in notExistedEmails)
-        //     {
-        //         var code = CodeHelper.GenerateCodeAsGuid();
-        //         
-        //         var user = (await _usersProvider.GetByEmail(email)).Data;
-        //
-        //         await _projectsUsersRepository.AddProjectUser(projectId, user.Id, MembershipStatus.Member);
-        //         
-        //         if (user.Status == UserStatus.Pending)
-        //         {
-        //             await _invitesService.CreateInvite(email, code, projectId, InviteEntityType.Project, authorId);
-        //         }
-        //         else if (sendMails)
-        //         {
-        //             //TODO: some way to send invite
-        //             // await _rabbitService.Send(new AddUserEmailModel
-        //             // {
-        //             //     To = email,
-        //             //     AuthorName = requestedUser.User.Name,
-        //             //     EntityName = project.Name,
-        //             //     EntityType = EntityType.Project
-        //             // });
-        //         }
-        //
-        //         if (sendMails)
-        //         {
-        //             await _invitesService.SendInvite(email);
-        //         }
-        //     }
-        //     
-        //     return new Response();
-        // }
-        //
-        // public async Task<Response<UserDTO>> InviteUserToCompany(Guid companyId, Guid inviteAuthorId, string email, bool sendMails = true)
-        // {
-        //     var companyUser = await _companiesUsersRepository.GetCompanyUserByEmail(companyId, email);
-        //     
-        //     if(companyUser != null)
-        //         return new Response<UserDTO>();
-        //     
-        //     var code = CodeHelper.GenerateCodeAsGuid();
-        //         
-        //     var user = (await _usersProvider.GetByEmail(email)).Data;
-        //     if (user == null)
-        //     {
-        //         var createUserDTO = new UserCreateDTO()
-        //         {
-        //             Email = email,
-        //             Step = RegistrationStep.New,
-        //             MembershipStatus = MembershipStatus.Member,
-        //             UserStatus = UserStatus.Pending
-        //         };
-        //         user = (await _usersService.CreateUserWithPasswordRestore(createUserDTO, code)).Data;
-        //     }
-        //
-        //     await _companiesUsersRepository.AddCompanyUser(companyId, user.Id, MembershipStatus.Member);
-        //
-        //     if (user.Status == UserStatus.Pending)
-        //     {
-        //         await _invitesService.CreateInvite(email, code, companyId, InviteEntityType.Company, inviteAuthorId);
-        //     }
-        //
-        //     if (sendMails)
-        //     {
-        //         await _invitesService.SendInvite(email);
-        //     }
-        //     
-        //     return new Response<UserDTO>
-        //     {
-        //         Data = user
-        //     };
-        // }
-        //
-        // public async Task<Response<UserDTO>> InviteUserToTeam(Guid teamId, Guid inviteAuthorId, string email, bool sendMails = true)
-        // {
-        //     var team = await _teamsRepository.GetById(teamId);
-        //     var companyId = team.CompanyId;
-        //     
-        //     var companyInviteResponse = await InviteUserToCompany(companyId, inviteAuthorId, email, false);
-        //     
-        //     var teamUser = await _teamsUsersRepository.GetTeamUserByEmails(teamId, email);
-        //     if(teamUser != null)
-        //         return new Response<UserDTO>();
-        //     
-        //     var code = CodeHelper.GenerateCodeAsGuid();
-        //         
-        //     var user = companyInviteResponse.Data;
-        //
-        //     await _teamsUsersRepository.AddTeamUser(teamId, user.Id, MembershipStatus.Member);
-        //         
-        //     if (user.Status == UserStatus.Pending)
-        //     {
-        //         await _invitesService.CreateInvite(email, code, teamId, InviteEntityType.Team, inviteAuthorId);
-        //     }
-        //
-        //     if (sendMails)
-        //     {
-        //         await _invitesService.SendInvite(email);
-        //     }
-        //     
-        //     return new Response<UserDTO>
-        //     {
-        //         Data = user
-        //     };
-        // }
-        //
-        // public async Task<Response<UserDTO>> InviteUserToProject(Guid projectId, Guid inviteAuthorId, string email, bool sendMails = true)
-        // {
-        //     var project = await _projectsRepository.GetById(projectId);
-        //     var teamId = project.TeamId;
-        //     
-        //     var teamInviteResponse = await InviteUserToTeam(teamId, inviteAuthorId, email, false);
-        //     
-        //     var projectUser = await _projectsUsersRepository.GetProjectUserByEmail(projectId, email);
-        //     if(projectUser != null)
-        //         return new Response<UserDTO>();
-        //     
-        //     var code = CodeHelper.GenerateCodeAsGuid();
-        //         
-        //     var user = teamInviteResponse.Data;
-        //
-        //     await _projectsUsersRepository.AddProjectUser(projectId, user.Id, MembershipStatus.Member);
-        //         
-        //     if (user.Status == UserStatus.Pending)
-        //     {
-        //         await _invitesService.CreateInvite(email, code, projectId, InviteEntityType.Project, inviteAuthorId);
-        //     }
-        //
-        //     if (sendMails)
-        //     {
-        //         await _invitesService.SendInvite(email);
-        //     }
-        //     
-        //     return new Response<UserDTO>
-        //     {
-        //         Data = user
-        //     };
-        // }
+            return result;
+        }
     }
 }

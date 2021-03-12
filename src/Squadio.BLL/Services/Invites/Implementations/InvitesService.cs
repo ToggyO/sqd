@@ -1,7 +1,9 @@
 ﻿﻿using System;
-using System.Linq;
+ using System.Collections.Generic;
+ using System.Linq;
 using System.Threading.Tasks;
-using Squadio.BLL.Services.Notifications.Emails;
+ using AutoMapper;
+ using Squadio.BLL.Services.Notifications.Emails;
 using Squadio.Common.Helpers;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Companies;
@@ -11,8 +13,9 @@ using Squadio.DAL.Repository.Teams;
 using Squadio.DAL.Repository.Users;
 using Squadio.Domain.Enums;
 using Squadio.Domain.Models.Invites;
+ using Squadio.DTO.Models.Invites;
 
-namespace Squadio.BLL.Services.Invites.Implementations
+ namespace Squadio.BLL.Services.Invites.Implementations
 {
     public class InvitesService : IInvitesService
     {
@@ -22,13 +25,15 @@ namespace Squadio.BLL.Services.Invites.Implementations
         private readonly IUsersRepository _usersRepository;
         private readonly IInvitesRepository _repository;
         private readonly IEmailNotificationsService _emailNotificationsService;
+        private readonly IMapper _mapper;
 
         public InvitesService(ICompaniesRepository companiesRepository
             , ITeamsRepository teamsRepository
             , IProjectsRepository projectsRepository
             , IUsersRepository usersRepository
             , IInvitesRepository repository
-            , IEmailNotificationsService emailNotificationsService)
+            , IEmailNotificationsService emailNotificationsService
+            , IMapper mapper)
         {
             _companiesRepository = companiesRepository;
             _teamsRepository = teamsRepository;
@@ -36,14 +41,20 @@ namespace Squadio.BLL.Services.Invites.Implementations
             _usersRepository = usersRepository;
             _repository = repository;
             _emailNotificationsService = emailNotificationsService;
+            _mapper = mapper;
         }
 
-        public async Task<Response> GetInviteByCode(string code)
+        public Task<Response<InviteDTO>> GetInviteByCode(string code)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<Response> CreateInvite(string email, Guid entityId, InviteEntityType inviteEntityType, Guid authorId, string code = null)
+        public Task<Response<IEnumerable<InviteDTO>>> GetInvites(IEnumerable<string> emails, Guid entityId, InviteEntityType inviteEntityType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<Response<InviteDTO>> CreateInvite(string email, Guid entityId, InviteEntityType inviteEntityType, Guid authorId, string code = null)
         {
             if (string.IsNullOrEmpty(code))
             {
@@ -62,11 +73,22 @@ namespace Squadio.BLL.Services.Invites.Implementations
                 CreatorId = authorId
             };
             
-            await _repository.CreateInvite(invite);
+            invite = await _repository.CreateInvite(invite);
+
+            var mappedInvite = _mapper.Map<InviteDTO>(invite);
             
-            return new Response();
+            return new Response<InviteDTO>
+            {
+                Data = mappedInvite
+            };
         }
 
+        public async Task<Response> SendInvite(string email, Guid entityId, InviteEntityType inviteEntityType)
+        {
+            throw new NotImplementedException();
+        }
+
+        [Obsolete]
         public async Task<Response> SendInvite(string email)
         {
             // var user = await _usersRepository.GetByEmail(email);
@@ -129,7 +151,7 @@ namespace Squadio.BLL.Services.Invites.Implementations
             throw new NotImplementedException();
         }
 
-        public async Task<Response> RemoveInvites(string email, Guid entityId, InviteEntityType inviteEntityType)
+        public async Task<Response> RemoveInvite(string email, Guid entityId, InviteEntityType inviteEntityType)
         {
             var invites = await _repository.GetInvites(email: email, entityId: entityId, entityType: inviteEntityType);
             await _repository.DeleteInvites(invites.Select(x => x.Id));

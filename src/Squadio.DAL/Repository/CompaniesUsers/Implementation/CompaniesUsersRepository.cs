@@ -68,10 +68,7 @@ namespace Squadio.DAL.Repository.CompaniesUsers.Implementation
 
         public async Task<IEnumerable<CompanyUserModel>> GetCompanyUsersByEmails(Guid companyId, IEnumerable<string> emails)
         {
-            IQueryable<CompanyUserModel> query = _context.CompaniesUsers
-                .Include(x => x.User).ThenInclude(x => x.Avatar)
-                .Include(x => x.Company)
-                .Where(x => x.CompanyId == companyId);
+            var query = _context.CompaniesUsers.Where(x => x.CompanyId == companyId);
             
             if (emails != null)
             {

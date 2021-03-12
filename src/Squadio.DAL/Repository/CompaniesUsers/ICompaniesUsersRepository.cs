@@ -15,17 +15,11 @@ namespace Squadio.DAL.Repository.CompaniesUsers
             , Guid? userId = null
             , Guid? companyId = null
             , IEnumerable<MembershipStatus> statuses = null);
-        // Task<PageModel<CompanyUserModel>> GetCompanyUsersByEmails(PageModel model, Guid companyId, IEnumerable<string> emails);
         Task<IEnumerable<CompanyUserModel>> GetCompanyUsersByEmails(Guid companyId, IEnumerable<string> emails);
-        Task<CompanyUserModel> GetCompanyUserByEmail(Guid companyId, string email);
         Task<CompanyUserModel> GetCompanyUser(Guid companyId, Guid userId);
         Task<CompanyUserModel> AddCompanyUser(Guid companyId, Guid userId, MembershipStatus membershipStatus);
         Task DeleteCompanyUser(Guid companyId, Guid userId);
         Task<IEnumerable<CompanyUserModel>> GetCompaniesByUsers(IEnumerable<Guid> userIds);
         Task<IEnumerable<CompanyUserModel>> GetUsersByCompanies(IEnumerable<Guid> companyIds);
-        // Task<int> GetCompanyUsersCount(Guid companyId);
-        // Task DeleteCompanyUsers(Guid companyId, IEnumerable<string> emails);
-        // Task AddRangeCompanyUser(Guid companyId, IEnumerable<Guid> userIds, MembershipStatus membershipStatus);
-        // Task ChangeStatusCompanyUser(Guid companyId, Guid userId, MembershipStatus newMembershipStatus);
     }
 }

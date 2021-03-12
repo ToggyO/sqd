@@ -807,23 +807,33 @@ namespace Squadio.BLL.Services.SignUp.Implementations
                 });
             }
 
-            throw new NotImplementedException();
-            // var allInvites = (await _invitesRepository.GetInvites(
-            //     authorId: userId, 
-            //     activated: false,
-            //     isSent: false)).ToList();
-            //
-            // var emailsDistinct = allInvites.Select(x => x.Email).Distinct().ToList();
-            //
-            // if (emailsDistinct.Count == 0)
-            //     return new Response();
-            //
-            // foreach (var email in emailsDistinct)
-            // {
-            //     await _invitesService.SendInvite(email);
-            // }
-            //
-            // return new Response();
+            var allInvites = (await _invitesRepository.GetInvites(authorId: userId)).ToList();
+            
+            var emailsDistinct = allInvites.Select(x => x.Email).Distinct().ToList();
+            
+            if (emailsDistinct.Count == 0)
+                return new Response();
+            
+            foreach (var email in emailsDistinct)
+            {
+                var emailInvites = allInvites
+                    .Where(x => String.Equals(x.Email, email, StringComparison.CurrentCultureIgnoreCase))
+                    .OrderByDescending(x=>x.EntityType)
+                    .ToList();
+                var mainInvite = emailInvites.FirstOrDefault();
+                if (mainInvite != null)
+                {
+                    await _invitesService.SendInvite(mainInvite.Email, mainInvite.EntityId, mainInvite.EntityType);
+                }
+
+                emailInvites.Remove(mainInvite);
+                foreach (var secondaryInvite in emailInvites)
+                {
+                    await _invitesService.RemoveInvite(secondaryInvite.Email, secondaryInvite.EntityId, secondaryInvite.EntityType);
+                }
+            }
+            
+            return new Response();
         }
     }
 }

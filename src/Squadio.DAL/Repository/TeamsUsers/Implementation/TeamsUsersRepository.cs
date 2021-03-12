@@ -69,6 +69,25 @@ namespace Squadio.DAL.Repository.TeamsUsers.Implementation
             return result;
         }
 
+        public async Task<IEnumerable<TeamUserModel>> GetTeamUsersByEmails(Guid teamId, IEnumerable<string> emails)
+        {
+            var query = _context.TeamsUsers.Where(x => x.TeamId == teamId);
+            
+            if (emails != null)
+            {
+                var userEmails = emails.ToList();
+                if (userEmails?.Any() == true)
+                {
+                    query = query.Where(x => userEmails.Contains(x.User.Email));
+                }
+            }
+
+            var items = await query
+                .ToListAsync();
+
+            return items;
+        }
+
         public async Task<TeamUserModel> GetTeamUserByEmails(Guid teamId, string email)
         {
             if (string.IsNullOrEmpty(email))

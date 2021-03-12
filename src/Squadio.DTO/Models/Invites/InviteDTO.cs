@@ -1,10 +1,8 @@
-﻿using System;
-
-namespace Squadio.DTO.Models.Invites
+﻿namespace Squadio.DTO.Models.Invites
 {
-    public class InviteDTO
+    public class InviteDTO : InviteSimpleDTO
     {
-        public string Email { get; set; }
-        public DateTime CreatedDate { get; set; }
+        public string Code { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

@@ -118,23 +118,23 @@ namespace Squadio.BLL.Providers.SignUp.Implementations
                 });
             }
             
-            var inviteResponse = await GetInvitesByEntityId(team.Id);
+            var inviteResponse = await GetInvitesByEntityId(team.Id, InviteEntityType.Team);
             return new Response<IEnumerable<string>>
             {
                 Data = inviteResponse.Data.Select(x => x.Email).Distinct()
             };
         }
         
-        private async Task<Response<IEnumerable<InviteDTO>>> GetInvitesByEntityId(Guid entityId, bool? activated = null)
+        private async Task<Response<IEnumerable<InviteSimpleDTO>>> GetInvitesByEntityId(Guid entityId, InviteEntityType entityType)
         {
-            // var invites = await _invitesRepository.GetInvites(
-            //     entityId: entityId, 
-            //     activated: activated);
-            // return new Response<IEnumerable<InviteDTO>>
-            // {
-            //     Data = invites.Select(x => _mapper.Map<InviteModel, InviteDTO>(x))
-            // };
-            throw new NotImplementedException();
+            var invites = await _invitesRepository.GetInvites(
+                entityId: entityId, 
+                entityType: entityType);
+            var mapped = _mapper.Map<IEnumerable<InviteSimpleDTO>>(invites);
+            return new Response<IEnumerable<InviteSimpleDTO>>
+            {
+                Data = mapped
+            };
         }
     }
 }

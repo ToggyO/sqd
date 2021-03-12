@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Squadio.Common.Models.Responses;
 using Squadio.Domain.Enums;
@@ -13,12 +14,7 @@ namespace Squadio.BLL.Services.Membership
         Task<Response> AddUserToCompany(Guid companyId, Guid userId, MembershipStatus membershipStatus);
         Task<Response> AddUserToTeam(Guid teamId, Guid userId, MembershipStatus membershipStatus);
         Task<Response> AddUserToProject(Guid projectId, Guid userId, MembershipStatus membershipStatus);
-        // Task<Response> InviteUsersToCompany(Guid companyId, Guid authorId, CreateInvitesDTO dto, bool sendMails = true);
-        // Task<Response> InviteUsersToTeam(Guid teamId, Guid authorId, CreateInvitesDTO dto, bool sendMails = true);
-        // Task<Response> InviteUsersToProject(Guid projectId, Guid authorId, CreateInvitesDTO dto, bool sendMails = true);
-        // Task<Response<UserDTO>> InviteUserToCompany(Guid companyId, Guid inviteAuthorId, string email, bool sendMails = true);
-        // Task<Response<UserDTO>> InviteUserToTeam(Guid teamId, Guid inviteAuthorId, string email, bool sendMails = true);
-        // Task<Response<UserDTO>> InviteUserToProject(Guid projectId, Guid inviteAuthorId, string email, bool sendMails = true);
+        Task<Response> InviteUsers(Guid entityId, InviteEntityType entityType, Guid authorId, IEnumerable<string> emails, bool sendMails = true);
         
         Task<Response> DeleteUserFromCompany(Guid companyId, Guid removeUserId, Guid currentUserId);
         Task<Response> DeleteUserFromTeam(Guid teamId, Guid removeUserId, Guid currentUserId, bool checkAccess = true);

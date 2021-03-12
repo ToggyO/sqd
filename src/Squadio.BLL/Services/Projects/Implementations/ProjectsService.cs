@@ -51,8 +51,7 @@ namespace Squadio.BLL.Services.Projects.Implementations
 
             await _projectsUsersRepository.AddProjectUser(entity.Id, userId, MembershipStatus.SuperAdmin);
             
-            //TODO:
-            // await _membershipService.InviteUsersToProject(entity.Id, userId, new CreateInvitesDTO {Emails = dto.Emails}, sendInvites);
+            await _membershipService.InviteUsers(entity.Id, InviteEntityType.Project, userId, dto.Emails, sendInvites);
             
             var result = _mapper.Map<ProjectModel, ProjectDTO>(entity);
             return new Response<ProjectDTO>

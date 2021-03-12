@@ -50,9 +50,7 @@ namespace Squadio.BLL.Services.Teams.Implementations
 
             await _teamsUsersRepository.AddTeamUser(entity.Id, userId, MembershipStatus.SuperAdmin);
             
-            
-            //TODO:
-            // await _membershipService.InviteUsersToTeam(entity.Id, userId, new CreateInvitesDTO {Emails = dto.Emails}, sendInvites);
+            await _membershipService.InviteUsers(entity.Id, InviteEntityType.Team, userId, dto.Emails, sendInvites);
 
             var result = _mapper.Map<TeamModel, TeamDTO>(entity);
             return new Response<TeamDTO>
