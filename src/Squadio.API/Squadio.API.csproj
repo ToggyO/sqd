@@ -56,4 +56,11 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\EmailTemplates\ConfirmAdminNewMailboxTemplate.html" />
+    <None Include="wwwroot\EmailTemplates\ResetAdminPasswordTemplate.html" />
+    <None Include="wwwroot\EmailTemplates\ResetPasswordTemplate.html" />
+    <None Include="wwwroot\EmailTemplates\TestTemplate.html" />
+  </ItemGroup>
+
 </Project>
