@@ -41,11 +41,21 @@ namespace Squadio.DAL.Repository.Invites.Implementation
             return item;
         }
 
+        public async Task<InviteModel> ActivateInvite(string code)
+        {
+            var item = await GetInviteByCode(code);
+            return await ActivateInvite(item.Id);
+        }
+
         public async Task DeleteInvites(IEnumerable<Guid> ids)
         {
             var query = _context.Invites.Where(x => ids.Contains(x.Id));
-            var items = query.ToList();
-            _context.Invites.RemoveRange(query);
+            await query.ForEachAsync(x =>
+            {
+                x.IsDeleted = true;
+                x.UpdatedDate = DateTime.UtcNow;
+            });
+            _context.UpdateRange(query);
             await _context.SaveChangesAsync();
         }
 
@@ -53,9 +63,7 @@ namespace Squadio.DAL.Repository.Invites.Implementation
             Guid? entityId = null, 
             Guid? authorId = null, 
             string email = null, 
-            InviteEntityType? entityType = null, 
-            bool? activated = null,
-            bool? isSent = null)
+            InviteEntityType? entityType = null)
         {
             var query = _context.Invites
                 .Include(x => x.Creator) as IQueryable<InviteModel>;
@@ -75,32 +83,25 @@ namespace Squadio.DAL.Repository.Invites.Implementation
                 query = query.Where(x => x.EntityType == entityType);
             }
             
-            if (activated.HasValue)
-            {
-                query = query.Where(x => x.IsDeleted == activated);
-            }
-            
-            if (isSent.HasValue)
-            {
-                query = query.Where(x => x.IsSent == isSent);
-            }
-            
             if (!string.IsNullOrEmpty(email))
             {
                 query = query.Where(x => x.Email.ToUpper() == email.ToUpper());
             }
+            
+            query = query.Where(x => x.IsDeleted != true);
             
             var items = await query
                 .ToListAsync();
             return items;
         }
 
-        public async Task ActivateInvites(Guid entityId, IEnumerable<string> emails)
+        public async Task ActivateInvites(Guid entityId, string email)
         {
-            var emailsUpper = emails.Select(s => s.ToUpper());
+            if(string.IsNullOrEmpty(email))
+                return;
 
             var query = _context.Invites.Where(x => x.EntityId == entityId && x.IsDeleted == false);
-            query = query.Where(model => emailsUpper.Contains(model.Email.ToUpper()));
+            query = query.Where(x => x.Email.ToUpper() == email.ToUpper());
             
             await query.ForEachAsync(x =>
             {
@@ -109,12 +110,6 @@ namespace Squadio.DAL.Repository.Invites.Implementation
             });
             _context.UpdateRange(query);
             await _context.SaveChangesAsync();
-        }
-
-        public async Task<InviteModel> ActivateInvite(string code)
-        {
-            var item = await GetInviteByCode(code);
-            return await ActivateInvite(item.Id);
         }
     }
 }

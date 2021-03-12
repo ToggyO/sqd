@@ -11,6 +11,7 @@ using Squadio.BLL.Providers.Users;
 using Squadio.BLL.Services.Companies;
 using Squadio.BLL.Services.ConfirmEmail;
 using Squadio.BLL.Services.Invites;
+using Squadio.BLL.Services.Membership;
 using Squadio.BLL.Services.Projects;
 using Squadio.BLL.Services.Teams;
 using Squadio.BLL.Services.Users;
@@ -47,6 +48,7 @@ namespace Squadio.BLL.Services.SignUp.Implementations
         private readonly IProjectsProvider _projectsProvider;
         private readonly IConfirmEmailService _confirmEmailService;
         private readonly IInvitesService _invitesService;
+        private readonly IMembershipService _membershipService;
         private readonly ILogger<SignUpService> _logger;
         private readonly IMapper _mapper;
 
@@ -62,6 +64,7 @@ namespace Squadio.BLL.Services.SignUp.Implementations
             , IProjectsProvider projectsProvider
             , IConfirmEmailService confirmEmailService
             , IInvitesService invitesService
+            , IMembershipService membershipService
             , ILogger<SignUpService> logger
             , IMapper mapper)
         {
@@ -77,6 +80,7 @@ namespace Squadio.BLL.Services.SignUp.Implementations
             _projectsProvider = projectsProvider;
             _confirmEmailService = confirmEmailService;
             _invitesService = invitesService;
+            _membershipService = membershipService;
             _logger = logger;
             _mapper = mapper;
         }
@@ -93,6 +97,7 @@ namespace Squadio.BLL.Services.SignUp.Implementations
             var inviteResponse = await GetInviteByCode(dto.InviteCode);
 
             if (!inviteResponse.IsSuccess 
+                || inviteResponse.Data == null
                 || inviteResponse.Data?.Code != dto.InviteCode 
                 || inviteResponse.Data?.IsDeleted == true)
             {
@@ -108,34 +113,32 @@ namespace Squadio.BLL.Services.SignUp.Implementations
 
             var invite = inviteResponse.Data;
             
-            var user = await _usersRepository.GetByEmail(invite.Email);
-            var step = await _repository.GetRegistrationStepByUserId(user.Id);
-            var stepValidate = ValidateStep(step, RegistrationStep.EmailConfirmed);
-            if (!stepValidate.IsSuccess)
+            var createUserDTO = new UserCreateDTO()
             {
-                var errorResponse = (ErrorResponse<SignUpStepDTO>) stepValidate;
-                
-                return new ErrorResponse<UserDTO>
-                {
-                    Message = errorResponse.Message,
-                    Code = errorResponse.Code,
-                    Errors = errorResponse.Errors,
-                    HttpStatusCode = errorResponse.HttpStatusCode
-                };
-            }
+                Email = invite.Email,
+                Step = RegistrationStep.EmailConfirmed,
+                MembershipStatus = MembershipStatus.Member,
+                SignUpBy = SignUpType.Email
+            };
 
-            var resetPasswordResponse = await _usersService.ResetPasswordConfirm(dto.InviteCode, dto.Password);
+            var createResponse = await _usersService.CreateUser(createUserDTO);
+            
+            if (!createResponse.IsSuccess)
+                return createResponse;
 
-            if (!resetPasswordResponse.IsSuccess)
-            {
-                return resetPasswordResponse;
-            }
+            var userDto = createResponse.Data;
 
-            await _repository.SetRegistrationStep(user.Id, RegistrationStep.EmailConfirmed);
+            await _repository.SetRegistrationStep(userDto.Id, createUserDTO.Step, createUserDTO.MembershipStatus);
+            
+            await _usersService.SetPassword(userDto.Email, dto.Password);
+
+            await _membershipService.ApplyInvite(userDto.Id, invite.EntityId, invite.EntityType);
+
+            await _invitesRepository.ActivateInvites(invite.EntityId, userDto.Email);
 
             return new Response<UserDTO>
             {
-                Data = _mapper.Map<UserModel, UserDTO>(user)
+                Data = userDto
             };
         }
 
@@ -163,6 +166,7 @@ namespace Squadio.BLL.Services.SignUp.Implementations
             var inviteResponse = await GetInviteByCode(dto.InviteCode);
 
             if (!inviteResponse.IsSuccess 
+                || inviteResponse.Data == null
                 || inviteResponse.Data?.Code != dto.InviteCode 
                 || inviteResponse.Data?.IsDeleted == true)
             {
@@ -178,17 +182,27 @@ namespace Squadio.BLL.Services.SignUp.Implementations
 
             var invite = inviteResponse.Data;
             
-            var user = await _usersRepository.GetByEmail(invite?.Email);
-            var step = await _repository.GetRegistrationStepByUserId(user.Id);
-            var stepValidate = ValidateStep(step, RegistrationStep.EmailConfirmed);
-            if (!stepValidate.IsSuccess)
+            var createUserDTO = new UserCreateDTO()
             {
-                return stepValidate;
-            }
+                Email = invite.Email,
+                Name = infoFromGoogleToken.Name,
+                Step = RegistrationStep.ProjectCreated,
+                MembershipStatus = MembershipStatus.Member,
+                SignUpBy = SignUpType.Email
+            };
 
-            user.Name = infoFromGoogleToken.Name;
+            var createResponse = await _usersService.CreateUser(createUserDTO);
             
-            step = await _repository.SetRegistrationStep(user.Id, RegistrationStep.ProjectCreated);
+            if (!createResponse.IsSuccess)
+                return createResponse;
+
+            var userDto = createResponse.Data;
+
+            await _repository.SetRegistrationStep(userDto.Id, createUserDTO.Step, createUserDTO.MembershipStatus);
+
+            await _membershipService.ApplyInvite(userDto.Id, invite.EntityId, invite.EntityType);
+
+            await _invitesRepository.ActivateInvites(invite.EntityId, userDto.Email);
             
             return new Response();
         }
@@ -218,11 +232,11 @@ namespace Squadio.BLL.Services.SignUp.Implementations
             };
 
             var createResponse = await _usersService.CreateUser(createUserDTO);
-
-            await _repository.SetRegistrationStep(createResponse.Data.Id, createUserDTO.Step, createUserDTO.MembershipStatus);
-
+            
             if (!createResponse.IsSuccess)
                 return createResponse;
+
+            await _repository.SetRegistrationStep(createResponse.Data.Id, createUserDTO.Step, createUserDTO.MembershipStatus);
 
             var createdUser = createResponse.Data;
             
@@ -558,10 +572,6 @@ namespace Squadio.BLL.Services.SignUp.Implementations
                 if (!sendResult.IsSuccess)
                     return sendResult as Response<SignUpStepDTO>;
             }
-            else
-            {
-                await _invitesService.ActivateInvites(step.User.Email);
-            }
 
             step = await _repository.SetRegistrationStep(userId, RegistrationStep.Done);
             
@@ -702,24 +712,23 @@ namespace Squadio.BLL.Services.SignUp.Implementations
         
         public async Task<Response<InviteModel>> GetInviteByCode(string code)
         {
-            // var item = await _invitesRepository.GetInviteByCode(code);
-            // if (item == null)
-            // {
-            //     return new SecurityErrorResponse<InviteModel>(new []
-            //     {
-            //         new Error
-            //         {
-            //             Code = ErrorCodes.Common.NotFound,
-            //             Message = ErrorMessages.Common.NotFound
-            //         }
-            //     });
-            // }
-            //
-            // return new Response<InviteModel>
-            // {
-            //     Data = item
-            // };
-            throw new NotImplementedException();
+            var item = await _invitesRepository.GetInviteByCode(code);
+            if (item == null)
+            {
+                return new SecurityErrorResponse<InviteModel>(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Common.NotFound,
+                        Message = ErrorMessages.Common.NotFound
+                    }
+                });
+            }
+            
+            return new Response<InviteModel>
+            {
+                Data = item
+            };
         }
         
         private async Task<Response> SendSignUpInvites(Guid userId)

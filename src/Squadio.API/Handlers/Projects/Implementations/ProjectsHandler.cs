@@ -80,8 +80,10 @@ namespace Squadio.API.Handlers.Projects.Implementations
 
         public async Task<Response> InviteProjectUsers(Guid projectId, CreateInvitesDTO dto, ClaimsPrincipal claims)
         {
-            var result = await _membershipService.InviteUsersToProject(projectId, claims.GetUserId(), dto);
-            return result;
+            //TODO:
+            throw new NotImplementedException();
+            // var result = await _membershipService.InviteUsersToProject(projectId, claims.GetUserId(), dto);
+            // return result;
         }
 
         // private async Task BroadcastChanges(Response<ProjectDTO> response, ChangesType changesType)

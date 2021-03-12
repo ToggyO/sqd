@@ -1,7 +1,8 @@
-﻿using System;
+﻿﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Squadio.BLL.Services.Notifications.Emails;
+using Squadio.Common.Helpers;
 using Squadio.Common.Models.Responses;
 using Squadio.DAL.Repository.Companies;
 using Squadio.DAL.Repository.Invites;
@@ -37,50 +38,33 @@ namespace Squadio.BLL.Services.Invites.Implementations
             _emailNotificationsService = emailNotificationsService;
         }
 
-        public async Task<Response> CreateInvite(string email, string code, Guid entityId, InviteEntityType inviteEntityType, Guid authorId)
+        public async Task<Response> GetInviteByCode(string code)
         {
-            // var user = await _usersRepository.GetByEmail(email);
-            // if (user.Status != UserStatus.Pending)
-            // {
-            //     return new ErrorResponse();
-            // }
-            //
-            // var invite = new InviteModel
-            // {
-            //     Email = email,
-            //     IsDeleted = false,
-            //     IsSent = false,
-            //     CreatedDate = DateTime.UtcNow,
-            //     Code = code,
-            //     EntityId = entityId,
-            //     EntityType = inviteEntityType,
-            //     CreatorId = authorId
-            // };
-            //
-            // await _repository.CreateInvite(invite);
-            //
-            // return new Response();
             throw new NotImplementedException();
         }
 
-        public async Task<Response> ActivateInvites(string email)
+        public async Task<Response> CreateInvite(string email, Guid entityId, InviteEntityType inviteEntityType, Guid authorId, string code = null)
         {
-            // var user = await _usersRepository.GetByEmail(email);
-            //
-            // var invites = await _repository.GetInvites(email: email, activated: false);
-            // foreach (var invite in invites)
-            // {
-            //     await _repository.ActivateInvite(invite.Id);
-            // }
-            //
-            // if (user.Status == UserStatus.Pending)
-            // {
-            //     user.Status = UserStatus.Active;
-            //     await _usersRepository.Update(user);
-            // }
-            //
-            // return new Response();
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(code))
+            {
+                code = CodeHelper.GenerateCodeAsGuid();
+            }
+            
+            var invite = new InviteModel
+            {
+                Email = email,
+                IsDeleted = false,
+                IsSent = false,
+                CreatedDate = DateTime.UtcNow,
+                Code = code,
+                EntityId = entityId,
+                EntityType = inviteEntityType,
+                CreatorId = authorId
+            };
+            
+            await _repository.CreateInvite(invite);
+            
+            return new Response();
         }
 
         public async Task<Response> SendInvite(string email)
@@ -143,6 +127,13 @@ namespace Squadio.BLL.Services.Invites.Implementations
             //
             // return new ErrorResponse();
             throw new NotImplementedException();
+        }
+
+        public async Task<Response> RemoveInvites(string email, Guid entityId, InviteEntityType inviteEntityType)
+        {
+            var invites = await _repository.GetInvites(email: email, entityId: entityId, entityType: inviteEntityType);
+            await _repository.DeleteInvites(invites.Select(x => x.Id));
+            return new Response();
         }
     }
 }

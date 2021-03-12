@@ -77,8 +77,10 @@ namespace Squadio.API.Handlers.Teams.Implementations
 
         public async Task<Response> InviteTeamUsers(Guid teamId, CreateInvitesDTO dto, ClaimsPrincipal claims)
         {
-            var result = await _membershipService.InviteUsersToTeam(teamId, claims.GetUserId(), dto);
-            return result;
+            //TODO:
+            throw new NotImplementedException();
+            // var result = await _membershipService.InviteUsersToTeam(teamId, claims.GetUserId(), dto);
+            // return result;
         }
     }
 }

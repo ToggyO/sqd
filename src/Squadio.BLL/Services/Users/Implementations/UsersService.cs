@@ -125,6 +125,8 @@ namespace Squadio.BLL.Services.Users.Implementations
             
             entity = await _repository.Create(entity);
             
+            //TODO: here should be set signup step???
+            
             var result = _mapper.Map<UserModel, UserDTO>(entity);
             
             return new Response<UserDTO>

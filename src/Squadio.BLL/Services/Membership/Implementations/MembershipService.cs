@@ -65,49 +65,143 @@ namespace Squadio.BLL.Services.Membership.Implementations
         }
         
         #endregion
-        public Task<Response> InviteUsersToCompany(Guid companyId, Guid authorId, CreateInvitesDTO dto, bool sendMails = true)
+
+        public async Task<Response> ApplyInvite(Guid userId, Guid entityId, InviteEntityType entityType)
         {
-            throw new NotImplementedException();
+            var user = await _usersProvider.GetById(userId);
+            switch (entityType)
+            {
+                case InviteEntityType.Company:
+                    await AddUserToCompany(entityId, userId, MembershipStatus.Member);
+                    break;
+                case InviteEntityType.Team:
+                    await AddUserToTeam(entityId, userId, MembershipStatus.Member);
+                    break;
+                case InviteEntityType.Project:
+                    await AddUserToProject(entityId, userId, MembershipStatus.Member);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(entityType), entityType, null);
+            }
+
+            await _invitesService.RemoveInvites(user.Data.Email, entityId, entityType);
+            return new Response();
         }
 
-        public Task<Response> InviteUsersToTeam(Guid teamId, Guid authorId, CreateInvitesDTO dto, bool sendMails = true)
+        public async Task<Response> AddUserToCompany(Guid companyId, Guid userId, MembershipStatus membershipStatus)
         {
-            throw new NotImplementedException();
+            var companyUser = await _companiesUsersRepository.GetCompanyUser(companyId, userId);
+            if(companyUser == null)
+                await _companiesUsersRepository.AddCompanyUser(companyId, userId, membershipStatus);
+            return new Response();
         }
 
-        public Task<Response> InviteUsersToProject(Guid projectId, Guid authorId, CreateInvitesDTO dto, bool sendMails = true)
+        public async Task<Response> AddUserToTeam(Guid teamId, Guid userId, MembershipStatus membershipStatus)
         {
-            throw new NotImplementedException();
+            var team = await _teamsRepository.GetById(teamId);
+            await AddUserToCompany(team.CompanyId, userId, membershipStatus);
+            var teamUser = await _teamsUsersRepository.GetTeamUser(teamId, userId);
+            if(teamUser == null)
+                await _teamsUsersRepository.AddTeamUser(teamId, userId, membershipStatus);
+            return new Response();
         }
 
-        public Task<Response<UserDTO>> InviteUserToCompany(Guid companyId, Guid inviteAuthorId, string email, bool sendMails = true)
+        public async Task<Response> AddUserToProject(Guid projectId, Guid userId, MembershipStatus membershipStatus)
         {
-            throw new NotImplementedException();
+            var project = await _projectsRepository.GetById(projectId);
+            await AddUserToTeam(project.TeamId, userId, membershipStatus);
+            var projectUser = await _projectsUsersRepository.GetProjectUser(projectId, userId);
+            if(projectUser == null)
+                await _projectsUsersRepository.AddProjectUser(projectId, userId, membershipStatus);
+            return new Response();
         }
-
-        public Task<Response<UserDTO>> InviteUserToTeam(Guid teamId, Guid inviteAuthorId, string email, bool sendMails = true)
+        
+        public async Task<Response> DeleteUserFromCompany(Guid companyId, Guid removeUserId, Guid currentUserId)
         {
-            throw new NotImplementedException();
+            var currentCompanyUser = await _companiesUsersRepository.GetCompanyUser(companyId, currentUserId);
+        
+            if (currentCompanyUser == null || currentCompanyUser?.Status != MembershipStatus.SuperAdmin)
+            {
+                return new ForbiddenErrorResponse(new []
+                {
+                    new Error
+                    {
+                        Code = ErrorCodes.Security.Forbidden,
+                        Message = ErrorMessages.Security.Forbidden
+                    }
+                }); 
+            }
+            
+            var teams = await _teamsRepository.GetTeams(new PageModel()
+            {
+                Page = 1,
+                PageSize = 1000
+            }, companyId);
+            
+            foreach (var team in teams.Items)
+            {
+                await DeleteUserFromTeam(team.Id, removeUserId, currentUserId, false);
+            }
+        
+            await _companiesUsersRepository.DeleteCompanyUser(companyId, removeUserId);
+            
+            return new Response();
         }
-
-        public Task<Response<UserDTO>> InviteUserToProject(Guid projectId, Guid inviteAuthorId, string email, bool sendMails = true)
+        
+        public async Task<Response> DeleteUserFromTeam(Guid teamId, Guid removeUserId, Guid currentUserId, bool checkAccess = true)
         {
-            throw new NotImplementedException();
+            if (checkAccess)
+            {
+                var currentTeamUser = await _teamsUsersRepository.GetTeamUser(teamId, currentUserId);
+        
+                if (currentTeamUser == null || currentTeamUser?.Status != MembershipStatus.SuperAdmin)
+                {
+                    return new ForbiddenErrorResponse(new[]
+                    {
+                        new Error
+                        {
+                            Code = ErrorCodes.Security.Forbidden,
+                            Message = ErrorMessages.Security.Forbidden
+                        }
+                    });
+                }
+            }
+        
+            var projects = await _projectsRepository.GetProjects(new PageModel()
+            {
+                Page = 1,
+                PageSize = 1000
+            }, teamId);
+            
+            foreach (var project in projects.Items)
+            {
+                await DeleteUserFromProject(project.Id, removeUserId, currentUserId, false);
+            }
+            
+            await _teamsUsersRepository.DeleteTeamUser(teamId, removeUserId);
+            return new Response();
         }
-
-        public Task<Response> DeleteUserFromCompany(Guid companyId, Guid removeUserId, Guid currentUserId)
+        
+        public async Task<Response> DeleteUserFromProject(Guid projectId, Guid removeUserId, Guid currentUserId, bool checkAccess = true)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<Response> DeleteUserFromTeam(Guid teamId, Guid removeUserId, Guid currentUserId, bool checkAccess = true)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Response> DeleteUserFromProject(Guid projectId, Guid removeUserId, Guid currentUserId, bool checkAccess = true)
-        {
-            throw new NotImplementedException();
+            if (checkAccess)
+            {
+                var currentProjectUser = await _projectsUsersRepository.GetProjectUser(projectId, currentUserId);
+        
+                if (currentProjectUser == null || currentProjectUser?.Status != MembershipStatus.SuperAdmin)
+                {
+                    return new ForbiddenErrorResponse(new[]
+                    {
+                        new Error
+                        {
+                            Code = ErrorCodes.Security.Forbidden,
+                            Message = ErrorMessages.Security.Forbidden
+                        }
+                    });
+                }
+            }
+            await _projectsUsersRepository.DeleteProjectUser(projectId, removeUserId);
+            return new Response();
         }
 
         //TODO: think how optimize invites. Now here many access to DB!
@@ -379,94 +473,6 @@ namespace Squadio.BLL.Services.Membership.Implementations
         //     {
         //         Data = user
         //     };
-        // }
-        //
-        // public async Task<Response> DeleteUserFromCompany(Guid companyId, Guid removeUserId, Guid currentUserId)
-        // {
-        //     var currentCompanyUser = await _companiesUsersRepository.GetCompanyUser(companyId, currentUserId);
-        //
-        //     if (currentCompanyUser == null || currentCompanyUser?.Status != MembershipStatus.SuperAdmin)
-        //     {
-        //         return new ForbiddenErrorResponse(new []
-        //         {
-        //             new Error
-        //             {
-        //                 Code = ErrorCodes.Security.Forbidden,
-        //                 Message = ErrorMessages.Security.Forbidden
-        //             }
-        //         }); 
-        //     }
-        //     
-        //     var teams = await _teamsRepository.GetTeams(new PageModel()
-        //     {
-        //         Page = 1,
-        //         PageSize = 1000
-        //     }, companyId);
-        //     
-        //     foreach (var team in teams.Items)
-        //     {
-        //         await DeleteUserFromTeam(team.Id, removeUserId, currentUserId, false);
-        //     }
-        //
-        //     await _companiesUsersRepository.DeleteCompanyUser(companyId, removeUserId);
-        //     
-        //     return new Response();
-        // }
-        //
-        // public async Task<Response> DeleteUserFromTeam(Guid teamId, Guid removeUserId, Guid currentUserId, bool checkAccess = true)
-        // {
-        //     if (checkAccess)
-        //     {
-        //         var currentTeamUser = await _teamsUsersRepository.GetTeamUser(teamId, currentUserId);
-        //
-        //         if (currentTeamUser == null || currentTeamUser?.Status != MembershipStatus.SuperAdmin)
-        //         {
-        //             return new ForbiddenErrorResponse(new[]
-        //             {
-        //                 new Error
-        //                 {
-        //                     Code = ErrorCodes.Security.Forbidden,
-        //                     Message = ErrorMessages.Security.Forbidden
-        //                 }
-        //             });
-        //         }
-        //     }
-        //
-        //     var projects = await _projectsRepository.GetProjects(new PageModel()
-        //     {
-        //         Page = 1,
-        //         PageSize = 1000
-        //     }, teamId);
-        //     
-        //     foreach (var project in projects.Items)
-        //     {
-        //         await DeleteUserFromProject(project.Id, removeUserId, currentUserId, false);
-        //     }
-        //     
-        //     await _teamsUsersRepository.DeleteTeamUser(teamId, removeUserId);
-        //     return new Response();
-        // }
-        //
-        // public async Task<Response> DeleteUserFromProject(Guid projectId, Guid removeUserId, Guid currentUserId, bool checkAccess = true)
-        // {
-        //     if (checkAccess)
-        //     {
-        //         var currentProjectUser = await _projectsUsersRepository.GetProjectUser(projectId, currentUserId);
-        //
-        //         if (currentProjectUser == null || currentProjectUser?.Status != MembershipStatus.SuperAdmin)
-        //         {
-        //             return new ForbiddenErrorResponse(new[]
-        //             {
-        //                 new Error
-        //                 {
-        //                     Code = ErrorCodes.Security.Forbidden,
-        //                     Message = ErrorMessages.Security.Forbidden
-        //                 }
-        //             });
-        //         }
-        //     }
-        //     await _projectsUsersRepository.DeleteProjectUser(projectId, removeUserId);
-        //     return new Response();
         // }
     }
 }

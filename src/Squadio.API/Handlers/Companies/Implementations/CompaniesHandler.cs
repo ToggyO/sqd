@@ -66,8 +66,10 @@ namespace Squadio.API.Handlers.Companies.Implementations
 
         public async Task<Response> InviteCompanyUsers(Guid companyId, CreateInvitesDTO dto, ClaimsPrincipal claims)
         {
-            var result = await _membershipService.InviteUsersToCompany(companyId, claims.GetUserId(), dto);
-            return result;
+            //TODO:
+            throw new NotImplementedException();
+            // var result = await _membershipService.InviteUsersToCompany(companyId, claims.GetUserId(), dto);
+            // return result;
         }
     }
 }
