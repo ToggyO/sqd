@@ -196,7 +196,7 @@ namespace Squadio.API
                     options.RouteTemplate = "swagger/{documentName}/swagger.json";
                     options.PreSerializeFilters.Add((swaggerDoc, httpReq) => swaggerDoc.Servers = new System.Collections.Generic.List<OpenApiServer>
                     {
-                        new OpenApiServer { Url = $"https://squad.magora.team/api", Description = "Dev"},
+                        new OpenApiServer { Url = $"https://api.squad.magora.team", Description = "Dev"},
                         new OpenApiServer { Url = $"{httpReq.Scheme}://{httpReq.Host.Value}", Description = "Local"}
                     });
                 });
